@@ -45,13 +45,19 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
     "8",
     "9",
   ];
+
   return (
-    <div className="flex gap-2 ">
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      exit={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="flex gap-2 "
+    >
       {props.letters.split("").map((letter: string, index: number) => {
         return (
           <div
             key={index}
-            className={`flex aspect-square min-h-[50px] w-[7vh] min-w-[50px] flex-col items-center overflow-hidden rounded-md text-[6vh] font-semibold text-white ${
+            className={`flex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-semibold text-white ${
               props.backgroundColor ? props.backgroundColor : "bg-[#9462C6]"
             }`}
           >
@@ -62,7 +68,12 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
                   animate={{
                     y: `-${alphabet.indexOf(letter) * 7}vh`,
                   }}
-                  transition={{ duration: 0.5 }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.25,
+                    type: "spring",
+                    damping: 12,
+                  }}
                   key={`${index}letter`}
                 >
                   {alphabetLetter}
@@ -72,7 +83,7 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
           </div>
         );
       })}
-    </div>
+    </motion.div>
   );
 };
 

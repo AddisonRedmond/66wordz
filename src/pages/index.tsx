@@ -1,11 +1,19 @@
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { authRequired } from "~/utils/authRequired";
 import { motion } from "framer-motion";
-import Tile from "~/components/tile";
+import { api } from "~/utils/api";
+import GameControls from "~/components/game-controls";
+import Header from "~/components/hearder";
 
 const Home = () => {
   const { data } = useSession();
+  const lobby = api.public.joinPublicGame.useMutation();
+
+  const joinGame = () => {
+    lobby.mutate();
+  };
+
   return (
     <>
       <Head>
@@ -19,22 +27,9 @@ const Home = () => {
         exit={{ opacity: 0 }}
         className="flex min-h-screen flex-col justify-around"
       >
-        <div className="flex flex-col items-center gap-3">
-          <Tile letters={"66"} />
-          <Tile letters="WORDZ" />
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <div>
-            <button className="h-16 w-36 rounded-md bg-stone-500 px-4 font-semibold text-white duration-150 ease-in-out hover:bg-stone-400">
-              Public Game
-            </button>
-          </div>
-          <div>
-            <button className="h-16 w-36 rounded-md border-2 border-black px-4 font-semibold duration-150 ease-in-out hover:bg-black hover:text-white">
-              Ready
-            </button>
-          </div>
-        </div>
+        <Header isLoading={false} />
+
+        <GameControls joinGame={joinGame} />
       </motion.div>
     </>
   );

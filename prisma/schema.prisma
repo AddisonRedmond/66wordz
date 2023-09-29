@@ -58,9 +58,10 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    wins          Int @default(0)
-    losses        Int @default(0)
-    gamesPlayed   Int @default(0)
+    wins          Int       @default(0)
+    losses        Int       @default(0)
+    gamesPlayed   Int       @default(0)
+    Players       Players[]
 }
 
 model VerificationToken {
@@ -72,13 +73,15 @@ model VerificationToken {
 }
 
 model Lobby {
-    id     String    @id @default(cuid())
-    player Players[]
+    id      String    @id @default(cuid())
+    started Boolean   @default(false)
+    player  Players[]
 }
 
 model Players {
-    id      String @id @default(cuid())
-    userId  String
+    // id      String @id @default(cuid())
+    userId  String @unique
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     lobbyId String
     lobby   Lobby  @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
 }
