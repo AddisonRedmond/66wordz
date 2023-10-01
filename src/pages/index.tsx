@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
+import PublicGame from "~/components/public-game";
 
 const Home = () => {
   const { data } = useSession();
@@ -27,9 +28,12 @@ const Home = () => {
         exit={{ opacity: 0 }}
         className="flex min-h-screen flex-col justify-around"
       >
-        <Header isLoading={false} />
-
-        <GameControls joinGame={joinGame} />
+        <Header isLoading={lobby.isLoading} />
+        {lobby.data?.lobbyId ? (
+          <PublicGame lobbyId={lobby.data.lobbyId} />
+        ) : (
+          <GameControls joinGame={joinGame} />
+        )}
       </motion.div>
     </>
   );

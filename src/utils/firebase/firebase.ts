@@ -14,9 +14,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+export const db = getDatabase();
 
 export const createNewFirebaseLobby = (lobbyId: string) => {
-  const db = getDatabase();
   const timeStamp = new Date();
   set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
@@ -28,7 +28,6 @@ export const joinFirebaseLobby = (
   userId: string,
   word: string,
 ) => {
-  const db = getDatabase();
   set(ref(db, "publicLobbies/" + lobbyId + "/players"), {
     [userId]: {
       word: word,
