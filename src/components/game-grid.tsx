@@ -1,5 +1,17 @@
+const WordRow: React.FC = () => {
+  return <>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+  </>
+}
+
 const GameGrid: React.FC = () => {
-  return <div className="h-2/5 w-1/2 bg-stone-300"></div>;
+  return <div className="bg-gray-400 h-2/3">
+    <p>TEST</p>
+  </div>;
 };
 
 export default GameGrid;

@@ -27,10 +27,10 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   console.log(data);
 
   return (
-    <div>
+    <>
       <GameGrid />
       <Keyboard disabled={false} />
-    </div>
+    </>
   );
 };
 
