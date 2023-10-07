@@ -26,7 +26,7 @@ const Home = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex min-h-screen flex-col items-center justify-around"
+        className="flex min-h-screen flex-col items-center justify-evenly"
       >
         <Header isLoading={lobby.isLoading} />
         {lobby.data?.lobbyId ? (
