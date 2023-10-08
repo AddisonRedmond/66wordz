@@ -1,0 +1,31 @@
+Join lobby function
+when a player is added, add them to the opponent grid
+
+
+create opponent grid
+must show timer/hp
+must show full match/partial match/ and no match tiles
+when player is eliminated show loss animation on opponent tile
+
+Create hp/timer
+Create at timer based off of time stamp
+must be able to add and remove time from timer - include animation
+
+Game grid
+disable typeing until game has started
+add global listener for keypress
+add spell checking
+
+
+keyboard 
+add color changes to keyboard
+need color for no match
+need color for partial match
+need color for full match
+set up keyboard to be clickable
+colors must persist between a full board reset but same word - best guess should go to the top of the board as the first guess
+
+need to find colors for match types
+
+need to make bots? 
+

@@ -9,6 +9,14 @@ type PublicGameProps = {
 
 const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const [data, setData] = useState<any>();
+  const [guesses, setGuesses] = useState<string[]>(["GUESS", "PENIS"]);
+  const [guess, setGuess] = useState<string>("");
+
+  const handleKeyUp = (e: KeyboardEvent) => {
+    setGuess((prevGuess)=>`${prevGuess}${e.key.toUpperCase()}`);
+  };
+
+  console.log(guess);
 
   useEffect(() => {
     const query = ref(db, `publicLobbies/${props.lobbyId}`);
@@ -16,19 +24,22 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
       const firebaseData = snapShot.val() || {};
       setData(firebaseData);
     };
-
+    window.addEventListener("keyup", handleKeyUp);
     const unsubscribe = onValue(query, handleDataChange);
     return () => {
       off(query, "value", handleDataChange);
       unsubscribe;
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
-  console.log(data);
-
   return (
     <>
-      <GameGrid />
+      <div className="text-center">
+        <p className="font-bold">Loading Players</p>
+        <GameGrid guess={guess} guesses={guesses} />
+      </div>
+
       <Keyboard disabled={false} />
     </>
   );
