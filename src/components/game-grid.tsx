@@ -1,6 +1,6 @@
 type GameGridProps = {
   guess: string;
-  guesses: string[] | null;
+  guesses: string[];
 };
 
 type WordRowProps = {
@@ -13,7 +13,7 @@ type WordTileProps = {
 
 const WordTile: React.FC<WordTileProps> = (props: WordTileProps) => {
   return (
-    <div className=" flex aspect-square w-[3vw] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[1.5vw] font-bold">
+    <div className=" flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold">
       <p>{props.letter}</p>
     </div>
   );
@@ -35,7 +35,9 @@ const GameGrid: React.FC<GameGridProps> = (props: GameGridProps) => {
   const handleWord = () => {
     let rows = [];
     for (let i = 0; i < 6; i++) {
-      if (props.guesses?.[i]) {
+      if (i === 0 && !props.guesses.length) {
+        rows.push(<WordRow key={i} word={props.guess} />);
+      } else if (props.guesses?.[i]) {
         rows.push(<WordRow key={i} word={props.guesses[i]} />);
       } else if (props.guesses?.[i - 1]) {
         rows.push(<WordRow key={i} word={props.guess} />);
