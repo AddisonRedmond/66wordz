@@ -31,29 +31,27 @@ const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
   );
 };
 
-const GameGrid: React.FC<GameGridProps> = (props: GameGridProps) => {
+const GameGrid: React.FC<GameGridProps> = ({ guess, guesses }) => {
   const handleWord = () => {
-    let rows = [];
-    for (let i = 0; i < 6; i++) {
-      if (i === 0 && !props.guesses.length) {
-        rows.push(<WordRow key={i} word={props.guess} />);
-      } else if (props.guesses?.[i]) {
-        rows.push(<WordRow key={i} word={props.guesses[i]} />);
-      } else if (props.guesses?.[i - 1]) {
-        rows.push(<WordRow key={i} word={props.guess} />);
+    return Array.from({ length: 6 }).map((_, index: number) => {
+      if (index === 0 && !guesses.length) {
+        return guess;
+      } else if (guesses?.[index]) {
+        return guesses[index];
+      } else if (guesses?.[index - 1]) {
+        return guess;
       } else {
-        rows.push(<WordRow key={i} />);
+        return null;
       }
-    }
-    return rows;
+    });
+
   };
   return (
     <div className="flex h-2/3 flex-col gap-2 rounded-md bg-stone-300 p-2">
-      {handleWord().map((wordRow: JSX.Element, index: number) => {
-        return wordRow;
-      })}
+      {handleWord().map((word: string, index: number) => (
+        <WordRow key={index} word={word} />
+      ))}
     </div>
   );
 };
-
 export default GameGrid;

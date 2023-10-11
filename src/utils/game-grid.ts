@@ -7,13 +7,15 @@ export const handleKeyPress = (key: string, guess: string): string => {
     return `${guess}${key}`.toUpperCase();
   }
 
-  
-
   return guess;
 };
 
-
-export const handleSubmit = (guess: string, word: string) => {
-
-
-}
+export const handleDeleteLetter = (guess: string, setGuess: () => void) => {
+  if (guess.length) {
+    console.log("HERE")
+    console.log(guess)
+    setGuess((prevGuess) => {
+      return prevGuess.slice(0, -1);
+    });
+  }
+};
