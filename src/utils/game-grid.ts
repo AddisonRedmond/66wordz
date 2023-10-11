@@ -15,12 +15,5 @@ export const handleKeyPress = (key: string, guess: string): string => {
 
 export const handleSubmit = (guess: string, word: string) => {
 
-    if(guess === word) {
-        // run correct guess funcion
-        return true
-    } else {
-        // check if guess count has been reached -> run reset function
 
-        // if guess count has not been reached -> change the colors
-    }
 }
