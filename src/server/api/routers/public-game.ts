@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { createNewFirebaseLobby } from "~/utils/firebase/firebase";
+import {
+  createNewFirebaseLobby,
+  joinFirebaseLobby,
+} from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const publicGameRouter = createTRPCRouter({
@@ -42,12 +45,14 @@ export const publicGameRouter = createTRPCRouter({
     };
 
     const joinLobby = async (lobbyId: string) => {
-      const lobby = ctx.db.players.create({
+      const lobby = await ctx.db.players.create({
         data: {
           userId: ctx.session.user.id,
           lobbyId: lobbyId,
         },
       });
+
+      joinFirebaseLobby(lobby.lobbyId, ctx.session.user.id, "GUESS");
 
       return lobby;
     };

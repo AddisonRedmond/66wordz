@@ -8,7 +8,7 @@ import Header from "~/components/hearder";
 import PublicGame from "~/components/public-game";
 
 const Home = () => {
-  const { data } = useSession();
+  const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
 
   const joinGame = () => {
@@ -30,7 +30,7 @@ const Home = () => {
       >
         <Header isLoading={lobby.isLoading} />
         {lobby.data?.lobbyId ? (
-          <PublicGame lobbyId={lobby.data.lobbyId} />
+          <PublicGame lobbyId={lobby.data.lobbyId} userId={session!.user.id}/>
         ) : (
           <GameControls joinGame={joinGame} />
         )}

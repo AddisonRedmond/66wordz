@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, update } from "firebase/database";
 import { env } from "~/env.mjs";
 
 const firebaseConfig = {
@@ -28,9 +28,36 @@ export const joinFirebaseLobby = (
   userId: string,
   word: string,
 ) => {
-  set(ref(db, "publicLobbies/" + lobbyId + "/players"), {
+  set(ref(db, "publicLobbies/" + lobbyId), {
     [userId]: {
       word: word,
+      guesses: [null],
+      startTime: null,
+      allGuesses: [null],
     },
   });
+};
+
+export const updateGuessAndGuesses = async (
+  lobbyId: string,
+  userId: string,
+  guesses: string[],
+  allGuesses: string[],
+) => {
+  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+    guesses: guesses,
+    allGuesses: allGuesses,
+  });
+};
+
+export const updateWord = async (
+  lobbyId: string,
+  userId: string,
+  word: string
+) => {
+ 
+    await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+      word: word
+    });
+
 };
