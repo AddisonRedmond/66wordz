@@ -35,7 +35,11 @@ const WordTile: React.FC<WordTileProps> = (props: WordTileProps) => {
   return (
     <motion.div
       initial={{ backgroundColor: "#F5F5F4" }}
-      animate={props.match && { backgroundColor: handleColor() }}
+      animate={
+        props.match
+          ? { backgroundColor: handleColor() }
+          : { backgroundColor: "#F5F5F4" }
+      }
       className=" flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
     >
       <p>{props.letter}</p>

@@ -51,7 +51,7 @@ export const publicGameRouter = createTRPCRouter({
         },
       });
 
-      joinFirebaseLobby(lobby.lobbyId, ctx.session.user.id, "GUESS");
+      joinFirebaseLobby(lobby.lobbyId, ctx.session.user.id);
 
       return lobby;
     };

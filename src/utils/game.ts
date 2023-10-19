@@ -1,3 +1,5 @@
+import { updateGuessesAndWord, updateTimerAndGuesses } from "./firebase/firebase";
+import words from "./words";
 export const handleMatched = (
   guesses: string[],
   word: string,
@@ -38,7 +40,6 @@ export const formatGameData = (dataObject: {
   startTime?: string;
   allGuesses: string[];
 } => {
-  console.log(dataObject);
   let gameObj = {
     guesses: dataObject?.guesses ? dataObject.guesses : [],
     word: dataObject?.word ? dataObject.word : "ERROR",
@@ -46,4 +47,60 @@ export const formatGameData = (dataObject: {
     allGuesses: dataObject?.allGuesses ? dataObject.allGuesses : [],
   };
   return gameObj;
+};
+
+export const getClosestWord = (word: string, guesses: string[]) => {
+  const countMatchingLetter = (word1: string, word2: string) => {
+    let count = 0;
+
+    const minLength = Math.min(word1.length, word2.length);
+
+    for (let i = 0; i < minLength; i++) {
+      if (word1[i] === word2[i]) {
+        count++;
+      }
+    }
+
+    return count;
+  };
+
+  let closestWord: string = "";
+  let closestMatchCount = -1;
+
+  for (const guess of guesses) {
+    const currentWord = guess;
+    const matchCount = countMatchingLetter(word, currentWord);
+
+    if (matchCount > closestMatchCount) {
+      closestMatchCount = matchCount;
+      closestWord = currentWord;
+    }
+  }
+
+  return closestWord;
+};
+
+export const handleGetNewWord = (): string => {
+  const randomIndex = Math.floor(Math.random() * words.length);
+  if (randomIndex >= 0 && randomIndex < words.length) {
+    return words[randomIndex] as string;
+  }
+  return "ERROR";
+};
+
+export const handleCorrectGuess = (lobbyId: string, userId: string) => {
+  updateGuessesAndWord(lobbyId, userId, [], handleGetNewWord());
+  // clear out guesses from firebase
+  // swap out the word in firebase
+  // add time to timer
+};
+
+export const handleWordFailure = (
+  guesses: string[],
+  word: string,
+  lobbyId: string,
+  userId: string,
+) => {
+  const closestWord = getClosestWord(word, guesses)
+  updateTimerAndGuesses(lobbyId, userId, closestWord)
 };

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, update } from "firebase/database";
+import { getDatabase, ref, set, push, update } from "firebase/database";
 import { env } from "~/env.mjs";
+import { handleGetNewWord } from "../game";
 
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_API_KEY,
@@ -23,41 +24,55 @@ export const createNewFirebaseLobby = (lobbyId: string) => {
   });
 };
 
-export const joinFirebaseLobby = (
-  lobbyId: string,
-  userId: string,
-  word: string,
-) => {
-  set(ref(db, "publicLobbies/" + lobbyId), {
-    [userId]: {
-      word: word,
-      guesses: [null],
-      startTime: null,
-      allGuesses: [null],
-    },
+export const joinFirebaseLobby = (lobbyId: string, userId: string) => {
+  set(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+    word: handleGetNewWord(),
+    guesses: [null],
+    startTime: null,
+    allGuesses: [null],
   });
 };
 
-export const updateGuessAndGuesses = async (
+export const updateGuessesAndAllGuesses = async (
   lobbyId: string,
   userId: string,
   guesses: string[],
   allGuesses: string[],
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  return await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
     guesses: guesses,
     allGuesses: allGuesses,
+  });
+};
+
+export const updateGuessesAndWord = async (
+  lobbyId: string,
+  userId: string,
+  guesses: string[],
+  word: string,
+) => {
+  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+    guesses: guesses,
+    word: word,
   });
 };
 
 export const updateWord = async (
   lobbyId: string,
   userId: string,
-  word: string
+  word: string,
 ) => {
- 
-    await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
-      word: word
-    });
+  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+    word: word,
+  });
+};
 
+export const updateTimerAndGuesses = async (
+  lobbyId: string,
+  userId: string,
+  closestWord: string,
+) => {
+  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+    guesses: [closestWord],
+  });
 };
