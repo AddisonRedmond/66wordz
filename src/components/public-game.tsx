@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
 import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
 import Keyboard from "./keyboard";
@@ -22,32 +22,14 @@ type Matches = {
   noMatch: string[];
 };
 
-type PlayersData = {
-  guesses: string[];
-  word: string;
-  startTime?: string;
-  allGuesses: string[];
-} | null;
-
-type GameData = {
-  [dynamicKey: string]: {
-    [nestedKey: string]: PlayersData; // Use an appropriate type for the nested objects
-  } & {
-    initializedTimeStamp: string;
-  };
-} | null;
-
 const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
-  const [playerData, setPlayerData] = useState<PlayersData>(null);
-  const [gameData, setGameData] = useState<GameData>(null);
+  const [gameData, setGameData] = useState<any>(null);
   const [guess, setGuess] = useState<string>("");
   const [matches, setMatches] = useState<Matches>({
     fullMatch: [],
     partialMatch: [],
     noMatch: [],
   });
-
-  console.log(gameData![props.userId]);
 
   const resetMatches = () => {
     setMatches({
@@ -58,38 +40,24 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   };
 
   useEffect(() => {
-    const query = ref(db, `publicLobbies/${props.lobbyId}/${props.userId}`);
-    const handleDataChange = (snapShot: any) => {
-      const firebaseData: {
-        guesses?: string[];
-        word?: string;
-        startTime?: string;
-        allGuesses?: string[];
-      } = snapShot.val();
-      setPlayerData(formatGameData(firebaseData));
-    };
-
-    const unsubscribe = onValue(query, handleDataChange);
-
     const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
     const handlePlayersDataChange = (snapShot: any) => {
-      const gameData: SetStateAction<GameData> = snapShot.val();
+      const gameData: any = snapShot.val();
       setGameData(gameData);
     };
 
-    const test = onValue(playersQuery, handlePlayersDataChange);
+    const unsubscribe = onValue(playersQuery, handlePlayersDataChange);
 
     return () => {
-      off(query, "value", handleDataChange);
       off(playersQuery, "value", handlePlayersDataChange);
 
       unsubscribe();
-      test();
     };
   }, [props.lobbyId]);
 
   useEffect(() => {
-    if (playerData) {
+    if (gameData?.players[props.userId]) {
+      const playerData = formatGameData(gameData[props.userId]);
       // console.log(data.guesses.length)
       const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
@@ -152,34 +120,45 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
         window.removeEventListener("keyup", handleKeyUp);
       };
     }
-  }, [guess, playerData]);
+  }, [guess, gameData]);
 
   console.log(gameData);
 
-  if (playerData) {
+  if (gameData?.players[props.userId]) {
+    const playerData = formatGameData(gameData[props.userId]);
     return (
       <div className="flex w-full items-center justify-around">
         <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
-          {Array.from({ length: 36 }).map((_, index: number) => {
-            return <Opponent key={index} />;
-          })}
+          {Object.keys(gameData.players).map(
+            (playerId: string, index: number) => {
+              if (playerId === props.userId) {
+                return;
+              } else if (index % 2 == 0) return <Opponent key={playerId} />;
+            },
+          )}
         </div>
         <div className="flex flex-col items-center gap-4">
           <div className="text-center">
-            <p className="font-bold">Loading Players</p>
+            <p className="font-bold">{`Loading Players : ${
+              Object.keys(gameData.players).length
+            } of 66`}</p>
             <GameGrid
               guess={guess}
-              guesses={playerData.guesses}
-              word={playerData.word}
+              guesses={playerData?.guesses}
+              word={playerData?.word}
             />
           </div>
 
           <Keyboard disabled={false} matches={matches} />
         </div>
         <div className="flex w-1/4 flex-wrap justify-around gap-y-2">
-          {Array.from({ length: 36 }).map((_, index: number) => {
-            return <Opponent key={index * 2} />;
-          })}
+          {Object.keys(gameData.players).map(
+            (playerId: string, index: number) => {
+              if (playerId === props.userId) {
+                return;
+              } else if (index % 2 !== 0) return <Opponent key={playerId} />;
+            },
+          )}
         </div>
       </div>
     );

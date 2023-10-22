@@ -25,7 +25,7 @@ export const createNewFirebaseLobby = (lobbyId: string) => {
 };
 
 export const joinFirebaseLobby = (lobbyId: string, userId: string) => {
-  set(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  set(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     word: handleGetNewWord(),
     guesses: [null],
     startTime: null,
@@ -39,7 +39,7 @@ export const updateGuessesAndAllGuesses = async (
   guesses: string[],
   allGuesses: string[],
 ) => {
-  return await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  return await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     allGuesses: allGuesses,
   });
@@ -51,7 +51,7 @@ export const updateGuessesAndWord = async (
   guesses: string[],
   word: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
   });
@@ -62,7 +62,7 @@ export const updateWord = async (
   userId: string,
   word: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     word: word,
   });
 };
@@ -72,7 +72,7 @@ export const updateTimerAndGuesses = async (
   userId: string,
   closestWord: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
   });
 };
