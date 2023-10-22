@@ -89,7 +89,7 @@ const GameGrid: React.FC<GameGridProps> = ({ guess, guesses, word }) => {
   };
 
   return (
-    <div className="flex h-2/3 flex-col gap-2 rounded-md bg-stone-300 p-2">
+    <div className="flex h-2/3 w-fit p-2 flex-col gap-2 rounded-md bg-stone-300">
       {handleWord().map((guess: string, index: number) => (
         <WordRow
           key={index}

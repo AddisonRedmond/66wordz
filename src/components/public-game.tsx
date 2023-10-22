@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
 import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
 import Keyboard from "./keyboard";
@@ -9,6 +9,7 @@ import {
   handleMatched,
   handleWordFailure,
 } from "~/utils/game";
+import Opponent from "./opponent";
 
 type PublicGameProps = {
   lobbyId: string;
@@ -21,21 +22,32 @@ type Matches = {
   noMatch: string[];
 };
 
-type GameData = {
+type PlayersData = {
   guesses: string[];
   word: string;
   startTime?: string;
   allGuesses: string[];
 } | null;
 
+type GameData = {
+  [dynamicKey: string]: {
+    [nestedKey: string]: PlayersData; // Use an appropriate type for the nested objects
+  } & {
+    initializedTimeStamp: string;
+  };
+} | null;
+
 const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
-  const [data, setData] = useState<GameData>(null);
+  const [playerData, setPlayerData] = useState<PlayersData>(null);
+  const [gameData, setGameData] = useState<GameData>(null);
   const [guess, setGuess] = useState<string>("");
   const [matches, setMatches] = useState<Matches>({
     fullMatch: [],
     partialMatch: [],
     noMatch: [],
   });
+
+  console.log(gameData![props.userId]);
 
   const resetMatches = () => {
     setMatches({
@@ -54,47 +66,60 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
         startTime?: string;
         allGuesses?: string[];
       } = snapShot.val();
-      setData(formatGameData(firebaseData));
+      setPlayerData(formatGameData(firebaseData));
     };
 
     const unsubscribe = onValue(query, handleDataChange);
 
+    const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
+    const handlePlayersDataChange = (snapShot: any) => {
+      const gameData: SetStateAction<GameData> = snapShot.val();
+      setGameData(gameData);
+    };
+
+    const test = onValue(playersQuery, handlePlayersDataChange);
+
     return () => {
       off(query, "value", handleDataChange);
+      off(playersQuery, "value", handlePlayersDataChange);
+
       unsubscribe();
+      test();
     };
   }, [props.lobbyId]);
 
   useEffect(() => {
-    if (data) {
+    if (playerData) {
       // console.log(data.guesses.length)
-      const handleKeyUp = async (e: KeyboardEvent) => {
+      const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
           // check if correct guess
           console.log("UPDATING GUESS AND GUESSES");
 
-          await updateGuessesAndAllGuesses(
+          updateGuessesAndAllGuesses(
             props.lobbyId,
             props.userId,
-            [...data.guesses, guess],
-            [...data.allGuesses, guess],
+            [...playerData.guesses, guess],
+            [...playerData.allGuesses, guess],
           );
-          console.log(`length: ${data.guesses.length}, data: ${data.guesses} `);
+          console.log(
+            `length: ${playerData.guesses.length}, data: ${playerData.guesses} `,
+          );
 
           // maybe use a .onchildchanged firebase function to fix this? Right now the updateguessesandallguesses function updates
           // , but isnt done by the time this part of the code runs
-          if (guess === data.word) {
+          if (guess === playerData.word) {
             handleCorrectGuess(props.lobbyId, props.userId);
             setGuess("");
             resetMatches();
             return;
-          } else if (data.guesses.length > 5) {
+          } else if (playerData.guesses.length > 5) {
             console.log("HANDIING WORD FAILURE");
             handleWordFailure(
-              data.guesses,
-              data.word,
+              playerData.guesses,
+              playerData.word,
               props.lobbyId,
               props.userId,
             );
@@ -118,26 +143,45 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
 
       window.addEventListener("keyup", handleKeyUp);
       setMatches(() =>
-        handleMatched(data.guesses ? data.guesses : [], data.word),
+        handleMatched(
+          playerData.guesses ? playerData.guesses : [],
+          playerData.word,
+        ),
       );
       return () => {
         window.removeEventListener("keyup", handleKeyUp);
       };
     }
-  }, [guess, data]);
+  }, [guess, playerData]);
 
-  // console.log(data);
+  console.log(gameData);
 
-  if (data) {
+  if (playerData) {
     return (
-      <>
-        <div className="text-center">
-          <p className="font-bold">Loading Players</p>
-          <GameGrid guess={guess} guesses={data.guesses} word={data.word} />
+      <div className="flex w-full items-center justify-around">
+        <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
+          {Array.from({ length: 36 }).map((_, index: number) => {
+            return <Opponent key={index} />;
+          })}
         </div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <p className="font-bold">Loading Players</p>
+            <GameGrid
+              guess={guess}
+              guesses={playerData.guesses}
+              word={playerData.word}
+            />
+          </div>
 
-        <Keyboard disabled={false} matches={matches} />
-      </>
+          <Keyboard disabled={false} matches={matches} />
+        </div>
+        <div className="flex w-1/4 flex-wrap justify-around gap-y-2">
+          {Array.from({ length: 36 }).map((_, index: number) => {
+            return <Opponent key={index * 2} />;
+          })}
+        </div>
+      </div>
     );
   } else {
     return <p>An Error Occurred!</p>;
