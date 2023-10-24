@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, push, update } from "firebase/database";
+import { getDatabase, ref, set, update } from "firebase/database";
 import { env } from "~/env.mjs";
 import { handleGetNewWord } from "../game";
 
@@ -17,10 +17,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase();
 
+
 export const createNewFirebaseLobby = (lobbyId: string) => {
   const timeStamp = new Date();
   set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
+    gameStarted: false,
   });
 };
 
@@ -50,10 +52,12 @@ export const updateGuessesAndWord = async (
   userId: string,
   guesses: string[],
   word: string,
+  timer: number
 ) => {
   await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
+    timer: timer
   });
 };
 
@@ -71,8 +75,16 @@ export const updateTimerAndGuesses = async (
   lobbyId: string,
   userId: string,
   closestWord: string,
+  timer: number,
 ) => {
   await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
+    timer: timer - 20000,
+  });
+};
+
+export const handleStartTimer = async (lobbyId: string, userId: string) => {
+  update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+    timer: new Date().getTime() + 180000,
   });
 };

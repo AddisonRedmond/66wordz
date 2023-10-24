@@ -3,7 +3,7 @@ import { useTimer } from "react-timer-hook";
 
 type TimerProps = {
   expiryTimestamp: Date;
-  endGame: () => void;
+  endGame?: () => void;
 };
 
 const Timer: React.FC<TimerProps> = ({
@@ -22,7 +22,7 @@ const Timer: React.FC<TimerProps> = ({
     restart,
   } = useTimer({
     expiryTimestamp,
-    onExpire: () => endGame(),
+    onExpire: () => console.log( "timer ended"),
   });
 
   useEffect(() => {
@@ -38,18 +38,18 @@ const Timer: React.FC<TimerProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-center text-2xl font-semibold text-white">
-      {!true && (
-        <div className="mx-1">
+    <div className="flex flex-col justify-center text-2xl font-semibold my-3">
+      {true && (
+        <div className="mx-1 text-black">
           <span>{minutes} Mins</span> <span>{seconds} Secs</span>
         </div>
       )}
       <div className="h-1 w-[100%] bg-white">
         <div
-          className="ease-in-out"
+          className="ease-in-out rounded-full"
           style={{
             width: `${toTotalSeconds(minutes, seconds)}%`,
-            height: "100%",
+            height: "10px",
             backgroundColor: "green",
           }}
         ></div>

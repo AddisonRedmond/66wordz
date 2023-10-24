@@ -10,10 +10,12 @@ const KeyboardRow = ({
   letters,
   specialKey,
   matches,
+  disabled,
 }: {
   letters: string;
   specialKey?: JSX.Element;
   matches: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  disabled: boolean;
 }) => {
   const handleColors = (letter: string) => {
     if (matches.fullMatch.includes(letter)) {
@@ -31,7 +33,9 @@ const KeyboardRow = ({
           <motion.p
             // initial={{ backgroundColor: "#F5F5F4" }}
             animate={{ backgroundColor: handleColors(letter) }}
-            className=" flex aspect-square w-7 cursor-pointer items-center justify-center rounded-md bg-neutral-200 font-bold"
+            className={`flex aspect-square w-7 ${
+              disabled ? "cursor-not-allowed" : "cursor-pointer"
+            } items-center justify-center rounded-md bg-neutral-200 font-bold`}
             key={letter}
           >
             {letter}
@@ -50,15 +54,28 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   return (
     <div className="flex flex-col items-center gap-1">
       <div className="flex">
-        <KeyboardRow matches={props.matches} letters={topRow} />
+        <KeyboardRow
+          matches={props.matches}
+          letters={topRow}
+          disabled={props.disabled}
+        />
       </div>
       <div className="flex">
         <KeyboardRow
           matches={props.matches}
           letters={middleRow}
+          disabled={props.disabled}
           specialKey={
-            <span className="flex aspect-square w-7 cursor-pointer items-center justify-center rounded-md bg-neutral-200 font-bold">
-              <Image className="" src={Delete} alt="Delete svg" />
+            <span
+              className={`flex aspect-square w-7 items-center justify-center rounded-md bg-neutral-200 font-bold`}
+            >
+              <Image
+                className={`${
+                  props.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                } `}
+                src={Delete}
+                alt="Delete svg"
+              />
             </span>
           }
         />
@@ -67,8 +84,13 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
         <KeyboardRow
           matches={props.matches}
           letters={bottomRow}
+          disabled={props.disabled}
           specialKey={
-            <p className="flex cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold">
+            <p
+              className={`${
+                props.disabled ? "cursor-not-allowed" : "cursor-pointer"
+              }  flex cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold`}
+            >
               ENTER
             </p>
           }

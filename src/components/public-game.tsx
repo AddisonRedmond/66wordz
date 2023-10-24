@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
-import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
+import {
+  db,
+  handleStartTimer,
+  updateGuessesAndAllGuesses,
+} from "~/utils/firebase/firebase";
 import Keyboard from "./keyboard";
 import GameGrid from "./game-grid";
 import {
@@ -10,6 +14,7 @@ import {
   handleWordFailure,
 } from "~/utils/game";
 import Opponent from "./opponent";
+import Timer from "./timer";
 
 type PublicGameProps = {
   lobbyId: string;
@@ -56,15 +61,19 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   }, [props.lobbyId]);
 
   useEffect(() => {
-    if (gameData?.players[props.userId]) {
-      const playerData = formatGameData(gameData[props.userId]);
-      // console.log(data.guesses.length)
+    if (gameData?.gameStarted === true && !gameData?.players[props.userId].timer ) {
+      handleStartTimer(props.lobbyId, props.userId);
+    }
+  }, [gameData?.gameStarted]);
+
+  useEffect(() => {
+    if (gameData?.players[props.userId] && gameData.gameStarted) {
+      const playerData = formatGameData(gameData.players[props.userId]);
       const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
           // check if correct guess
-          console.log("UPDATING GUESS AND GUESSES");
 
           updateGuessesAndAllGuesses(
             props.lobbyId,
@@ -72,25 +81,28 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             [...playerData.guesses, guess],
             [...playerData.allGuesses, guess],
           );
-          console.log(
-            `length: ${playerData.guesses.length}, data: ${playerData.guesses} `,
-          );
 
           // maybe use a .onchildchanged firebase function to fix this? Right now the updateguessesandallguesses function updates
           // , but isnt done by the time this part of the code runs
           if (guess === playerData.word) {
-            handleCorrectGuess(props.lobbyId, props.userId);
+            handleCorrectGuess(
+              props.lobbyId,
+              props.userId,
+              playerData.timer,
+              playerData.guesses.length,
+            );
             setGuess("");
             resetMatches();
             return;
-          } else if (playerData.guesses.length > 5) {
-            console.log("HANDIING WORD FAILURE");
+          } else if (playerData.guesses.length > 4) {
             handleWordFailure(
               playerData.guesses,
               playerData.word,
               props.lobbyId,
               props.userId,
+              gameData.players[props.userId].timer,
             );
+            setGuess("");
             return;
           }
 
@@ -122,18 +134,25 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     }
   }, [guess, gameData]);
 
-  console.log(gameData);
-
   if (gameData?.players[props.userId]) {
-    const playerData = formatGameData(gameData[props.userId]);
+    const playerData = formatGameData(gameData.players[props.userId]);
     return (
       <div className="flex w-full items-center justify-around">
         <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
           {Object.keys(gameData.players).map(
             (playerId: string, index: number) => {
+              const { word, guesses } = gameData.players[playerId];
               if (playerId === props.userId) {
                 return;
-              } else if (index % 2 == 0) return <Opponent key={playerId} />;
+              } else if (index % 2 == 0)
+                return (
+                  <Opponent
+                    word={word}
+                    guesses={guesses}
+                    id={playerId}
+                    key={playerId}
+                  />
+                );
             },
           )}
         </div>
@@ -142,21 +161,32 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             <p className="font-bold">{`Loading Players : ${
               Object.keys(gameData.players).length
             } of 66`}</p>
+            <Timer expiryTimestamp={new Date(playerData.timer)} />
             <GameGrid
               guess={guess}
               guesses={playerData?.guesses}
               word={playerData?.word}
+              disabled={!gameData.gameStarted}
             />
           </div>
 
-          <Keyboard disabled={false} matches={matches} />
+          <Keyboard disabled={!gameData.gameStarted} matches={matches} />
         </div>
         <div className="flex w-1/4 flex-wrap justify-around gap-y-2">
           {Object.keys(gameData.players).map(
             (playerId: string, index: number) => {
+              const { word, guesses } = gameData.players[playerId];
               if (playerId === props.userId) {
                 return;
-              } else if (index % 2 !== 0) return <Opponent key={playerId} />;
+              } else if (index % 2 !== 0)
+                return (
+                  <Opponent
+                    word={word}
+                    guesses={guesses}
+                    id={playerId}
+                    key={playerId}
+                  />
+                );
             },
           )}
         </div>

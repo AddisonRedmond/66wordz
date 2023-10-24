@@ -1,5 +1,19 @@
-import { updateGuessesAndWord, updateTimerAndGuesses } from "./firebase/firebase";
+import {
+  updateGuessesAndWord,
+  updateTimerAndGuesses,
+} from "./firebase/firebase";
 import words from "./words";
+
+const timeAdjustmentValues: { [key: number]: number } = {
+  0: 180000,
+  1: 180000,
+  2: 30000,
+  3: 30000,
+  4: 20000,
+  5: 20000,
+  6: 10000,
+};
+
 export const handleMatched = (
   guesses: string[],
   word: string,
@@ -32,18 +46,13 @@ export const handleMatched = (
 export const formatGameData = (dataObject: {
   guesses?: string[];
   word?: string;
-  startTime?: string;
+  timer: number;
   allGuesses?: string[];
-}): {
-  guesses: string[];
-  word: string;
-  startTime?: string;
-  allGuesses: string[];
-} => {
+}) => {
   let gameObj = {
     guesses: dataObject?.guesses ? dataObject.guesses : [],
     word: dataObject?.word ? dataObject.word : "ERROR",
-    startTime: dataObject?.startTime,
+    timer: dataObject.timer,
     allGuesses: dataObject?.allGuesses ? dataObject.allGuesses : [],
   };
   return gameObj;
@@ -88,8 +97,23 @@ export const handleGetNewWord = (): string => {
   return "ERROR";
 };
 
-export const handleCorrectGuess = (lobbyId: string, userId: string) => {
-  updateGuessesAndWord(lobbyId, userId, [], handleGetNewWord());
+export const handleCorrectGuess = (
+  lobbyId: string,
+  userId: string,
+  timer: number,
+  numberOfGuesses: number,
+) => {
+  let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
+
+  if (new Date().getTime() + 180000 < timer + updatedTimer) {
+    console.log("Greater than 3 mins");
+    updatedTimer = new Date().getTime() + 180000;
+  } else {
+    console.log("Not greater than 3");
+    updatedTimer = timer + updatedTimer;
+  }
+
+  updateGuessesAndWord(lobbyId, userId, [], handleGetNewWord(), updatedTimer);
   // clear out guesses from firebase
   // swap out the word in firebase
   // add time to timer
@@ -100,7 +124,24 @@ export const handleWordFailure = (
   word: string,
   lobbyId: string,
   userId: string,
+  timer: number,
 ) => {
-  const closestWord = getClosestWord(word, guesses)
-  updateTimerAndGuesses(lobbyId, userId, closestWord)
+  const closestWord = getClosestWord(word, guesses);
+  updateTimerAndGuesses(lobbyId, userId, closestWord, timer);
+};
+
+export const handleColor = (
+  letter: string | undefined,
+  word: string,
+  index: number,
+) => {
+  if (letter) {
+    if (!word?.split("").includes(letter)) {
+      return "#545B77";
+    } else if (letter === word?.split("")[index]) {
+      return "#00DFA2";
+    } else if (word?.split("").includes(letter)) {
+      return "#F6FA70";
+    }
+  }
 };
