@@ -61,7 +61,10 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   }, [props.lobbyId]);
 
   useEffect(() => {
-    if (gameData?.gameStarted === true && !gameData?.players[props.userId].timer ) {
+    if (
+      gameData?.gameStarted === true &&
+      !gameData?.players[props.userId].timer
+    ) {
       handleStartTimer(props.lobbyId, props.userId);
     }
   }, [gameData?.gameStarted]);
@@ -73,7 +76,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
-          // check if correct guess
 
           updateGuessesAndAllGuesses(
             props.lobbyId,
@@ -81,9 +83,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             [...playerData.guesses, guess],
             [...playerData.allGuesses, guess],
           );
-
-          // maybe use a .onchildchanged firebase function to fix this? Right now the updateguessesandallguesses function updates
-          // , but isnt done by the time this part of the code runs
           if (guess === playerData.word) {
             handleCorrectGuess(
               props.lobbyId,
@@ -105,12 +104,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             setGuess("");
             return;
           }
-
-          // if not
-          // check if final guess
-
-          // if not
-
           setGuess("");
         } else if (
           /[a-zA-Z]/.test(e.key) &&
@@ -141,7 +134,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
         <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
           {Object.keys(gameData.players).map(
             (playerId: string, index: number) => {
-              const { word, guesses } = gameData.players[playerId];
+              const { word, guesses, timer } = gameData.players[playerId];
               if (playerId === props.userId) {
                 return;
               } else if (index % 2 == 0)
@@ -151,6 +144,8 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                     guesses={guesses}
                     id={playerId}
                     key={playerId}
+                    timer={timer}
+                    numOfOpponents={Object.keys(gameData.players).length / 2}
                   />
                 );
             },
@@ -161,7 +156,12 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             <p className="font-bold">{`Loading Players : ${
               Object.keys(gameData.players).length
             } of 66`}</p>
-            <Timer expiryTimestamp={new Date(playerData.timer)} />
+            {gameData.gameStarted && (
+              <Timer
+                expiryTimestamp={new Date(playerData.timer)}
+                opponent={false}
+              />
+            )}
             <GameGrid
               guess={guess}
               guesses={playerData?.guesses}
@@ -172,10 +172,10 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
 
           <Keyboard disabled={!gameData.gameStarted} matches={matches} />
         </div>
-        <div className="flex w-1/4 flex-wrap justify-around gap-y-2">
+        <div className="flex w-1/4 flex-wrap justify-around gap-1">
           {Object.keys(gameData.players).map(
             (playerId: string, index: number) => {
-              const { word, guesses } = gameData.players[playerId];
+              const { word, guesses, timer } = gameData.players[playerId];
               if (playerId === props.userId) {
                 return;
               } else if (index % 2 !== 0)
@@ -185,6 +185,8 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                     guesses={guesses}
                     id={playerId}
                     key={playerId}
+                    timer={timer}
+                    numOfOpponents={Object.keys(gameData.players).length / 2}
                   />
                 );
             },
@@ -193,7 +195,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
       </div>
     );
   } else {
-    return <p>An Error Occurred!</p>;
+    return <p>Loading!</p>;
   }
 };
 

@@ -145,3 +145,15 @@ export const handleColor = (
     }
   }
 };
+
+
+const handleEndGame = (lobbyId: string, userId: string) => {
+  // calculate if last person in lobby;
+  // show total time user played, what place they got
+  // all of their guesses
+  // all of their correct guesses
+  // show their place
+
+  // quit match button, 
+  // specate button,
+}
