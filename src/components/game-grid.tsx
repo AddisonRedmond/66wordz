@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
+import { handleColor } from "~/utils/game";
 
 type GameGridProps = {
   guess: string;
   guesses: string[];
   word: string;
+  disabled: boolean;
 };
 
 type WordRowProps = {
@@ -19,30 +21,23 @@ type WordTileProps = {
   match: boolean;
 };
 
-const WordTile: React.FC<WordTileProps> = (props: WordTileProps) => {
-  const handleColor = () => {
-    if (props.letter) {
-      if (!props.word?.split("").includes(props.letter)) {
-        return "#545B77";
-      } else if (props.letter === props.word?.split("")[props.index]) {
-        return "#00DFA2";
-      } else if (props.word?.split("").includes(props.letter)) {
-        return "#F6FA70";
-      }
-    }
-  };
-
+const WordTile: React.FC<WordTileProps> = ({
+  letter,
+  word,
+  index,
+  match,
+}: WordTileProps) => {
   return (
     <motion.div
       initial={{ backgroundColor: "#F5F5F4" }}
       animate={
-        props.match
-          ? { backgroundColor: handleColor() }
+        match
+          ? { backgroundColor: handleColor(letter, word, index) }
           : { backgroundColor: "#F5F5F4" }
       }
       className=" flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
     >
-      <p>{props.letter}</p>
+      <p>{letter}</p>
     </motion.div>
   );
 };
@@ -65,7 +60,12 @@ const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
   );
 };
 
-const GameGrid: React.FC<GameGridProps> = ({ guess, guesses, word }) => {
+const GameGrid: React.FC<GameGridProps> = ({
+  guess,
+  guesses,
+  word,
+  disabled,
+}) => {
   const handleWord = () => {
     return Array.from({ length: 6 }).map((_, index: number) => {
       if (index === 0 && !guesses.length) {
@@ -89,7 +89,7 @@ const GameGrid: React.FC<GameGridProps> = ({ guess, guesses, word }) => {
   };
 
   return (
-    <div className="flex h-2/3 w-fit p-2 flex-col gap-2 rounded-md bg-stone-300">
+    <div className={`flex h-2/3 w-fit flex-col gap-2 rounded-md bg-stone-300 p-2 ${disabled ? "opacity-30": "opacity-100"} ${disabled && "cursor-not-allowed"}`}>
       {handleWord().map((guess: string, index: number) => (
         <WordRow
           key={index}

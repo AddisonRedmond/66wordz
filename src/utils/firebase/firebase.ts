@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, push, update } from "firebase/database";
+import { getDatabase, ref, set, update } from "firebase/database";
 import { env } from "~/env.mjs";
 import { handleGetNewWord } from "../game";
 
@@ -17,15 +17,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase();
 
+
 export const createNewFirebaseLobby = (lobbyId: string) => {
   const timeStamp = new Date();
   set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
+    gameStarted: false,
   });
 };
 
 export const joinFirebaseLobby = (lobbyId: string, userId: string) => {
-  set(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  set(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     word: handleGetNewWord(),
     guesses: [null],
     startTime: null,
@@ -39,7 +41,7 @@ export const updateGuessesAndAllGuesses = async (
   guesses: string[],
   allGuesses: string[],
 ) => {
-  return await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  return await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     allGuesses: allGuesses,
   });
@@ -50,10 +52,12 @@ export const updateGuessesAndWord = async (
   userId: string,
   guesses: string[],
   word: string,
+  timer: number
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
+    timer: timer
   });
 };
 
@@ -62,7 +66,7 @@ export const updateWord = async (
   userId: string,
   word: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     word: word,
   });
 };
@@ -71,8 +75,16 @@ export const updateTimerAndGuesses = async (
   lobbyId: string,
   userId: string,
   closestWord: string,
+  timer: number,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
+    timer: timer - 20000,
+  });
+};
+
+export const handleStartTimer = async (lobbyId: string, userId: string) => {
+  update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+    timer: new Date().getTime() + 180000,
   });
 };
