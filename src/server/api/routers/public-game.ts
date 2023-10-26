@@ -1,6 +1,7 @@
 import {
   createNewFirebaseLobby,
   joinFirebaseLobby,
+  startGame,
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
@@ -54,6 +55,23 @@ export const publicGameRouter = createTRPCRouter({
 
       joinFirebaseLobby(lobby.lobbyId, ctx.session.user.id);
 
+      const playerCount = await ctx.db.players.count({
+        where: {
+          lobbyId: lobby.lobbyId,
+        },
+      });
+
+      if (playerCount >= 66) {
+        startGame(lobby.lobbyId);
+        await ctx.db.lobby.update({
+          where: {
+            id: lobby.lobbyId,
+          },
+          data: {
+            started: true,
+          },
+        });
+      }
       return lobby;
     };
 
@@ -81,5 +99,23 @@ export const publicGameRouter = createTRPCRouter({
       const dictionary = new Typo("en_US");
 
       return dictionary.check(input);
+    }),
+  endGame: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = ctx.session.user.id;
+    await ctx.db.players.delete({
+      where: { userId: user },
+    });
+  }),
+  manualStart: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.lobby.update({
+        where: {
+          id: input,
+        },
+        data: {
+          started: true,
+        },
+      });
     }),
 });

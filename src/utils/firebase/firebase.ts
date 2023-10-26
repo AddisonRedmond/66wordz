@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, update } from "firebase/database";
+import { getDatabase, ref, set, update, remove } from "firebase/database";
 import { env } from "~/env.mjs";
 import { handleGetNewWord } from "../game";
 
@@ -16,7 +16,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase();
-
 
 export const createNewFirebaseLobby = (lobbyId: string) => {
   const timeStamp = new Date();
@@ -52,12 +51,12 @@ export const updateGuessesAndWord = async (
   userId: string,
   guesses: string[],
   word: string,
-  timer: number
+  timer: number,
 ) => {
   await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
-    timer: timer
+    timer: timer,
   });
 };
 
@@ -86,5 +85,25 @@ export const updateTimerAndGuesses = async (
 export const handleStartTimer = async (lobbyId: string, userId: string) => {
   update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     timer: new Date().getTime() + 180000,
+  });
+};
+
+export const handleRemoveUserFromLobby = async (
+  lobbyId: string,
+  userId: string,
+) => {
+  remove(ref(db, `publicLobbies/${lobbyId}/players/${userId}`));
+};
+
+export const handleIdleUser = (lobbyId: string, userId: string) => {
+  update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+    inActive: true,
+  });
+};
+
+export const startGame = (lobbyId: string) => {
+  update(ref(db, `publicLobbies/${lobbyId}`), {
+    gameStarted: true,
+    startTime: new Date().getTime(),
   });
 };

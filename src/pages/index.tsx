@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { authRequired } from "~/utils/authRequired";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
@@ -13,6 +13,10 @@ const Home = () => {
 
   const joinGame = () => {
     lobby.mutate();
+  };
+
+  const exitMatch = () => {
+    lobby.reset();
   };
 
   return (
@@ -29,11 +33,17 @@ const Home = () => {
         className="flex min-h-screen flex-col items-center justify-evenly"
       >
         <Header isLoading={lobby.isLoading} />
-        {lobby.data?.lobbyId ? (
-          <PublicGame lobbyId={lobby.data.lobbyId} userId={session!.user.id}/>
-        ) : (
-          <GameControls joinGame={joinGame} />
-        )}
+        <AnimatePresence>
+          {lobby.data?.lobbyId ? (
+            <PublicGame
+              lobbyId={lobby.data.lobbyId}
+              userId={session!.user.id}
+              exitMatch={exitMatch}
+            />
+          ) : (
+            <GameControls joinGame={joinGame} />
+          )}
+        </AnimatePresence>
       </motion.div>
     </>
   );

@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
 import {
   db,
+  handleIdleUser,
+  handleRemoveUserFromLobby,
   handleStartTimer,
+  startGame,
   updateGuessesAndAllGuesses,
 } from "~/utils/firebase/firebase";
 import Keyboard from "./keyboard";
 import GameGrid from "./game-grid";
 import {
+  canculateTimePlayed,
   formatGameData,
   handleCorrectGuess,
   handleMatched,
@@ -18,10 +22,14 @@ import Timer from "./timer";
 import words from "~/utils/words";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Modal from "./modal";
+import { AnimatePresence, motion } from "framer-motion";
+import { api } from "~/utils/api";
 
 type PublicGameProps = {
   lobbyId: string;
   userId: string;
+  exitMatch: () => void;
 };
 
 type Matches = {
@@ -33,6 +41,15 @@ type Matches = {
 const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const [gameData, setGameData] = useState<any>(null);
   const [guess, setGuess] = useState<string>("");
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const endGame = api.public.endGame.useMutation();
+  const manualStart = api.public.manualStart.useMutation();
+  const [endGameSummary, setEndGameSummary] = useState<{
+    placement: number;
+    totalTime: string;
+    totalGuesses: number;
+  } | null>(null);
+
   const [matches, setMatches] = useState<Matches>({
     fullMatch: [],
     partialMatch: [],
@@ -47,14 +64,26 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     });
   };
 
-  const misspelled = (guess: string) => {
-    if (words.includes(guess)) {
-      return true;
-    } else {
-      return false;
-    }
+  const handleEndMatch = () => {
+    setModalIsOpen(true);
+    const { allGuesses, timer } = gameData.players[props.userId];
+    setEndGameSummary({
+      placement: Object.keys(gameData.players).length,
+      totalTime: canculateTimePlayed(gameData.startTime, timer),
+      totalGuesses: allGuesses?.length ? allGuesses.length : 0,
+    });
+
+    // handleRemoveUserFromLobby(props.lobbyId, props.userId);
+    endGame.mutate();
+    setModalIsOpen(true);
   };
+
   const notify = () => toast.warn(`${guess} not in word list!`);
+
+  const handleManualStart = () => {
+    startGame(props.lobbyId);
+    manualStart.mutate(props.lobbyId);
+  };
 
   useEffect(() => {
     const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
@@ -142,11 +171,27 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     }
   }, [guess, gameData]);
 
-  if (gameData?.players[props.userId]) {
+  if (gameData?.players) {
     const playerData = formatGameData(gameData.players[props.userId]);
     return (
       <>
-        <div className="flex w-full items-center justify-around">
+        <AnimatePresence>
+          {modalIsOpen && (
+            <Modal
+              placement={endGameSummary?.placement}
+              totalTime={endGameSummary?.totalTime}
+              totalGuesses={endGameSummary?.totalGuesses}
+              exitMatch={props.exitMatch}
+            />
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          exit={{ scale: 0 }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="flex w-full items-center justify-around"
+        >
           <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
             {Object.keys(gameData.players).map(
               (playerId: string, index: number) => {
@@ -169,15 +214,23 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           </div>
           <div className="flex flex-col items-center gap-4">
             <div className="text-center">
-              <p className="font-bold">{`Loading Players : ${
-                Object.keys(gameData.players).length
-              } of 66`}</p>
-              {gameData.gameStarted && (
-                <Timer
-                  expiryTimestamp={new Date(playerData.timer)}
-                  opponent={false}
-                />
-              )}
+              <AnimatePresence>
+                {gameData.gameStarted && !endGame.isSuccess && (
+                  <Timer
+                    expiryTimestamp={new Date(playerData.timer)}
+                    opponent={false}
+                    endGame={() => handleEndMatch()}
+                  />
+                )}{" "}
+                {!gameData.gameStarted && (
+                  <motion.p
+                    exit={{ scale: 0 }}
+                    className="font-bold"
+                  >{`Loading Players : ${
+                    Object.keys(gameData.players).length
+                  } of 66`}</motion.p>
+                )}
+              </AnimatePresence>
               <GameGrid
                 guess={guess}
                 guesses={playerData?.guesses}
@@ -187,6 +240,15 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             </div>
 
             <Keyboard disabled={!gameData.gameStarted} matches={matches} />
+            {!gameData.gameStarted &&
+              Object.keys(gameData.players)[0] === props.userId && (
+                <button
+                  className="rounded-md bg-black p-2 text-xs font-semibold text-white"
+                  onClick={() => handleManualStart()}
+                >
+                  Manual Start
+                </button>
+              )}
           </div>
           <div className="flex w-1/4 flex-wrap justify-around gap-1">
             {Object.keys(gameData.players).map(
@@ -208,10 +270,11 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
               },
             )}
           </div>
-        </div>
+        </motion.div>
         <ToastContainer
           position="bottom-center"
-          autoClose={2000}
+          autoClose={1000}
+          limit={3}
           newestOnTop={false}
           theme="dark"
         />

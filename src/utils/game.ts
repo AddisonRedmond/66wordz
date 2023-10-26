@@ -146,14 +146,20 @@ export const handleColor = (
   }
 };
 
-
 const handleEndGame = (lobbyId: string, userId: string) => {
   // calculate if last person in lobby;
   // show total time user played, what place they got
   // all of their guesses
   // all of their correct guesses
   // show their place
-
-  // quit match button, 
+  // quit match button,
   // specate button,
-}
+};
+
+export const canculateTimePlayed = (startTime: number, endTime: number) => {
+  const totalSeconds = Math.floor((endTime - startTime) / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes} mins ${seconds} secs`;
+};
