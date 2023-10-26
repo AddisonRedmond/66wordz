@@ -3,6 +3,7 @@ import {
   joinFirebaseLobby,
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { z } from "zod";
 
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure.mutation(async ({ ctx }) => {
@@ -73,4 +74,12 @@ export const publicGameRouter = createTRPCRouter({
 
     // if there is NOT create a new row in the DB and add the user to template to the firebase lobby
   }),
+  spellCheck: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      const Typo = require("typo-js");
+      const dictionary = new Typo("en_US");
+
+      return dictionary.check(input);
+    }),
 });

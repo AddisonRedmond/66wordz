@@ -15,6 +15,9 @@ import {
 } from "~/utils/game";
 import Opponent from "./opponent";
 import Timer from "./timer";
+import words from "~/utils/words";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type PublicGameProps = {
   lobbyId: string;
@@ -43,6 +46,15 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
       noMatch: [],
     });
   };
+
+  const misspelled = (guess: string) => {
+    if (words.includes(guess)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const notify = () => toast.warn(`${guess} not in word list!`);
 
   useEffect(() => {
     const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
@@ -76,35 +88,38 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
-
-          updateGuessesAndAllGuesses(
-            props.lobbyId,
-            props.userId,
-            [...playerData.guesses, guess],
-            [...playerData.allGuesses, guess],
-          );
-          if (guess === playerData.word) {
-            handleCorrectGuess(
+          if (words.includes(guess)) {
+            updateGuessesAndAllGuesses(
               props.lobbyId,
               props.userId,
-              playerData.timer,
-              playerData.guesses.length,
+              [...playerData.guesses, guess],
+              [...playerData.allGuesses, guess],
             );
+            if (guess === playerData.word) {
+              handleCorrectGuess(
+                props.lobbyId,
+                props.userId,
+                playerData.timer,
+                playerData.guesses.length,
+              );
+              setGuess("");
+              resetMatches();
+              return;
+            } else if (playerData.guesses.length > 4) {
+              handleWordFailure(
+                playerData.guesses,
+                playerData.word,
+                props.lobbyId,
+                props.userId,
+                gameData.players[props.userId].timer,
+              );
+              setGuess("");
+              return;
+            }
             setGuess("");
-            resetMatches();
-            return;
-          } else if (playerData.guesses.length > 4) {
-            handleWordFailure(
-              playerData.guesses,
-              playerData.word,
-              props.lobbyId,
-              props.userId,
-              gameData.players[props.userId].timer,
-            );
-            setGuess("");
-            return;
+          } else {
+            notify();
           }
-          setGuess("");
         } else if (
           /[a-zA-Z]/.test(e.key) &&
           e.key.length === 1 &&
@@ -130,69 +145,77 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   if (gameData?.players[props.userId]) {
     const playerData = formatGameData(gameData.players[props.userId]);
     return (
-      <div className="flex w-full items-center justify-around">
-        <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
-          {Object.keys(gameData.players).map(
-            (playerId: string, index: number) => {
-              const { word, guesses, timer } = gameData.players[playerId];
-              if (playerId === props.userId) {
-                return;
-              } else if (index % 2 == 0)
-                return (
-                  <Opponent
-                    word={word}
-                    guesses={guesses}
-                    id={playerId}
-                    key={playerId}
-                    timer={timer}
-                    numOfOpponents={Object.keys(gameData.players).length / 2}
-                  />
-                );
-            },
-          )}
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <p className="font-bold">{`Loading Players : ${
-              Object.keys(gameData.players).length
-            } of 66`}</p>
-            {gameData.gameStarted && (
-              <Timer
-                expiryTimestamp={new Date(playerData.timer)}
-                opponent={false}
-              />
+      <>
+        <div className="flex w-full items-center justify-around">
+          <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
+            {Object.keys(gameData.players).map(
+              (playerId: string, index: number) => {
+                const { word, guesses, timer } = gameData.players[playerId];
+                if (playerId === props.userId) {
+                  return;
+                } else if (index % 2 == 0)
+                  return (
+                    <Opponent
+                      word={word}
+                      guesses={guesses}
+                      id={playerId}
+                      key={playerId}
+                      timer={timer}
+                      numOfOpponents={Object.keys(gameData.players).length / 2}
+                    />
+                  );
+              },
             )}
-            <GameGrid
-              guess={guess}
-              guesses={playerData?.guesses}
-              word={playerData?.word}
-              disabled={!gameData.gameStarted}
-            />
           </div>
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-center">
+              <p className="font-bold">{`Loading Players : ${
+                Object.keys(gameData.players).length
+              } of 66`}</p>
+              {gameData.gameStarted && (
+                <Timer
+                  expiryTimestamp={new Date(playerData.timer)}
+                  opponent={false}
+                />
+              )}
+              <GameGrid
+                guess={guess}
+                guesses={playerData?.guesses}
+                word={playerData?.word}
+                disabled={!gameData.gameStarted}
+              />
+            </div>
 
-          <Keyboard disabled={!gameData.gameStarted} matches={matches} />
+            <Keyboard disabled={!gameData.gameStarted} matches={matches} />
+          </div>
+          <div className="flex w-1/4 flex-wrap justify-around gap-1">
+            {Object.keys(gameData.players).map(
+              (playerId: string, index: number) => {
+                const { word, guesses, timer } = gameData.players[playerId];
+                if (playerId === props.userId) {
+                  return;
+                } else if (index % 2 !== 0)
+                  return (
+                    <Opponent
+                      word={word}
+                      guesses={guesses}
+                      id={playerId}
+                      key={playerId}
+                      timer={timer}
+                      numOfOpponents={Object.keys(gameData.players).length / 2}
+                    />
+                  );
+              },
+            )}
+          </div>
         </div>
-        <div className="flex w-1/4 flex-wrap justify-around gap-1">
-          {Object.keys(gameData.players).map(
-            (playerId: string, index: number) => {
-              const { word, guesses, timer } = gameData.players[playerId];
-              if (playerId === props.userId) {
-                return;
-              } else if (index % 2 !== 0)
-                return (
-                  <Opponent
-                    word={word}
-                    guesses={guesses}
-                    id={playerId}
-                    key={playerId}
-                    timer={timer}
-                    numOfOpponents={Object.keys(gameData.players).length / 2}
-                  />
-                );
-            },
-          )}
-        </div>
-      </div>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={2000}
+          newestOnTop={false}
+          theme="dark"
+        />
+      </>
     );
   } else {
     return <p>Loading!</p>;

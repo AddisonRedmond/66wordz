@@ -50,9 +50,18 @@ dependencies:
   react-timer-hook:
     specifier: ^3.0.7
     version: 3.0.7(react@18.2.0)
+  react-toastify:
+    specifier: ^9.1.3
+    version: 9.1.3(react-dom@18.2.0)(react@18.2.0)
   superjson:
     specifier: ^1.13.3
     version: 1.13.3
+  typo-js:
+    specifier: ^1.2.3
+    version: 1.2.3
+  typo-js-ts:
+    specifier: ^2.0.4
+    version: 2.0.4
   zod:
     specifier: ^3.22.2
     version: 3.22.2
@@ -70,6 +79,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.2.8
     version: 18.2.8
+  '@types/typo-js':
+    specifier: ^1.2.1
+    version: 1.2.1
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.7.3
     version: 6.7.3(@typescript-eslint/parser@6.7.3)(eslint@8.50.0)(typescript@5.2.2)
@@ -1037,6 +1049,10 @@ packages:
     resolution: {integrity: sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==}
     dev: true
 
+  /@types/typo-js@1.2.1:
+    resolution: {integrity: sha512-q5oOvzXhwYHz8mqH7O8Zte1zjrYjN2Qq0lhRaid/5oK2XdKbO66oRmLDoVVCbKXfdnVlOLTjhJa4md2la+Xoyw==}
+    dev: true
+
   /@typescript-eslint/eslint-plugin@6.7.3(@typescript-eslint/parser@6.7.3)(eslint@8.50.0)(typescript@5.2.2):
     resolution: {integrity: sha512-vntq452UHNltxsaaN+L9WyuMch8bMd9CqJ3zhzTPXXidwbf5mqqKCVXEuvRZUqLJSTLeWE65lQwyXsRGnXkCTA==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -1441,6 +1457,11 @@ packages:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
+    dev: false
+
+  /clsx@1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
     dev: false
 
   /color-convert@2.0.1:
@@ -3188,6 +3209,17 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-toastify@9.1.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-fPfb8ghtn/XMxw3LkxQBk3IyagNpF/LIKjOBflbexr2AWxAH1MJgvnESwEwBn9liLFXgTKWgBSdZpw9m4OTHTg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -3624,6 +3656,14 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  /typo-js-ts@2.0.4:
+    resolution: {integrity: sha512-tUFUoXTFYUS3Yu28XcrOo2E9oe/lb1VDL6Bx4tqXM6ZBrSWdorCX7hTWM0yNdwWYPsfkwYGHazO6xGaGjsT7YQ==}
+    dev: false
+
+  /typo-js@1.2.3:
+    resolution: {integrity: sha512-67Hyl94beZX8gmTap7IDPrG5hy2cHftgsCAcGvE1tzuxGT+kRB+zSBin0wIMwysYw8RUCBCvv9UfQl8TNM75dA==}
+    dev: false
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}

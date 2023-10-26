@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 import { handleColor } from "~/utils/game";
 
 type GameGridProps = {
@@ -44,7 +44,7 @@ const WordTile: React.FC<WordTileProps> = ({
 
 const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
   return (
-    <div className="flex gap-1">
+    <motion.div  className="flex gap-1">
       {Array.from({ length: 5 }).map((_, index: number) => {
         return (
           <WordTile
@@ -56,7 +56,7 @@ const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
           />
         );
       })}
-    </div>
+    </motion.div>
   );
 };
 
