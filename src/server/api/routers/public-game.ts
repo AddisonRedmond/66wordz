@@ -41,7 +41,7 @@ export const publicGameRouter = createTRPCRouter({
       const newLobby = await ctx.db.lobby.create({ data: {} });
 
       //   create the new lobby in firebase realtime db
-      createNewFirebaseLobby(newLobby.id);
+      await createNewFirebaseLobby(newLobby.id);
       return newLobby;
     };
 
@@ -92,14 +92,7 @@ export const publicGameRouter = createTRPCRouter({
 
     // if there is NOT create a new row in the DB and add the user to template to the firebase lobby
   }),
-  spellCheck: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ input }) => {
-      const Typo = require("typo-js");
-      const dictionary = new Typo("en_US");
 
-      return dictionary.check(input);
-    }),
   endGame: protectedProcedure.mutation(async ({ ctx }) => {
     const user = ctx.session.user.id;
     await ctx.db.players.delete({

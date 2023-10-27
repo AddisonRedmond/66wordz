@@ -1,9 +1,7 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 import Facebook from "../../public/Facebook.svg";
 import Google from "../../public/Google.svg";
-import { api } from "~/utils/api";
 import Image from "next/image";
 import Tile from "~/components/tile";
 import { authRequired } from "~/utils/authRequired";
@@ -33,7 +31,7 @@ export default function Login() {
             <p>or</p>
             <Image
               src={Google}
-              onClick={() => signIn()}
+              onClick={()=>signIn().catch(console.error)}
               alt="google icon to login"
               className="cursor-pointer"
             />

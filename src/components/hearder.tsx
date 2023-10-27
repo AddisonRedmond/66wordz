@@ -1,6 +1,6 @@
 import Loading from "./loading";
 import Tile from "./tile";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 type HeaderProps = {
   isLoading: boolean;

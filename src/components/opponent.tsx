@@ -13,7 +13,6 @@ type OpponentProps = {
 const Opponent: React.FC<OpponentProps> = ({
   word,
   guesses,
-  id,
   timer,
   numOfOpponents,
 }: OpponentProps) => {

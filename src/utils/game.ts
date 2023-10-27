@@ -49,7 +49,7 @@ export const formatGameData = (dataObject: {
   timer: number;
   allGuesses?: string[];
 }) => {
-  let gameObj = {
+  const gameObj = {
     guesses: dataObject?.guesses ? dataObject.guesses : [],
     word: dataObject?.word ? dataObject.word : "ERROR",
     timer: dataObject.timer,
@@ -73,7 +73,7 @@ export const getClosestWord = (word: string, guesses: string[]) => {
     return count;
   };
 
-  let closestWord: string = "";
+  let closestWord = "";
   let closestMatchCount = -1;
 
   for (const guess of guesses) {
@@ -92,17 +92,17 @@ export const getClosestWord = (word: string, guesses: string[]) => {
 export const handleGetNewWord = (): string => {
   const randomIndex = Math.floor(Math.random() * words.length);
   if (randomIndex >= 0 && randomIndex < words.length) {
-    return words[randomIndex] as string;
+    return words[randomIndex]!;
   }
   return "ERROR";
 };
 
-export const handleCorrectGuess = (
+export const handleCorrectGuess = async (
   lobbyId: string,
   userId: string,
   timer: number,
   numberOfGuesses: number,
-) => {
+): Promise<void> => {
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
 
   if (new Date().getTime() + 180000 < timer + updatedTimer) {
@@ -113,21 +113,27 @@ export const handleCorrectGuess = (
     updatedTimer = timer + updatedTimer;
   }
 
-  updateGuessesAndWord(lobbyId, userId, [], handleGetNewWord(), updatedTimer);
+  await updateGuessesAndWord(
+    lobbyId,
+    userId,
+    [],
+    handleGetNewWord(),
+    updatedTimer,
+  );
   // clear out guesses from firebase
   // swap out the word in firebase
   // add time to timer
 };
 
-export const handleWordFailure = (
+export const handleWordFailure = async (
   guesses: string[],
   word: string,
   lobbyId: string,
   userId: string,
   timer: number,
-) => {
+): Promise<void> => {
   const closestWord = getClosestWord(word, guesses);
-  updateTimerAndGuesses(lobbyId, userId, closestWord, timer);
+  await updateTimerAndGuesses(lobbyId, userId, closestWord, timer);
 };
 
 export const handleColor = (
@@ -144,16 +150,6 @@ export const handleColor = (
       return "#F6FA70";
     }
   }
-};
-
-const handleEndGame = (lobbyId: string, userId: string) => {
-  // calculate if last person in lobby;
-  // show total time user played, what place they got
-  // all of their guesses
-  // all of their correct guesses
-  // show their place
-  // quit match button,
-  // specate button,
 };
 
 export const canculateTimePlayed = (startTime: number, endTime: number) => {

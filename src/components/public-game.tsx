@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
 import {
   db,
-  handleIdleUser,
-  handleRemoveUserFromLobby,
   handleStartTimer,
   startGame,
   updateGuessesAndAllGuesses,
@@ -80,8 +78,8 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
 
   const notify = () => toast.warn(`${guess} not in word list!`);
 
-  const handleManualStart = () => {
-    startGame(props.lobbyId);
+  const handleManualStart = async () => {
+    await startGame(props.lobbyId);
     manualStart.mutate(props.lobbyId);
   };
 
@@ -113,12 +111,12 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   useEffect(() => {
     if (gameData?.players[props.userId] && gameData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
-      const handleKeyUp = (e: KeyboardEvent) => {
+      const handleKeyUp = async (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
           if (words.includes(guess)) {
-            updateGuessesAndAllGuesses(
+            await updateGuessesAndAllGuesses(
               props.lobbyId,
               props.userId,
               [...playerData.guesses, guess],

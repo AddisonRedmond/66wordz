@@ -28,7 +28,7 @@ const KeyboardRow = ({
   };
   return (
     <div className="flex gap-1">
-      {letters.split("").map((letter: string, index: number) => {
+      {letters.split("").map((letter: string) => {
         return (
           <motion.p
             // initial={{ backgroundColor: "#F5F5F4" }}

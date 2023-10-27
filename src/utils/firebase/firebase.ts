@@ -14,19 +14,19 @@ const firebaseConfig = {
   measurementId: env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export const createNewFirebaseLobby = (lobbyId: string) => {
+export const createNewFirebaseLobby = async (lobbyId: string) => {
   const timeStamp = new Date();
-  set(ref(db, "publicLobbies/" + lobbyId), {
+  await set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
     gameStarted: false,
   });
 };
 
-export const joinFirebaseLobby = (lobbyId: string, userId: string) => {
-  set(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+export const joinFirebaseLobby = async (lobbyId: string, userId: string) => {
+  await set(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     word: handleGetNewWord(),
     guesses: [null],
     startTime: null,
@@ -83,7 +83,7 @@ export const updateTimerAndGuesses = async (
 };
 
 export const handleStartTimer = async (lobbyId: string, userId: string) => {
-  update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     timer: new Date().getTime() + 180000,
   });
 };
@@ -92,17 +92,17 @@ export const handleRemoveUserFromLobby = async (
   lobbyId: string,
   userId: string,
 ) => {
-  remove(ref(db, `publicLobbies/${lobbyId}/players/${userId}`));
+  await remove(ref(db, `publicLobbies/${lobbyId}/players/${userId}`));
 };
 
-export const handleIdleUser = (lobbyId: string, userId: string) => {
-  update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+export const handleIdleUser = async (lobbyId: string, userId: string) => {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     inActive: true,
   });
 };
 
-export const startGame = (lobbyId: string) => {
-  update(ref(db, `publicLobbies/${lobbyId}`), {
+export const startGame = async (lobbyId: string) => {
+  await update(ref(db, `publicLobbies/${lobbyId}`), {
     gameStarted: true,
     startTime: new Date().getTime(),
   });
