@@ -24,7 +24,7 @@ const Home = () => {
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <motion.div
         initial={{ opacity: 0 }}

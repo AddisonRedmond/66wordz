@@ -13,7 +13,7 @@ export default function Login() {
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <div className="flex flex-row">
         <div className="flex h-screen w-1/2 flex-col items-center justify-center gap-4 bg-black">
