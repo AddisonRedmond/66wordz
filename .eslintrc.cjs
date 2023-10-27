@@ -1,12 +1,5 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
-  ignorePatterns: [
-    "./src/components/public-game.tsx",
-    "./src/pages/index.tsx",
-    "./src/pages/login.tsx",
-    "./src/utils/authRequired.ts",
-    "./src/utils/firebase/firebase.ts",
-  ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
