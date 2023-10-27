@@ -17,7 +17,6 @@ const Opponent: React.FC<OpponentProps> = ({
   timer,
   numOfOpponents,
   endGame,
-  id
 }: OpponentProps) => {
   const tempTime = new Date();
   tempTime.setSeconds(tempTime.getSeconds() + 100);
