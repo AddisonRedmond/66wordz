@@ -10,7 +10,7 @@ export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure.mutation(async ({ ctx }) => {
     // check if player is already part of a game
 
-    const rejoin: { userId: string; lobbyId: string; } | null =
+    const rejoin: { userId: string; lobbyId: string } | null =
       await ctx.db.players.findUnique({
         where: {
           userId: ctx.session.user.id,
@@ -98,9 +98,16 @@ export const publicGameRouter = createTRPCRouter({
 
   endGame: protectedProcedure.mutation(async ({ ctx }) => {
     const user = ctx.session.user.id;
-    await ctx.db.players.delete({
+    const lobbyId = await ctx.db.players.delete({
       where: { userId: user },
     });
+    const playerCount = await ctx.db.players.count({
+      where: {
+        lobbyId: lobbyId.lobbyId,
+      },
+    });
+
+    return playerCount
   }),
   manualStart: protectedProcedure
     .input(z.string())

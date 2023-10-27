@@ -43,16 +43,20 @@ export const handleMatched = (
   };
 };
 
-export const formatGameData = (dataObject: {
-  guesses?: string[];
-  word?: string;
-  timer: number;
-  allGuesses?: string[];
-}) => {
+export const formatGameData = (
+  dataObject:
+    | {
+        guesses?: string[];
+        word?: string;
+        timer?: number;
+        allGuesses?: string[];
+      }
+    | undefined,
+) => {
   const gameObj = {
     guesses: dataObject?.guesses ? dataObject.guesses : [],
     word: dataObject?.word ? dataObject.word : "ERROR",
-    timer: dataObject.timer,
+    timer: dataObject?.timer ? dataObject.timer : 0,
     allGuesses: dataObject?.allGuesses ? dataObject.allGuesses : [],
   };
   return gameObj;
@@ -106,10 +110,8 @@ export const handleCorrectGuess = async (
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
 
   if (new Date().getTime() + 180000 < timer + updatedTimer) {
-    console.log("Greater than 3 mins");
     updatedTimer = new Date().getTime() + 180000;
   } else {
-    console.log("Not greater than 3");
     updatedTimer = timer + updatedTimer;
   }
 
@@ -133,7 +135,8 @@ export const handleWordFailure = async (
   timer: number,
 ): Promise<void> => {
   const closestWord = getClosestWord(word, guesses);
-  await updateTimerAndGuesses(lobbyId, userId, closestWord, timer);
+  const updatedTimer = timer - 20000;
+  await updateTimerAndGuesses(lobbyId, userId, closestWord, updatedTimer);
 };
 
 export const handleColor = (

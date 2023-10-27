@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ref, onValue, off } from "firebase/database";
 import {
   db,
+  handleRemoveUserFromLobby,
   handleStartTimer,
   startGame,
   updateGuessesAndAllGuesses,
@@ -23,6 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "./modal";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
+import Confetti from "react-dom-confetti";
 
 type PublicGameProps = {
   lobbyId: string;
@@ -42,6 +44,8 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const endGame = api.public.endGame.useMutation();
   const manualStart = api.public.manualStart.useMutation();
+  const [win, setWin] = useState<boolean>(false);
+  const [sepctate, setSpectate] = useState<boolean>(false);
   const [endGameSummary, setEndGameSummary] = useState<{
     placement: number;
     totalTime: string;
@@ -62,17 +66,19 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     });
   };
 
-  const handleEndMatch = () => {
+  const handleEndMatch = (firstPlace?: boolean) => {
+    setSpectate(true);
     setModalIsOpen(true);
     const { allGuesses, timer } = gameData.players[props.userId];
+    endGame.mutate();
     setEndGameSummary({
-      placement: Object.keys(gameData.players).length,
+      placement: firstPlace ? 1 : Object.keys(gameData.players).length,
       totalTime: canculateTimePlayed(gameData.startTime, timer),
       totalGuesses: allGuesses?.length ? allGuesses.length : 0,
     });
 
-    // handleRemoveUserFromLobby(props.lobbyId, props.userId);
-    endGame.mutate();
+    handleRemoveUserFromLobby(props.lobbyId, props.userId);
+
     setModalIsOpen(true);
   };
 
@@ -81,6 +87,26 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const handleManualStart = async () => {
     await startGame(props.lobbyId);
     manualStart.mutate(props.lobbyId);
+  };
+
+  const playerHasWon = () => {
+    setWin(true);
+    handleEndMatch(true);
+  };
+
+  const checkIfWin = () => {
+    // check if all timers have expired
+    const players: string[] = Object.keys(gameData.players);
+    for (const [index, value] of players.entries()) {
+      if (
+        props.userId !== players[index] &&
+        gameData.players[value].timer > new Date().getTime()
+      ) {
+        break;
+      } else if (index >= players.length - 1) {
+        playerHasWon();
+      }
+    }
   };
 
   useEffect(() => {
@@ -109,7 +135,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   }, [gameData?.gameStarted]);
 
   useEffect(() => {
-    if (gameData?.players[props.userId] && gameData.gameStarted) {
+    if (gameData?.players?.[props.userId] && gameData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
       const handleKeyUp = async (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
@@ -138,7 +164,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                 playerData.word,
                 props.lobbyId,
                 props.userId,
-                gameData.players[props.userId].timer,
+                playerData.timer,
               );
               setGuess("");
               return;
@@ -169,10 +195,33 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     }
   }, [guess, gameData]);
 
-  if (gameData?.players) {
-    const playerData = formatGameData(gameData.players[props.userId]);
+  const config = {
+    angle: 90,
+    spread: 360,
+    startVelocity: 40,
+    elementCount: 70,
+    dragFriction: 0.12,
+    duration: 3000,
+    stagger: 3,
+    width: "10px",
+    height: "10px",
+    perspective: "500px",
+    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  };
+
+  const spectateMode = () => {
+    if (sepctate || win) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  if (gameData) {
+    const playerData = formatGameData(gameData.players?.[props.userId]);
     return (
       <>
+        <Confetti active={win} config={config} />
         <AnimatePresence>
           {modalIsOpen && (
             <Modal
@@ -190,84 +239,96 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           animate={{ scale: 1 }}
           className="flex w-full items-center justify-around"
         >
-          <div className=" flex w-1/4 flex-wrap justify-around gap-y-2">
-            {Object.keys(gameData.players).map(
-              (playerId: string, index: number) => {
-                const { word, guesses, timer } = gameData.players[playerId];
-                if (playerId === props.userId) {
-                  return;
-                } else if (index % 2 == 0)
-                  return (
-                    <Opponent
-                      word={word}
-                      guesses={guesses}
-                      id={playerId}
-                      key={playerId}
-                      timer={timer}
-                      numOfOpponents={Object.keys(gameData.players).length / 2}
-                    />
-                  );
-              },
-            )}
-          </div>
-          <div className="flex flex-col items-center gap-4">
-            <div className="text-center">
-              <AnimatePresence>
-                {gameData.gameStarted && !endGame.isSuccess && (
-                  <Timer
-                    expiryTimestamp={new Date(playerData.timer)}
-                    opponent={false}
-                    endGame={() => handleEndMatch()}
-                  />
-                )}{" "}
-                {!gameData.gameStarted && (
-                  <motion.p
-                    exit={{ scale: 0 }}
-                    className="font-bold"
-                  >{`Loading Players : ${
-                    Object.keys(gameData.players).length
-                  } of 66`}</motion.p>
-                )}
-              </AnimatePresence>
-              <GameGrid
-                guess={guess}
-                guesses={playerData?.guesses}
-                word={playerData?.word}
-                disabled={!gameData.gameStarted}
-              />
-            </div>
-
-            <Keyboard disabled={!gameData.gameStarted} matches={matches} />
-            {!gameData.gameStarted &&
-              Object.keys(gameData.players)[0] === props.userId && (
-                <button
-                  className="rounded-md bg-black p-2 text-xs font-semibold text-white"
-                  onClick={() => handleManualStart()}
-                >
-                  Manual Start
-                </button>
+          {gameData.players && (
+            <div className=" flex w-1/4 flex-wrap justify-around gap-y-2 overflow-hidden">
+              {Object.keys(gameData.players).map(
+                (playerId: string, index: number) => {
+                  const { word, guesses, timer } = gameData.players[playerId];
+                  if (playerId === props.userId) {
+                    return;
+                  } else if (index % 2 == 0)
+                    return (
+                      <Opponent
+                        word={word}
+                        guesses={guesses}
+                        id={playerId}
+                        key={playerId}
+                        timer={timer}
+                        endGame={() => checkIfWin()}
+                        numOfOpponents={
+                          Object.keys(gameData.players).length / 2
+                        }
+                      />
+                    );
+                },
               )}
-          </div>
-          <div className="flex w-1/4 flex-wrap justify-around gap-1">
-            {Object.keys(gameData.players).map(
-              (playerId: string, index: number) => {
-                const { word, guesses, timer } = gameData.players[playerId];
-                if (playerId === props.userId) {
-                  return;
-                } else if (index % 2 !== 0)
-                  return (
-                    <Opponent
-                      word={word}
-                      guesses={guesses}
-                      id={playerId}
-                      key={playerId}
-                      timer={timer}
-                      numOfOpponents={Object.keys(gameData.players).length / 2}
+            </div>
+          )}
+          {spectateMode() && (
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-center">
+                <AnimatePresence>
+                  {gameData.gameStarted && !endGame.isSuccess && (
+                    <Timer
+                      expiryTimestamp={new Date(playerData.timer)}
+                      opponent={false}
+                      endGame={() => handleEndMatch()}
                     />
-                  );
-              },
-            )}
-          </div>
+                  )}
+                  {!gameData.gameStarted && (
+                    <motion.p
+                      exit={{ scale: 0 }}
+                      className="font-bold"
+                    >{`Loading Players : ${
+                      Object.keys(gameData.players).length
+                    } of 66`}</motion.p>
+                  )}
+                </AnimatePresence>
+                <GameGrid
+                  guess={guess}
+                  guesses={playerData?.guesses}
+                  word={playerData?.word}
+                  disabled={!gameData.gameStarted}
+                />
+              </div>
+
+              <Keyboard disabled={!gameData.gameStarted} matches={matches} />
+              {!gameData.gameStarted &&
+                Object.keys(gameData.players)[0] === props.userId && (
+                  <button
+                    className="rounded-md bg-black p-2 text-xs font-semibold text-white"
+                    onClick={() => handleManualStart()}
+                  >
+                    Manual Start
+                  </button>
+                )}
+            </div>
+          )}
+          {gameData.players && (
+            <div className="flex w-1/4 flex-wrap justify-around gap-1">
+              {Object.keys(gameData.players).map(
+                (playerId: string, index: number) => {
+                  const { word, guesses, timer } = gameData.players[playerId];
+                  if (playerId === props.userId) {
+                    return;
+                  } else if (index % 2 !== 0)
+                    return (
+                      <Opponent
+                        word={word}
+                        guesses={guesses}
+                        id={playerId}
+                        key={playerId}
+                        timer={timer}
+                        endGame={() => checkIfWin()}
+                        numOfOpponents={
+                          Object.keys(gameData.players).length / 2
+                        }
+                      />
+                    );
+                },
+              )}
+            </div>
+          )}
         </motion.div>
         <ToastContainer
           position="bottom-center"

@@ -17,7 +17,9 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export const createNewFirebaseLobby = async (lobbyId: string): Promise<void> => {
+export const createNewFirebaseLobby = async (
+  lobbyId: string,
+): Promise<void> => {
   const timeStamp = new Date();
   await set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
@@ -76,9 +78,10 @@ export const updateTimerAndGuesses = async (
   closestWord: string,
   timer: number,
 ) => {
+  console.log(timer);
   await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
-    timer: timer - 20000,
+    timer: timer,
   });
 };
 

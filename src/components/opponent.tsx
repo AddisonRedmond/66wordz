@@ -8,6 +8,7 @@ type OpponentProps = {
   id: string;
   timer: number;
   numOfOpponents: number;
+  endGame: ()=> void
 };
 
 const Opponent: React.FC<OpponentProps> = ({
@@ -15,6 +16,8 @@ const Opponent: React.FC<OpponentProps> = ({
   guesses,
   timer,
   numOfOpponents,
+  endGame,
+  id
 }: OpponentProps) => {
   const tempTime = new Date();
   tempTime.setSeconds(tempTime.getSeconds() + 100);
@@ -30,7 +33,7 @@ const Opponent: React.FC<OpponentProps> = ({
       exit={{ scale: 0 }}
       className={`flex flex-col gap-1 rounded-md border-2 border-gray-400 p-1 max-w-xs aspect-square`}
     >
-      {!!timer && <Timer expiryTimestamp={new Date(timer)} opponent={true} />}
+      {!!timer && <Timer expiryTimestamp={new Date(timer)} opponent={true} endGame={endGame}/>}
       {Array.from({ length: 5 }).map((_, index: number) => {
         return (
           <div key={index} className="flex flex-row justify-center gap-1 ">

@@ -24,7 +24,7 @@ const Modal: React.FC<ModalProps> = ({
       >
         <div className="flex h-full flex-col justify-around">
           <div className="mb-6 text-center text-xl font-semibold">
-            <p>Eliminated</p>
+            <p>{placement === 1 ? "WINNER!" : "Eliminated"}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex justify-center">
