@@ -28,7 +28,8 @@ const config = {
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/consistent-indexed-object-style": "warn",
     "@typescript-eslint/no-misused-promises": "warn",
-    "@typescript-eslint/no-floating-promises": "warn"
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/no-redundant-type-constituents": "warn",
   },
 };
 
