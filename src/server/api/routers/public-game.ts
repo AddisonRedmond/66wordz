@@ -10,11 +10,12 @@ export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure.mutation(async ({ ctx }) => {
     // check if player is already part of a game
 
-    const rejoin = await ctx.db.players.findUnique({
-      where: {
-        userId: ctx.session.user.id,
-      },
-    });
+    const rejoin: { useId: string; lobbyId: string } =
+      await ctx.db.players.findUnique({
+        where: {
+          userId: ctx.session.user.id,
+        },
+      });
 
     if (rejoin) {
       return rejoin;
@@ -38,7 +39,7 @@ export const publicGameRouter = createTRPCRouter({
 
     const createNewLobby = async () => {
       // create the new lobby in the database
-      const newLobby = await ctx.db.lobby.create({ data: {} });
+      const newLobby: { id: string } = await ctx.db.lobby.create({ data: {} });
 
       //   create the new lobby in firebase realtime db
       await createNewFirebaseLobby(newLobby.id);
@@ -46,12 +47,14 @@ export const publicGameRouter = createTRPCRouter({
     };
 
     const joinLobby = async (lobbyId: string) => {
-      const lobby = await ctx.db.players.create({
-        data: {
-          userId: ctx.session.user.id,
-          lobbyId: lobbyId,
-        },
-      });
+      // lobby is actually coming from player, should be named player lobby
+      const lobby: { userId: string; lobbyId: string } =
+        await ctx.db.players.create({
+          data: {
+            userId: ctx.session.user.id,
+            lobbyId: lobbyId,
+          },
+        });
 
       joinFirebaseLobby(lobby.lobbyId, ctx.session.user.id);
 

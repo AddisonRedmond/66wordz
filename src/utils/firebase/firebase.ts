@@ -17,7 +17,7 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export const createNewFirebaseLobby = async (lobbyId: string) => {
+export const createNewFirebaseLobby = async (lobbyId: string): Promise<void> => {
   const timeStamp = new Date();
   await set(ref(db, "publicLobbies/" + lobbyId), {
     initializeTimeStamp: `${timeStamp}`,
