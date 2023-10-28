@@ -15,12 +15,12 @@ export default function Login() {
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <div className="flex flex-row">
-        <div className="flex h-screen w-1/2 flex-col items-center justify-center gap-4 bg-black">
+      <div className="flex h-screen flex-col md:flex-row">
+        <div className="flex h-1/2 flex-col items-center justify-center gap-4 bg-black md:h-full md:w-1/2">
           <Tile letters={"66"} auto={true} />
           <Tile letters="WORDZ" />
         </div>
-        <div className="flex h-screen w-1/2 flex-col items-center justify-center gap-48 bg-white font-bold">
+        <div className="flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <h1 className="text-[5vh]">Login With</h1>
           <div className="flex items-center gap-10">
             <Image
@@ -31,7 +31,7 @@ export default function Login() {
             <p>or</p>
             <Image
               src={Google}
-              onClick={()=>signIn().catch(console.error)}
+              onClick={() => signIn().catch(console.error)}
               alt="google icon to login"
               className="cursor-pointer"
             />

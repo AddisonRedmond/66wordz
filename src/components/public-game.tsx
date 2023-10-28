@@ -18,7 +18,7 @@ import {
 } from "~/utils/game";
 import Opponent from "./opponent";
 import Timer from "./timer";
-import words from "~/utils/words";
+import words from "~/utils/dictionary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "./modal";
