@@ -50,6 +50,7 @@ export const formatGameData = (
         word?: string;
         timer?: number;
         allGuesses?: string[];
+        failed: boolean;
       }
     | undefined,
 ) => {
@@ -58,6 +59,7 @@ export const formatGameData = (
     word: dataObject?.word ? dataObject.word : "ERROR",
     timer: dataObject?.timer ? dataObject.timer : 0,
     allGuesses: dataObject?.allGuesses ? dataObject.allGuesses : [],
+    failed: dataObject?.failed ? dataObject.failed : false,
   };
   return gameObj;
 };
@@ -106,15 +108,17 @@ export const handleCorrectGuess = async (
   userId: string,
   timer: number,
   numberOfGuesses: number,
+  failed: boolean,
 ): Promise<void> => {
+  console.log(numberOfGuesses)
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
-
-  if (new Date().getTime() + 180000 < timer + updatedTimer) {
+  if (failed) {
+    updatedTimer = timer + 10000;
+  } else if (new Date().getTime() + 180000 < timer + updatedTimer) {
     updatedTimer = new Date().getTime() + 180000;
   } else {
     updatedTimer = timer + updatedTimer;
   }
-
   await updateGuessesAndWord(
     lobbyId,
     userId,

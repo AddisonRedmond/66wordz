@@ -142,34 +142,36 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
           if (words.includes(guess)) {
-            await updateGuessesAndAllGuesses(
+            updateGuessesAndAllGuesses(
               props.lobbyId,
               props.userId,
               [...playerData.guesses, guess],
               [...playerData.allGuesses, guess],
-            );
-            if (guess === playerData.word) {
-              handleCorrectGuess(
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-                playerData.guesses.length,
-              );
+            ).then(async () => {
+              if (guess === playerData.word) {
+                await handleCorrectGuess(
+                  props.lobbyId,
+                  props.userId,
+                  playerData.timer,
+                  playerData.guesses.length,
+                  playerData.failed,
+                );
+                setGuess("");
+                resetMatches();
+                return;
+              } else if (playerData.guesses.length > 4) {
+                await handleWordFailure(
+                  playerData.guesses,
+                  playerData.word,
+                  props.lobbyId,
+                  props.userId,
+                  playerData.timer,
+                );
+                setGuess("");
+                return;
+              }
               setGuess("");
-              resetMatches();
-              return;
-            } else if (playerData.guesses.length > 4) {
-              handleWordFailure(
-                playerData.guesses,
-                playerData.word,
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-              );
-              setGuess("");
-              return;
-            }
-            setGuess("");
+            });
           } else {
             notify();
           }
@@ -216,7 +218,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
       return true;
     }
   };
-
   if (gameData) {
     const playerData = formatGameData(gameData.players?.[props.userId]);
     return (

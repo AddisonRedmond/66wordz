@@ -33,6 +33,7 @@ export const joinFirebaseLobby = async (lobbyId: string, userId: string) => {
     guesses: [null],
     startTime: null,
     allGuesses: [null],
+    failed: false,
   });
 };
 
@@ -42,7 +43,7 @@ export const updateGuessesAndAllGuesses = async (
   guesses: string[],
   allGuesses: string[],
 ) => {
-  return await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     allGuesses: allGuesses,
   });
@@ -59,6 +60,7 @@ export const updateGuessesAndWord = async (
     guesses: guesses,
     word: word,
     timer: timer,
+    failed: false,
   });
 };
 
@@ -78,10 +80,10 @@ export const updateTimerAndGuesses = async (
   closestWord: string,
   timer: number,
 ) => {
-  console.log(timer);
   await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
     timer: timer,
+    failed: true,
   });
 };
 
