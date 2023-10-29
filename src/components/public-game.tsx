@@ -137,7 +137,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   useEffect(() => {
     if (gameData?.players?.[props.userId] && gameData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
-      const handleKeyUp = async (e: KeyboardEvent) => {
+      const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
           setGuess((prevGuess) => prevGuess.slice(0, -1));
         } else if (e.key === "Enter" && guess.length === 5) {
