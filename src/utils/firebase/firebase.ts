@@ -110,3 +110,7 @@ export const startGame = async (lobbyId: string) => {
     startTime: new Date().getTime(),
   });
 };
+
+export const endGame = async (lobbyId: string) => {
+  await remove(ref(db, `publicLobbies/${lobbyId}`));
+};
