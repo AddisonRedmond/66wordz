@@ -29,6 +29,7 @@ import Confetti from "react-dom-confetti";
 type PublicGameProps = {
   lobbyId: string;
   userId: string;
+  gameType: string;
   exitMatch: () => void;
 };
 
@@ -73,11 +74,11 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     endGame.mutate();
     setEndGameSummary({
       placement: firstPlace ? 1 : Object.keys(gameData.players).length,
-      totalTime: canculateTimePlayed(gameData.startTime, timer),
+      totalTime: canculateTimePlayed(gameData.lobbyData.startTime, timer),
       totalGuesses: allGuesses?.length ? allGuesses.length : 0,
     });
 
-    handleRemoveUserFromLobby(props.lobbyId, props.userId);
+    handleRemoveUserFromLobby(props.lobbyId, props.userId, props.gameType);
 
     setModalIsOpen(true);
   };
@@ -85,7 +86,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const notify = () => toast.warn(`${guess} not in word list!`);
 
   const handleManualStart = async () => {
-    await startGame(props.lobbyId);
+    await startGame(props.lobbyId, props.gameType);
     manualStart.mutate(props.lobbyId);
   };
 
@@ -110,7 +111,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   };
 
   useEffect(() => {
-    const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
+    const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);
     const handlePlayersDataChange = (snapShot: any) => {
       const gameData: any = snapShot.val();
       setGameData(gameData);
@@ -127,15 +128,15 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
 
   useEffect(() => {
     if (
-      gameData?.gameStarted === true &&
+      gameData?.lobbyData.gameStarted === true &&
       !gameData?.players[props.userId].timer
     ) {
-      handleStartTimer(props.lobbyId, props.userId);
+      handleStartTimer(props.lobbyId, props.userId, props.gameType);
     }
-  }, [gameData?.gameStarted]);
+  }, [gameData?.lobbyData.gameStarted]);
 
   useEffect(() => {
-    if (gameData?.players?.[props.userId] && gameData.gameStarted) {
+    if (gameData?.players?.[props.userId] && gameData.lobbyData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
       const handleKeyUp = async (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
@@ -147,6 +148,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
               props.userId,
               [...playerData.guesses, guess],
               [...playerData.allGuesses, guess],
+              props.gameType,
             );
             if (guess === playerData.word) {
               handleCorrectGuess(
@@ -154,6 +156,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                 props.userId,
                 playerData.timer,
                 playerData.guesses.length,
+                props.gameType,
               );
               setGuess("");
               resetMatches();
@@ -165,6 +168,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                 props.lobbyId,
                 props.userId,
                 playerData.timer,
+                props.gameType,
               );
               setGuess("");
               return;
@@ -268,14 +272,14 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             <div className="flex flex-col items-center gap-4">
               <div className="text-center">
                 <AnimatePresence>
-                  {gameData.gameStarted && !endGame.isSuccess && (
+                  {gameData.lobbyData.gameStarted && !endGame.isSuccess && (
                     <Timer
                       expiryTimestamp={new Date(playerData.timer)}
                       opponent={false}
                       endGame={() => handleEndMatch()}
                     />
                   )}
-                  {!gameData.gameStarted && (
+                  {!gameData.lobbyData.gameStarted && (
                     <motion.p
                       exit={{ scale: 0 }}
                       className="font-bold"
@@ -288,12 +292,15 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                   guess={guess}
                   guesses={playerData?.guesses}
                   word={playerData?.word}
-                  disabled={!gameData.gameStarted}
+                  disabled={!gameData.lobbyData.gameStarted}
                 />
               </div>
 
-              <Keyboard disabled={!gameData.gameStarted} matches={matches} />
-              {!gameData.gameStarted &&
+              <Keyboard
+                disabled={!gameData.lobbyData.gameStarted}
+                matches={matches}
+              />
+              {!gameData.lobbyData.gameStarted &&
                 Object.keys(gameData.players)[0] === props.userId && (
                   <button
                     className="rounded-md bg-black p-2 text-xs font-semibold text-white"

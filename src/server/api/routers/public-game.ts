@@ -6,6 +6,7 @@ import {
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { GameType } from "@prisma/client";
+import { handleGetNewWord } from "~/utils/game";
 
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
@@ -52,9 +53,20 @@ export const publicGameRouter = createTRPCRouter({
         const newLobby: { id: string } = await ctx.db.lobby.create({
           data: { gameType: clientGameType },
         });
-
         //   create the new lobby in firebase realtime db
-        await createNewFirebaseLobby(newLobby.id);
+        if (clientGameType === "ELIMINATION") {
+          await createNewFirebaseLobby(clientGameType, newLobby.id, {
+            gameStarted: false,
+            initilizedTimeStamp: new Date(),
+            word: handleGetNewWord(),
+          });
+        } else if (clientGameType === "MARATHON") {
+          await createNewFirebaseLobby(clientGameType, newLobby.id, {
+            gameStarted: false,
+            initilizedTimeStamp: new Date(),
+          });
+        }
+
         return newLobby;
       };
 
@@ -68,7 +80,14 @@ export const publicGameRouter = createTRPCRouter({
             },
           });
 
-        joinFirebaseLobby(player.lobbyId, ctx.session.user.id);
+        if (clientGameType === "MARATHON") {
+          joinFirebaseLobby(
+            player.lobbyId,
+            ctx.session.user.id,
+            clientGameType,
+            handleGetNewWord(),
+          );
+        }
 
         const playerCount = await ctx.db.players.count({
           where: {
@@ -77,7 +96,7 @@ export const publicGameRouter = createTRPCRouter({
         });
 
         if (playerCount >= 66) {
-          startGame(player.lobbyId);
+          startGame(player.lobbyId, clientGameType);
           await ctx.db.lobby.update({
             where: {
               id: player.lobbyId,

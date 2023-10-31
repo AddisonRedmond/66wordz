@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, update, remove } from "firebase/database";
 import { env } from "~/env.mjs";
-import { handleGetNewWord } from "../game";
 
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_API_KEY,
@@ -18,18 +17,27 @@ initializeApp(firebaseConfig);
 export const db = getDatabase();
 
 export const createNewFirebaseLobby = async (
+  gameType: string,
   lobbyId: string,
+  lobbyData?: {
+    gameStarted: boolean;
+    initilizedTimeStamp: Date;
+    word?: string;
+  },
 ): Promise<void> => {
-  const timeStamp = new Date();
-  await set(ref(db, "publicLobbies/" + lobbyId), {
-    initializeTimeStamp: `${timeStamp}`,
-    gameStarted: false,
+  await set(ref(db, `${gameType}/${lobbyId}`), {
+    lobbyData
   });
 };
 
-export const joinFirebaseLobby = async (lobbyId: string, userId: string) => {
-  await set(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
-    word: handleGetNewWord(),
+export const joinFirebaseLobby = async (
+  lobbyId: string,
+  userId: string,
+  gameType: string,
+  word?: string
+) => {
+  await set(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
+    word: word,
     guesses: [null],
     startTime: null,
     allGuesses: [null],
@@ -41,8 +49,9 @@ export const updateGuessesAndAllGuesses = async (
   userId: string,
   guesses: string[],
   allGuesses: string[],
+  gameType: string,
 ) => {
-  return await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  return await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     allGuesses: allGuesses,
   });
@@ -54,8 +63,9 @@ export const updateGuessesAndWord = async (
   guesses: string[],
   word: string,
   timer: number,
+  gameType: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
     timer: timer,
@@ -66,8 +76,9 @@ export const updateWord = async (
   lobbyId: string,
   userId: string,
   word: string,
+  gameType: string,
 ) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     word: word,
   });
 };
@@ -77,16 +88,20 @@ export const updateTimerAndGuesses = async (
   userId: string,
   closestWord: string,
   timer: number,
+  gameType: string,
 ) => {
-  console.log(timer);
-  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+  await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
     timer: timer,
   });
 };
 
-export const handleStartTimer = async (lobbyId: string, userId: string) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+export const handleStartTimer = async (
+  lobbyId: string,
+  userId: string,
+  gameType: string,
+) => {
+  await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     timer: new Date().getTime() + 180000,
   });
 };
@@ -94,23 +109,28 @@ export const handleStartTimer = async (lobbyId: string, userId: string) => {
 export const handleRemoveUserFromLobby = async (
   lobbyId: string,
   userId: string,
+  gameType: string,
 ) => {
-  await remove(ref(db, `publicLobbies/${lobbyId}/players/${userId}`));
+  await remove(ref(db, `${gameType}/${lobbyId}/players/${userId}`));
 };
 
-export const handleIdleUser = async (lobbyId: string, userId: string) => {
-  await update(ref(db, `publicLobbies/${lobbyId}/players/${userId}`), {
+export const handleIdleUser = async (
+  lobbyId: string,
+  userId: string,
+  gameType: string,
+) => {
+  await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     inActive: true,
   });
 };
 
-export const startGame = async (lobbyId: string) => {
-  await update(ref(db, `publicLobbies/${lobbyId}`), {
+export const startGame = async (lobbyId: string, gameType: string) => {
+  await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: true,
     startTime: new Date().getTime(),
   });
 };
 
-export const endGame = async (lobbyId: string) => {
-  await remove(ref(db, `publicLobbies/${lobbyId}`));
+export const endGame = async (lobbyId: string, gameType: string) => {
+  await remove(ref(db, `${gameType}/${lobbyId}`));
 };

@@ -8,7 +8,6 @@ import Header from "~/components/hearder";
 import PublicGame from "~/components/public-game";
 import Elimination from "~/components/elimination";
 import { useState } from "react";
-
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
@@ -29,12 +28,17 @@ const Home = () => {
           <PublicGame
             lobbyId={lobby.data.id}
             userId={session!.user.id}
+            gameType={lobby.data.gameType}
             exitMatch={exitMatch}
           />
         );
       } else if (lobby.data.gameType === "ELIMINATION") {
         return (
-          <Elimination lobbyId={lobby.data.id} userId={session!.user.id} />
+          <Elimination
+            lobbyId={lobby.data.id}
+            userId={session!.user.id}
+            gameType={gameMode}
+          />
         );
       }
     }
