@@ -293,6 +293,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                   guesses={playerData?.guesses}
                   word={playerData?.word}
                   disabled={!gameData.lobbyData.gameStarted}
+                  rows={6}
                 />
               </div>
 

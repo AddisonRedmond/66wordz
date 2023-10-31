@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-export const useOnKeyUp = (keyUpFunction: () => void, dependancies: []) => {
+export const useOnKeyUp = (
+  keyUpFunction: (e: KeyboardEvent) => Promise<void>,
+  dependancies: [],
+) => {
   useEffect(() => {
     window.addEventListener("keyup", keyUpFunction);
 
