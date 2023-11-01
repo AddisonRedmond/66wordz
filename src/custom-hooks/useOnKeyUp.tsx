@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 export const useOnKeyUp = (
   keyUpFunction: (e: KeyboardEvent) => Promise<void>,
-  dependancies: [],
+  dependancies: string[],
 ) => {
   useEffect(() => {
     window.addEventListener("keyup", keyUpFunction);

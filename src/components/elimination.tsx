@@ -6,28 +6,60 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Keyboard from "./keyboard";
 import WordContainer from "~/elimination/word-container";
+import {
+  handleCorrectAnswer,
+  handleCreateWordIndex,
+} from "~/utils/elimination";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
   gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
 };
 
+type Matches = {
+  fullMatch: string[];
+  partialMatch: string[];
+  noMatch: string[];
+};
+
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const gameData = useGameLobbyData(db, props);
   const [guess, setGuess] = useState("");
-
+  const [matches, setMatches] = useState<Matches>({
+    fullMatch: [],
+    partialMatch: [],
+    noMatch: [],
+  });
+  const [matchingIndex, setMatchingIndex] = useState<number[]>([]);
+  console.log(gameData)
   const handleKeyUp = async (e: KeyboardEvent) => {
-    console.log(e.key)
-    if (/[a-zA-Z]/.test(e.key) && e.key.length === 1 && guess.length < 5) {
+    const { gameStarted, word } = gameData.lobbyData;
+    if (e.key === "Backspace" && guess.length > 0) {
+      setGuess((prevGuess) => prevGuess.slice(0, -1));
+    } else if (e.key === "Enter") {
+      // check if guess matches word
+      if (guess === word) {
+        handleCorrectAnswer();
+        return;
+      }
+      // if it doesnt, increment number of guesses,
+      else if (guess !== word) {
+        // highlight matching letters, highlight semi-matching letters
+        setMatchingIndex(handleCreateWordIndex(guess, word, matchingIndex));
+      }
+    } else if (
+      /[a-zA-Z]/.test(e.key) &&
+      e.key.length === 1 &&
+      guess.length < 5
+    ) {
       setGuess((prevGuess) => `${prevGuess}${e.key}`.toUpperCase());
     }
   };
 
-  console.log(guess)
-  useOnKeyUp(handleKeyUp, []);
+  useOnKeyUp(handleKeyUp, [guess, gameData]);
   if (gameData) {
     const { gameStarted, word } = gameData.lobbyData;
-    const guesses: string[] = gameData?.players || [""];
+    const guesses: string[] = gameData?.players || [];
     return (
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
@@ -35,7 +67,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
         exit={{ scale: 0, opacity: 0 }}
         className="flex flex-col items-center justify-center gap-4"
       >
-        <WordContainer />
+        <WordContainer word={word} matchingIndex={matchingIndex} />
         <GameGrid
           guess={guess}
           guesses={guesses}
@@ -44,14 +76,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           rows={1}
         />
 
-        <Keyboard
-          disabled={false}
-          matches={{
-            fullMatch: [],
-            partialMatch: [],
-            noMatch: [],
-          }}
-        />
+        <Keyboard disabled={false} matches={matches} />
       </motion.div>
     );
   } else {
