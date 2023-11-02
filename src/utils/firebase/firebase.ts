@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, update, remove } from "firebase/database";
 import { env } from "~/env.mjs";
+import { handleGetNewWord } from "../game";
 
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_API_KEY,
@@ -22,11 +23,12 @@ export const createNewFirebaseLobby = async (
   lobbyData?: {
     gameStarted: boolean;
     initilizedTimeStamp: Date;
+    round?: number;
     word?: string;
   },
 ): Promise<void> => {
   await set(ref(db, `${gameType}/${lobbyId}`), {
-    lobbyData
+    lobbyData,
   });
 };
 
@@ -34,13 +36,21 @@ export const joinFirebaseLobby = async (
   lobbyId: string,
   userId: string,
   gameType: string,
-  word?: string
+  guessCount: number | null,
+  word?: string,
 ) => {
   await set(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     word: word,
     guesses: [null],
     startTime: null,
     allGuesses: [null],
+    guessCount: guessCount,
+  });
+};
+
+export const joinEliminationLobby = async (gamePath: string) => {
+  await set(ref(db, gamePath), {
+    points: 0,
   });
 };
 
@@ -124,13 +134,42 @@ export const handleIdleUser = async (
   });
 };
 
-export const startGame = async (lobbyId: string, gameType: string) => {
+export const startGame = async (
+  lobbyId: string,
+  gameType: string,
+  qualifedSpots?: number,
+) => {
   await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: true,
     startTime: new Date().getTime(),
+    qualifedSpots: qualifedSpots,
   });
 };
 
 export const endGame = async (lobbyId: string, gameType: string) => {
   await remove(ref(db, `${gameType}/${lobbyId}`));
+};
+
+export const updateGuessCountAndMatchingIndex = async (
+  gamePath: string,
+  guessCount: number,
+  matchingIndex: number[],
+) => {
+  await update(ref(db, gamePath), {
+    guessCount: guessCount,
+    matchingIndex: matchingIndex,
+  });
+};
+
+export const updatePoints = async (gamePath: string, points: number) => {
+  await update(ref(db, `${gamePath}`), {
+    points: points,
+  });
+};
+
+export const updateEliminationWordAndReset = async (gamePath: string) => {
+  await update(ref(db, `${gamePath}/lobbyData`), {
+    word: handleGetNewWord(),
+  });
+  await remove(ref(db, `${gamePath}/roundData`));
 };

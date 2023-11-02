@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 type WordContainerProps = {
   word: string;
@@ -11,12 +11,23 @@ const Tile: React.FC<{ letter: string; letterMatches: boolean }> = (props: {
   letterMatches: boolean;
 }) => {
   return (
-    <motion.p
-      animate={props.letterMatches && { backgroundColor: "#00DFA2" }}
+    <motion.div
+      animate={props.letterMatches ? { backgroundColor: "#00DFA2" } : {backgroundColor: "white"}}
       className="flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
     >
-      {props.letterMatches && props.letter}
-    </motion.p>
+      <AnimatePresence>
+        {props.letterMatches && (
+          <motion.p
+            initial={{ scale: 0 }}
+            exit={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            // className="flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
+          >
+            {props.letter}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

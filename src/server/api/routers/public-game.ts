@@ -1,5 +1,6 @@
 import {
   createNewFirebaseLobby,
+  joinEliminationLobby,
   joinFirebaseLobby,
   startGame,
 } from "~/utils/firebase/firebase";
@@ -58,6 +59,7 @@ export const publicGameRouter = createTRPCRouter({
           await createNewFirebaseLobby(clientGameType, newLobby.id, {
             gameStarted: false,
             initilizedTimeStamp: new Date(),
+            round: 1,
             word: handleGetNewWord(),
           });
         } else if (clientGameType === "MARATHON") {
@@ -72,10 +74,11 @@ export const publicGameRouter = createTRPCRouter({
 
       const joinLobby = async (lobbyId: string) => {
         // lobby is actually coming from player, should be named player lobby
+        const userId = ctx.session.user.id;
         const player: { userId: string; lobbyId: string } =
           await ctx.db.players.create({
             data: {
-              userId: ctx.session.user.id,
+              userId: userId,
               lobbyId: lobbyId,
             },
           });
@@ -83,9 +86,14 @@ export const publicGameRouter = createTRPCRouter({
         if (clientGameType === "MARATHON") {
           joinFirebaseLobby(
             player.lobbyId,
-            ctx.session.user.id,
+            userId,
             clientGameType,
+            0,
             handleGetNewWord(),
+          );
+        } else if (clientGameType === "ELIMINATION") {
+          joinEliminationLobby(
+            `${clientGameType}/${player.lobbyId}/playerPoints/${userId}`,
           );
         }
 

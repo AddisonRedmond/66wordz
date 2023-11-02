@@ -1,6 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { publicGameRouter } from "./routers/public-game";
-import { eliminationRouter } from "./routers/elimination";
 /**
  * This is the primary router for your server.
  *
@@ -8,7 +7,6 @@ import { eliminationRouter } from "./routers/elimination";
  */
 export const appRouter = createTRPCRouter({
   public: publicGameRouter,
-  elimination: eliminationRouter,
 });
 
 // export type definition of API
