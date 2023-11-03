@@ -12,7 +12,9 @@ const Tile: React.FC<{ letter: string; letterMatches: boolean }> = (props: {
 }) => {
   return (
     <motion.div
-      animate={props.letterMatches ? { backgroundColor: "#00DFA2" } : {backgroundColor: "white"}}
+      animate={{
+        backgroundColor: `${props.letterMatches ? "#00DFA2" : "white"}`,
+      }}
       className="flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
     >
       <AnimatePresence>

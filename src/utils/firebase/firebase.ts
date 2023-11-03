@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, update, remove } from "firebase/database";
+import { getDatabase, ref, set, update, remove, runTransaction } from "firebase/database";
 import { env } from "~/env.mjs";
 import { handleGetNewWord } from "../game";
 
@@ -172,4 +172,23 @@ export const updateEliminationWordAndReset = async (gamePath: string) => {
     word: handleGetNewWord(),
   });
   await remove(ref(db, `${gamePath}/roundData`));
+};
+
+export const handleNextRound = async (
+  gamePath: string,
+  round: number,
+  qualifedPlayers: {
+    [key: string]: {
+      points: number;
+    };
+  },
+) => {
+  await set(ref(db, `${gamePath}`), {
+    lobbyData: {
+      gameStarted: false,
+      round: round,
+      word: handleGetNewWord(),
+    },
+    playerPoints: qualifedPlayers,
+  });
 };

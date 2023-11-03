@@ -1,18 +1,18 @@
 import useGameLobbyData from "../custom-hooks/useGameLobbyData"; // Import your custom hook
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
-import { db } from "~/utils/firebase/firebase";
+import { db, handleNextRound } from "~/utils/firebase/firebase";
 import GameGrid from "./game-grid";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Keyboard from "./keyboard";
 import WordContainer from "~/elimination/word-container";
-
 import {
-  calculatePoints,
+  roundQualifiedTable,
   handleCorrectAnswer,
   handleCreateMatchingIndex,
   handleEliminationMatched,
   spellCheck,
+  calculatePoints,
 } from "~/utils/elimination";
 import { updateGuessCountAndMatchingIndex } from "../utils/firebase/firebase";
 import Points from "~/elimination/points";
@@ -36,6 +36,7 @@ type Players = {
 }[];
 
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
+  const TARGET_SCORE = 500;
   const gameData = useGameLobbyData(db, props);
   const [guess, setGuess] = useState("");
   const [keyBoardMatches, setKeyBoardMatches] = useState<Matches>({
@@ -46,21 +47,43 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const notify = () => toast.warn(`${guess} not in word list!`);
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
 
-  const remainingSpots = (playerCount: number, round: number) => {
-    if (round === 1) {
-      return playerCount / 2;
+  const calulateQualifiedSpots = () => {};
+
+  const handleQualified = (points: number) => {
+    const qualifiedPlayers: string[] = [];
+    console.log(points);
+    Object.keys(gameData?.playerPoints).forEach((player: string) => {
+      if (player === props.userId && points >= TARGET_SCORE) {
+        qualifiedPlayers.push(player);
+      } else if (gameData?.playerPoints?.[player]?.points >= TARGET_SCORE) {
+        qualifiedPlayers.push(player);
+      }
+    });
+
+    console.log(qualifiedPlayers);
+    // if playerId is part of qualifiedPlayers list, disable them from playing
+
+    if (
+      qualifiedPlayers.length >= Math.ceil(gameData?.playerPoints.length / 2)
+    ) {
+      const qualifiedPlayersObject: { [keyof: string]: { points: number } } =
+        {};
+      qualifiedPlayers.forEach((playerId: string) => {
+        qualifiedPlayersObject[playerId] = { points: 0 };
+      });
+      handleNextRound(
+        `${props.lobbyId}`,
+        gameData.lobbyData.round + 1,
+        qualifiedPlayersObject,
+      );
+    } else {
     }
 
-    return playerCount / 2;
-  };
-
-  const handleQualified = () => {
     // if gameData.qualified <= remainingSpots
     // add player gameData.qualified
     // else end round,
     // set(db,ref) === gameData.qualified
   };
-
   // main logic for game
   const handleKeyUp = async (e: KeyboardEvent) => {
     const { gameStarted, word, round } = gameData.lobbyData;
@@ -70,10 +93,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     const { points = 0 } = gameData?.playerPoints?.[props.userId] || [];
     if (!gameStarted) {
       return;
-    }
-
-    if (points >= 500) {
-      handleQualified();
     }
 
     if (e.key === "Backspace" && guess.length > 0) {
@@ -86,7 +105,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
       // check if guess matches word
       if (guess === word) {
-        handleCorrectAnswer(
+        await handleCorrectAnswer(
           `ELIMINATION/${props.lobbyId}/playerPoints/${props.userId}`,
           guessCount,
           points,
@@ -98,7 +117,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           partialMatch: [],
           noMatch: [],
         });
-        // checkIfQuanified();
+        handleQualified(
+          calculatePoints(
+            guessCount,
+            gameData?.playerPoints?.[props.userId].points,
+          ),
+        );
+
         return;
       }
       // if it doesnt, increment number of guesses,
@@ -145,16 +170,21 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     }
   };
   useOnKeyUp(handleKeyUp, [guess, gameData]);
-  console.log(gameData);
+
   if (gameData) {
     const { gameStarted, word } = gameData.lobbyData;
-    console.log(gameStarted);
     const { guessCount = 0, matchingIndex = [] } =
       gameData?.roundData?.[props.userId] || {};
-
     const { points = 0 } = gameData?.playerPoints?.[props.userId] || [];
-
     const guesses: string[] = gameData?.players || [];
+    const isDisabled = () => {
+      if (gameData?.playerPoints?.[props.userId].points >= TARGET_SCORE) {
+        return true;
+      } else if (!gameStarted) {
+        return true;
+      }
+      return false;
+    }; 
     return (
       <>
         <ToastContainer
@@ -179,19 +209,19 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             <div className="flex flex-col gap-3">
               <Points
                 totalPoints={points}
-                pointsTarget={500}
+                pointsTarget={TARGET_SCORE}
                 showPoints={true}
               />
               <GameGrid
                 guess={guess}
                 guesses={guesses}
                 word={word}
-                disabled={!gameStarted}
+                disabled={isDisabled()}
                 rows={1}
               />
             </div>
 
-            <Keyboard disabled={!gameStarted} matches={keyBoardMatches} />
+            <Keyboard disabled={isDisabled()} matches={keyBoardMatches} />
           </div>
           <OpponentsContainer players={getHalfOfOpponents("odd")} word={word} />
         </motion.div>

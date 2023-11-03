@@ -25,14 +25,14 @@ export const calculatePoints = (guessCount: number, points: number) => {
   }
 };
 
-export const handleCorrectAnswer = (
+export const handleCorrectAnswer = async (
   gamePath: string,
   guessCount: number,
   existingPoints: number,
   lobbyId: string,
 ) => {
-  updatePoints(gamePath, calculatePoints(guessCount, existingPoints));
-  updateEliminationWordAndReset(`ELIMINATION/${lobbyId}`);
+  await updatePoints(gamePath, calculatePoints(guessCount, existingPoints));
+  await updateEliminationWordAndReset(`ELIMINATION/${lobbyId}`);
 };
 
 export const handleCreateMatchingIndex = (
@@ -93,3 +93,12 @@ export const handleEliminationMatched = (
     noMatch: [...previousMatch.noMatch, ...noMatch],
   };
 };
+
+export const roundQualifiedTable = {
+  1: 1.5,
+  2: 1.5,
+  3: 1.5,
+  4: 2,
+  5: 2,
+};
+
