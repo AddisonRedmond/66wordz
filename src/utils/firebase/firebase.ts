@@ -5,10 +5,8 @@ import {
   set,
   update,
   remove,
-  runTransaction,
 } from "firebase/database";
 import { env } from "~/env.mjs";
-import { handleGetNewWord } from "../game";
 
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_API_KEY,
@@ -160,12 +158,6 @@ export const updateGuessCountAndMatchingIndex = async (
   await update(ref(db, gamePath), {
     guessCount: guessCount,
     matchingIndex: matchingIndex,
-  });
-};
-
-export const updatePoints = async (gamePath: string, points: number) => {
-  await update(ref(db, `${gamePath}`), {
-    points: points,
   });
 };
 

@@ -21,7 +21,7 @@ const OpponentsContainer: React.FC<OpponentsContainerProps> = (
   if (props.players) {
     return (
       <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
-        {props.players.map((player: Player, index: number) => {
+        {props.players.map((player: Player) => {
           return (
             <Opponent
               key={player.playerId}

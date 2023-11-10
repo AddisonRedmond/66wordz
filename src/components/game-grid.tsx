@@ -1,12 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { handleColor } from "~/utils/game";
 
-type Matches = {
-  fullMatch: string[];
-  partialMatch: string[];
-  noMatch: string[];
-};
-
 type GameGridProps = {
   guess: string;
   guesses: string[];

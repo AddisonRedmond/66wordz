@@ -1,5 +1,3 @@
-import { updatePoints } from "./firebase/firebase";
-
 import dictionary from "./dictionary";
 
 const pointTable: { [key: number]: number } = {

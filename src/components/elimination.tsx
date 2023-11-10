@@ -35,12 +35,6 @@ type Matches = {
   noMatch: string[];
 };
 
-type Player = {
-  playerId: string;
-  points: number;
-  playerData: { guessCount: number; matchingIndex: number[] };
-};
-
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
   const startGame = api.elimination.startGame.useMutation();
@@ -81,13 +75,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   };
 
   // main logic for game
-  const handleKeyUp = async (e: KeyboardEvent) => {
+  const handleKeyUp = (e: KeyboardEvent) => {
     if (gameData) {
       const { gameStarted, word, round } = gameData.lobbyData;
       const { guessCount = 0, matchingIndex = [] } =
-        gameData?.roundData?.[props.userId] || {};
+        gameData?.roundData?.[props.userId] ?? {};
 
-      const points = gameData?.playerPoints?.[props.userId]?.points || 0;
+      const points = gameData?.playerPoints?.[props.userId]?.points ?? 0;
       if (!gameStarted) {
         return;
       }
@@ -188,13 +182,12 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   };
 
   if (gameData) {
-    const { gameStarted, word } = gameData.lobbyData || {
+    const { word } = gameData.lobbyData || {
       gameStarted: false,
       word: "ERROR",
     };
-    const { guessCount = 0, matchingIndex = [] } =
-      gameData?.roundData?.[props.userId] || {};
-    const points = gameData?.playerPoints?.[props.userId]?.points || 0;
+    const { matchingIndex = [] } = gameData?.roundData?.[props.userId] ?? {};
+    const points = gameData?.playerPoints?.[props.userId]?.points ?? 0;
     const guesses: string[] = gameData?.players || [];
     const isDisabled = () => {
       return (

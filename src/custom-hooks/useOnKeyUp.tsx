@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { GameData } from "./useGameLobbyData";
 
 export const useOnKeyUp = (
-  keyUpFunction: (e: KeyboardEvent) => Promise<void>,
+  keyUpFunction: (e: KeyboardEvent) => void,
   dependancies: (string | GameData | null)[],
 ) => {
   useEffect(() => {
