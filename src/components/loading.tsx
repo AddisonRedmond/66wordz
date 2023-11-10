@@ -19,8 +19,7 @@ const Loading: React.FC = () => {
   };
 
   return (
-    <>
-      <motion.div
+    <motion.div
         className="flex justify-center gap-2"
         initial={{ scale: 0, opacity: 0 }}
         exit={{ scale: 0, opacity: 0 }}
@@ -50,7 +49,6 @@ const Loading: React.FC = () => {
           );
         })}
       </motion.div>
-    </>
   );
 };
 

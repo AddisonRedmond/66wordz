@@ -1,5 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, update, remove, runTransaction } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  update,
+  remove,
+  runTransaction,
+} from "firebase/database";
 import { env } from "~/env.mjs";
 import { handleGetNewWord } from "../game";
 
@@ -134,15 +141,10 @@ export const handleIdleUser = async (
   });
 };
 
-export const startGame = async (
-  lobbyId: string,
-  gameType: string,
-  qualifedSpots?: number,
-) => {
+export const startGame = async (lobbyId: string, gameType: string) => {
   await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: true,
     startTime: new Date().getTime(),
-    qualifedSpots: qualifedSpots,
   });
 };
 
@@ -167,28 +169,58 @@ export const updatePoints = async (gamePath: string, points: number) => {
   });
 };
 
-export const updateEliminationWordAndReset = async (gamePath: string) => {
-  await update(ref(db, `${gamePath}/lobbyData`), {
-    word: handleGetNewWord(),
+export const createNewRound = async (
+  playerPointsTemplate: {
+    [keyof: string]: { points: 0 };
+  },
+  lobbyDataTemplate: {
+    gameStarted: boolean;
+    round: number;
+    word: string;
+    nextRoundStartTime: number;
+  },
+  gamePath: string,
+) => {
+  console.log(playerPointsTemplate);
+  await set(ref(db, `${gamePath}`), {
+    playerPoints: playerPointsTemplate,
+    lobbyData: lobbyDataTemplate,
   });
-  await remove(ref(db, `${gamePath}/roundData`));
 };
 
-export const handleNextRound = async (
+export const handleCorrectGuess = async (
   gamePath: string,
-  round: number,
-  qualifedPlayers: {
-    [key: string]: {
-      points: number;
-    };
-  },
+  word: string,
+  points: number,
+  userId: string,
+) => {
+  await remove(ref(db, `${gamePath}/roundData`));
+  await update(ref(db, `${gamePath}/lobbyData/`), {
+    word: word,
+  });
+  await update(ref(db, `${gamePath}/playerPoints/${userId}`), {
+    points: points,
+  });
+};
+
+export const handleEliminationWinner = async (
+  gamePath: string,
+  userId: string,
 ) => {
   await set(ref(db, `${gamePath}`), {
-    lobbyData: {
-      gameStarted: false,
-      round: round,
-      word: handleGetNewWord(),
-    },
-    playerPoints: qualifedPlayers,
+    userId: userId,
   });
+};
+
+export const lobbyCleanUp = async (
+  gameType: string,
+  lobbyId: string,
+  userId: string,
+) => {
+  if (gameType === "MARATHON") {
+    await remove(ref(db, `MARATHON/${lobbyId}/players/${userId}`));
+  } else if (gameType === "ELIMINATION") {
+    await remove(ref(db, `ELIMINATION/${lobbyId}/playerPoints/${userId}`));
+    await remove(ref(db, `ELIMINATION/${lobbyId}/roundData/${userId}`));
+  }
 };

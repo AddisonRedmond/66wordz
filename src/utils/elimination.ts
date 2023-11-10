@@ -1,7 +1,4 @@
-import {
-  updatePoints,
-  updateEliminationWordAndReset,
-} from "./firebase/firebase";
+import { updatePoints } from "./firebase/firebase";
 
 import dictionary from "./dictionary";
 
@@ -23,16 +20,6 @@ export const calculatePoints = (guessCount: number, points: number) => {
   } else {
     return pointValue + points;
   }
-};
-
-export const handleCorrectAnswer = async (
-  gamePath: string,
-  guessCount: number,
-  existingPoints: number,
-  lobbyId: string,
-) => {
-  await updatePoints(gamePath, calculatePoints(guessCount, existingPoints));
-  await updateEliminationWordAndReset(`ELIMINATION/${lobbyId}`);
 };
 
 export const handleCreateMatchingIndex = (
@@ -94,11 +81,25 @@ export const handleEliminationMatched = (
   };
 };
 
-export const roundQualifiedTable = {
-  1: 1.5,
-  2: 1.5,
-  3: 1.5,
-  4: 2,
-  5: 2,
-};
+export const calculateSpots = (round: number, playerCount: number) => {
+  const calculateNumber = () => {
+    switch (round) {
+      case 1:
+        return playerCount / 1.4;
+      case 2:
+        return playerCount / 1.5;
+      case 3:
+        return playerCount / 1.8;
+      case 4:
+        return playerCount / 1.8;
+      case 5:
+        return playerCount / 2;
+      case 6:
+        return playerCount / 2;
+      default:
+        return playerCount / 2;
+    }
+  };
 
+  return Math.floor(calculateNumber());
+};

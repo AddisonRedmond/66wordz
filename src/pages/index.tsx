@@ -11,6 +11,7 @@ import { useState } from "react";
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
+  const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const [gameMode, setGameMode] = useState<
     "MARATHON" | "ELIMINATION" | "ITEMS"
   >("MARATHON");
@@ -19,7 +20,10 @@ const Home = () => {
   };
 
   const exitMatch = () => {
+    lobbyCleanUp.mutate();
     lobby.reset();
+    // delete user from lobby db
+    // delete user from firebase db
   };
   const handleStartGame = () => {
     if (lobby.data?.id) {
@@ -38,6 +42,7 @@ const Home = () => {
             lobbyId={lobby.data.id}
             userId={session!.user.id}
             gameType={gameMode}
+            exitMatch={exitMatch}
           />
         );
       }

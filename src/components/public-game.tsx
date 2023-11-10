@@ -243,6 +243,14 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           animate={{ scale: 1 }}
           className="flex w-full items-center justify-around"
         >
+          <div className="absolute left-10 top-24">
+            <button
+              onClick={() => props.exitMatch()}
+              className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
+            >
+              {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
+            </button>
+          </div>
           {gameData.players && (
             <div className=" flex w-1/4 flex-wrap justify-around gap-y-2 overflow-hidden">
               {Object.keys(gameData.players).map(

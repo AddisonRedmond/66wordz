@@ -2,6 +2,7 @@ import {
   createNewFirebaseLobby,
   joinEliminationLobby,
   joinFirebaseLobby,
+  lobbyCleanUp,
   startGame,
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -164,4 +165,15 @@ export const publicGameRouter = createTRPCRouter({
         },
       });
     }),
+
+  lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = ctx.session.user.id;
+    const { lobbyId } = await ctx.db.players.delete({
+      where: { userId: user },
+    });
+    const lobby = await ctx.db.lobby.findUnique({
+      where: { id: lobbyId },
+    });
+    await lobbyCleanUp(lobby!.gameType, lobbyId, user);
+  }),
 });

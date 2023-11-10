@@ -1,6 +1,34 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 
+type LobbyData = {
+  gameStarted: boolean;
+  round: number;
+  word: string;
+  nextRoundStartTime?: Date;
+};
+
+type PlayerPoints = {
+  [keyof: string]: {
+    points: number;
+  };
+};
+
+type RoundData = {
+  [keyof: string]: {
+    guessCount: number;
+    matchingIndex?: number[];
+  };
+};
+
+export type GameData = {
+  players: never[];
+  lobbyData: LobbyData;
+  playerPoints: PlayerPoints;
+  roundData?: RoundData;
+  winner?: { [keyof: string]: string };
+};
+
 const useGameLobbyData = (
   db: Database,
   props: {
@@ -9,7 +37,7 @@ const useGameLobbyData = (
     gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
   },
 ) => {
-  const [gameData, setGameData] = useState<any>(null);
+  const [gameData, setGameData] = useState<GameData | null>(null);
 
   useEffect(() => {
     const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);

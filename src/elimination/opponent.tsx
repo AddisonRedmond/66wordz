@@ -5,10 +5,10 @@ type OpponentProps = {
   points?: number;
   wordLength: number;
   matchingIndex?: number[];
-  numOfOpponents: number;
+  numOfOpponents?: number;
 };
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
-  const opponentSizePercentage = 100 / Math.sqrt(props.numOfOpponents); // Using the square root for both width and height
+  const opponentSizePercentage = 100 / Math.sqrt(props?.numOfOpponents || 0) ; // Using the square root for both width and height
   return (
     <motion.div
       className="rounded-md border-2 border-zinc-600 p-2"
