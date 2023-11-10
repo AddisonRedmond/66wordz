@@ -111,13 +111,13 @@ export const handleCorrectGuess = async (
   gameType: string,
 ): Promise<void> => {
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
-  if (failed) {
-    updatedTimer = timer + 10000;
-  } else if (new Date().getTime() + 180000 < timer + updatedTimer) {
+
+  if (new Date().getTime() + 180000 < timer + updatedTimer) {
     updatedTimer = new Date().getTime() + 180000;
   } else {
     updatedTimer = timer + updatedTimer;
   }
+
   await updateGuessesAndWord(
     lobbyId,
     userId,
