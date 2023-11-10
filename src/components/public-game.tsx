@@ -29,6 +29,7 @@ import Confetti from "react-dom-confetti";
 type PublicGameProps = {
   lobbyId: string;
   userId: string;
+  gameType: string;
   exitMatch: () => void;
 };
 
@@ -73,11 +74,11 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     endGame.mutate();
     setEndGameSummary({
       placement: firstPlace ? 1 : Object.keys(gameData.players).length,
-      totalTime: canculateTimePlayed(gameData.startTime, timer),
+      totalTime: canculateTimePlayed(gameData.lobbyData.startTime, timer),
       totalGuesses: allGuesses?.length ? allGuesses.length : 0,
     });
 
-    handleRemoveUserFromLobby(props.lobbyId, props.userId);
+    handleRemoveUserFromLobby(props.lobbyId, props.userId, props.gameType);
 
     setModalIsOpen(true);
   };
@@ -85,7 +86,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   const notify = () => toast.warn(`${guess} not in word list!`);
 
   const handleManualStart = async () => {
-    await startGame(props.lobbyId);
+    await startGame(props.lobbyId, props.gameType);
     manualStart.mutate(props.lobbyId);
   };
 
@@ -110,7 +111,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   };
 
   useEffect(() => {
-    const playersQuery = ref(db, `publicLobbies/${props.lobbyId}`);
+    const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);
     const handlePlayersDataChange = (snapShot: any) => {
       const gameData: any = snapShot.val();
       setGameData(gameData);
@@ -127,15 +128,15 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
 
   useEffect(() => {
     if (
-      gameData?.gameStarted === true &&
+      gameData?.lobbyData.gameStarted === true &&
       !gameData?.players[props.userId].timer
     ) {
-      handleStartTimer(props.lobbyId, props.userId);
+      handleStartTimer(props.lobbyId, props.userId, props.gameType);
     }
-  }, [gameData?.gameStarted]);
+  }, [gameData?.lobbyData.gameStarted]);
 
   useEffect(() => {
-    if (gameData?.players?.[props.userId] && gameData.gameStarted) {
+    if (gameData?.players?.[props.userId] && gameData.lobbyData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
       const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === "Backspace" && guess.length > 0) {
@@ -147,31 +148,32 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
               props.userId,
               [...playerData.guesses, guess],
               [...playerData.allGuesses, guess],
-            ).then(async () => {
-              if (guess === playerData.word) {
-                await handleCorrectGuess(
-                  props.lobbyId,
-                  props.userId,
-                  playerData.timer,
-                  playerData.guesses.length,
-                  playerData.failed,
-                );
-                setGuess("");
-                resetMatches();
-                return;
-              } else if (playerData.guesses.length > 4) {
-                await handleWordFailure(
-                  playerData.guesses,
-                  playerData.word,
-                  props.lobbyId,
-                  props.userId,
-                  playerData.timer,
-                );
-                setGuess("");
-                return;
-              }
+              props.gameType,
+            );
+            if (guess === playerData.word) {
+              handleCorrectGuess(
+                props.lobbyId,
+                props.userId,
+                playerData.timer,
+                playerData.guesses.length,
+                props.gameType,
+              );
               setGuess("");
-            });
+              resetMatches();
+              return;
+            } else if (playerData.guesses.length > 4) {
+              handleWordFailure(
+                playerData.guesses,
+                playerData.word,
+                props.lobbyId,
+                props.userId,
+                playerData.timer,
+                props.gameType,
+              );
+              setGuess("");
+              return;
+            }
+            setGuess("");
           } else {
             notify();
           }
@@ -240,6 +242,14 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           animate={{ scale: 1 }}
           className="flex w-full items-center justify-around"
         >
+          <div className="absolute left-10 top-24">
+            <button
+              onClick={() => props.exitMatch()}
+              className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
+            >
+              {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
+            </button>
+          </div>
           {gameData.players && (
             <div className=" flex w-1/4 flex-wrap justify-around gap-y-2 overflow-hidden">
               {Object.keys(gameData.players).map(
@@ -269,14 +279,14 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
             <div className="flex flex-col items-center gap-4">
               <div className="text-center">
                 <AnimatePresence>
-                  {gameData.gameStarted && !endGame.isSuccess && (
+                  {gameData.lobbyData.gameStarted && !endGame.isSuccess && (
                     <Timer
                       expiryTimestamp={new Date(playerData.timer)}
                       opponent={false}
                       endGame={() => handleEndMatch()}
                     />
                   )}
-                  {!gameData.gameStarted && (
+                  {!gameData.lobbyData.gameStarted && (
                     <motion.p
                       exit={{ scale: 0 }}
                       className="font-bold"
@@ -289,12 +299,16 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
                   guess={guess}
                   guesses={playerData?.guesses}
                   word={playerData?.word}
-                  disabled={!gameData.gameStarted}
+                  disabled={!gameData.lobbyData.gameStarted}
+                  rows={6}
                 />
               </div>
 
-              <Keyboard disabled={!gameData.gameStarted} matches={matches} />
-              {!gameData.gameStarted &&
+              <Keyboard
+                disabled={!gameData.lobbyData.gameStarted}
+                matches={matches}
+              />
+              {!gameData.lobbyData.gameStarted &&
                 Object.keys(gameData.players)[0] === props.userId && (
                   <button
                     className="rounded-md bg-black p-2 text-xs font-semibold text-white"

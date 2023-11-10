@@ -6,17 +6,47 @@ import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
 import PublicGame from "~/components/public-game";
-
+import Elimination from "~/components/elimination";
+import { useState } from "react";
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
-
+  const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
+  const [gameMode, setGameMode] = useState<
+    "MARATHON" | "ELIMINATION" | "ITEMS"
+  >("MARATHON");
   const joinGame = () => {
-    lobby.mutate();
+    lobby.mutate(gameMode);
   };
 
   const exitMatch = () => {
+    lobbyCleanUp.mutate();
     lobby.reset();
+    // delete user from lobby db
+    // delete user from firebase db
+  };
+  const handleStartGame = () => {
+    if (lobby.data?.id) {
+      if (lobby.data.gameType === "MARATHON") {
+        return (
+          <PublicGame
+            lobbyId={lobby.data.id}
+            userId={session!.user.id}
+            gameType={lobby.data.gameType}
+            exitMatch={exitMatch}
+          />
+        );
+      } else if (lobby.data.gameType === "ELIMINATION") {
+        return (
+          <Elimination
+            lobbyId={lobby.data.id}
+            userId={session!.user.id}
+            gameType={gameMode}
+            exitMatch={exitMatch}
+          />
+        );
+      }
+    }
   };
 
   return (
@@ -34,14 +64,14 @@ const Home = () => {
       >
         <Header isLoading={lobby.isLoading} />
         <AnimatePresence>
-          {lobby.data?.lobbyId ? (
-            <PublicGame
-              lobbyId={lobby.data.lobbyId}
-              userId={session!.user.id}
-              exitMatch={exitMatch}
-            />
+          {lobby.data?.id ? (
+            handleStartGame()
           ) : (
-            <GameControls joinGame={joinGame} />
+            <GameControls
+              joinGame={joinGame}
+              gameMode={gameMode}
+              setGameMode={setGameMode}
+            />
           )}
         </AnimatePresence>
       </motion.div>

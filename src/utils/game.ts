@@ -108,9 +108,8 @@ export const handleCorrectGuess = async (
   userId: string,
   timer: number,
   numberOfGuesses: number,
-  failed: boolean,
+  gameType: string,
 ): Promise<void> => {
-  console.log(numberOfGuesses)
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
   if (failed) {
     updatedTimer = timer + 10000;
@@ -125,6 +124,7 @@ export const handleCorrectGuess = async (
     [],
     handleGetNewWord(),
     updatedTimer,
+    gameType,
   );
   // clear out guesses from firebase
   // swap out the word in firebase
@@ -137,10 +137,17 @@ export const handleWordFailure = async (
   lobbyId: string,
   userId: string,
   timer: number,
+  gameType: string,
 ): Promise<void> => {
   const closestWord = getClosestWord(word, guesses);
   const updatedTimer = timer - 20000;
-  await updateTimerAndGuesses(lobbyId, userId, closestWord, updatedTimer);
+  await updateTimerAndGuesses(
+    lobbyId,
+    userId,
+    closestWord,
+    updatedTimer,
+    gameType,
+  );
 };
 
 export const handleColor = (

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { handleColor } from "~/utils/game";
 
 type GameGridProps = {
@@ -6,6 +6,7 @@ type GameGridProps = {
   guesses: string[];
   word: string;
   disabled: boolean;
+  rows: number;
 };
 
 type WordRowProps = {
@@ -37,14 +38,25 @@ const WordTile: React.FC<WordTileProps> = ({
       }
       className=" flex aspect-square h-[5vh] items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-[2.5vh] font-bold"
     >
-      <p>{letter}</p>
+      <AnimatePresence>
+        {letter && (
+          <motion.p
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.07 }}
+          >
+            {letter}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
 
 const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
   return (
-    <motion.div  className="flex gap-1">
+    <motion.div className="flex gap-1">
       {Array.from({ length: 5 }).map((_, index: number) => {
         return (
           <WordTile
@@ -65,9 +77,10 @@ const GameGrid: React.FC<GameGridProps> = ({
   guesses,
   word,
   disabled,
+  rows,
 }) => {
   const handleWord = () => {
-    return Array.from({ length: 6 }).map((_, index: number) => {
+    return Array.from({ length: rows }).map((_, index: number) => {
       if (index === 0 && !guesses.length) {
         return guess;
       } else if (guesses?.[index]) {
@@ -89,7 +102,11 @@ const GameGrid: React.FC<GameGridProps> = ({
   };
 
   return (
-    <div className={`flex h-2/3 w-fit flex-col gap-2 rounded-md bg-stone-300 p-2 ${disabled ? "opacity-30": "opacity-100"} ${disabled && "cursor-not-allowed"}`}>
+    <div
+      className={`flex h-2/3 w-fit flex-col gap-2 rounded-md bg-stone-300 p-2 ${
+        disabled ? "opacity-30" : "opacity-100"
+      } ${disabled && "cursor-not-allowed"}`}
+    >
       {handleWord().map((guess: string, index: number) => (
         <WordRow
           key={index}
