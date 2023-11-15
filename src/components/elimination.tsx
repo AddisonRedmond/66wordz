@@ -38,6 +38,7 @@ type Matches = {
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
   const startGame = api.elimination.startGame.useMutation();
+  const addBots = api.elimination.addBots.useMutation();
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
   const TARGET_SCORE = 500;
   const gameData = useGameLobbyData(db, props);
@@ -49,6 +50,14 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   });
   const notify = () => toast.warn(`${guess} not in word list!`);
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
+
+  useEffect(() => {
+    setKeyBoardMatches({
+      fullMatch: [],
+      partialMatch: [],
+      noMatch: [],
+    });
+  }, [gameData?.lobbyData.word]);
 
   useEffect(() => {
     if (
@@ -239,6 +248,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
               className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
             >
               {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
+            </button>
+
+            <button
+              className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
+              onClick={() => addBots.mutate()}
+            >
+              Add Bots
             </button>
           </div>
 

@@ -83,12 +83,13 @@ model Lobby {
     started  Boolean   @default(false)
     player   Players[]
     gameType GameType
+    bot      Boolean   @default(false)
 }
 
 model Players {
-    userId    String   @unique
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String  @unique
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     lobbyId   String
-    lobby     Lobby    @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+    lobby     Lobby   @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
     qualified Boolean @default(false)
 }

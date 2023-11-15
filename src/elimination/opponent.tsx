@@ -8,7 +8,7 @@ type OpponentProps = {
   numOfOpponents?: number;
 };
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
-  const opponentSizePercentage = 100 / Math.sqrt(props?.numOfOpponents ?? 0) ; // Using the square root for both width and height
+  const opponentSizePercentage = 100 / Math.sqrt(props?.numOfOpponents ?? 0); // Using the square root for both width and height
   return (
     <motion.div
       className="rounded-md border-2 border-zinc-600 p-2"
@@ -29,7 +29,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
           return (
             <div
               key={index}
-              className={`aspect-square w-1/5 ${
+              className={`aspect-square w-1/5 duration-100 ease-in-out ${
                 (props?.matchingIndex ?? []).includes(index)
                   ? "bg-[#00DFA2]"
                   : "bg-stone-500"

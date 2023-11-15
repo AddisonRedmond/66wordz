@@ -9,6 +9,7 @@ import {
   startGame,
 } from "~/utils/firebase/firebase";
 import { handleGetNewWord } from "~/utils/game";
+import { env } from "~/env.mjs";
 
 export const eliminationRouter = createTRPCRouter({
   handleCorrectGuess: protectedProcedure
@@ -133,4 +134,27 @@ export const eliminationRouter = createTRPCRouter({
     .mutation(({ input }) => {
       startGame(input.lobbyId, "ELIMINATION");
     }),
+
+  addBots: protectedProcedure.mutation(async ({ ctx }) => {
+    const playerLobby = await ctx.db.players.findUnique({
+      where: { userId: ctx.session.user.id },
+    });
+
+    const lobbyId = playerLobby?.lobbyId;
+
+    let lobby = await ctx.db.lobby.findUnique({ where: { id: lobbyId } });
+
+    if (lobby?.bot) {
+      return lobby;
+    } else if (!lobby?.bot) {
+      lobby = await ctx.db.lobby.update({
+        where: { id: lobbyId },
+        data: {
+          bot: true,
+        },
+      });
+      fetch(`${env.BOT_SERVER}/add_bots/${lobby.id}`, { method: "POST" });
+      return lobby;
+    }
+  }),
 });
