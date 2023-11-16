@@ -48,6 +48,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     partialMatch: [],
     noMatch: [],
   });
+
   const notify = () => toast.warn(`${guess} not in word list!`);
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
 
@@ -144,28 +145,40 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     }
   };
 
+  // returns half of the opponents based on their index being even or odd
+  // returns an object that fits the player type in opponents
   const getHalfOfOpponents = (evenOdd: "even" | "odd") => {
-    if (gameData) {
-      if (evenOdd === "even") {
-        return Object.keys(gameData?.playerPoints || {})
-          .filter((_, index) => index % 2 === 0)
-          .map((playerId) => ({
-            playerId: playerId,
-            playerData: gameData?.roundData?.[playerId],
-            points: gameData.playerPoints?.[playerId]?.points,
-          }))
-          .filter((opponent) => opponent.playerId !== props.userId);
-      } else {
-        return Object.keys(gameData?.playerPoints || {})
-          .filter((_, index) => index % 2 !== 0)
-          .map((playerId) => ({
-            playerId: playerId,
-            playerData: gameData?.roundData?.[playerId],
-            points: gameData.playerPoints?.[playerId]?.points,
-          }))
-          .filter((opponent) => opponent.playerId !== props.userId);
-      }
+    if (!gameData) {
+      return [];
     }
+
+    const isEvenIndex = (index: number) =>
+      evenOdd === "even" ? index % 2 === 0 : index % 2 !== 0;
+
+    const opponents = Object.keys(gameData.playerPoints || {})
+      .filter((playerId) => playerId !== "bots")
+      .filter((_, index) => isEvenIndex(index))
+      .map((playerId) => ({
+        playerId,
+        playerData: gameData.roundData?.[playerId],
+        points: gameData.playerPoints?.[playerId]?.points,
+      }))
+      .filter((opponent) => opponent.playerId !== props.userId);
+
+    if (gameData?.botPoints) {
+      const bots = Object.keys(gameData?.botPoints)
+        .filter((_, index) => isEvenIndex(index))
+        .map((botId) => {
+          return {
+            playerId: botId,
+            playerData: gameData.roundData?.[botId],
+            points: gameData.botPoints?.[botId]?.points,
+          };
+        });
+
+      return [...opponents, ...bots];
+    }
+    return opponents;
   };
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
@@ -197,6 +210,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     };
     const { matchingIndex = [] } = gameData?.roundData?.[props.userId] ?? {};
     const points = gameData?.playerPoints?.[props.userId]?.points ?? 0;
+
     const guesses: string[] = gameData?.players || [];
     const isDisabled = () => {
       return (
@@ -265,7 +279,9 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
           {gameData?.playerPoints?.[props.userId] && (
             <div className="flex  flex-col items-center gap-4">
-              {!correctGuess.data?.qualified ? (
+              {points >= 500 ? (
+                <Qualified />
+              ) : (
                 <>
                   <WordContainer word={word} matchingIndex={matchingIndex} />
                   <div className="flex flex-col gap-3">
@@ -285,8 +301,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
                   <Keyboard disabled={isDisabled()} matches={keyBoardMatches} />
                 </>
-              ) : (
-                <Qualified />
               )}
             </div>
           )}

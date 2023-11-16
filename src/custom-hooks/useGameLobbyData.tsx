@@ -20,13 +20,13 @@ type RoundData = {
     matchingIndex?: number[];
   };
 };
-
 export type GameData = {
   players: never[];
   lobbyData: LobbyData;
   playerPoints: PlayerPoints;
   roundData?: RoundData;
   winner?: { [keyof: string]: string };
+  botPoints?: PlayerPoints;
 };
 
 const useGameLobbyData = (

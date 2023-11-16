@@ -9,7 +9,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { GameType } from "@prisma/client";
 import { handleGetNewWord } from "~/utils/game";
-
+import { env } from "~/env.mjs";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.string())
@@ -63,6 +63,17 @@ export const publicGameRouter = createTRPCRouter({
             round: 1,
             word: handleGetNewWord(),
           });
+          // register lobby with server
+          try {
+            fetch(
+              `${env.BOT_SERVER}/register_elimination_lobby/${newLobby.id}`,
+              {
+                method: "POST",
+              },
+            );
+          } catch (e) {
+            console.log(e);
+          }
         } else if (clientGameType === "MARATHON") {
           await createNewFirebaseLobby(clientGameType, newLobby.id, {
             gameStarted: false,
