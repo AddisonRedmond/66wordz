@@ -7,6 +7,7 @@ type LobbyData = {
   word: string;
   nextRoundStartTime?: Date;
   gameStartTimer?: number;
+  previousWord?: string;
 };
 
 type PlayerPoints = {

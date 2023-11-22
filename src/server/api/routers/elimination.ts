@@ -3,12 +3,10 @@ import { z } from "zod";
 import { calculatePoints } from "~/utils/elimination";
 import {
   handleCorrectGuess,
-  handleEliminationWinner,
   startGame,
 } from "~/utils/firebase/firebase";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
-import { Players } from "@prisma/client";
 
 export const eliminationRouter = createTRPCRouter({
   handleCorrectGuess: protectedProcedure
@@ -23,14 +21,14 @@ export const eliminationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const POINTS_TARGET = 500;
+      // const POINTS_TARGET = 500;
       const userId = ctx.session.user.id;
       const calculatedPoints = calculatePoints(input.guessCount, input.points);
-      let playerInfo: Players | null = null;
+      // let playerInfo: Players | null = null;
 
-      const lobbyCount = await ctx.db.players.count({
-        where: { lobbyId: input.lobbyId },
-      });
+      // const lobbyCount = await ctx.db.players.count({
+      //   where: { lobbyId: input.lobbyId },
+      // });
 
       await handleCorrectGuess(
         `ELIMINATION/${input.lobbyId}`,
