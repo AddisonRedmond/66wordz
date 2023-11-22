@@ -1,5 +1,6 @@
 import {
   createNewFirebaseLobby,
+  deleteLobby,
   joinEliminationLobby,
   joinFirebaseLobby,
   lobbyCleanUp,
@@ -9,7 +10,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { GameType } from "@prisma/client";
 import { handleGetNewWord } from "~/utils/game";
-
+import { env } from "~/env.mjs";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.string())
@@ -62,7 +63,19 @@ export const publicGameRouter = createTRPCRouter({
             initilizedTimeStamp: new Date(),
             round: 1,
             word: handleGetNewWord(),
+            gameStartTimer: new Date().getTime() + 90000,
           });
+          // register lobby with server
+          try {
+            await fetch(
+              `${env.BOT_SERVER}/register_elimination_lobby/${newLobby.id}`,
+              {
+                method: "POST",
+              },
+            );
+          } catch (e) {
+            console.log(e);
+          }
         } else if (clientGameType === "MARATHON") {
           await createNewFirebaseLobby(clientGameType, newLobby.id, {
             gameStarted: false,
@@ -125,8 +138,10 @@ export const publicGameRouter = createTRPCRouter({
       return findLobby()
         .then(async (lobby) => {
           if (lobby) {
+            console.log("found lobby");
             return joinLobby(lobby.id);
           } else {
+            console.log("creating new lobby");
             const newLobby = await createNewLobby();
             return await joinLobby(newLobby.id);
           }
@@ -174,6 +189,18 @@ export const publicGameRouter = createTRPCRouter({
     const lobby = await ctx.db.lobby.findUnique({
       where: { id: lobbyId },
     });
-    await lobbyCleanUp(lobby!.gameType, lobbyId, user);
+
+    const playerCount = await ctx.db.players.count({
+      where: {
+        lobbyId: lobbyId,
+      },
+    });
+
+    if (playerCount === 0) {
+      await ctx.db.lobby.delete({ where: { id: lobbyId } });
+      deleteLobby(lobby!.gameType, lobbyId);
+    } else {
+      await lobbyCleanUp(lobby!.gameType, lobbyId, user);
+    }
   }),
 });

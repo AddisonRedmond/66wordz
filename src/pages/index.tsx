@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { authRequired } from "~/utils/authRequired";
+import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
@@ -80,6 +80,6 @@ const Home = () => {
 };
 export default Home;
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: AuthContext) {
   return await authRequired(context, false);
 }

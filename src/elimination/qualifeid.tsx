@@ -14,7 +14,7 @@ const Qualified: React.FC = () => {
   const tile = {
     visible: {
       rotateZ: [-360, 0, 0, 0, 0, 0],
-      y: [0, 0, 0, 0, -20, 0],
+      y: [0, 0, 0, 0, -10, 0],
     },
   };
 

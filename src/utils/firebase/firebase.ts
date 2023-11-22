@@ -1,11 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  getDatabase,
-  ref,
-  set,
-  update,
-  remove,
-} from "firebase/database";
+import { getDatabase, ref, set, update, remove } from "firebase/database";
 import { env } from "~/env.mjs";
 
 const firebaseConfig = {
@@ -28,10 +22,12 @@ export const createNewFirebaseLobby = async (
   lobbyData?: {
     gameStarted: boolean;
     initilizedTimeStamp: Date;
+    gameStartTimer?: number;
     round?: number;
     word?: string;
   },
 ): Promise<void> => {
+  console.log("CREATING FIREBASE LOBBY");
   await set(ref(db, `${gameType}/${lobbyId}`), {
     lobbyData,
   });
@@ -187,10 +183,12 @@ export const handleCorrectGuess = async (
   word: string,
   points: number,
   userId: string,
+  previousWord: string,
 ) => {
   await remove(ref(db, `${gamePath}/roundData`));
   await update(ref(db, `${gamePath}/lobbyData/`), {
     word: word,
+    previousWord: previousWord,
   });
   await update(ref(db, `${gamePath}/playerPoints/${userId}`), {
     points: points,
@@ -217,4 +215,8 @@ export const lobbyCleanUp = async (
     await remove(ref(db, `ELIMINATION/${lobbyId}/playerPoints/${userId}`));
     await remove(ref(db, `ELIMINATION/${lobbyId}/roundData/${userId}`));
   }
+};
+
+export const deleteLobby = async (gameType: string, lobbyId: string) => {
+  await remove(ref(db, `${gameType}/${lobbyId}`));
 };

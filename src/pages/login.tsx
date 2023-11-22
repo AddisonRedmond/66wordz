@@ -4,7 +4,7 @@ import Facebook from "../../public/Facebook.svg";
 import Google from "../../public/Google.svg";
 import Image from "next/image";
 import Tile from "~/components/tile";
-import { authRequired } from "~/utils/authRequired";
+import { AuthContext, authRequired } from "~/utils/authRequired";
 import { motion } from "framer-motion";
 
 export default function Login() {
@@ -17,7 +17,7 @@ export default function Login() {
       </Head>
       <div className="flex h-screen flex-col md:flex-row">
         <div className="flex h-1/2 flex-col items-center justify-center gap-4 bg-black md:h-full md:w-1/2">
-          <Tile letters={"66"} auto={true} />
+          <Tile letters={"66"} />
           <Tile letters="WORDZ" />
         </div>
         <div className="flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
@@ -42,6 +42,6 @@ export default function Login() {
   );
 }
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: AuthContext) {
   return await authRequired(context, true);
 }

@@ -4,6 +4,7 @@ import { db } from "~/utils/firebase/firebase";
 import GameGrid from "./game-grid";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import GameStartTimer from "./game-start-timer";
 import Keyboard from "./keyboard";
 import WordContainer from "~/elimination/word-container";
 import { api } from "~/utils/api";
@@ -22,6 +23,7 @@ import EliminationModal from "~/elimination/elimination-modal";
 import Confetti from "react-dom-confetti";
 import Winner from "~/elimination/winner";
 import Disqualfied from "~/elimination/disqualified";
+import Opponent from "~/elimination/opponent";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -35,9 +37,20 @@ type Matches = {
   noMatch: string[];
 };
 
+type Player = {
+  playerId: string;
+  playerData:
+    | {
+        guessCount: number;
+        matchingIndex?: number[] | undefined;
+      }
+    | undefined;
+  points: number | undefined;
+};
+
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
-  const startGame = api.elimination.startGame.useMutation();
+  const addBots = api.elimination.addBots.useMutation();
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
   const TARGET_SCORE = 500;
   const gameData = useGameLobbyData(db, props);
@@ -47,8 +60,18 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     partialMatch: [],
     noMatch: [],
   });
+
   const notify = () => toast.warn(`${guess} not in word list!`);
+
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
+
+  useEffect(() => {
+    setKeyBoardMatches({
+      fullMatch: [],
+      partialMatch: [],
+      noMatch: [],
+    });
+  }, [gameData?.lobbyData?.word]);
 
   useEffect(() => {
     if (
@@ -62,15 +85,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
   const handleStartNextRound = () => {
     if (gameData) {
-      if (!!gameData?.lobbyData?.nextRoundStartTime === true) {
-        return;
-      } else {
-        const playerIds = Object.keys(gameData.playerPoints);
-        if (playerIds[0] === props.userId) {
-          startGame.mutate({ lobbyId: props.lobbyId });
-        }
-        setGameStartTimer(false);
-      }
+      setGameStartTimer(false);
     }
   };
 
@@ -102,6 +117,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             points: points,
             lobbyId: props.lobbyId,
             roundNumber: round,
+            previousWord: word,
           });
 
           setGuess("");
@@ -135,28 +151,40 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     }
   };
 
+  // returns half of the opponents based on their index being even or odd
+  // returns an object that fits the player type in opponents
   const getHalfOfOpponents = (evenOdd: "even" | "odd") => {
-    if (gameData) {
-      if (evenOdd === "even") {
-        return Object.keys(gameData?.playerPoints || {})
-          .filter((_, index) => index % 2 === 0)
-          .map((playerId) => ({
-            playerId: playerId,
-            playerData: gameData?.roundData?.[playerId],
-            points: gameData.playerPoints?.[playerId]?.points,
-          }))
-          .filter((opponent) => opponent.playerId !== props.userId);
-      } else {
-        return Object.keys(gameData?.playerPoints || {})
-          .filter((_, index) => index % 2 !== 0)
-          .map((playerId) => ({
-            playerId: playerId,
-            playerData: gameData?.roundData?.[playerId],
-            points: gameData.playerPoints?.[playerId]?.points,
-          }))
-          .filter((opponent) => opponent.playerId !== props.userId);
-      }
+    if (!gameData) {
+      return [];
     }
+
+    const isEvenIndex = (index: number) =>
+      evenOdd === "even" ? index % 2 === 0 : index % 2 !== 0;
+
+    const opponents = Object.keys(gameData.playerPoints || {})
+      .filter((playerId) => playerId !== "bots")
+      .filter((_, index) => isEvenIndex(index))
+      .map((playerId) => ({
+        playerId,
+        playerData: gameData.roundData?.[playerId],
+        points: gameData.playerPoints?.[playerId]?.points,
+      }))
+      .filter((opponent) => opponent.playerId !== props.userId);
+
+    if (gameData?.botPoints) {
+      const bots = Object.keys(gameData?.botPoints)
+        .filter((_, index) => isEvenIndex(index))
+        .map((botId) => {
+          return {
+            playerId: botId,
+            playerData: gameData.roundData?.[botId],
+            points: gameData.botPoints?.[botId]?.points,
+          };
+        });
+
+      return [...opponents, ...bots];
+    }
+    return opponents;
   };
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
@@ -188,11 +216,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     };
     const { matchingIndex = [] } = gameData?.roundData?.[props.userId] ?? {};
     const points = gameData?.playerPoints?.[props.userId]?.points ?? 0;
+
     const guesses: string[] = gameData?.players || [];
     const isDisabled = () => {
       return (
-        gameData?.playerPoints?.[props.userId]?.points !== undefined &&
-        gameData.playerPoints[props.userId]!.points >= TARGET_SCORE
+        (gameData?.playerPoints?.[props.userId]?.points !== undefined &&
+          gameData.playerPoints[props.userId]!.points >= TARGET_SCORE) ||
+        gameData.lobbyData?.gameStarted === false
       );
     };
     return (
@@ -238,7 +268,14 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
               onClick={() => props.exitMatch()}
               className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
             >
-              {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
+              {gameData.lobbyData?.gameStarted ? "Forfeit" : "Exit Match"}
+            </button>
+
+            <button
+              className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
+              onClick={() => addBots.mutate()}
+            >
+              Add Bots
             </button>
           </div>
 
@@ -247,35 +284,84 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             word={word}
           />
 
-          {gameData?.playerPoints?.[props.userId] && (
+          {gameData?.playerPoints?.[props.userId] ? (
             <div className="flex  flex-col items-center gap-4">
-              {!correctGuess.data?.qualified ? (
-                <>
-                  <WordContainer word={word} matchingIndex={matchingIndex} />
-                  <div className="flex flex-col gap-3">
-                    <Points
-                      totalPoints={points}
-                      pointsTarget={TARGET_SCORE}
-                      showPoints={true}
-                    />
-                    <GameGrid
-                      guess={guess}
-                      guesses={guesses}
-                      word={word}
-                      disabled={isDisabled()}
-                      rows={1}
-                    />
-                  </div>
-
-                  <Keyboard disabled={isDisabled()} matches={keyBoardMatches} />
-                </>
-              ) : (
+              {points >= 500 ? (
                 <Qualified />
+              ) : (
+                <>
+                  {!gameData.lobbyData.gameStarted &&
+                    gameData.lobbyData.gameStartTimer && (
+                      <div className=" h-64">
+                        <GameStartTimer
+                          expiryTimestamp={
+                            new Date(gameData?.lobbyData?.gameStartTimer)
+                          }
+                        />
+                        <div className="text-center font-semibold">
+                          <p>LOADING PLAYERS</p>
+                          <p className="font-semibold">
+                            {Object.keys(gameData.playerPoints).length} out of
+                            66
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                  {gameData.lobbyData.gameStarted && (
+                    <>
+                      {gameData?.lobbyData?.previousWord && (
+                        <div className="text-center">
+                          <p className="text-3xl font-bold">Previous word</p>
+                          <p className="text-2xl font-semibold">
+                            {gameData?.lobbyData?.previousWord}
+                          </p>
+                        </div>
+                      )}
+                      <WordContainer
+                        word={word}
+                        matchingIndex={matchingIndex}
+                      />
+                      <div className="flex flex-col gap-3">
+                        <Points
+                          totalPoints={points}
+                          pointsTarget={TARGET_SCORE}
+                          showPoints={true}
+                        />
+                        <GameGrid
+                          guess={guess}
+                          guesses={guesses}
+                          word={word}
+                          disabled={isDisabled()}
+                          rows={1}
+                        />
+                      </div>
+                      <Keyboard
+                        disabled={isDisabled()}
+                        matches={keyBoardMatches}
+                      />
+                    </>
+                  )}
+                </>
               )}
             </div>
+          ) : (
+            <Disqualfied handleClick={props.exitMatch} />
           )}
 
-          <OpponentsContainer players={getHalfOfOpponents("odd")} word={word} />
+          <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
+            {getHalfOfOpponents("odd").map((player: Player) => {
+              return (
+                <Opponent
+                  key={player.playerId}
+                  numOfOpponents={getHalfOfOpponents("odd").length}
+                  points={player?.points}
+                  matchingIndex={player.playerData?.matchingIndex}
+                  wordLength={word.length}
+                />
+              );
+            })}
+          </div>
         </motion.div>
       </>
     );

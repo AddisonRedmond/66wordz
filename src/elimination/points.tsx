@@ -13,7 +13,7 @@ const Points: React.FC<PointsProps> = (props: PointsProps) => {
   return (
     <div>
       {props.showPoints && (
-        <p className="text-center font-semibold">{`${props.totalPoints} out of ${props.pointsTarget}`}</p>
+        <p className="text-center font-semibold">{`${props.totalPoints} out of ${props.pointsTarget} points`}</p>
       )}
       <motion.div
         animate={{ width: `${CalcualtePointsPrecentage()}%`, maxWidth: "100%" }}

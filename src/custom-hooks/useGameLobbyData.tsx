@@ -6,6 +6,8 @@ type LobbyData = {
   round: number;
   word: string;
   nextRoundStartTime?: Date;
+  gameStartTimer?: number;
+  previousWord?: string;
 };
 
 type PlayerPoints = {
@@ -20,13 +22,13 @@ type RoundData = {
     matchingIndex?: number[];
   };
 };
-
 export type GameData = {
   players: never[];
   lobbyData: LobbyData;
   playerPoints: PlayerPoints;
   roundData?: RoundData;
   winner?: { [keyof: string]: string };
+  botPoints?: PlayerPoints;
 };
 
 const useGameLobbyData = (
@@ -38,12 +40,11 @@ const useGameLobbyData = (
   },
 ) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
-
   useEffect(() => {
     const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);
 
-    const handlePlayersDataChange = (snapshot: any) => {
-      const gameData = snapshot.val();
+    const handlePlayersDataChange = (snapshot: { val: () => GameData }) => {
+      const gameData: GameData = snapshot.val();
       setGameData(gameData);
     };
 

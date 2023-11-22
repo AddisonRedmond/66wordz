@@ -23,7 +23,7 @@ const GameControls = (props: GameControlProps) => {
           onClick={() => {
             setMenuIsOpen(!menuIsOpen);
           }}
-          className="hover:bg h-16 w-36 rounded-full bg-[#7A20D5] px-4 font-semibold text-white duration-150 ease-in-out"
+          className="hover:bg h-16 w-36 rounded-full bg-[#7a20d5] px-4 font-semibold text-white duration-150 ease-in-out hover:bg-[#aa6de7]"
         >
           {props.gameMode}
         </button>
