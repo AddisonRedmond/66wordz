@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 
 type TileProps = {
   letters: string;
-  auto?: boolean;
   backgroundColor?: string;
 };
 

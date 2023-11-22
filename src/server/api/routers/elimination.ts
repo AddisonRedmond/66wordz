@@ -1,15 +1,14 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { calculatePoints, calculateSpots } from "~/utils/elimination";
-import { Players } from "@prisma/client";
+import { calculatePoints } from "~/utils/elimination";
 import {
-  createNewRound,
   handleCorrectGuess,
   handleEliminationWinner,
   startGame,
 } from "~/utils/firebase/firebase";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
+import { Players } from "@prisma/client";
 
 export const eliminationRouter = createTRPCRouter({
   handleCorrectGuess: protectedProcedure
@@ -20,6 +19,7 @@ export const eliminationRouter = createTRPCRouter({
         points: z.number(),
         lobbyId: z.string(),
         roundNumber: z.number(),
+        previousWord: z.string()
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -37,6 +37,7 @@ export const eliminationRouter = createTRPCRouter({
         handleGetNewWord(),
         calculatedPoints,
         userId,
+        input.previousWord,
       );
 
       // if (calculatedPoints >= POINTS_TARGET) {
