@@ -270,13 +270,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             >
               {gameData.lobbyData?.gameStarted ? "Forfeit" : "Exit Match"}
             </button>
-
-            <button
-              className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
-              onClick={() => addBots.mutate()}
-            >
-              Add Bots
-            </button>
           </div>
 
           <OpponentsContainer

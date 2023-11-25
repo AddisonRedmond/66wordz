@@ -58,24 +58,21 @@ export const publicGameRouter = createTRPCRouter({
         });
         //   create the new lobby in firebase realtime db
         if (clientGameType === "ELIMINATION") {
-          await createNewFirebaseLobby(clientGameType, newLobby.id, {
+          createNewFirebaseLobby(clientGameType, newLobby.id, {
             gameStarted: false,
             initilizedTimeStamp: new Date(),
             round: 1,
             word: handleGetNewWord(),
             gameStartTimer: new Date().getTime() + 90000,
+          }).then(() => {
+            try {
+              fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
+                method: "POST",
+                body: JSON.stringify({ lobbyId: newLobby.id }),
+              });
+            } catch (e) {}
           });
           // register lobby with server
-          try {
-            await fetch(
-              `${env.BOT_SERVER}/register_elimination_lobby/${newLobby.id}`,
-              {
-                method: "POST",
-              },
-            );
-          } catch (e) {
-            console.log(e);
-          }
         } else if (clientGameType === "MARATHON") {
           await createNewFirebaseLobby(clientGameType, newLobby.id, {
             gameStarted: false,
@@ -138,10 +135,8 @@ export const publicGameRouter = createTRPCRouter({
       return findLobby()
         .then(async (lobby) => {
           if (lobby) {
-            console.log("found lobby");
             return joinLobby(lobby.id);
           } else {
-            console.log("creating new lobby");
             const newLobby = await createNewLobby();
             return await joinLobby(newLobby.id);
           }

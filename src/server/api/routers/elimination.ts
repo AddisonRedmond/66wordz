@@ -1,10 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { calculatePoints } from "~/utils/elimination";
-import {
-  handleCorrectGuess,
-  startGame,
-} from "~/utils/firebase/firebase";
+import { handleCorrectGuess, startGame } from "~/utils/firebase/firebase";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 
@@ -17,7 +14,7 @@ export const eliminationRouter = createTRPCRouter({
         points: z.number(),
         lobbyId: z.string(),
         roundNumber: z.number(),
-        previousWord: z.string()
+        previousWord: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -154,9 +151,7 @@ export const eliminationRouter = createTRPCRouter({
       });
       try {
         fetch(`${env.BOT_SERVER}/add_bots/${lobby.id}`, { method: "POST" });
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
       return lobby;
     }
   }),

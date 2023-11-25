@@ -26,11 +26,11 @@ export const createNewFirebaseLobby = async (
     round?: number;
     word?: string;
   },
-): Promise<void> => {
-  console.log("CREATING FIREBASE LOBBY");
+) => {
   await set(ref(db, `${gameType}/${lobbyId}`), {
     lobbyData,
   });
+  return lobbyId;
 };
 
 export const joinFirebaseLobby = async (
@@ -171,7 +171,6 @@ export const createNewRound = async (
   },
   gamePath: string,
 ) => {
-  console.log(playerPointsTemplate);
   await set(ref(db, `${gamePath}`), {
     playerPoints: playerPointsTemplate,
     lobbyData: lobbyDataTemplate,

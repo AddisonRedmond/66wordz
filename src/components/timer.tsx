@@ -15,7 +15,7 @@ const Timer: React.FC<TimerProps> = ({
 }: TimerProps) => {
   const { seconds, minutes, restart } = useTimer({
     expiryTimestamp,
-    onExpire: endGame ? () => endGame() : () => console.log("Timer ended"),
+    onExpire: endGame ? () => endGame() : undefined,
   });
 
   useEffect(() => {
