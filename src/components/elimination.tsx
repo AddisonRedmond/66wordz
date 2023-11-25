@@ -50,7 +50,6 @@ type Player = {
 
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
-  const addBots = api.elimination.addBots.useMutation();
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
   const TARGET_SCORE = 500;
   const gameData = useGameLobbyData(db, props);
