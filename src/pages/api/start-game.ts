@@ -14,7 +14,7 @@ const cors = Cors({
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: Function,
+  fn: (req: NextApiRequest, res: NextApiResponse, cb: any) => Promise<void> | void,
 ) {
   return new Promise<void>((resolve, reject) => {
     fn(req, res, (result: any) => {

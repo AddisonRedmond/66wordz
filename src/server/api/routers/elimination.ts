@@ -3,7 +3,6 @@ import { z } from "zod";
 import { calculatePoints } from "~/utils/elimination";
 import { handleCorrectGuess, startGame } from "~/utils/firebase/firebase";
 import { handleGetNewWord } from "~/utils/game";
-import { getDatabase, ref, onValue } from "firebase/database";
 
 export const eliminationRouter = createTRPCRouter({
   handleCorrectGuess: protectedProcedure
