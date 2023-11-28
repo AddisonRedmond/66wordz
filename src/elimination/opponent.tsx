@@ -12,7 +12,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
 
   return (
     <motion.div
-      className="rounded-md border-2 border-zinc-600 p-2"
+      className="rounded-md border-2 border-zinc-400 p-2"
       initial={{ scale: 0 }}
       animate={{
         scale: 1,

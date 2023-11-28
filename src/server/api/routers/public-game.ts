@@ -34,7 +34,7 @@ export const publicGameRouter = createTRPCRouter({
         });
       }
 
-      // check data base for a lobby that has < 50 players and hasn't started yet
+      // check data base for a lobby that has < 67 players and hasn't started yet
 
       const findLobby = async () => {
         const lobby: { id: string; started: boolean }[] = await ctx.db
@@ -43,7 +43,7 @@ export const publicGameRouter = createTRPCRouter({
       FROM Lobby l
       WHERE (
         SELECT COUNT(*) FROM Players p WHERE p.lobbyId = l.id
-      ) < 66
+      ) < 67
       AND l.started = false
       AND l.gameType = ${input}
       LIMIT 1;
@@ -63,14 +63,16 @@ export const publicGameRouter = createTRPCRouter({
             initilizedTimeStamp: new Date(),
             round: 1,
             word: handleGetNewWord(),
-            gameStartTimer: new Date().getTime() + 90000,
+            gameStartTimer: new Date().getTime() + 10000,
           }).then(() => {
             try {
               fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
                 method: "POST",
                 body: JSON.stringify({ lobbyId: newLobby.id }),
               });
-            } catch (e) {}
+            } catch (e) {
+              console.log("error registering elimination lobby", e);
+            }
           });
           // register lobby with server
         } else if (clientGameType === "MARATHON") {
@@ -114,7 +116,7 @@ export const publicGameRouter = createTRPCRouter({
           },
         });
 
-        if (playerCount >= 66) {
+        if (playerCount >= 67) {
           startGame(player.lobbyId, clientGameType);
           await ctx.db.lobby.update({
             where: {
