@@ -63,7 +63,7 @@ export const publicGameRouter = createTRPCRouter({
             initilizedTimeStamp: new Date(),
             round: 1,
             word: handleGetNewWord(),
-            gameStartTimer: new Date().getTime() + 10000,
+            gameStartTimer: new Date().getTime() + 90000,
           }).then(() => {
             try {
               fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
