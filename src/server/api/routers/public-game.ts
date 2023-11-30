@@ -1,5 +1,6 @@
 import {
-  createNewFirebaseLobby,
+  createNewEliminationLobby,
+  createNewMarathonLobby,
   deleteLobby,
   joinEliminationLobby,
   joinFirebaseLobby,
@@ -58,25 +59,26 @@ export const publicGameRouter = createTRPCRouter({
         });
         //   create the new lobby in firebase realtime db
         if (clientGameType === "ELIMINATION") {
-          createNewFirebaseLobby(clientGameType, newLobby.id, {
+          await createNewEliminationLobby(clientGameType, newLobby.id, {
             gameStarted: false,
             initilizedTimeStamp: new Date(),
             round: 1,
             word: handleGetNewWord(),
-            gameStartTimer: new Date().getTime() + 90000,
-          }).then(() => {
-            try {
-              fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
-                method: "POST",
-                body: JSON.stringify({ lobbyId: newLobby.id }),
-              });
-            } catch (e) {
-              console.log("error registering elimination lobby", e);
-            }
+            gameStartTimer: new Date().getTime() + 60000,
+            roundTimer: new Date().getTime() + 240000,
           });
+          try {
+            fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
+              method: "POST",
+              body: JSON.stringify({ lobbyId: newLobby.id }),
+            });
+          } catch (e) {
+            console.log("error registering elimination lobby", e);
+          }
+
           // register lobby with server
         } else if (clientGameType === "MARATHON") {
-          await createNewFirebaseLobby(clientGameType, newLobby.id, {
+          await createNewMarathonLobby(clientGameType, newLobby.id, {
             gameStarted: false,
             initilizedTimeStamp: new Date(),
           });

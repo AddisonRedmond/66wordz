@@ -15,7 +15,6 @@ import {
 } from "~/utils/elimination";
 import { updateGuessCountAndMatchingIndex } from "../utils/firebase/firebase";
 import Points from "~/elimination/points";
-import OpponentsContainer from "~/elimination/opponents-container";
 import { ToastContainer, toast } from "react-toastify";
 import Qualified from "~/elimination/qualifeid";
 import NextRoundTimer from "~/elimination/next-round-timer";
@@ -24,6 +23,7 @@ import Confetti from "react-dom-confetti";
 import Winner from "~/elimination/winner";
 import Disqualfied from "~/elimination/disqualified";
 import Opponent from "~/elimination/opponent";
+import RoundTimer from "~/elimination/round-timer";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -51,7 +51,7 @@ type Player = {
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
-  const TARGET_SCORE = 500;
+  const TARGET_SCORE = 300;
   const gameData = useGameLobbyData(db, props);
   const [guess, setGuess] = useState("");
   const [keyBoardMatches, setKeyBoardMatches] = useState<Matches>({
@@ -271,19 +271,35 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             </button>
           </div>
 
-          <OpponentsContainer
-            players={getHalfOfOpponents("even")}
-            word={word}
-          />
+          <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
+            {getHalfOfOpponents("even").map((player: Player) => {
+              return (
+                <Opponent
+                  key={player.playerId}
+                  numOfOpponents={getHalfOfOpponents("even").length}
+                  points={player?.points}
+                  matchingIndex={player.playerData?.matchingIndex}
+                  wordLength={word.length}
+                />
+              );
+            })}
+          </div>
 
           {gameData?.playerPoints?.[props.userId] ? (
             <div className="flex  flex-col items-center gap-4">
-              {points >= 500 ? (
+              {gameData.lobbyData.gameStarted && (
+                <RoundTimer
+                  expiryTimestamp={new Date(gameData.lobbyData.roundTimer)}
+                />
+              )}
+
+              {points >= 300 ? (
                 <Qualified />
               ) : (
                 <>
                   {!gameData.lobbyData.gameStarted &&
-                    gameData.lobbyData.gameStartTimer && (
+                    gameData.lobbyData.gameStartTimer &&
+                    gameData.lobbyData.round === 1 && (
                       <div className=" h-64">
                         <GameStartTimer
                           expiryTimestamp={

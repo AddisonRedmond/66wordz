@@ -14,7 +14,11 @@ const cors = Cors({
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
-  fn: (req: NextApiRequest, res: NextApiResponse, cb: any) => Promise<void> | void,
+  fn: (
+    req: NextApiRequest,
+    res: NextApiResponse,
+    cb: any,
+  ) => Promise<void> | void,
 ) {
   return new Promise<void>((resolve, reject) => {
     fn(req, res, (result: any) => {
@@ -37,5 +41,5 @@ export default async function handler(
   //   cors isnt working btw/ origin can be any, need to fix
 
   await db.lobby.update({ where: { id: lobbyId }, data: { started: true } });
-  res.status(200);
+  res.status(200).end();
 }

@@ -23,7 +23,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     >
       <Points
         totalPoints={props?.points ? props.points : 0}
-        pointsTarget={500}
+        pointsTarget={300}
       />
       <div className="mt-2 flex flex-row justify-center gap-1">
         {Array.from({ length: props.wordLength }).map((_, index: number) => {
@@ -46,7 +46,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                   exit={{ scale: 0 }}
                   className="text-white"
                 >
-                  {props.points && props.points >= 500
+                  {props.points && props.points >= 300
                     ? "QUALD".split("")[index]
                     : ""}
                 </motion.p>

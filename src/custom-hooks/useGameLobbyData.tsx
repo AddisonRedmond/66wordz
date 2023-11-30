@@ -8,6 +8,7 @@ type LobbyData = {
   nextRoundStartTime?: Date;
   gameStartTimer?: number;
   previousWord?: string;
+  roundTimer: number;
 };
 
 type PlayerPoints = {

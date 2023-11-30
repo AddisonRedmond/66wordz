@@ -16,15 +16,30 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export const createNewFirebaseLobby = async (
+export const createNewMarathonLobby = async (
   gameType: string,
   lobbyId: string,
   lobbyData?: {
     gameStarted: boolean;
     initilizedTimeStamp: Date;
-    gameStartTimer?: number;
-    round?: number;
-    word?: string;
+  },
+) => {
+  await set(ref(db, `${gameType}/${lobbyId}`), {
+    lobbyData,
+  });
+  return lobbyId;
+};
+
+export const createNewEliminationLobby = async (
+  gameType: string,
+  lobbyId: string,
+  lobbyData?: {
+    gameStarted: boolean;
+    initilizedTimeStamp: Date;
+    gameStartTimer: number;
+    round: number;
+    word: string;
+    roundTimer: number;
   },
 ) => {
   await set(ref(db, `${gameType}/${lobbyId}`), {

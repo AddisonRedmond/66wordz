@@ -33,91 +33,6 @@ export const eliminationRouter = createTRPCRouter({
         userId,
         input.previousWord,
       );
-
-      // if (calculatedPoints >= POINTS_TARGET) {
-      //   if (input.roundNumber >= 6 || lobbyCount <= 5) {
-      //     handleEliminationWinner(
-      //       `ELIMINATION/${input.lobbyId}/winner`,
-      //       userId,
-      //     );
-      //     await ctx.db.lobby.delete({ where: { id: input.lobbyId } });
-      //   } else {
-      //     playerInfo = await ctx.db.players.update({
-      //       where: { userId: userId },
-      //       data: { qualified: true },
-      //     });
-      //   }
-      // }
-
-      // const qualified = await ctx.db.players.findMany({
-      //   where: { lobbyId: input.lobbyId, qualified: { equals: true } },
-      // });
-
-      // // deletes the players who are qualified:false
-      // const deleteAndUpdateDisqualified = async () => {
-      //   await ctx.db.players.deleteMany({
-      //     where: { lobbyId: input.lobbyId, qualified: false },
-      //   });
-
-      //   await ctx.db.players.updateMany({
-      //     where: { lobbyId: input.lobbyId, qualified: true },
-      //     data: { qualified: false },
-      //   });
-      // };
-
-      // // resets all of the "qualified" people and returns them in an object which is {playerid: {points: 0}}
-      // const buildNextRoundPlayerPoints = () => {
-      //   const nextRoundTemp: { [keyof: string]: { points: 0 } } = {};
-      //   qualified.forEach((player: Players) => {
-      //     nextRoundTemp[player.userId] = { points: 0 };
-      //   });
-      //   return nextRoundTemp;
-      // };
-
-      // // returns an object that will replace the lobbyData object in firebase
-      // // object is lobbyData type
-      // const buildNextRoundLobbyData = () => {
-      //   const lobbyData: {
-      //     gameStarted: boolean;
-      //     round: number;
-      //     word: string;
-      //     nextRoundStartTime: number;
-      //   } = {
-      //     gameStarted: false,
-      //     round: input.roundNumber + 1,
-      //     word: handleGetNewWord(),
-      //     nextRoundStartTime: new Date().getTime() + 10000,
-      //   };
-      //   return lobbyData;
-      // };
-
-      // const handleNextRound = () => {
-      //   const nextRoundPlayerPoints = buildNextRoundPlayerPoints();
-      //   const nextRoundLobbyData = buildNextRoundLobbyData();
-
-      //   // delete everyone who didnt qualify and reset those who have qualified to qualified false
-      //   deleteAndUpdateDisqualified();
-
-      //   // firebase function, changes the firebase lobby to the updated lobbyData and playerPoints
-      //   createNewRound(
-      //     nextRoundPlayerPoints,
-      //     nextRoundLobbyData,
-      //     `ELIMINATION/${input.lobbyId}`,
-      //   );
-
-      //   // upate the firebase lobby's round number
-      // };
-      // if (qualified.length >= calculateSpots(input.roundNumber, lobbyCount)) {
-      //   handleNextRound();
-      // }
-
-      // return playerInfo;
-      // check if users points are greater or equal to the target
-      // if they are add the user to qualified
-      // update the points in firebase
-
-      // check the number of qualifed people, if we're at the limit run next round logic
-      //
     }),
 
   startGame: protectedProcedure
@@ -129,6 +44,4 @@ export const eliminationRouter = createTRPCRouter({
     .mutation(({ input }) => {
       startGame(input.lobbyId, "ELIMINATION");
     }),
-
-  
 });

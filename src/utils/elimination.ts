@@ -1,14 +1,14 @@
 import dictionary from "./dictionary";
 
 const pointTable: { [key: number]: number } = {
-  0: 500,
-  1: 500,
-  2: 200,
-  3: 150,
-  4: 100,
-  5: 90,
-  6: 80,
-  7: 70,
+  0: 300,
+  1: 200,
+  2: 100,
+  3: 90,
+  4: 80,
+  5: 70,
+  6: 60,
+  7: 50,
 };
 
 export const calculatePoints = (guessCount: number, points: number) => {
