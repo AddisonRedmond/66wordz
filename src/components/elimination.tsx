@@ -15,7 +15,6 @@ import {
 } from "~/utils/elimination";
 import { updateGuessCountAndMatchingIndex } from "../utils/firebase/firebase";
 import Points from "~/elimination/points";
-import OpponentsContainer from "~/elimination/opponents-container";
 import { ToastContainer, toast } from "react-toastify";
 import Qualified from "~/elimination/qualifeid";
 import NextRoundTimer from "~/elimination/next-round-timer";
