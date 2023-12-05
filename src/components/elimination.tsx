@@ -161,8 +161,8 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
       evenOdd === "even" ? index % 2 === 0 : index % 2 !== 0;
 
     const opponents = Object.keys(gameData.playerPoints || {})
-      .filter((playerId) => playerId !== "bots")
-      .filter((_, index) => isEvenIndex(index))
+      .filter((playerId) => playerId !== props.userId)
+      .filter((_, index) => isEvenIndex(index + 1))
       .map((playerId) => ({
         playerId,
         playerData: gameData.roundData?.[playerId],
@@ -181,9 +181,12 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           };
         });
 
-      return [...opponents, ...bots];
+      return [...opponents, ...bots].filter(
+        (opponent) => opponent.playerId !== props.userId,
+      );
     }
-    return opponents;
+
+    return opponents.filter((opponent) => opponent.playerId !== props.userId);
   };
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
@@ -288,9 +291,14 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           {gameData?.playerPoints?.[props.userId] ? (
             <div className="flex  flex-col items-center gap-4">
               {gameData.lobbyData.gameStarted && (
-                <RoundTimer
-                  expiryTimestamp={new Date(gameData.lobbyData.roundTimer)}
-                />
+                <div className="text-center">
+                  <p className="text-3xl font-semibold">
+                    Round {gameData?.lobbyData?.round}
+                  </p>
+                  <RoundTimer
+                    expiryTimestamp={new Date(gameData.lobbyData.roundTimer)}
+                  />
+                </div>
               )}
 
               {points >= 300 ? (
@@ -301,18 +309,19 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                     gameData.lobbyData.gameStartTimer &&
                     gameData.lobbyData.round === 1 && (
                       <div className=" h-64">
+                        <div className="mb-6 text-center font-semibold">
+                          <p className="text-2xl">LOADING PLAYERS</p>
+                          <p className="text-xl font-semibold">
+                            {Object.keys(gameData.playerPoints).length} out of
+                            66
+                          </p>
+                        </div>
+
                         <GameStartTimer
                           expiryTimestamp={
                             new Date(gameData?.lobbyData?.gameStartTimer)
                           }
                         />
-                        <div className="text-center font-semibold">
-                          <p>LOADING PLAYERS</p>
-                          <p className="font-semibold">
-                            {Object.keys(gameData.playerPoints).length} out of
-                            66
-                          </p>
-                        </div>
                       </div>
                     )}
 
@@ -320,7 +329,9 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                     <>
                       {gameData?.lobbyData?.previousWord && (
                         <div className="text-center">
-                          <p className="text-3xl font-bold">Previous word</p>
+                          <p className="text-xl font-semibold text-neutral-600">
+                            Previous word
+                          </p>
                           <p className="text-2xl font-semibold">
                             {gameData?.lobbyData?.previousWord}
                           </p>

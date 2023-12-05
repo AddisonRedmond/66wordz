@@ -15,15 +15,6 @@ datasource db {
     relationMode = "prisma"
 }
 
-// model Example {
-//     id        Int      @id @default(autoincrement())
-//     name      String
-//     createdAt DateTime @default(now())
-//     updatedAt DateTime @updatedAt
-
-//     @@index([name])
-// }
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -63,6 +54,7 @@ model User {
     losses        Int       @default(0)
     gamesPlayed   Int       @default(0)
     Players       Players[]
+    issues        Issues[]
 }
 
 model VerificationToken {
@@ -92,4 +84,18 @@ model Players {
     lobbyId   String
     lobby     Lobby   @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
     qualified Boolean @default(false)
+}
+
+enum IssueType {
+    MARATHON
+    ELIMINATION
+    OTHER
+}
+
+model Issues {
+    id          String    @id @default(cuid())
+    createdById String
+    createdBy   User      @relation(fields: [createdById], references: [id])
+    issueType   IssueType
+    summary     String
 }

@@ -14,8 +14,8 @@ const GameStartTimer: React.FC<GameStartTimeProps> = ({
   });
   return (
     <div className="text-center font-semibold">
-      <p>{`Game starting in`}</p>
-      <div className="flex justify-center gap-2">
+      <p className="text-lg">{`Game starting in`}</p>
+      <div className="flex justify-center gap-2 mt-2">
         <div className="flex flex-col items-center">
           <Tile letters={`${totalSeconds}`} />
         </div>
