@@ -25,11 +25,12 @@ import Modal from "./modal";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import Confetti from "react-dom-confetti";
+import useMarathonLobbyData from "~/custom-hooks/useMarathonLobbyData";
 
 type PublicGameProps = {
   lobbyId: string;
   userId: string;
-  gameType: string;
+  gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
   exitMatch: () => void;
 };
 
@@ -40,18 +41,20 @@ type Matches = {
 };
 
 const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
-  const [gameData, setGameData] = useState<any>(null);
+  // const [gameData, setGameData] = useState<any>(null);
   const [guess, setGuess] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const endGame = api.public.endGame.useMutation();
   const manualStart = api.public.manualStart.useMutation();
   const [win, setWin] = useState<boolean>(false);
-  const [sepctate, setSpectate] = useState<boolean>(false);
+  const [spectate, setSpectate] = useState<boolean>(false);
   const [endGameSummary, setEndGameSummary] = useState<{
     placement: number;
     totalTime: string;
     totalGuesses: number;
   } | null>(null);
+
+  const gameData = useMarathonLobbyData(db, props);
 
   const [matches, setMatches] = useState<Matches>({
     fullMatch: [],
@@ -109,22 +112,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
       }
     }
   };
-
-  useEffect(() => {
-    const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);
-    const handlePlayersDataChange = (snapShot: any) => {
-      const gameData: any = snapShot.val();
-      setGameData(gameData);
-    };
-
-    const unsubscribe = onValue(playersQuery, handlePlayersDataChange);
-
-    return () => {
-      off(playersQuery, "value", handlePlayersDataChange);
-
-      unsubscribe();
-    };
-  }, [props.lobbyId]);
 
   useEffect(() => {
     if (
@@ -214,7 +201,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
   };
 
   const spectateMode = () => {
-    if (sepctate || win) {
+    if (spectate || win) {
       return false;
     } else {
       return true;
