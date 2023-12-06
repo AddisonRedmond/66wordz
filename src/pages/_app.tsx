@@ -16,7 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <AnimatePresence>
-        {router.asPath !== "/login" && <Navbar key="navbar" />}
+        {router.pathname !== "/login" && <Navbar key="navbar" />}
         <Component {...pageProps} />
       </AnimatePresence>
     </SessionProvider>
