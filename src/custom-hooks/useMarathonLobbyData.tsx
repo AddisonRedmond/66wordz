@@ -13,7 +13,7 @@ export type GameData = {
   };
 };
 
-const useGameLobbyData = (
+const useMarathonLobbyData = (
   db: Database,
   props: {
     userId: string;
@@ -41,4 +41,4 @@ const useGameLobbyData = (
   return gameData;
 };
 
-export default useGameLobbyData;
+export default useMarathonLobbyData;

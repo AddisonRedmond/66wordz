@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
-import PublicGame from "~/components/public-game";
+import Marathon from "~/components/marathon";
 import Elimination from "~/components/elimination";
 import { useState } from "react";
 const Home = () => {
@@ -29,7 +29,7 @@ const Home = () => {
     if (lobby.data?.id) {
       if (lobby.data.gameType === "MARATHON") {
         return (
-          <PublicGame
+          <Marathon
             lobbyId={lobby.data.id}
             userId={session!.user.id}
             gameType={lobby.data.gameType}
