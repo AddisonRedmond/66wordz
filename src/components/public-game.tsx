@@ -135,56 +135,58 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
     }
   }, [gameData?.lobbyData.gameStarted]);
 
+  const handleKeyUp = (e: KeyboardEvent) => {
+    const playerData = formatGameData(gameData.players[props.userId]);
+    if (e.key === "Backspace" && guess.length > 0) {
+      setGuess((prevGuess) => prevGuess.slice(0, -1));
+    } else if (e.key === "Enter" && guess.length === 5) {
+      if (words.includes(guess)) {
+        updateGuessesAndAllGuesses(
+          props.lobbyId,
+          props.userId,
+          [...playerData.guesses, guess],
+          [...playerData.allGuesses, guess],
+          props.gameType,
+        );
+        if (guess === playerData.word) {
+          handleCorrectGuess(
+            props.lobbyId,
+            props.userId,
+            playerData.timer,
+            playerData.guesses.length,
+            props.gameType,
+          );
+          setGuess("");
+          resetMatches();
+          return;
+        } else if (playerData.guesses.length > 4) {
+          handleWordFailure(
+            playerData.guesses,
+            playerData.word,
+            props.lobbyId,
+            props.userId,
+            playerData.timer,
+            props.gameType,
+          );
+          setGuess("");
+          return;
+        }
+        setGuess("");
+      } else {
+        notify();
+      }
+    } else if (
+      /[a-zA-Z]/.test(e.key) &&
+      e.key.length === 1 &&
+      guess.length < 5
+    ) {
+      setGuess((prevGuess) => `${prevGuess}${e.key}`.toUpperCase());
+    }
+  };
+
   useEffect(() => {
     if (gameData?.players?.[props.userId] && gameData.lobbyData.gameStarted) {
       const playerData = formatGameData(gameData.players[props.userId]);
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.key === "Backspace" && guess.length > 0) {
-          setGuess((prevGuess) => prevGuess.slice(0, -1));
-        } else if (e.key === "Enter" && guess.length === 5) {
-          if (words.includes(guess)) {
-            updateGuessesAndAllGuesses(
-              props.lobbyId,
-              props.userId,
-              [...playerData.guesses, guess],
-              [...playerData.allGuesses, guess],
-              props.gameType,
-            );
-            if (guess === playerData.word) {
-              handleCorrectGuess(
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-                playerData.guesses.length,
-                props.gameType,
-              );
-              setGuess("");
-              resetMatches();
-              return;
-            } else if (playerData.guesses.length > 4) {
-              handleWordFailure(
-                playerData.guesses,
-                playerData.word,
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-                props.gameType,
-              );
-              setGuess("");
-              return;
-            }
-            setGuess("");
-          } else {
-            notify();
-          }
-        } else if (
-          /[a-zA-Z]/.test(e.key) &&
-          e.key.length === 1 &&
-          guess.length < 5
-        ) {
-          setGuess((prevGuess) => `${prevGuess}${e.key}`.toUpperCase());
-        }
-      };
 
       window.addEventListener("keyup", handleKeyUp);
       setMatches(() =>
@@ -240,9 +242,9 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
           exit={{ scale: 0 }}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex w-full items-center justify-around"
+          className="w-full flex-col items-center justify-around sm:flex"
         >
-          <div className="absolute left-10 top-24">
+          <div className="left-10 top-24 text-center sm:absolute">
             <button
               onClick={() => props.exitMatch()}
               className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
@@ -307,6 +309,7 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
               <Keyboard
                 disabled={!gameData.lobbyData.gameStarted}
                 matches={matches}
+                handleKeyPress={handleKeyUp}
               />
               {!gameData.lobbyData.gameStarted &&
                 Object.keys(gameData.players)[0] === props.userId && (

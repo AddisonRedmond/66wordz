@@ -153,7 +153,7 @@ const Navbar: React.FC = () => {
             alt="profile icon"
           /> */}
           <button
-            className="rounded-md bg-black p-2 text-sm font-semibold text-white"
+            className="rounded-md bg-black p-2 sm:text-sm font-semibold text-white text-xs"
             onClick={handleSignOut}
           >
             Sign Out
@@ -161,7 +161,7 @@ const Navbar: React.FC = () => {
           <Image
             onClick={() => openReportBugModal()}
             title="report a bug or an issue"
-            className="absolute top-14 cursor-pointer"
+            className="invisible absolute top-14 cursor-pointer sm:visible"
             src={bug}
             alt="bug icon"
             height={15}
