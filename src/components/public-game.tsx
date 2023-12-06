@@ -309,7 +309,6 @@ const PublicGame: React.FC<PublicGameProps> = (props: PublicGameProps) => {
               <Keyboard
                 disabled={!gameData.lobbyData.gameStarted}
                 matches={matches}
-                handleKeyPress={handleKeyUp}
               />
               {!gameData.lobbyData.gameStarted &&
                 Object.keys(gameData.players)[0] === props.userId && (
