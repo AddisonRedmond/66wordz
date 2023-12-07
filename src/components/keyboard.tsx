@@ -33,9 +33,9 @@ const KeyboardRow = ({
           <motion.p
             // initial={{ backgroundColor: "#F5F5F4" }}
             animate={{ backgroundColor: handleColors(letter) }}
-            className={`flex aspect-square w-7 ${
+            className={`flex aspect-square w-8 sm:w-10 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
-            } items-center justify-center rounded-md bg-neutral-200 font-bold`}
+            } items-center justify-center rounded-md border-2 border-black bg-neutral-200 font-bold sm:border-none`}
             key={letter}
           >
             {letter}
@@ -52,7 +52,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex w-full flex-col items-center gap-1">
       <div className="flex">
         <KeyboardRow
           matches={props.matches}
@@ -67,7 +67,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           disabled={props.disabled}
           specialKey={
             <span
-              className={`flex aspect-square w-7 items-center justify-center rounded-md bg-neutral-200 font-bold`}
+              className={`hidden aspect-square w-7 items-center justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex`}
             >
               <Image
                 className={`${
@@ -89,12 +89,20 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
             <p
               className={`${
                 props.disabled ? "cursor-not-allowed" : "cursor-pointer"
-              }  flex cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold`}
+              }  hidden cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold sm:visible sm:flex`}
             >
               ENTER
             </p>
           }
         />
+      </div>
+      <div className="sm:invisibile visible flex w-full justify-around text-center text-lg font-semibold">
+        <p className="my-auto flex h-10 w-1/4 flex-col justify-center rounded-md border-2 border-neutral-700 sm:hidden">
+          Enter
+        </p>
+        <p className="my-auto flex h-10 w-1/4 flex-col justify-center rounded-md border-2 border-neutral-700 sm:hidden">
+          Delete
+        </p>
       </div>
     </div>
   );
