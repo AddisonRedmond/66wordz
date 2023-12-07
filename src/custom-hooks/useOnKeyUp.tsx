@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { GameData } from "./useGameLobbyData";
 
 export const useOnKeyUp = (
   keyUpFunction: (e: KeyboardEvent) => void,
-  dependancies: (string | GameData | null)[],
+  dependancies: any[],
 ) => {
   useEffect(() => {
     window.addEventListener("keyup", keyUpFunction);

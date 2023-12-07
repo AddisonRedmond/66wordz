@@ -12,6 +12,9 @@ import { motion } from "framer-motion";
 import { api } from "~/utils/api";
 import Confetti from "react-dom-confetti";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
+import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
+import GameGrid from "./game-grid";
+import Keyboard from "./keyboard";
 type MarathonProps = {
   lobbyId: string;
   userId: string;
@@ -58,8 +61,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
 
   const notify = () => toast.warn(`${guess} not in word list!`);
 
-  const handleManualStart = async () => {};
-
   const playerHasWon = () => {
     setWin(true);
     handleEndMatch(true);
@@ -67,68 +68,15 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
 
   const checkIfWin = () => {};
 
-  useEffect(() => {
-    if (gameData?.players?.[props.userId] && gameData.lobbyData.gameStarted) {
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.key === "Backspace" && guess.length > 0) {
-          setGuess((prevGuess) => prevGuess.slice(0, -1));
-        } else if (e.key === "Enter" && guess.length === 5) {
-          if (words.includes(guess)) {
-            updateGuessesAndAllGuesses(
-              props.lobbyId,
-              props.userId,
-              [...playerData.guesses, guess],
-              [...playerData.allGuesses, guess],
-              props.gameType,
-            );
-            if (guess === playerData.word) {
-              handleCorrectGuess(
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-                playerData.guesses.length,
-                props.gameType,
-              );
-              setGuess("");
-              resetMatches();
-              return;
-            } else if (playerData.guesses.length > 4) {
-              handleWordFailure(
-                playerData.guesses,
-                playerData.word,
-                props.lobbyId,
-                props.userId,
-                playerData.timer,
-                props.gameType,
-              );
-              setGuess("");
-              return;
-            }
-            setGuess("");
-          } else {
-            notify();
-          }
-        } else if (
-          /[a-zA-Z]/.test(e.key) &&
-          e.key.length === 1 &&
-          guess.length < 5
-        ) {
-          setGuess((prevGuess) => `${prevGuess}${e.key}`.toUpperCase());
-        }
-      };
+  const handleKeyBoardLogic = (letter: string) => {};
+  const handleKeyUp = (e: KeyboardEvent) => {
+    const letter = e.key.toUpperCase();
+    handleKeyBoardLogic(letter);
+  };
 
-      window.addEventListener("keyup", handleKeyUp);
-      setMatches(() =>
-        handleMatched(
-          playerData.guesses ? playerData.guesses : [],
-          playerData.word,
-        ),
-      );
-      return () => {
-        window.removeEventListener("keyup", handleKeyUp);
-      };
-    }
-  }, [guess, gameData]);
+  useOnKeyUp(handleKeyUp, [guess, gameData]);
+
+  console.log(gameData);
 
   const config = {
     angle: 90,
@@ -144,7 +92,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
   };
 
-  const spectateMode = () => {};
   if (gameData) {
     return (
       <>
@@ -162,6 +109,19 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
             >
               {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
             </button>
+          </div>
+          <div className="flex flex-col items-center justify-center gap-3">
+            <GameGrid
+              disabled={!gameData.lobbyData.gameStarted}
+              guess={guess}
+              guesses={[]}
+              word={"TESTS"}
+              rows={6}
+            />
+            <Keyboard
+              matches={matches}
+              disabled={!gameData.lobbyData.gameStarted}
+            />
           </div>
         </motion.div>
         <ToastContainer
