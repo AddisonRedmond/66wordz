@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
     "MARATHON" | "ELIMINATION" | "OTHER"
   >("MARATHON");
   const [message, setMessage] = useState<string>("");
-  const [messagNotLongEnough, setMessageNotLongEnough] =
+  const [messageNotLongEnough, setMessageNotLongEnough] =
     useState<boolean>(false);
   const submitIssue = api.reportIssue.reportIssue.useMutation();
 
@@ -105,7 +105,7 @@ const Navbar: React.FC = () => {
                     <option value="OTHER">OTHER</option>
                   </select>
                   <label className="flex flex-row">{`Character Count ${message.length} out of 300`}</label>
-                  {messagNotLongEnough && (
+                  {messageNotLongEnough && (
                     <span className="font-semibold">
                       Message not long enough
                     </span>
@@ -115,7 +115,7 @@ const Navbar: React.FC = () => {
                     onChange={(e) => handleUpdateMessage(e)}
                     className=" h-32 w-full rounded-md border-2 border-gray-400 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
                     placeholder={
-                      messagNotLongEnough
+                      messageNotLongEnough
                         ? "Summay isn't log enough"
                         : "What happened?"
                     }
@@ -153,7 +153,7 @@ const Navbar: React.FC = () => {
             alt="profile icon"
           /> */}
           <button
-            className="rounded-md bg-black p-2 sm:text-sm font-semibold text-white text-xs"
+            className="rounded-md bg-black p-2 text-xs font-semibold text-white sm:text-sm"
             onClick={handleSignOut}
           >
             Sign Out
@@ -161,7 +161,7 @@ const Navbar: React.FC = () => {
           <Image
             onClick={() => openReportBugModal()}
             title="report a bug or an issue"
-            className="invisible absolute top-14 cursor-pointer sm:visible"
+            className="absolute top-14 hidden cursor-pointer sm:inline-block"
             src={bug}
             alt="bug icon"
             height={15}

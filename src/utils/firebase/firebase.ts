@@ -22,6 +22,7 @@ export const createNewMarathonLobby = async (
   lobbyData?: {
     gameStarted: boolean;
     initilizedTimeStamp: Date;
+    gameStartTimer: number;
   },
 ) => {
   await set(ref(db, `${gameType}/${lobbyId}`), {
@@ -90,12 +91,15 @@ export const updateGuessesAndWord = async (
   word: string,
   timer: number,
   gameType: string,
+  correctGuessCount: number,
 ) => {
+  
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
     timer: timer,
     failed: false,
+    correctGuessCount: correctGuessCount + 1,
   });
 };
 

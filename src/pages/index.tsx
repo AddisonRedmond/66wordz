@@ -5,18 +5,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
-import PublicGame from "~/components/public-game";
+import Marathon from "~/components/marathon";
 import Elimination from "~/components/elimination";
 import { useState } from "react";
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
+  const [isSolo, setIsSolo] = useState<boolean>(false);
   const [gameMode, setGameMode] = useState<
     "MARATHON" | "ELIMINATION" | "ITEMS"
   >("MARATHON");
   const joinGame = () => {
-    lobby.mutate(gameMode);
+    lobby.mutate({ gameMode: gameMode, isSolo: isSolo });
   };
 
   const exitMatch = () => {
@@ -29,11 +30,12 @@ const Home = () => {
     if (lobby.data?.id) {
       if (lobby.data.gameType === "MARATHON") {
         return (
-          <PublicGame
+          <Marathon
             lobbyId={lobby.data.id}
             userId={session!.user.id}
             gameType={lobby.data.gameType}
             exitMatch={exitMatch}
+            isSolo={isSolo}
           />
         );
       } else if (lobby.data.gameType === "ELIMINATION") {
@@ -62,7 +64,7 @@ const Home = () => {
         exit={{ opacity: 0 }}
         className="flex min-h-screen flex-col items-center justify-evenly"
       >
-        <Header isLoading={lobby.isLoading} />
+        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
         <AnimatePresence>
           {lobby.data?.id ? (
             handleStartGame()
@@ -71,6 +73,8 @@ const Home = () => {
               joinGame={joinGame}
               gameMode={gameMode}
               setGameMode={setGameMode}
+              setIsSolo={setIsSolo}
+              isSolo={isSolo}
             />
           )}
         </AnimatePresence>

@@ -88,8 +88,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     }
   };
 
-  // main logic for game
-  const handleKeyUp = (e: KeyboardEvent) => {
+  const handleKeyBoardLogic = (letter: string) => {
     if (gameData) {
       const { gameStarted, word, round } = gameData.lobbyData;
       const { guessCount = 0, matchingIndex = [] } =
@@ -100,9 +99,9 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
         return;
       }
 
-      if (e.key === "Backspace" && guess.length > 0) {
+      if (letter === "Backspace" && guess.length > 0) {
         setGuess((prevGuess) => prevGuess.slice(0, -1));
-      } else if (e.key === "Enter") {
+      } else if (letter === "Enter") {
         if (!spellCheck(guess)) {
           notify();
           return;
@@ -141,13 +140,18 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           setGuess("");
         }
       } else if (
-        /[a-zA-Z]/.test(e.key) &&
-        e.key.length === 1 &&
+        /[a-zA-Z]/.test(letter) &&
+        letter.length === 1 &&
         guess.length < 5
       ) {
-        setGuess((prevGuess) => `${prevGuess}${e.key}`.toUpperCase());
+        setGuess((prevGuess) => `${prevGuess}${letter}`.toUpperCase());
       }
     }
+  };
+
+  // main logic for game
+  const handleKeyUp = (e: KeyboardEvent) => {
+    handleKeyBoardLogic(e.key);
   };
 
   // returns half of the opponents based on their index being even or odd
@@ -358,6 +362,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                       <Keyboard
                         disabled={isDisabled()}
                         matches={keyBoardMatches}
+                        handleKeyBoardLogic={handleKeyBoardLogic}
                       />
                     </>
                   )}

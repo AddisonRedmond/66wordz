@@ -37,7 +37,6 @@ export default async function handler(
   await runMiddleware(req, res, cors);
   const data = JSON.parse(req.body);
   const lobbyId = data.lobbyId;
-  console.log(lobbyId);
   //   cors isnt working btw/ origin can be any, need to fix
 
   await db.lobby.update({ where: { id: lobbyId }, data: { started: true } });

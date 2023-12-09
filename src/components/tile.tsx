@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 type TileProps = {
   letters: string;
   backgroundColor?: string;
+  desktopOnly?: boolean;
 };
 
 const Tile: React.FC<TileProps> = (props: TileProps) => {
@@ -50,7 +51,7 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
       initial={{ scale: 0, opacity: 0 }}
       exit={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="flex gap-2 "
+      className={`flex gap-2 ${props.desktopOnly ? "hidden sm:flex" : ""}`}
     >
       {props.letters.split("").map((letter: string, index: number) => {
         return (

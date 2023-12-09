@@ -109,6 +109,7 @@ export const handleCorrectGuess = async (
   timer: number,
   numberOfGuesses: number,
   gameType: string,
+  correctGuessCount: number,
 ): Promise<void> => {
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
 
@@ -125,6 +126,7 @@ export const handleCorrectGuess = async (
     handleGetNewWord(),
     updatedTimer,
     gameType,
+    correctGuessCount,
   );
   // clear out guesses from firebase
   // swap out the word in firebase
@@ -166,7 +168,7 @@ export const handleColor = (
   }
 };
 
-export const canculateTimePlayed = (startTime: number, endTime: number) => {
+export const calculateTimePlayed = (startTime: number, endTime: number) => {
   const totalSeconds = Math.floor((endTime - startTime) / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
