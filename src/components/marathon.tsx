@@ -11,7 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 // import { api } from "~/utils/api";
-import Confetti from "react-dom-confetti";
+// import Confetti from "react-dom-confetti";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import GameGrid from "./game-grid";
@@ -167,19 +167,19 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
-  const config = {
-    angle: 90,
-    spread: 360,
-    startVelocity: 40,
-    elementCount: 70,
-    dragFriction: 0.12,
-    duration: 3000,
-    stagger: 3,
-    width: "10px",
-    height: "10px",
-    perspective: "500px",
-    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
-  };
+  // const config = {
+  //   angle: 90,
+  //   spread: 360,
+  //   startVelocity: 40,
+  //   elementCount: 70,
+  //   dragFriction: 0.12,
+  //   duration: 3000,
+  //   stagger: 3,
+  //   width: "10px",
+  //   height: "10px",
+  //   perspective: "500px",
+  //   colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  // };
 
   if (gameData) {
     const playerData = gameData.players[props.userId];
