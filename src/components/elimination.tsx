@@ -9,6 +9,9 @@ import Keyboard from "./keyboard";
 import WordContainer from "~/elimination/word-container";
 import { api } from "~/utils/api";
 import {
+  calculateSpots,
+  calculateTotalPlayers,
+  getTopPlayersAndBots,
   handleCreateMatchingIndex,
   handleEliminationMatched,
   spellCheck,
@@ -195,6 +198,24 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
+  const totalPlayers = calculateTotalPlayers(
+    gameData?.playerPoints,
+    gameData?.botPoints,
+  );
+
+  const availableSpots = calculateSpots(
+    totalPlayers,
+    gameData?.lobbyData?.round,
+  );
+
+  const placement = getTopPlayersAndBots(
+    availableSpots,
+    gameData?.playerPoints,
+    gameData?.botPoints,
+  );
+
+  console.log(placement);
+
   const config = {
     angle: 90,
     spread: 360,
@@ -293,10 +314,10 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           </div>
 
           {gameData?.playerPoints?.[props.userId] ? (
-            <div className="flex  flex-col items-center gap-4">
+            <div className="flex  flex-col items-center sm:gap-4">
               {gameData.lobbyData.gameStarted && (
                 <div className="text-center">
-                  <p className="text-3xl font-semibold">
+                  <p className="font-semibold sm:text-3xl">
                     Round {gameData?.lobbyData?.round}
                   </p>
                   <RoundTimer
@@ -331,12 +352,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
                   {gameData.lobbyData.gameStarted && (
                     <>
+                    {<p>your placment is {placement.topPlayers.indexOf(props.userId) + 1}</p>}
                       {gameData?.lobbyData?.previousWord && (
                         <div className="text-center">
-                          <p className="text-xl font-semibold text-neutral-600">
+                          <p className="font-semibold text-neutral-600 sm:text-xl">
                             Previous word
                           </p>
-                          <p className="text-2xl font-semibold">
+                          <p className="font-semibold sm:text-2xl">
                             {gameData?.lobbyData?.previousWord}
                           </p>
                         </div>
@@ -345,7 +367,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                         word={word}
                         matchingIndex={matchingIndex}
                       />
-                      <div className="flex flex-col gap-3">
+                      <div className="mb-3 flex flex-col gap-3">
                         <Points
                           totalPoints={points}
                           pointsTarget={TARGET_SCORE}

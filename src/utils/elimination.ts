@@ -1,3 +1,4 @@
+import { PlayerPoints } from "~/custom-hooks/useGameLobbyData";
 import dictionary from "./dictionary";
 
 const pointTable: { [key: number]: number } = {
@@ -79,7 +80,7 @@ export const handleEliminationMatched = (
   };
 };
 
-export const calculateSpots = (round: number, playerCount: number) => {
+export const calculateSpots = (playerCount: number, round?: number) => {
   const calculateNumber = () => {
     switch (round) {
       case 1:
@@ -100,4 +101,40 @@ export const calculateSpots = (round: number, playerCount: number) => {
   };
 
   return Math.floor(calculateNumber());
+};
+
+export const getTopPlayersAndBots = (
+  topCount: number,
+  playerPoints?: PlayerPoints,
+  botPoints?: PlayerPoints,
+): { topPlayers: string[] } => {
+  const sortAndExtractTop = (
+    pointsObject: PlayerPoints | null,
+    count: number,
+  ): string[] => {
+    if (!pointsObject) {
+      return [];
+    }
+    return Object.keys(pointsObject)
+      .filter((userId) => pointsObject[userId]!.points > 0)
+      .sort((a, b) => pointsObject[b]!.points - pointsObject[a]!.points)
+      .slice(0, count);
+  };
+
+  const allPlayers = { ...playerPoints, ...botPoints };
+  const topPlayers = sortAndExtractTop(allPlayers, topCount);
+
+  return { topPlayers: topPlayers };
+};
+
+export const calculateTotalPlayers = (
+  playerPoints?: PlayerPoints,
+  botPoints?: PlayerPoints | null,
+): number => {
+  if (!playerPoints) {
+    return 0;
+  } else if (botPoints) {
+    return Object.keys(botPoints).length + Object.keys(playerPoints).length;
+  }
+  return Object.keys(playerPoints).length;
 };

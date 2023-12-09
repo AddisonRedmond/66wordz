@@ -12,7 +12,7 @@ const RoundTimer: React.FC<RoundTimerProps> = ({
     expiryTimestamp,
   });
   return (
-    <div className="text-center text-lg font-semibold mt-4">
+    <div className="text-center text-sm sm:text-lg font-semibold mt-4">
       <p className=" text-neutral-600">Time Remaining</p>
       <p>{`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`}</p>
     </div>

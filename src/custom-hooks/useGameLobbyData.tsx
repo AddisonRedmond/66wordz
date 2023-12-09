@@ -11,7 +11,7 @@ type LobbyData = {
   roundTimer: number;
 };
 
-type PlayerPoints = {
+export type PlayerPoints = {
   [keyof: string]: {
     points: number;
   };
