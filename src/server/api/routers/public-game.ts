@@ -14,10 +14,10 @@ import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
-    .input(z.string())
+    .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       // check if player is already part of a game
-      const clientGameType = input as GameType;
+      const clientGameType = input.gameMode as GameType;
       const rejoin: {
         userId: string;
         lobbyId: string;
@@ -55,7 +55,7 @@ export const publicGameRouter = createTRPCRouter({
       const createNewLobby = async () => {
         // create the new lobby in the database
         const newLobby: { id: string } = await ctx.db.lobby.create({
-          data: { gameType: clientGameType },
+          data: { gameType: clientGameType, started: input.isSolo },
         });
         //   create the new lobby in firebase realtime db
         if (clientGameType === "ELIMINATION") {
@@ -73,7 +73,6 @@ export const publicGameRouter = createTRPCRouter({
               body: JSON.stringify({ lobbyId: newLobby.id }),
             });
           } catch (e) {
-            console.log("error registering elimination lobby", e);
           }
 
           // register lobby with server
@@ -81,6 +80,8 @@ export const publicGameRouter = createTRPCRouter({
           await createNewMarathonLobby(clientGameType, newLobby.id, {
             gameStarted: false,
             initilizedTimeStamp: new Date(),
+            gameStartTimer:
+              new Date().getTime() + (input.isSolo ? 5000 : 60000),
           });
         }
 

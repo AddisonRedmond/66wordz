@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 
 export type GameData = {
-  lobbyData: { gameStarted: boolean; startTimer: number };
+  lobbyData: {
+    gameStarted: boolean;
+    startTimer: number;
+    gameStartTimer: number;
+  };
   players: {
     [keyof: string]: {
+      guesses: string[];
       guessCount: number;
       word: string;
       timer: number;
       allGuesses: string[];
+      correctGuessCount: number;
     };
   };
 };

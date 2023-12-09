@@ -37,11 +37,11 @@ const Timer: React.FC<TimerProps> = ({
         animate={{ scale: 1, opacity: 1 }}
         className={`${
           opponent ? "my-0" : "my-3"
-        } flex flex-col justify-center text-2xl font-semibold`}
+        } flex flex-col justify-center text-2xl font-semibold w-full`}
       >
         {!opponent && (
-          <div className="mx-1 text-black">
-            <span>{minutes} Mins</span> <span>{seconds} Secs</span>
+          <div className="mx-1 text-black text-center sm:inline-block hidden">
+            <span>{`${minutes}:${seconds < 10 ? "0" : ""}${seconds}`}</span>
           </div>
         )}
         <div className="h-1 w-[100%] bg-white">

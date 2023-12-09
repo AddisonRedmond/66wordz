@@ -3,8 +3,9 @@ import {
   handleCorrectGuess,
   handleMatched,
   handleWordFailure,
+  calculateTimePlayed,
 } from "~/utils/game";
-import { db } from "~/utils/firebase/firebase";
+import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
 import words from "~/utils/dictionary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,11 +16,18 @@ import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import GameGrid from "./game-grid";
 import Keyboard from "./keyboard";
+import Timer from "./timer";
+import GameStartTimer from "./game-start-timer";
+import { startSoloGame, startUserTimer } from "~/utils/firebase/marathon";
+import LoadingPlayers from "./loading-players";
+import TotalTime from "./marathon/total-time";
+import EliminationModal from "~/elimination/elimination-modal";
 type MarathonProps = {
   lobbyId: string;
   userId: string;
   gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
   exitMatch: () => void;
+  isSolo: boolean;
 };
 
 type Matches = {
@@ -40,7 +48,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   } | null>(null);
 
   const endGame = api.public.endGame.useMutation();
-  const manualStart = api.public.manualStart.useMutation();
   const gameData = useMarathonLobbyData(db, props);
 
   const [matches, setMatches] = useState<Matches>({
@@ -57,7 +64,15 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
     });
   };
 
-  const handleEndMatch = (firstPlace?: boolean) => {};
+  const handleEndMatch = (firstPlace?: boolean) => {
+    // get total words guessed,
+    // get total time played,
+    // get total correct guesses
+    // display modal with summary
+    // log total time to database for user in miliseconds
+    // total time would be the playerData.timer - lobbydata.gameStartTimer
+    setModalIsOpen(true);
+  };
 
   const notify = () => toast.warn(`${guess} not in word list!`);
 
@@ -68,15 +83,103 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
 
   const checkIfWin = () => {};
 
-  const handleKeyBoardLogic = (letter: string) => {};
+  const handleKeyBoardLogic = (letter: string) => {
+    const playerData = gameData?.players[props.userId];
+    const {
+      guesses = [],
+      guessCount,
+      word = "ERROR",
+      timer = 0,
+      allGuesses = [],
+      correctGuessCount = 0,
+    } = playerData ?? {};
+    if (!playerData) {
+      return;
+    } else if (letter === "Backspace" && guess.length > 0) {
+      setGuess((prevGuess) => prevGuess.slice(0, -1));
+    } else if (letter === "Enter" && guess.length === 5) {
+      if (words.includes(guess)) {
+        updateGuessesAndAllGuesses(
+          props.lobbyId,
+          props.userId,
+          [...(guesses ?? []), guess],
+          [...(allGuesses ?? []), guess],
+          props.gameType,
+        );
+        const theMatches = handleMatched(guesses, word);
+        setMatches(() => handleMatched(guesses, word));
+        if (guess === word) {
+          handleCorrectGuess(
+            props.lobbyId,
+            props.userId,
+            timer,
+            guesses.length,
+            props.gameType,
+            correctGuessCount,
+          );
+          setGuess("");
+          resetMatches();
+          return;
+        } else if (guesses.length > 4) {
+          handleWordFailure(
+            guesses,
+            word,
+            props.lobbyId,
+            props.userId,
+            timer,
+            props.gameType,
+          );
+          setGuess("");
+          return;
+        }
+        setGuess("");
+      } else {
+        notify();
+      }
+    } else if (
+      /[a-zA-Z]/.test(letter) &&
+      letter.length === 1 &&
+      guess.length < 5
+    ) {
+      setGuess((prevGuess) => `${prevGuess}${letter}`.toUpperCase());
+    }
+  };
   const handleKeyUp = (e: KeyboardEvent) => {
-    const letter = e.key.toUpperCase();
+    const letter = e.key;
     handleKeyBoardLogic(letter);
   };
 
-  useOnKeyUp(handleKeyUp, [guess, gameData]);
+  useEffect(() => {
+    // check if user has a timer data already,
+    if (
+      gameData?.lobbyData.gameStarted &&
+      !gameData.players[props.userId]?.timer
+    ) {
+      // if not, create one
+      startUserTimer(props.userId, props.lobbyId);
+    }
+    // if not, create one
+    // if they do, return nothing
+  }, [gameData?.lobbyData.gameStarted]);
 
-  console.log(gameData);
+  useEffect(() => {
+    if (gameData?.players?.[props.userId] && gameData.lobbyData.gameStarted) {
+      const playerData = gameData.players[props.userId];
+
+      window.addEventListener("keyup", handleKeyUp);
+      setMatches(() =>
+        handleMatched(
+          playerData!.guesses ? playerData!.guesses : [],
+          playerData!.word,
+        ),
+      );
+      return () => {
+        window.removeEventListener("keyup", handleKeyUp);
+      };
+    }
+  }, [guess, gameData]);
+
+  useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   const config = {
     angle: 90,
@@ -93,44 +196,125 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   };
 
   if (gameData) {
+    const playerData = gameData.players[props.userId];
+
     return (
       <>
-        <Confetti active={win} config={config} />
-        <motion.div
-          exit={{ scale: 0 }}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="flex w-full items-center justify-around"
-        >
-          <div className="absolute left-10 top-24">
+        {modalIsOpen && (
+          <EliminationModal>
+            <div className=" flex w-[90vw] flex-col justify-center sm:h-48 sm:w-96">
+              <p className="text-center text-xl font-semibold">Game Summary</p>
+              <div className="flex flex-col items-center justify-center font-semibold">
+                <div className="flex w-5/6 justify-between">
+                  <p>Total Guesses</p>
+                  <p>
+                    {playerData?.allGuesses ? playerData.allGuesses.length : 0}
+                  </p>
+                </div>
+
+                <div className="flex w-5/6 justify-between">
+                  <p>Total Correct Guesses</p>
+                  <p>{playerData?.correctGuessCount}</p>
+                </div>
+
+                <div className="flex w-5/6 justify-between">
+                  <p>Total Time</p>
+                  <p>
+                    {calculateTimePlayed(
+                      gameData.lobbyData.gameStartTimer,
+                      playerData!.timer,
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="text-center">
+                <button
+                  onClick={() => props.exitMatch()}
+                  className="rounded-md bg-black p-2 text-white"
+                >
+                  Exit Game
+                </button>
+              </div>
+            </div>
+          </EliminationModal>
+        )}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative -top-2 sm:absolute sm:left-10 sm:top-24">
             <button
               onClick={() => props.exitMatch()}
               className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
             >
-              {gameData.lobbyData.gameStarted ? "Forfeit" : "Exit Match"}
+              {gameData.lobbyData?.gameStarted ? "Forfeit" : "Exit Match"}
             </button>
           </div>
-          <div className="flex flex-col items-center justify-center gap-3">
-            <GameGrid
-              disabled={!gameData.lobbyData.gameStarted}
-              guess={guess}
-              guesses={[]}
-              word={"TESTS"}
-              rows={6}
-            />
-            <Keyboard
-              matches={matches}
-              disabled={!gameData.lobbyData.gameStarted}
-            />
-          </div>
-        </motion.div>
-        <ToastContainer
-          position="bottom-center"
-          autoClose={1000}
-          limit={3}
-          newestOnTop={false}
-          theme="dark"
-        />
+
+          {gameData.lobbyData.gameStarted ? (
+            <>
+              <Confetti active={win} config={config} />
+              <motion.div
+                exit={{ scale: 0 }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="flex w-full flex-col items-center justify-around"
+              >
+                <div className="flex flex-col items-center justify-center gap-3">
+                  {gameData.lobbyData.gameStarted && (
+                    <TotalTime
+                      isTimerRunning={!modalIsOpen}
+                      startTime={gameData.lobbyData.gameStartTimer}
+                    />
+                  )}
+                  <div>
+                    {playerData?.timer && (
+                      <Timer
+                        expiryTimestamp={new Date(playerData.timer)}
+                        opponent={false}
+                        endGame={() => handleEndMatch()}
+                      />
+                    )}
+
+                    <GameGrid
+                      disabled={!gameData.lobbyData.gameStarted}
+                      guess={guess}
+                      guesses={playerData?.guesses ?? []}
+                      word={playerData?.word ?? ""}
+                      rows={6}
+                    />
+                  </div>
+                  <Keyboard
+                    matches={matches}
+                    disabled={!gameData.lobbyData.gameStarted}
+                    handleKeyBoardLogic={handleKeyBoardLogic}
+                  />
+                </div>
+              </motion.div>
+              <ToastContainer
+                position="bottom-center"
+                autoClose={1000}
+                limit={3}
+                newestOnTop={false}
+                theme="dark"
+              />
+            </>
+          ) : (
+            <div>
+              {props.isSolo ? (
+                <p className="text-center text-2xl font-semibold">Solo Game</p>
+              ) : (
+                <LoadingPlayers
+                  totalPlayers={Object.keys(gameData.players).length}
+                />
+              )}
+
+              <GameStartTimer
+                handleTimerEnd={() => {
+                  props.isSolo ? startSoloGame(props.lobbyId) : undefined;
+                }}
+                expiryTimestamp={new Date(gameData.lobbyData.gameStartTimer)}
+              />
+            </div>
+          )}
+        </div>
       </>
     );
   } else {
