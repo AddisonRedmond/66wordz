@@ -1,4 +1,4 @@
-import { ref, set, update, remove } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { db } from "./firebase";
 
 export const startUserTimer = async (userId: string, lobbyId: string) => {

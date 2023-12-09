@@ -10,7 +10,7 @@ import words from "~/utils/dictionary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-import { api } from "~/utils/api";
+// import { api } from "~/utils/api";
 import Confetti from "react-dom-confetti";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
@@ -39,15 +39,9 @@ type Matches = {
 const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   const [guess, setGuess] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [win, setWin] = useState<boolean>(false);
-  const [spectate, setSpectate] = useState<boolean>(false);
-  const [endGameSummary, setEndGameSummary] = useState<{
-    placement: number;
-    totalTime: string;
-    totalGuesses: number;
-  } | null>(null);
+  // const [win, setWin] = useState<boolean>(false);
 
-  const endGame = api.public.endGame.useMutation();
+  // const endGame = api.public.endGame.useMutation();
   const gameData = useMarathonLobbyData(db, props);
 
   const [matches, setMatches] = useState<Matches>({
@@ -64,30 +58,23 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
     });
   };
 
-  const handleEndMatch = (firstPlace?: boolean) => {
-    // get total words guessed,
-    // get total time played,
-    // get total correct guesses
-    // display modal with summary
-    // log total time to database for user in miliseconds
-    // total time would be the playerData.timer - lobbydata.gameStartTimer
+  const handleEndMatch = () => {
     setModalIsOpen(true);
   };
 
   const notify = () => toast.warn(`${guess} not in word list!`);
 
-  const playerHasWon = () => {
-    setWin(true);
-    handleEndMatch(true);
-  };
+  // const playerHasWon = () => {
+  //   setWin(true);
+  //   handleEndMatch(true);
+  // };
 
-  const checkIfWin = () => {};
+  // const checkIfWin = () => {};
 
   const handleKeyBoardLogic = (letter: string) => {
     const playerData = gameData?.players[props.userId];
     const {
       guesses = [],
-      guessCount,
       word = "ERROR",
       timer = 0,
       allGuesses = [],
@@ -106,7 +93,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
           [...(allGuesses ?? []), guess],
           props.gameType,
         );
-        const theMatches = handleMatched(guesses, word);
         setMatches(() => handleMatched(guesses, word));
         if (guess === word) {
           handleCorrectGuess(
@@ -250,7 +236,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
 
           {gameData.lobbyData.gameStarted ? (
             <>
-              <Confetti active={win} config={config} />
+              {/* <Confetti active={modalIsOpen} config={config} /> */}
               <motion.div
                 exit={{ scale: 0 }}
                 initial={{ scale: 0 }}
