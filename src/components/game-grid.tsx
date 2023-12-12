@@ -1,4 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useAnimate } from "framer-motion";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { handleColor } from "~/utils/game";
 
 type GameGridProps = {
@@ -7,12 +8,16 @@ type GameGridProps = {
   word: string;
   disabled: boolean;
   rows: number;
+  spellCheck: boolean;
+  setSpellCheck: Dispatch<SetStateAction<boolean>>;
 };
 
 type WordRowProps = {
   guess?: string;
   word: string;
   match: boolean;
+  spellCheck: boolean;
+  setSpellCheck: Dispatch<SetStateAction<boolean>>;
 };
 
 type WordTileProps = {
@@ -55,8 +60,18 @@ const WordTile: React.FC<WordTileProps> = ({
 };
 
 const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
+  const [scope, animate] = useAnimate();
+
+  const control = {
+    x: [-10, 10, -10, 10, 0],
+  };
+  useEffect(() => {
+    animate(scope.current, control, { duration: 0.3 });
+
+    props.setSpellCheck(false);
+  }, [props.spellCheck]);
   return (
-    <motion.div className="flex gap-1">
+    <motion.div ref={scope} className="flex gap-1">
       {Array.from({ length: 5 }).map((_, index: number) => {
         return (
           <WordTile
@@ -78,6 +93,8 @@ const GameGrid: React.FC<GameGridProps> = ({
   word,
   disabled,
   rows,
+  spellCheck,
+  setSpellCheck,
 }) => {
   const handleWord = () => {
     return Array.from({ length: rows }).map((_, index: number) => {
@@ -113,6 +130,8 @@ const GameGrid: React.FC<GameGridProps> = ({
           guess={guess}
           word={word}
           match={handleMatches(index)}
+          spellCheck={spellCheck}
+          setSpellCheck={setSpellCheck}
         />
       ))}
     </div>

@@ -5,7 +5,11 @@ import {
   handleWordFailure,
   calculateTimePlayed,
 } from "~/utils/game";
-import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
+import {
+  db,
+  stopGame,
+  updateGuessesAndAllGuesses,
+} from "~/utils/firebase/firebase";
 import words from "~/utils/dictionary";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,6 +43,8 @@ type Matches = {
 const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   const [guess, setGuess] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [fireSpellCheck, setFireSpellCheck] = useState<boolean>(false);
+
   // const [win, setWin] = useState<boolean>(false);
 
   // const endGame = api.public.endGame.useMutation();
@@ -61,8 +67,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   const handleEndMatch = () => {
     setModalIsOpen(true);
   };
-
-  const notify = () => toast.warn(`${guess} not in word list!`);
 
   // const playerHasWon = () => {
   //   setWin(true);
@@ -120,7 +124,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
         }
         setGuess("");
       } else {
-        notify();
+        setFireSpellCheck(true);
       }
     } else if (
       /[a-zA-Z]/.test(letter) &&
@@ -265,6 +269,8 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
                       guesses={playerData?.guesses ?? []}
                       word={playerData?.word ?? ""}
                       rows={6}
+                      spellCheck={fireSpellCheck}
+                      setSpellCheck={setFireSpellCheck}
                     />
                   </div>
                   <Keyboard

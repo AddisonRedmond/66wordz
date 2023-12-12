@@ -14,11 +14,11 @@ import {
   getTopPlayersAndBots,
   handleCreateMatchingIndex,
   handleEliminationMatched,
+  placementSuffix,
   spellCheck,
 } from "~/utils/elimination";
 import { updateGuessCountAndMatchingIndex } from "../utils/firebase/firebase";
 import Points from "~/elimination/points";
-import { ToastContainer, toast } from "react-toastify";
 import Qualified from "~/elimination/qualifeid";
 import NextRoundTimer from "~/elimination/next-round-timer";
 import EliminationModal from "~/elimination/elimination-modal";
@@ -27,6 +27,8 @@ import Winner from "~/elimination/winner";
 import Disqualfied from "~/elimination/disqualified";
 import Opponent from "~/elimination/opponent";
 import RoundTimer from "~/elimination/round-timer";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import OpponentMobile from "~/elimination/opponent-moblie";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -53,6 +55,7 @@ type Player = {
 
 const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
+  const [fireSpellCheck, setFireSpellCheck] = useState<boolean>(false);
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
   const TARGET_SCORE = 300;
   const gameData = useGameLobbyData(db, props);
@@ -63,7 +66,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     noMatch: [],
   });
 
-  const notify = () => toast.warn(`${guess} not in word list!`);
+  const isMobile = useIsMobile();
 
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
 
@@ -106,7 +109,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
         setGuess((prevGuess) => prevGuess.slice(0, -1));
       } else if (letter === "Enter") {
         if (!spellCheck(guess)) {
-          notify();
+          setFireSpellCheck(true);
           return;
         }
 
@@ -214,8 +217,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     gameData?.botPoints,
   );
 
-  console.log(placement);
-
   const config = {
     angle: 90,
     spread: 360,
@@ -277,13 +278,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           </>
         )}
 
-        <ToastContainer
-          position="bottom-center"
-          autoClose={1000}
-          limit={3}
-          newestOnTop={false}
-          theme="dark"
-        />
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -299,22 +293,43 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             </button>
           </div>
 
-          <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
-            {getHalfOfOpponents("even").map((player: Player) => {
-              return (
-                <Opponent
-                  key={player.playerId}
-                  numOfOpponents={getHalfOfOpponents("even").length}
-                  points={player?.points}
-                  matchingIndex={player.playerData?.matchingIndex}
-                  wordLength={word.length}
-                />
-              );
-            })}
-          </div>
+          {!isMobile && (
+            <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
+              {getHalfOfOpponents("even").map((player: Player) => {
+                return (
+                  <Opponent
+                    key={player.playerId}
+                    numOfOpponents={getHalfOfOpponents("even").length}
+                    points={player?.points}
+                    matchingIndex={player.playerData?.matchingIndex}
+                    wordLength={word.length}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {gameData?.playerPoints?.[props.userId] ? (
             <div className="flex  flex-col items-center sm:gap-4">
+              {isMobile && (
+                <div>
+                  {Object.keys(gameData.playerPoints).map(
+                    (playerId: string, index: number) => {
+                      return (
+                        <OpponentMobile
+                          key={playerId}
+                          points={gameData.playerPoints[playerId]?.points}
+                          matchingIndex={
+                            gameData.roundData?.[playerId]?.matchingIndex
+                          }
+                          pointsGoal={TARGET_SCORE}
+                        />
+                      );
+                    },
+                  )}
+                </div>
+              )}
+
               {gameData.lobbyData.gameStarted && (
                 <div className="text-center">
                   <p className="font-semibold sm:text-3xl">
@@ -352,7 +367,15 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
 
                   {gameData.lobbyData.gameStarted && (
                     <>
-                    {<p>your placment is {placement.topPlayers.indexOf(props.userId) + 1}</p>}
+                      {
+                        <p className="font-semibold">
+                          {`${placement.topPlayers.indexOf(
+                            props.userId,
+                          )}${placementSuffix(
+                            placement.topPlayers.indexOf(props.userId),
+                          )} Place`}
+                        </p>
+                      }
                       {gameData?.lobbyData?.previousWord && (
                         <div className="text-center">
                           <p className="font-semibold text-neutral-600 sm:text-xl">
@@ -379,6 +402,8 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                           word={word}
                           disabled={isDisabled()}
                           rows={1}
+                          spellCheck={fireSpellCheck}
+                          setSpellCheck={setFireSpellCheck}
                         />
                       </div>
                       <Keyboard
@@ -395,19 +420,21 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
             <Disqualfied handleClick={props.exitMatch} />
           )}
 
-          <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
-            {getHalfOfOpponents("odd").map((player: Player) => {
-              return (
-                <Opponent
-                  key={player.playerId}
-                  numOfOpponents={getHalfOfOpponents("odd").length}
-                  points={player?.points}
-                  matchingIndex={player.playerData?.matchingIndex}
-                  wordLength={word.length}
-                />
-              );
-            })}
-          </div>
+          {!isMobile && (
+            <div className="flex w-1/3 flex-wrap justify-around gap-x-1 gap-y-2 overflow-hidden">
+              {getHalfOfOpponents("odd").map((player: Player) => {
+                return (
+                  <Opponent
+                    key={player.playerId}
+                    numOfOpponents={getHalfOfOpponents("odd").length}
+                    points={player?.points}
+                    matchingIndex={player.playerData?.matchingIndex}
+                    wordLength={word.length}
+                  />
+                );
+              })}
+            </div>
+          )}
         </motion.div>
       </>
     );

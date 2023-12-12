@@ -93,7 +93,6 @@ export const updateGuessesAndWord = async (
   gameType: string,
   correctGuessCount: number,
 ) => {
-  
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: guesses,
     word: word,
@@ -160,6 +159,12 @@ export const startGame = async (lobbyId: string, gameType: string) => {
   await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: true,
     startTime: new Date().getTime(),
+  });
+};
+
+export const stopGame = async (lobbyId: string, gameType: string) => {
+  await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
+    gameStarted: false,
   });
 };
 

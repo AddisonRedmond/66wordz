@@ -5,6 +5,7 @@ import { signOut } from "next-auth/react";
 import { ChangeEvent, MouseEventHandler, useState } from "react";
 import EliminationModal from "../elimination/elimination-modal";
 import { api } from "~/utils/api";
+
 const Navbar: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [issueType, setIssueType] = useState<
@@ -152,6 +153,7 @@ const Navbar: React.FC = () => {
             src={profile}
             alt="profile icon"
           /> */}
+
           <button
             className="rounded-md bg-black p-2 text-xs font-semibold text-white sm:text-sm"
             onClick={handleSignOut}

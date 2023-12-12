@@ -116,7 +116,6 @@ export const getTopPlayersAndBots = (
       return [];
     }
     return Object.keys(pointsObject)
-      .filter((userId) => pointsObject[userId]!.points > 0)
       .sort((a, b) => pointsObject[b]!.points - pointsObject[a]!.points)
       .slice(0, count);
   };
@@ -137,4 +136,17 @@ export const calculateTotalPlayers = (
     return Object.keys(botPoints).length + Object.keys(playerPoints).length;
   }
   return Object.keys(playerPoints).length;
+};
+
+export const placementSuffix = (placement: number) => {
+  switch (placement) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
 };
