@@ -1,5 +1,4 @@
 import Image from "next/image";
-// import profile from "../../public/PersonCircle.svg";
 import bug from "../../public/bug.svg";
 import { signOut } from "next-auth/react";
 import { ChangeEvent, MouseEventHandler, useState } from "react";
@@ -146,14 +145,6 @@ const Navbar: React.FC = () => {
       <div className="absolute top-0 z-10 flex h-14 w-screen flex-row items-center justify-between px-8">
         <p className="cursor-pointer text-4xl font-semibold">66</p>
         <div className="relative flex justify-center">
-          {/* <Image
-            onClick={handleSignOut}
-            className="cursor-pointer"
-            height={40}
-            src={profile}
-            alt="profile icon"
-          /> */}
-
           <button
             className="rounded-md bg-black p-2 text-xs font-semibold text-white sm:text-sm"
             onClick={handleSignOut}
@@ -163,7 +154,7 @@ const Navbar: React.FC = () => {
           <Image
             onClick={() => openReportBugModal()}
             title="report a bug or an issue"
-            className="absolute top-14 hidden cursor-pointer sm:inline-block"
+            className="absolute top-14 cursor-pointer sm:inline-block"
             src={bug}
             alt="bug icon"
             height={15}

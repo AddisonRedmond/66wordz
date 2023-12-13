@@ -29,6 +29,7 @@ import Opponent from "~/elimination/opponent";
 import RoundTimer from "~/elimination/round-timer";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import OpponentMobile from "~/elimination/opponent-moblie";
+import OpponentModal from "~/elimination/opponents-modal";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -57,6 +58,8 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const correctGuess = api.elimination.handleCorrectGuess.useMutation();
   const [fireSpellCheck, setFireSpellCheck] = useState<boolean>(false);
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
+  const [opponentsModalIsOpen, setOpponentsModalIsOpen] =
+    useState<boolean>(false);
   const TARGET_SCORE = 300;
   const gameData = useGameLobbyData(db, props);
   const [guess, setGuess] = useState("");
@@ -217,6 +220,35 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     gameData?.botPoints,
   );
 
+  // TODO: remove props.userid from array, and add the next person in line
+  const allPlayersAndBots = (numberOfPlayers?: number) => {
+    if (!gameData) return [];
+
+    const allPlayers = gameData?.playerPoints || {};
+    const allBots = gameData?.botPoints || {};
+    const combinedPlayerData = { ...allPlayers, ...allBots };
+
+    if (numberOfPlayers) {
+      const topPlayers = placement.topPlayers.slice(0, numberOfPlayers);
+
+      return topPlayers.map((playerId: string) => {
+        return {
+          playerId: playerId,
+          points: combinedPlayerData[playerId]?.points,
+          matchingIndex: gameData.roundData?.[playerId]?.matchingIndex,
+        };
+      });
+    } else {
+      return Object.keys(combinedPlayerData).map((playerId: string) => {
+        return {
+          playerId: playerId,
+          points: combinedPlayerData[playerId]?.points,
+          matchingIndex: gameData.roundData?.[playerId]?.matchingIndex,
+        };
+      });
+    }
+  };
+
   const config = {
     angle: 90,
     spread: 360,
@@ -249,13 +281,14 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     const isDisabled = () => {
       return (
         (gameData?.playerPoints?.[props.userId]?.points !== undefined &&
-          gameData.playerPoints[props.userId]!.points >= TARGET_SCORE) ||
+          gameData.playerPoints[props.userId]!.points >=
+            gameData.lobbyData.pointsGoal) ||
         gameData.lobbyData?.gameStarted === false
       );
     };
     return (
       <>
-        <Confetti active={runConfetti()} config={config} />
+        {!isMobile && <Confetti active={runConfetti()} config={config} />}
         {gameStartTimer && gameData?.lobbyData?.nextRoundStartTime && (
           <EliminationModal>
             <NextRoundTimer
@@ -284,7 +317,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           exit={{ scale: 0, opacity: 0 }}
           className="flex w-full items-center justify-evenly"
         >
-          <div className="absolute left-10 top-24">
+          <div className="absolute left-7 top-14 sm:left-10 sm:top-24">
             <button
               onClick={() => props.exitMatch()}
               className="rounded-md border-2 border-black p-2 text-xs font-semibold text-black duration-150 ease-in-out hover:bg-black hover:text-white"
@@ -312,20 +345,65 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
           {gameData?.playerPoints?.[props.userId] ? (
             <div className="flex  flex-col items-center sm:gap-4">
               {isMobile && (
-                <div>
-                  {Object.keys(gameData.playerPoints).map(
-                    (playerId: string, index: number) => {
+                <div className="grid grid-flow-col grid-rows-2 gap-4">
+                  {allPlayersAndBots(9).map(
+                    (playerObject: {
+                      playerId: string;
+                      points: number | undefined;
+                      matchingIndex: number[] | undefined;
+                    }) => {
                       return (
                         <OpponentMobile
-                          key={playerId}
-                          points={gameData.playerPoints[playerId]?.points}
-                          matchingIndex={
-                            gameData.roundData?.[playerId]?.matchingIndex
-                          }
-                          pointsGoal={TARGET_SCORE}
+                          key={playerObject.playerId}
+                          points={playerObject.points}
+                          matchingIndex={playerObject.matchingIndex}
+                          pointsGoal={gameData.lobbyData.pointsGoal}
                         />
                       );
                     },
+                  )}
+                  {gameData.lobbyData.gameStarted && (
+                    <>
+                      <div
+                        onClick={() => {
+                          setOpponentsModalIsOpen(true);
+                        }}
+                        className="rounded-full border-2 border-neutral-600 text-center text-xl font-bold text-black"
+                      >
+                        <p>. . .</p>
+                      </div>
+                      <OpponentModal isOpen={opponentsModalIsOpen}>
+                        <div className="px-2 text-center">
+                          <p className="mb-2 text-lg font-semibold">
+                            Opponents
+                          </p>
+                          <div className="grid grid-cols-4 gap-4">
+                            {allPlayersAndBots().map(
+                              (playerObject: {
+                                playerId: string;
+                                points: number | undefined;
+                                matchingIndex: number[] | undefined;
+                              }) => {
+                                return (
+                                  <OpponentMobile
+                                    key={playerObject.playerId}
+                                    points={playerObject.points}
+                                    matchingIndex={playerObject.matchingIndex}
+                                    pointsGoal={gameData.lobbyData.pointsGoal}
+                                  />
+                                );
+                              },
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setOpponentsModalIsOpen(false)}
+                            className="mt-2 rounded-md bg-black p-2 text-white"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </OpponentModal>
+                    </>
                   )}
                 </div>
               )}
@@ -341,7 +419,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                 </div>
               )}
 
-              {points >= 300 ? (
+              {points >= gameData.lobbyData.pointsGoal ? (
                 <Qualified />
               ) : (
                 <>
@@ -369,10 +447,10 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                     <>
                       {
                         <p className="font-semibold">
-                          {`${placement.topPlayers.indexOf(
-                            props.userId,
-                          )}${placementSuffix(
-                            placement.topPlayers.indexOf(props.userId),
+                          {`${
+                            placement.topPlayers.indexOf(props.userId) + 1
+                          }${placementSuffix(
+                            placement.topPlayers.indexOf(props.userId) + 1,
                           )} Place`}
                         </p>
                       }
@@ -393,7 +471,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                       <div className="mb-3 flex flex-col gap-3">
                         <Points
                           totalPoints={points}
-                          pointsTarget={TARGET_SCORE}
+                          pointsTarget={gameData.lobbyData.pointsGoal}
                           showPoints={true}
                         />
                         <GameGrid

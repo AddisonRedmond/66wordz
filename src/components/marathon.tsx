@@ -5,16 +5,10 @@ import {
   handleWordFailure,
   calculateTimePlayed,
 } from "~/utils/game";
-import {
-  db,
-  stopGame,
-  updateGuessesAndAllGuesses,
-} from "~/utils/firebase/firebase";
+import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
 import words from "~/utils/dictionary";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
-// import { api } from "~/utils/api";
 // import Confetti from "react-dom-confetti";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
@@ -280,13 +274,6 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
                   />
                 </div>
               </motion.div>
-              <ToastContainer
-                position="bottom-center"
-                autoClose={1000}
-                limit={3}
-                newestOnTop={false}
-                theme="dark"
-              />
             </>
           ) : (
             <div>

@@ -9,6 +9,7 @@ type LobbyData = {
   gameStartTimer?: number;
   previousWord?: string;
   roundTimer: number;
+  pointsGoal: number;
 };
 
 export type PlayerPoints = {

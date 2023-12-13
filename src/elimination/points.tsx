@@ -18,7 +18,7 @@ const Points: React.FC<PointsProps> = (props: PointsProps) => {
       <motion.div
         animate={{ width: `${CalcualtePointsPrecentage()}%`, maxWidth: "100%" }}
         className={`${
-          props.showPoints ? "h-3" : "h-1"
+          props.showPoints ? "h-1 sm:h-3" : "h-1"
         } rounded-full bg-green-600`}
       ></motion.div>
     </div>

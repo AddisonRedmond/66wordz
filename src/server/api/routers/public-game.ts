@@ -9,7 +9,6 @@ import {
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { GameType } from "@prisma/client";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 export const publicGameRouter = createTRPCRouter({
@@ -17,7 +16,7 @@ export const publicGameRouter = createTRPCRouter({
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       // check if player is already part of a game
-      const clientGameType = input.gameMode as GameType;
+      const clientGameType = input.gameMode;
       const rejoin: {
         userId: string;
         lobbyId: string;
@@ -66,14 +65,14 @@ export const publicGameRouter = createTRPCRouter({
             word: handleGetNewWord(),
             gameStartTimer: new Date().getTime() + 60000,
             roundTimer: new Date().getTime() + 240000,
+            pointsGoal: 300,
           });
           try {
             fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
               method: "POST",
               body: JSON.stringify({ lobbyId: newLobby.id }),
             });
-          } catch (e) {
-          }
+          } catch (e) {}
 
           // register lobby with server
         } else if (clientGameType === "MARATHON") {

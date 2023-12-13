@@ -4,18 +4,18 @@ import dictionary from "./dictionary";
 const pointTable: { [key: number]: number } = {
   0: 300,
   1: 200,
-  2: 100,
-  3: 90,
-  4: 80,
-  5: 70,
-  6: 60,
-  7: 50,
+  2: 150,
+  3: 140,
+  4: 130,
+  5: 120,
+  6: 110,
+  7: 100,
 };
 
 export const calculatePoints = (guessCount: number, points: number) => {
   const pointValue = pointTable[guessCount] ?? 0; // Use the nullish coalescing operator
   if (guessCount > 7) {
-    return 60 + points;
+    return 100 + points;
   } else {
     return pointValue + points;
   }

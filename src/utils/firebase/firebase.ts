@@ -41,6 +41,7 @@ export const createNewEliminationLobby = async (
     round: number;
     word: string;
     roundTimer: number;
+    pointsGoal: number;
   },
 ) => {
   await set(ref(db, `${gameType}/${lobbyId}`), {
