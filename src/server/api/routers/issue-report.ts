@@ -19,5 +19,6 @@ export const reportIssueRouter = createTRPCRouter({
           createdById: userId,
         },
       });
+      return "Issue reported!";
     }),
 });
