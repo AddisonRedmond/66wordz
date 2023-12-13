@@ -60,7 +60,6 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
   const [gameStartTimer, setGameStartTimer] = useState<boolean>(false);
   const [opponentsModalIsOpen, setOpponentsModalIsOpen] =
     useState<boolean>(false);
-  const TARGET_SCORE = 300;
   const gameData = useGameLobbyData(db, props);
   const [guess, setGuess] = useState("");
   const [keyBoardMatches, setKeyBoardMatches] = useState<Matches>({
@@ -225,7 +224,7 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     if (!gameData) return [];
 
     const allPlayers = gameData?.playerPoints || {};
-    const allBots = gameData?.botPoints || {};
+    const allBots = gameData?.botPoints ?? {};
     const combinedPlayerData = { ...allPlayers, ...allBots };
 
     if (numberOfPlayers) {

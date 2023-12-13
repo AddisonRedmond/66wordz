@@ -11,6 +11,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
+import { GameType } from "@prisma/client";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
@@ -53,6 +54,7 @@ export const publicGameRouter = createTRPCRouter({
 
       const createNewLobby = async () => {
         // create the new lobby in the database
+        const clientGameType = input.gameMode as GameType;
         const newLobby: { id: string } = await ctx.db.lobby.create({
           data: { gameType: clientGameType, started: input.isSolo },
         });

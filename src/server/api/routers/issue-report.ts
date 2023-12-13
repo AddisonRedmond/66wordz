@@ -12,13 +12,12 @@ export const reportIssueRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
       const { message, issueType } = input;
-      const issue = await ctx.db.issues.create({
+      await ctx.db.issues.create({
         data: {
           summary: message,
           issueType: issueType,
           createdById: userId,
         },
       });
-      return issue;
     }),
 });
