@@ -3,7 +3,7 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { db } from "~/utils/firebase/firebase";
 import GameGrid from "./game-grid";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 import GameStartTimer from "./game-start-timer";
 import Keyboard from "./keyboard";
 import WordContainer from "~/elimination/word-container";
@@ -68,6 +68,13 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
     noMatch: [],
   });
 
+  const [scope, animate] = useAnimate();
+
+  const control = {
+    color: ["#000000", "#4CBB17", "#000000"],
+    scale: [1, 1.2, 1],
+  };
+
   const isMobile = useIsMobile();
 
   const gamePath = `${props.gameType}/${props.lobbyId}/roundData/${props.userId}`;
@@ -89,6 +96,12 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
       setGameStartTimer(true);
     }
   }, [gameData]);
+
+  useEffect(() => {
+    if (gameData?.lobbyData.gameStarted) {
+      animate(scope.current, control, { duration: 0.3 });
+    }
+  }, [gameData?.lobbyData?.word]);
 
   const handleStartNextRound = () => {
     if (gameData) {
@@ -453,16 +466,18 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                           )} Place`}
                         </p>
                       }
-                      {gameData?.lobbyData?.previousWord && (
-                        <div className="text-center">
-                          <p className="font-semibold text-neutral-600 sm:text-xl">
-                            Previous word
-                          </p>
-                          <p className="font-semibold sm:text-2xl">
-                            {gameData?.lobbyData?.previousWord}
-                          </p>
-                        </div>
-                      )}
+
+                      <div className="text-center">
+                        <p className="font-semibold text-neutral-600 sm:text-xl">
+                          Previous word
+                        </p>
+                        <p ref={scope} className="font-semibold sm:text-2xl">
+                          {gameData?.lobbyData?.previousWord
+                            ? gameData?.lobbyData?.previousWord
+                            : "..."}
+                        </p>
+                      </div>
+
                       <WordContainer
                         word={word}
                         matchingIndex={matchingIndex}
