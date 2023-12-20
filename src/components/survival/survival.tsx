@@ -55,6 +55,8 @@ const Survival: React.FC<SurvivalProps> = ({
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   const playerData = gameData?.players[userId];
+
+  const words = Object.keys(gameData?.words || []).sort((a, b) => b.length - a.length);
   return (
     <div className="flex flex-col items-center justify-around gap-12">
       {/* div for game info */}
@@ -64,23 +66,23 @@ const Survival: React.FC<SurvivalProps> = ({
 
       <div className=" flex flex-col items-center gap-y-3">
         <WordContainer
-          word={gameData?.words?.word1?.word}
-          revealedIndex={gameData?.words?.word1?.revealedIndex}
-          type={gameData?.words?.word1?.type}
-          value={gameData?.words?.word1?.value}
+          word={words[0]}
+          revealedIndex={gameData?.words?.[words[0]!]?.revealedIndex}
+          type={gameData?.words?.[words[0]!]?.type}
+          value={gameData?.words?.[words[0]!]?.value}
         />
         <div className="flex flex-wrap justify-center gap-3">
           <WordContainer
-            word={gameData?.words?.word2?.word}
-            revealedIndex={gameData?.words?.word2?.revealedIndex}
-            type={gameData?.words?.word2?.type}
-            value={gameData?.words?.word2?.value}
+            word={words[1]}
+            revealedIndex={gameData?.words?.[words[1]!]?.revealedIndex}
+            type={gameData?.words?.[words[1]!]?.type}
+            value={gameData?.words?.[words[1]!]?.value}
           />
           <WordContainer
-            word={gameData?.words?.word3?.word}
-            revealedIndex={gameData?.words?.word3?.revealedIndex}
-            type={gameData?.words?.word3?.type}
-            value={gameData?.words?.word3?.value}
+            word={words[2]}
+            revealedIndex={gameData?.words?.[words[2]!]?.revealedIndex}
+            type={gameData?.words?.[words[2]!]?.type}
+            value={gameData?.words?.[words[2]!]?.value}
           />
         </div>
       </div>

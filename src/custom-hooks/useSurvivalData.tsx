@@ -5,7 +5,6 @@ import { GameType } from "@prisma/client";
 type WordType = "shield" | "health";
 
 type WordData = {
-  word: string;
   type: WordType;
   value: number;
   revealedIndex?: number[];
@@ -19,9 +18,11 @@ export type GameData = {
     damageTimer: number;
   };
   words: {
-    word1: WordData;
-    word2: WordData;
-    word3: WordData;
+    [keyof: string]: {
+      type: "shield" | "health";
+      value: number;
+      revealedIndex?: number[];
+    };
   };
   players: {
     [id: string]: {

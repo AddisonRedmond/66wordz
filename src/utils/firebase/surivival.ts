@@ -32,18 +32,15 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
       damangeValue: 0,
     },
     words: {
-      word1: {
-        word: handleGetNewWord(6),
+      [handleGetNewWord(6)]: {
         type: getRandomType(1),
         value: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
       },
-      word2: {
-        word: handleGetNewWord(5),
+      [handleGetNewWord(5)]: {
         type: getRandomType(1),
         value: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
       },
-      word3: {
-        word: handleGetNewWord(5),
+      [handleGetNewWord(4)]: {
         type: getRandomType(1),
         value: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
       },
