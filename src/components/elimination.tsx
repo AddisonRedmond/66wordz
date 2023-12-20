@@ -30,10 +30,11 @@ import RoundTimer from "~/elimination/round-timer";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import OpponentMobile from "~/elimination/opponent-moblie";
 import OpponentModal from "~/elimination/opponents-modal";
+import { GameType } from "@prisma/client";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
-  gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
+  gameType: GameType;
   exitMatch: () => void;
 };
 

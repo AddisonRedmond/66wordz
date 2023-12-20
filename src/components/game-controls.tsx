@@ -1,19 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Dispatch, SetStateAction, useState } from "react";
+import { GameType } from "@prisma/client";
 
 type GameControlProps = {
   joinGame: () => void;
-  gameMode: string;
-  setGameMode: Dispatch<SetStateAction<"MARATHON" | "ELIMINATION" | "ITEMS">>;
+  gameMode: GameType;
+  setGameMode: Dispatch<SetStateAction<GameType>>;
   setIsSolo: Dispatch<SetStateAction<boolean>>;
   isSolo: boolean;
+  games: GameType[];
 };
 
 const GameControls = (props: GameControlProps) => {
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
-  const handleSelectGameMode = (
-    gameMode: "MARATHON" | "ELIMINATION" | "ITEMS",
-  ) => {
+  const handleSelectGameMode = (gameMode: GameType) => {
     props.setGameMode(gameMode);
     setMenuIsOpen(false);
   };
@@ -59,22 +59,19 @@ const GameControls = (props: GameControlProps) => {
               exit={{ opacity: 0, y: -30, height: 10 }}
               className="absolute left-0 right-0 mt-1 rounded-md border-2 border-black bg-white"
             >
-              <p
-                onClick={() => {
-                  handleSelectGameMode("MARATHON");
-                }}
-                className="cursor-pointer rounded-t-md py-3 text-center font-semibold duration-300 ease-in-out hover:bg-[#E0CAF7]"
-              >
-                Marathon
-              </p>
-              <p
-                onClick={() => {
-                  handleSelectGameMode("ELIMINATION");
-                }}
-                className="cursor-pointer py-3 text-center font-semibold duration-300 ease-in-out hover:bg-[#E0CAF7]"
-              >
-                Elimination
-              </p>
+              {props.games.map((game: string) => {
+                return (
+                  <p
+                    key={game}
+                    onClick={() => {
+                      handleSelectGameMode(game as GameType);
+                    }}
+                    className="cursor-pointer rounded-t-md py-3 text-center font-semibold duration-300 ease-in-out hover:bg-[#E0CAF7]"
+                  >
+                    {game}
+                  </p>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

@@ -12,12 +12,16 @@ import { z } from "zod";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
+import {
+  createNewSurivivalLobby,
+  joinSurivivalLobby,
+} from "~/utils/firebase/surivival";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       // check if player is already part of a game
-      const clientGameType = input.gameMode;
+      const clientGameType = input.gameMode as GameType;
       const rejoin: {
         userId: string;
         lobbyId: string;
@@ -59,31 +63,35 @@ export const publicGameRouter = createTRPCRouter({
           data: { gameType: clientGameType, started: input.isSolo },
         });
         //   create the new lobby in firebase realtime db
-        if (clientGameType === "ELIMINATION") {
-          await createNewEliminationLobby(clientGameType, newLobby.id, {
-            gameStarted: false,
-            initilizedTimeStamp: new Date(),
-            round: 1,
-            word: handleGetNewWord(),
-            gameStartTimer: new Date().getTime() + 60000,
-            roundTimer: new Date().getTime() + 240000,
-            pointsGoal: 300,
-          });
-          try {
-            fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
-              method: "POST",
-              body: JSON.stringify({ lobbyId: newLobby.id }),
-            });
-          } catch (e) {}
 
-          // register lobby with server
-        } else if (clientGameType === "MARATHON") {
-          await createNewMarathonLobby(clientGameType, newLobby.id, {
-            gameStarted: false,
-            initilizedTimeStamp: new Date(),
-            gameStartTimer:
-              new Date().getTime() + (input.isSolo ? 5000 : 60000),
-          });
+        switch (clientGameType) {
+          case "ELIMINATION":
+            await createNewEliminationLobby(clientGameType, newLobby.id, {
+              gameStarted: false,
+              initilizedTimeStamp: new Date(),
+              round: 1,
+              word: handleGetNewWord(),
+              gameStartTimer: new Date().getTime() + 60000,
+              roundTimer: new Date().getTime() + 240000,
+              pointsGoal: 300,
+            });
+            try {
+              fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
+                method: "POST",
+                body: JSON.stringify({ lobbyId: newLobby.id }),
+              });
+            } catch (e) {}
+            break;
+          case "MARATHON":
+            await createNewMarathonLobby(clientGameType, newLobby.id, {
+              gameStarted: false,
+              initilizedTimeStamp: new Date(),
+              gameStartTimer:
+                new Date().getTime() + (input.isSolo ? 5000 : 60000),
+            });
+            break;
+          case "SURVIVAL":
+            await createNewSurivivalLobby(newLobby.id);
         }
 
         return newLobby;
@@ -100,18 +108,23 @@ export const publicGameRouter = createTRPCRouter({
             },
           });
 
-        if (clientGameType === "MARATHON") {
-          joinFirebaseLobby(
-            player.lobbyId,
-            userId,
-            clientGameType,
-            0,
-            handleGetNewWord(),
-          );
-        } else if (clientGameType === "ELIMINATION") {
-          joinEliminationLobby(
-            `${clientGameType}/${player.lobbyId}/playerPoints/${userId}`,
-          );
+        switch (clientGameType) {
+          case "ELIMINATION":
+            joinEliminationLobby(
+              `${clientGameType}/${player.lobbyId}/playerPoints/${userId}`,
+            );
+            break;
+          case "MARATHON":
+            joinFirebaseLobby(
+              player.lobbyId,
+              userId,
+              clientGameType,
+              0,
+              handleGetNewWord(),
+            );
+            break;
+          case "SURVIVAL":
+            joinSurivivalLobby(player.lobbyId, userId);
         }
 
         const playerCount = await ctx.db.players.count({

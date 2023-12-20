@@ -20,10 +20,11 @@ import { startSoloGame, startUserTimer } from "~/utils/firebase/marathon";
 import LoadingPlayers from "./loading-players";
 import TotalTime from "./marathon/total-time";
 import EliminationModal from "~/elimination/elimination-modal";
+import { GameType } from "@prisma/client";
 type MarathonProps = {
   lobbyId: string;
   userId: string;
-  gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
+  gameType: GameType;
   exitMatch: () => void;
   isSolo: boolean;
 };

@@ -3,6 +3,9 @@ import {
   updateTimerAndGuesses,
 } from "./firebase/firebase";
 import words from "./words";
+import SIX_LETTER_WORDS from "./six-letter-words";
+import FOUR_LETTER_WORDS from "./four-letter-words";
+import { GameType } from "@prisma/client";
 
 const timeAdjustmentValues: { [key: number]: number } = {
   0: 180000,
@@ -95,12 +98,23 @@ export const getClosestWord = (word: string, guesses: string[]) => {
   return closestWord;
 };
 
-export const handleGetNewWord = (): string => {
-  const randomIndex = Math.floor(Math.random() * words.length);
-  if (randomIndex >= 0 && randomIndex < words.length) {
-    return words[randomIndex]!;
+export const handleGetNewWord = (wordLength?: number): string => {
+  let randomIndex;
+
+  switch (wordLength) {
+    case 4:
+      randomIndex = Math.floor(Math.random() * FOUR_LETTER_WORDS.length);
+      return FOUR_LETTER_WORDS[randomIndex]!;
+    case 6:
+      randomIndex = Math.floor(Math.random() * SIX_LETTER_WORDS.length);
+      return SIX_LETTER_WORDS[randomIndex]!;
+    case 5:
+      randomIndex = Math.floor(Math.random() * words.length);
+      return words[randomIndex]!;
+    default:
+      randomIndex = Math.floor(Math.random() * words.length);
+      return words[randomIndex]!;
   }
-  return "ERROR";
 };
 
 export const handleCorrectGuess = async (
@@ -108,7 +122,7 @@ export const handleCorrectGuess = async (
   userId: string,
   timer: number,
   numberOfGuesses: number,
-  gameType: string,
+  gameType: GameType,
   correctGuessCount: number,
 ): Promise<void> => {
   let updatedTimer: number = timeAdjustmentValues?.[numberOfGuesses] ?? 20000;
@@ -139,7 +153,7 @@ export const handleWordFailure = async (
   lobbyId: string,
   userId: string,
   timer: number,
-  gameType: string,
+  gameType: GameType,
 ): Promise<void> => {
   const closestWord = getClosestWord(word, guesses);
   const updatedTimer = timer - 20000;

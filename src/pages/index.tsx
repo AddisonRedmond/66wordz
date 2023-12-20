@@ -8,17 +8,20 @@ import Header from "~/components/hearder";
 import Marathon from "~/components/marathon";
 import Elimination from "~/components/elimination";
 import { useState } from "react";
+import { GameType } from "@prisma/client";
+import Survival from "~/components/survival/survival";
+
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const [isSolo, setIsSolo] = useState<boolean>(false);
-  const [gameMode, setGameMode] = useState<
-    "MARATHON" | "ELIMINATION" | "ITEMS"
-  >("MARATHON");
+  const [gameMode, setGameMode] = useState<GameType>("MARATHON");
   const joinGame = () => {
     lobby.mutate({ gameMode: gameMode, isSolo: isSolo });
   };
+
+  const games: GameType[] = ["MARATHON", "ELIMINATION", "SURVIVAL"];
 
   const exitMatch = () => {
     lobbyCleanUp.mutate();
@@ -28,25 +31,35 @@ const Home = () => {
   };
   const handleStartGame = () => {
     if (lobby.data?.id) {
-      if (lobby.data.gameType === "MARATHON") {
-        return (
-          <Marathon
-            lobbyId={lobby.data.id}
-            userId={session!.user.id}
-            gameType={lobby.data.gameType}
-            exitMatch={exitMatch}
-            isSolo={isSolo}
-          />
-        );
-      } else if (lobby.data.gameType === "ELIMINATION") {
-        return (
-          <Elimination
-            lobbyId={lobby.data.id}
-            userId={session!.user.id}
-            gameType={gameMode}
-            exitMatch={exitMatch}
-          />
-        );
+      switch (lobby.data.gameType) {
+        case "MARATHON":
+          return (
+            <Marathon
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={lobby.data.gameType}
+              exitMatch={exitMatch}
+              isSolo={isSolo}
+            />
+          );
+        case "ELIMINATION":
+          return (
+            <Elimination
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={gameMode}
+              exitMatch={exitMatch}
+            />
+          );
+        case "SURVIVAL":
+          return (
+            <Survival
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={gameMode}
+              exitMatch={exitMatch}
+            />
+          );
       }
     }
   };
@@ -75,6 +88,7 @@ const Home = () => {
               setGameMode={setGameMode}
               setIsSolo={setIsSolo}
               isSolo={isSolo}
+              games={games}
             />
           )}
         </AnimatePresence>

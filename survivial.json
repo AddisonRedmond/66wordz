@@ -1,0 +1,32 @@
+// Lobby id will be the parent of this object
+{
+    "lobbyData": {
+        "gameStarted": "boolean",
+        "gameStartTimer": "int",
+        "SHADOW": {
+            "type": "health" | "shield",
+            "value": "int",
+            "revealedIndex": "number[]"
+        },
+        "CLEAN": {
+            "type": "health" | "shield",
+            "value": "int"
+        },
+        "FOUR": {
+            "type": "health" | "shield",
+            "value": "int"
+        },
+        "countDownTimer": "int",
+        "damangeValue": "int"
+    },
+    "players": {
+        "player1": {
+            "hp": "int"
+        }
+    },
+    "bots": {
+        "bot1": {
+            "hp": "int"
+        }
+    }
+}

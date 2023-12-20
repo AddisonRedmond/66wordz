@@ -3,7 +3,7 @@ import Delete from "../../public/Delete.svg";
 import { motion } from "framer-motion";
 type KeyboardProps = {
   disabled: boolean;
-  matches: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
   handleKeyBoardLogic: (letter: string) => void;
 };
 
@@ -16,11 +16,12 @@ const KeyboardRow = ({
 }: {
   letters: string;
   specialKey?: JSX.Element;
-  matches: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
   disabled: boolean;
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
   const handleColors = (letter: string) => {
+    if (!matches) return;
     if (matches.fullMatch.includes(letter)) {
       return "#00DFA2";
     } else if (matches.partialMatch.includes(letter)) {

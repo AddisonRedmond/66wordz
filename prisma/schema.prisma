@@ -68,6 +68,7 @@ model VerificationToken {
 enum GameType {
     MARATHON
     ELIMINATION
+    SURVIVAL
 }
 
 model Lobby {
