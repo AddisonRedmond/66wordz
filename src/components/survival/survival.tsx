@@ -31,18 +31,18 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const handleKeyBoardLogic = (key: string) => {
     const words = Object.keys(gameData?.words || []);
-    console.log(words);
+
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => prevGuess.slice(0, -1));
     } else if (key === "Enter") {
-      // check if guess matches any of the words
-      if (words.includes(guess)) {
-        // handle correct guess
-      } else {
-        // handle incorrect guess
-        // reset guess
-        // animation
-      }
+      // // check if guess matches any of the words
+      // if (words.includes(guess)) {
+      //   // handle correct guess
+      // } else {
+      //   // handle incorrect guess
+      //   // reset guess
+      //   // animation
+      // }
       //   if it doesn't run the sakey animation
     } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 6) {
       setGuess((prevGuess) => `${prevGuess}${key}`.toUpperCase());
