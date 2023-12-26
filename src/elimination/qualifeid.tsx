@@ -19,14 +19,14 @@ const Qualified: React.FC = () => {
   };
 
   return (
-    <div className="border-2-600 relative w-96 rounded-md bg-neutral-100 p-20 shadow-lg">
+    <div className="border-2-600 relative w-72 p-20 text-center">
       <div className="absolute left-3 top-3">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           exit={{ scale: 0, opacity: 0 }}
           animate="visible"
           variants={container}
-          className="flex text-2xl font-semibold"
+          className="flex text-2xl font-semibold justify-center"
         >
           {"QUALIFIED".split("").map((letter: string, index: number) => {
             return (
@@ -46,7 +46,7 @@ const Qualified: React.FC = () => {
           })}
         </motion.div>
         <p className=" text-xs text-neutral-500">
-          Congratulations! You have qualified for the next round.
+          Congratulations! You have qualified for the next round!
         </p>
       </div>
       <div className="flex justify-center">

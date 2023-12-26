@@ -23,7 +23,7 @@ const Winner: React.FC<WinnerProps> = (props: WinnerProps) => {
     controls.start(rainbowAnimation);
   }, []);
   return (
-    <div className="flex h-full flex-col items-center justify-around">
+    <div className="flex h-full flex-col items-center justify-around w-56 aspect-square">
       <p className="text-xl font-bold">Congratulations!</p>
       <p>You won 66 Wordz! </p>
       <motion.svg

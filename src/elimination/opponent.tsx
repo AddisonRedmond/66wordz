@@ -6,6 +6,7 @@ type OpponentProps = {
   wordLength: number;
   matchingIndex?: number[];
   numOfOpponents?: number;
+  targetPoints: number
 };
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
   const opponentSizePercentage = 100 / Math.sqrt(props?.numOfOpponents ?? 0); // Using the square root for both width and height
@@ -23,7 +24,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     >
       <Points
         totalPoints={props?.points ? props.points : 0}
-        pointsTarget={300}
+        pointsTarget={props.targetPoints}
       />
       <div className="mt-2 flex flex-row justify-center gap-1">
         {Array.from({ length: props.wordLength }).map((_, index: number) => {

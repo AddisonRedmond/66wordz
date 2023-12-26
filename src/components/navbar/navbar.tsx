@@ -1,10 +1,10 @@
-import Image from "next/image";
-import bug from "../../public/bug.svg";
-import { signOut } from "next-auth/react";
-import { ChangeEvent, MouseEventHandler, useState } from "react";
-import EliminationModal from "../elimination/elimination-modal";
+import { ChangeEvent, useState } from "react";
+import EliminationModal from "../../elimination/elimination-modal";
 import { api } from "~/utils/api";
-
+import DesktopNavbar from "./desktop";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import MobielNavbar from "./mobile";
+import { AnimatePresence } from "framer-motion";
 const Navbar: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [issueType, setIssueType] = useState<
@@ -13,15 +13,9 @@ const Navbar: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [messageNotLongEnough, setMessageNotLongEnough] =
     useState<boolean>(false);
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
   const submitIssue = api.reportIssue.reportIssue.useMutation();
-
-  const handleSignOut: MouseEventHandler = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const isMobile = useIsMobile();
 
   const handleUpdateMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) return;
@@ -31,10 +25,6 @@ const Navbar: React.FC = () => {
 
   const handleUpdateType = (e: ChangeEvent<HTMLSelectElement>) => {
     setIssueType(e.target.value as "MARATHON" | "ELIMINATION" | "OTHER");
-  };
-
-  const openReportBugModal = () => {
-    setShowModal(true);
   };
 
   const handleSubmitIssue = () => {
@@ -142,26 +132,13 @@ const Navbar: React.FC = () => {
           </>
         </EliminationModal>
       )}
-      <div className="absolute top-0 z-10 flex h-14 w-screen flex-row items-center justify-between px-8">
-        <p className="cursor-pointer text-4xl font-semibold">66</p>
-        <div className="relative flex justify-center">
-          <button
-            className="rounded-md bg-black p-2 text-xs font-semibold text-white sm:text-sm"
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </button>
-          <Image
-            onClick={() => openReportBugModal()}
-            title="report a bug or an issue"
-            className="absolute top-14 cursor-pointer sm:inline-block"
-            src={bug}
-            alt="bug icon"
-            height={15}
-            width={15}
-          />
-        </div>
-      </div>
+      <AnimatePresence>
+        {isMobile ? (
+          <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
+        ) : (
+          <DesktopNavbar issueModalIsOpen={setShowModal} />
+        )}
+      </AnimatePresence>
     </>
   );
 };
