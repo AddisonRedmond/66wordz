@@ -456,13 +456,17 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                           new Date(gameData.lobbyData.roundTimer)
                         }
                       />
-                      <div className="flex h-full w-20 flex-col justify-center">
+                      <div className="h-full w-20 text-center text-sm font-semibold">
+                        <p className="text-neutral-600 ">
+                          <span>Current</span>
+                          <br /> <span>Place</span>
+                        </p>
                         <p className="white font-semibold">
                           {`${
                             placement.topPlayers.indexOf(props.userId) + 1
                           }${placementSuffix(
                             placement.topPlayers.indexOf(props.userId) + 1,
-                          )} Place`}
+                          )}`}
                         </p>
                       </div>
 

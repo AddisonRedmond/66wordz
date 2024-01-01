@@ -6,7 +6,7 @@ type OpponentProps = {
   wordLength: number;
   matchingIndex?: number[];
   numOfOpponents?: number;
-  targetPoints: number
+  targetPoints: number;
 };
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
   const opponentSizePercentage = 100 / Math.sqrt(props?.numOfOpponents ?? 0); // Using the square root for both width and height
@@ -39,20 +39,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                   ? "bg-[#00DFA2]"
                   : "bg-stone-500"
               }`}
-            >
-              {
-                <motion.p
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  className="text-white"
-                >
-                  {props.points && props.points >= 300
-                    ? "QUALD".split("")[index]
-                    : ""}
-                </motion.p>
-              }
-            </motion.div>
+            ></motion.div>
           );
         })}
       </div>
