@@ -150,3 +150,11 @@ export const placementSuffix = (placement: number) => {
       return "th";
   }
 };
+
+export const handleRound = (round: number, playerCount: number) => {
+  if (round >= 4 || playerCount <= 6) {
+    return "Final Round";
+  }
+
+  return `Round ${round}`;
+};

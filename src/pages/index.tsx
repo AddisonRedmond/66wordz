@@ -15,9 +15,9 @@ const Home = () => {
   const [isSolo, setIsSolo] = useState<boolean>(false);
   const [gameMode, setGameMode] = useState<
     "MARATHON" | "ELIMINATION" | "ITEMS"
-  >("MARATHON");
+  >("ELIMINATION");
   const joinGame = () => {
-    lobby.mutate({ gameMode: gameMode, isSolo: isSolo });
+    lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
 
   const exitMatch = () => {

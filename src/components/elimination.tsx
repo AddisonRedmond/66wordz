@@ -14,6 +14,7 @@ import {
   getTopPlayersAndBots,
   handleCreateMatchingIndex,
   handleEliminationMatched,
+  handleRound,
   placementSuffix,
   spellCheck,
 } from "~/utils/elimination";
@@ -446,7 +447,8 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                   <>
                     <div>
                       <p className="font-semibold sm:text-3xl">
-                        Round {gameData?.lobbyData?.round}
+                        {handleRound(gameData.lobbyData.round, totalPlayers)}
+                        {/* Round {gameData?.lobbyData?.round} */}
                       </p>
                     </div>
 
