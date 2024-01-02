@@ -6,7 +6,7 @@ const Disqualfied: React.FC<DisqualfiedProps> = (props: DisqualfiedProps) => {
   return (
     <div className="flex h-full flex-col items-center justify-around">
       <p className="text-xl font-bold">Disqualfied ☹</p>
-      <p>You have been disqualfied. Better luck next time!</p>
+      <p className="text-center">You have been disqualfied. Better luck next time!</p>
       <button
         onClick={() => {
           props.handleClick();

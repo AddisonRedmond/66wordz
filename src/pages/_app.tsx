@@ -6,7 +6,7 @@ import { api } from "~/utils/api";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import "~/styles/globals.css";
-import Navbar from "~/components/navbar";
+import Navbar from "../components/navbar/navbar";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

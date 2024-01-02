@@ -41,7 +41,7 @@ const OpponentMobile: React.FC<OpponentMobileProps> = (
         strokeWidth={8}
       >
         <Image src={person} width={10} alt="person icon" />
-        <p className=" text-sm">{calculateMatchingIndex()}</p>
+        <p className=" text-sm">{`${calculateMatchingIndex()}/5`}</p>
       </CircularProgressbarWithChildren>
     </div>
   );

@@ -21,7 +21,7 @@ const GameControls = (props: GameControlProps) => {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="p-8">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <input
             id="solo-mode"
             onChange={() => props.setIsSolo(!props.isSolo)}
@@ -35,7 +35,7 @@ const GameControls = (props: GameControlProps) => {
           >
             Solo Game
           </label>
-        </div>
+        </div> */}
       </div>
       <div className="relative">
         <button

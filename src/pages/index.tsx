@@ -18,7 +18,7 @@ const Home = () => {
   const [isSolo, setIsSolo] = useState<boolean>(false);
   const [gameMode, setGameMode] = useState<GameType>("MARATHON");
   const joinGame = () => {
-    lobby.mutate({ gameMode: gameMode, isSolo: isSolo });
+    lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
 
   const games: GameType[] = ["MARATHON", "ELIMINATION", "SURVIVAL"];

@@ -209,13 +209,12 @@ export const handleCorrectGuess = async (
   userId: string,
   previousWord: string,
 ) => {
-  await remove(ref(db, `${gamePath}/roundData`));
+  await update(ref(db, `${gamePath}/playerPoints/${userId}`), {
+    points: points,
+  });
   await update(ref(db, `${gamePath}/lobbyData/`), {
     word: word,
     previousWord: previousWord,
-  });
-  await update(ref(db, `${gamePath}/playerPoints/${userId}`), {
-    points: points,
   });
 };
 
