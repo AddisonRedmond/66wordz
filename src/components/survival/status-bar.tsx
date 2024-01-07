@@ -7,7 +7,7 @@ type StatusBarProps = {
 const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   return (
     <motion.div
-      animate={{ width: `${props.statusValue}%` }}
+      animate={{ width: `${props.statusValue ? props.statusValue : 0}%` }}
       className={`h-2 w-full rounded-full ${props.color}`}
     ></motion.div>
   );

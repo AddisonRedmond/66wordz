@@ -59,6 +59,7 @@ export const joinSurivivalLobby = async (lobbyId: string, userId: string) => {
     health: 100,
     shield: 50,
     attack: 0,
+    eliminated: false,
   });
 };
 
@@ -150,4 +151,15 @@ export const wordLength = (word: string) => {
     default:
       return "SIX_LETTER_WORD";
   }
+};
+
+export const handleAttack = async (
+  lobbyId: string,
+  playerId: string,
+  attackValue: number,
+  playerStatus: { health: number; shield: number },
+) => {
+  await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
+    health: 100,
+  });
 };

@@ -3,14 +3,11 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import Tile from "./tile";
-import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
 import StatusBar from "./status-bar";
-import Sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import Opponent from "./opponent";
 import {
@@ -18,6 +15,7 @@ import {
   handleCorrectGuess,
   wordLength,
 } from "~/utils/surivival";
+import GuessContainer from "./guess-container";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -34,6 +32,8 @@ const Survival: React.FC<SurvivalProps> = ({
 }: SurvivalProps) => {
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
   const [guess, setGuess] = useState<string>("");
+  const [spellCheck, setSpellCheck] = useState<boolean>(false);
+  const [isAttack, setIsAttack] = useState<boolean>(false);
 
   const handleKeyBoardLogic = (key: string) => {
     const words = Object.keys(gameData?.words ?? []).map((word: string) => {
@@ -62,9 +62,12 @@ const Survival: React.FC<SurvivalProps> = ({
           // handle incorrect guess
           // reset guess
           // animation
+
+          setGuess("");
         }
       } else {
         // handle spell check is false
+        setSpellCheck(true);
       }
     } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 6) {
       setGuess((prevGuess) => `${prevGuess}${key}`.toUpperCase());
@@ -94,8 +97,13 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
+
   return (
-    <div className="flex flex-col items-center justify-around gap-12">
+    <div
+      className={`flex flex-col items-center justify-around gap-12 ${
+        isAttack ? `cursor-crosshair` : "cursor-default"
+      }`}
+    >
       {/* div for game info */}
       <div>
         {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
@@ -107,6 +115,7 @@ const Survival: React.FC<SurvivalProps> = ({
           revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
           type={gameData?.words?.SIX_LETTER_WORD?.type}
           value={gameData?.words?.SIX_LETTER_WORD?.value}
+          attack={gameData?.words?.SIX_LETTER_WORD?.attack}
         />
         <div className="flex flex-wrap justify-center gap-3">
           <WordContainer
@@ -114,12 +123,14 @@ const Survival: React.FC<SurvivalProps> = ({
             revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
             type={gameData?.words?.FIVE_LETTER_WORD?.type}
             value={gameData?.words?.FIVE_LETTER_WORD?.value}
+            attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
           />
           <WordContainer
             word={gameData?.words?.FOUR_LETTER_WORD?.word}
             revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
             type={gameData?.words?.FOUR_LETTER_WORD?.type}
             value={gameData?.words?.FOUR_LETTER_WORD?.value}
+            attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
           />
         </div>
       </div>
@@ -154,26 +165,14 @@ const Survival: React.FC<SurvivalProps> = ({
           </div>
 
           {/* guess container + attack value and button */}
-          <div className="relative">
-            <div className="flex h-[7vh] w-[34vh] flex-row items-center justify-center gap-1 rounded-md border-2 bg-stone-300 p-1">
-              <AnimatePresence>
-                {guess.split("").map((letter: string, index: number) => {
-                  return <Tile letter={letter} key={index} />;
-                })}
-              </AnimatePresence>
-            </div>
-
-            <div
-              className={`absolute -right-14 top-1/2 flex aspect-square w-12 -translate-y-1/2 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700  ${
-                playerData?.attack === 0 ? "opacity-25" : "opacity-100"
-              }`}
-            >
-              <div className={`absolute -top-6`}>
-                <p className="font-semibold">{playerData?.attack}</p>
-              </div>
-              <Image src={Sword} alt="attack Icon" />
-            </div>
-          </div>
+          <GuessContainer
+            guess={guess}
+            playerData={playerData}
+            spellCheck={spellCheck}
+            setSpellCheck={setSpellCheck}
+            setIsAttack={setIsAttack}
+            isAttack={isAttack}
+          />
           <div className="w-1/4">
             {getHalfOfOpponents(false).map((playerId: string) => {
               if (playerId === userId) return;

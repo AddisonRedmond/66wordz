@@ -1,12 +1,15 @@
 import Tile from "./tile";
 import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
+import sword from "../../../public/Sword.svg";
 import Image from "next/image";
+
 type WordContainerProps = {
   word?: string;
   revealedIndex?: number[];
   type?: "shield" | "health";
   value?: number;
+  attack?: number;
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
@@ -37,6 +40,10 @@ const WordContainer: React.FC<WordContainerProps> = ({
             return <Tile key={index} />;
           }
         })}
+        <div className="flex flex-col items-center justify-center font-semibold">
+          <Image src={sword} alt="status type" />
+          <p className="text-sm">{props.attack}</p>
+        </div>
       </div>
     );
   }

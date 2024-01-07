@@ -13,6 +13,15 @@ interface WordObject {
     attack: number;
   };
 }
+
+interface PlayerObject {
+  [id: string]: {
+    health: number;
+    shield: number;
+    attack: number;
+    eliminated: boolean;
+  };
+}
 export type GameData = {
   lobbyData: {
     gameStarted: boolean;
@@ -26,6 +35,7 @@ export type GameData = {
       health: number;
       shield: number;
       attack: number;
+      eliminated: boolean;
     };
   };
 };
