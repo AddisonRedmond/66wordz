@@ -4,12 +4,15 @@ import { GameType } from "@prisma/client";
 
 type WordType = "shield" | "health";
 
-type WordData = {
-  type: WordType;
-  value: number;
-  revealedIndex?: number[];
-};
-
+interface WordObject {
+  [key: string]: {
+    word: string;
+    type: "shield" | "health";
+    value: number;
+    revealedIndex: number[] | undefined;
+    attack: number;
+  };
+}
 export type GameData = {
   lobbyData: {
     gameStarted: boolean;
@@ -17,17 +20,12 @@ export type GameData = {
     damageValue: number;
     damageTimer: number;
   };
-  words: {
-    [keyof: string]: {
-      type: "shield" | "health";
-      value: number;
-      revealedIndex?: number[];
-    };
-  };
+  words: WordObject;
   players: {
     [id: string]: {
       health: number;
       shield: number;
+      attack: number;
     };
   };
 };

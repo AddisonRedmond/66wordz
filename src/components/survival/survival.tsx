@@ -10,9 +10,15 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
 import StatusBar from "./status-bar";
-
+import Sword from "../../../public/Sword.svg";
 import Image from "next/image";
-import StrikeTimer from "./strike-timer";
+import Opponent from "./opponent";
+import {
+  checkSpelling,
+  handleCorrectGuess,
+  wordLength,
+} from "~/utils/surivival";
+
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -30,20 +36,36 @@ const Survival: React.FC<SurvivalProps> = ({
   const [guess, setGuess] = useState<string>("");
 
   const handleKeyBoardLogic = (key: string) => {
-    const words = Object.keys(gameData?.words || []);
+    const words = Object.keys(gameData?.words ?? []).map((word: string) => {
+      return gameData?.words[word]?.word ?? "ERROR";
+    });
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => prevGuess.slice(0, -1));
     } else if (key === "Enter") {
-      // // check if guess matches any of the words
-      // if (words.includes(guess)) {
-      //   // handle correct guess
-      // } else {
-      //   // handle incorrect guess
-      //   // reset guess
-      //   // animation
-      // }
-      //   if it doesn't run the sakey animation
+      // spell check word
+      const isSpellCheck = checkSpelling(guess);
+      // if correct
+      if (isSpellCheck) {
+        if (words.includes(guess)) {
+          // handle correct guess
+          handleCorrectGuess(
+            lobbyId,
+            userId,
+            wordLength(guess),
+            guess,
+            gameData?.players?.[userId],
+            gameData?.words[wordLength(guess)],
+          );
+          setGuess("");
+        } else {
+          // handle incorrect guess
+          // reset guess
+          // animation
+        }
+      } else {
+        // handle spell check is false
+      }
     } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 6) {
       setGuess((prevGuess) => `${prevGuess}${key}`.toUpperCase());
     }
@@ -56,56 +78,117 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const playerData = gameData?.players[userId];
 
-  const words = Object.keys(gameData?.words || []).sort((a, b) => b.length - a.length);
+  const words = Object.keys(gameData?.words ?? []).sort(
+    (a, b) => b.length - a.length,
+  );
+
+  const getHalfOfOpponents = (even: boolean): string[] => {
+    if (even) {
+      return Object.keys(gameData?.players ?? []).filter(
+        (_, index: number) => index % 2 === 0,
+      );
+    } else {
+      return Object.keys(gameData?.players ?? []).filter(
+        (_, index: number) => index % 2 !== 0,
+      );
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-around gap-12">
       {/* div for game info */}
       <div>
-        <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} />
+        {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
       </div>
 
       <div className=" flex flex-col items-center gap-y-3">
         <WordContainer
-          word={words[0]}
-          revealedIndex={gameData?.words?.[words[0]!]?.revealedIndex}
-          type={gameData?.words?.[words[0]!]?.type}
-          value={gameData?.words?.[words[0]!]?.value}
+          word={gameData?.words?.SIX_LETTER_WORD?.word}
+          revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
+          type={gameData?.words?.SIX_LETTER_WORD?.type}
+          value={gameData?.words?.SIX_LETTER_WORD?.value}
         />
         <div className="flex flex-wrap justify-center gap-3">
           <WordContainer
-            word={words[1]}
-            revealedIndex={gameData?.words?.[words[1]!]?.revealedIndex}
-            type={gameData?.words?.[words[1]!]?.type}
-            value={gameData?.words?.[words[1]!]?.value}
+            word={gameData?.words?.FIVE_LETTER_WORD?.word}
+            revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
+            type={gameData?.words?.FIVE_LETTER_WORD?.type}
+            value={gameData?.words?.FIVE_LETTER_WORD?.value}
           />
           <WordContainer
-            word={words[2]}
-            revealedIndex={gameData?.words?.[words[2]!]?.revealedIndex}
-            type={gameData?.words?.[words[2]!]?.type}
-            value={gameData?.words?.[words[2]!]?.value}
+            word={gameData?.words?.FOUR_LETTER_WORD?.word}
+            revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
+            type={gameData?.words?.FOUR_LETTER_WORD?.type}
+            value={gameData?.words?.FOUR_LETTER_WORD?.value}
           />
         </div>
       </div>
 
+      {/* game ui layout -> health and shield + guess container + keybaord */}
       <div className="flex flex-col items-center gap-3">
+        {/* status indicators */}
         <div className="flex w-[34vh] flex-col gap-2">
           <div className=" flex w-full items-center justify-between gap-2">
             <StatusBar statusValue={playerData?.shield} color="bg-sky-400" />
             <Image className="" src={shield} alt="shield Icon" />
           </div>
 
-          <div className=" flex w-full items-center  gap-2">
+          <div className="flex w-full items-center justify-between gap-2">
             <StatusBar statusValue={playerData?.health} color="bg-green-400" />
-            <Image className="" src={health} alt="shield Icon" />
+            <Image src={health} alt="shield Icon" />
           </div>
         </div>
-        <div className="flex h-[7vh] w-[34vh] flex-row items-center justify-center gap-1 rounded-md border-2 bg-stone-300 p-1">
-          <AnimatePresence>
-            {guess.split("").map((letter: string, index: number) => {
-              return <Tile letter={letter} key={index} />;
+
+        <div className="flex w-screen justify-around">
+          <div className="w-1/4">
+            {getHalfOfOpponents(true).map((playerId: string) => {
+              if (playerId === userId) return;
+              return (
+                <Opponent
+                  key={playerId}
+                  health={gameData?.players[playerId]?.health}
+                  shield={gameData?.players[playerId]?.shield}
+                />
+              );
             })}
-          </AnimatePresence>
+          </div>
+
+          {/* guess container + attack value and button */}
+          <div className="relative">
+            <div className="flex h-[7vh] w-[34vh] flex-row items-center justify-center gap-1 rounded-md border-2 bg-stone-300 p-1">
+              <AnimatePresence>
+                {guess.split("").map((letter: string, index: number) => {
+                  return <Tile letter={letter} key={index} />;
+                })}
+              </AnimatePresence>
+            </div>
+
+            <div
+              className={`absolute -right-14 top-1/2 flex aspect-square w-12 -translate-y-1/2 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700  ${
+                playerData?.attack === 0 ? "opacity-25" : "opacity-100"
+              }`}
+            >
+              <div className={`absolute -top-6`}>
+                <p className="font-semibold">{playerData?.attack}</p>
+              </div>
+              <Image src={Sword} alt="attack Icon" />
+            </div>
+          </div>
+          <div className="w-1/4">
+            {getHalfOfOpponents(false).map((playerId: string) => {
+              if (playerId === userId) return;
+              return (
+                <Opponent
+                  key={playerId}
+                  health={gameData?.players[playerId]?.health}
+                  shield={gameData?.players[playerId]?.shield}
+                />
+              );
+            })}
+          </div>
         </div>
+
+        {/* keyboard */}
         <Keyboard disabled={false} handleKeyBoardLogic={handleKeyBoardLogic} />
       </div>
     </div>

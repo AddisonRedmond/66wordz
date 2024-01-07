@@ -26,7 +26,7 @@ const OpponentMobile: React.FC<OpponentMobileProps> = (
     if (props.matchingIndex) {
       return props.matchingIndex.length;
     }
-    return [].length;
+    return 0;
   };
 
   return (

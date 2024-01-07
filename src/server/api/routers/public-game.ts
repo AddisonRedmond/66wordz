@@ -15,7 +15,7 @@ import { GameType } from "@prisma/client";
 import {
   createNewSurivivalLobby,
   joinSurivivalLobby,
-} from "~/utils/firebase/surivival";
+} from "~/utils/surivival";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
@@ -60,7 +60,7 @@ export const publicGameRouter = createTRPCRouter({
         // create the new lobby in the database
         const clientGameType = input.gameMode as GameType;
         const newLobby: { id: string } = await ctx.db.lobby.create({
-          data: { gameType: clientGameType, started: input.isSolo },
+          data: { gameType: clientGameType, started: clientGameType === "MARATHON" },
         });
         //   create the new lobby in firebase realtime db
 
