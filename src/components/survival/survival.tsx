@@ -14,6 +14,7 @@ import {
   checkSpelling,
   handleCorrectGuess,
   wordLength,
+  handleAttack,
 } from "~/utils/surivival";
 import GuessContainer from "./guess-container";
 
@@ -97,6 +98,28 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
+  const attackMode = () => {
+    if (playerData?.attack === 0) {
+      setIsAttack(false);
+      return;
+    }
+    setIsAttack(!isAttack);
+  };
+
+  const attack = (playerId: string) => {
+    if (!gameData?.players[playerId] || !isAttack) {
+      return;
+    } else {
+      handleAttack(
+        lobbyId,
+        playerId,
+        gameData.players[userId]!.attack,
+        gameData.players[playerId]!,
+        userId,
+      );
+      setIsAttack(false);
+    }
+  };
 
   return (
     <div
@@ -151,14 +174,15 @@ const Survival: React.FC<SurvivalProps> = ({
         </div>
 
         <div className="flex w-screen justify-around">
-          <div className="w-1/4">
+          <div className="flex w-1/4 justify-around">
             {getHalfOfOpponents(true).map((playerId: string) => {
               if (playerId === userId) return;
               return (
                 <Opponent
                   key={playerId}
-                  health={gameData?.players[playerId]?.health}
-                  shield={gameData?.players[playerId]?.shield}
+                  playerId={playerId}
+                  opponentData={gameData?.players[playerId]}
+                  attack={attack}
                 />
               );
             })}
@@ -170,17 +194,18 @@ const Survival: React.FC<SurvivalProps> = ({
             playerData={playerData}
             spellCheck={spellCheck}
             setSpellCheck={setSpellCheck}
-            setIsAttack={setIsAttack}
+            setIsAttack={attackMode}
             isAttack={isAttack}
           />
-          <div className="w-1/4">
+          <div className="flex w-1/4 justify-around">
             {getHalfOfOpponents(false).map((playerId: string) => {
               if (playerId === userId) return;
               return (
                 <Opponent
                   key={playerId}
-                  health={gameData?.players[playerId]?.health}
-                  shield={gameData?.players[playerId]?.shield}
+                  playerId={playerId}
+                  opponentData={gameData?.players[playerId]}
+                  attack={attack}
                 />
               );
             })}

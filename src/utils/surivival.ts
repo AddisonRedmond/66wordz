@@ -157,9 +157,46 @@ export const handleAttack = async (
   lobbyId: string,
   playerId: string,
   attackValue: number,
-  playerStatus: { health: number; shield: number },
+  playerStatus: {
+    health: number;
+    shield: number;
+    attack: number;
+    eliminated: boolean;
+  },
+  attackerId: string,
 ) => {
+  const { health, shield } = playerStatus;
+  const calcualteUpdatedStatus = (attackValue: number, shield: number) => {
+    const updatedStatus: {
+      health: number;
+      shield: number;
+      eliminated: boolean;
+    } = {
+      health: health,
+      shield: shield,
+      eliminated: false,
+    };
+    if (shield - attackValue < 0) {
+      updatedStatus.shield = 0;
+      updatedStatus.health = health - (attackValue - shield) < 0 ? 0 : health - (attackValue - shield);
+    } else if (shield - attackValue >= 0) {
+      updatedStatus.shield = shield - attackValue;
+      updatedStatus.health = health;
+    }
+
+    if (updatedStatus.health <= 0) {
+      updatedStatus.eliminated = true;
+    }
+
+    console.log(updatedStatus);
+
+    return updatedStatus;
+  };
+
+  calcualteUpdatedStatus(attackValue, shield);
+
+  await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
   await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
-    health: 100,
+    ...calcualteUpdatedStatus(attackValue, shield),
   });
 };
