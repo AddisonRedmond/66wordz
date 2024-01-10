@@ -18,6 +18,8 @@ const WordContainer: React.FC<WordContainerProps> = ({
   type,
   ...props
 }: WordContainerProps) => {
+
+  console.log(revealedIndex?.includes(7))
   if (word) {
     const getType = () => {
       if (type === "shield") {
@@ -34,11 +36,13 @@ const WordContainer: React.FC<WordContainerProps> = ({
           <p className="text-sm">{props.value}</p>
         </div>
         {word.split("").map((letter: string, index: number) => {
-          if (revealedIndex?.includes(index)) {
-            return <Tile key={index} letter={letter} />;
-          } else {
-            return <Tile key={index} />;
-          }
+          return (
+            <Tile
+              key={index}
+              letter={letter}
+              revealed={revealedIndex?.includes(index)}
+            />
+          );
         })}
         <div className="flex flex-col items-center justify-center font-semibold">
           <Image src={sword} alt="status type" />

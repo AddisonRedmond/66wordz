@@ -12,10 +12,7 @@ import { z } from "zod";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
-import {
-  createNewSurivivalLobby,
-  joinSurivivalLobby,
-} from "~/utils/surivival";
+import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/surivival";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
@@ -60,7 +57,10 @@ export const publicGameRouter = createTRPCRouter({
         // create the new lobby in the database
         const clientGameType = input.gameMode as GameType;
         const newLobby: { id: string } = await ctx.db.lobby.create({
-          data: { gameType: clientGameType, started: clientGameType === "MARATHON" },
+          data: {
+            gameType: clientGameType,
+            started: clientGameType === "MARATHON",
+          },
         });
         //   create the new lobby in firebase realtime db
 
@@ -92,6 +92,14 @@ export const publicGameRouter = createTRPCRouter({
             break;
           case "SURVIVAL":
             await createNewSurivivalLobby(newLobby.id);
+            try {
+              fetch(`${env.BOT_SERVER}/register_survival_lobby`, {
+                method: "POST",
+                body: JSON.stringify({ lobbyId: newLobby.id }),
+              });
+            } catch (e) {
+              console.log(e);
+            }
         }
 
         return newLobby;

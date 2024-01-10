@@ -23,7 +23,7 @@ const Home = () => {
 
   const games: GameType[] = ["MARATHON", "ELIMINATION", "SURVIVAL"];
 
-  const exitMatch = () => {
+  const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
     lobby.reset();
     // delete user from lobby db

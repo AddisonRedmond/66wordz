@@ -40,14 +40,14 @@ const GuessContainer: React.FC<GuessContainerProps> = (
       >
         <AnimatePresence>
           {props.guess.split("").map((letter: string, index: number) => {
-            return <Tile letter={letter} key={index} />;
+            return <Tile letter={letter} key={index} revealed={true} />;
           })}
         </AnimatePresence>
       </div>
 
       <motion.button
         initial={{ scale: 1, translateY: "-50%" }}
-        animate={{ scale: props.isAttack ? 1.2 : 1, backgroundColor: props.isAttack ? "rgb(248 113 113)": "rgb(255 255 255)" }}
+        animate={{ scale: props.isAttack ? 1.2 : 1, backgroundColor: props.isAttack ? "rgb(16 185 129)": "rgb(255 255 255)" }}
         transition={props.isAttack ? { duration: 0.5, repeat: Infinity, repeatType: "reverse" }: {}}
         onClick={() => props.setIsAttack(!props.isAttack)}
         className={`absolute -right-14 top-1/2 flex aspect-square w-12 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700  ${

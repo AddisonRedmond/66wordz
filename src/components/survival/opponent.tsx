@@ -50,8 +50,8 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                 <p>❌</p>
               ) : (
                 <>
-                  <p className="text-sm text-sky-400">{health}</p>
-                  <p className="text-sm text-green-400">{shield}</p>
+                  <p className="text-sm text-sky-400">{shield}</p>
+                  <p className="text-sm text-green-400">{health}</p>
                 </>
               )}
             </div>

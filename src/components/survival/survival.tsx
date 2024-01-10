@@ -17,6 +17,8 @@ import {
   handleAttack,
 } from "~/utils/surivival";
 import GuessContainer from "./guess-container";
+import Eliminated from "./eliminated";
+import LoadingGame from "./loading-game";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -121,83 +123,66 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
-  return (
-    <div
-      className={`flex flex-col items-center justify-around gap-12 ${
-        isAttack ? `cursor-crosshair` : "cursor-default"
-      }`}
-    >
-      {/* div for game info */}
-      <div>
-        {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
-      </div>
-
-      <div className=" flex flex-col items-center gap-y-3">
-        <WordContainer
-          word={gameData?.words?.SIX_LETTER_WORD?.word}
-          revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
-          type={gameData?.words?.SIX_LETTER_WORD?.type}
-          value={gameData?.words?.SIX_LETTER_WORD?.value}
-          attack={gameData?.words?.SIX_LETTER_WORD?.attack}
+  if (gameData?.lobbyData.gameStarted === false) {
+    return (
+      <>
+        <button
+          onClick={() => exitMatch()}
+          className=" duration absolute right-72 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
+        >
+          QUIT GAME
+        </button>
+        <LoadingGame
+          expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
         />
-        <div className="flex flex-wrap justify-center gap-3">
-          <WordContainer
-            word={gameData?.words?.FIVE_LETTER_WORD?.word}
-            revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
-            type={gameData?.words?.FIVE_LETTER_WORD?.type}
-            value={gameData?.words?.FIVE_LETTER_WORD?.value}
-            attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
-          />
-          <WordContainer
-            word={gameData?.words?.FOUR_LETTER_WORD?.word}
-            revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
-            type={gameData?.words?.FOUR_LETTER_WORD?.type}
-            value={gameData?.words?.FOUR_LETTER_WORD?.value}
-            attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
-          />
-        </div>
-      </div>
-
-      {/* game ui layout -> health and shield + guess container + keybaord */}
-      <div className="flex flex-col items-center gap-3">
-        {/* status indicators */}
-        <div className="flex w-[34vh] flex-col gap-2">
-          <div className=" flex w-full items-center justify-between gap-2">
-            <StatusBar statusValue={playerData?.shield} color="bg-sky-400" />
-            <Image className="" src={shield} alt="shield Icon" />
-          </div>
-
-          <div className="flex w-full items-center justify-between gap-2">
-            <StatusBar statusValue={playerData?.health} color="bg-green-400" />
-            <Image src={health} alt="shield Icon" />
-          </div>
+      </>
+    );
+  } else if (gameData?.lobbyData.gameStarted === true){
+    return (
+      <div
+        className={`flex flex-col items-center justify-around gap-12 ${
+          isAttack ? `custom-cursor` : "cursor-default"
+        }`}
+      >
+        <button
+          onClick={() => exitMatch()}
+          className=" duration absolute right-72 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
+        >
+          QUIT GAME
+        </button>
+        {/* div for game info */}
+        <div>
+          {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
         </div>
 
-        <div className="flex w-screen justify-around">
-          <div className="flex w-1/4 justify-around">
-            {getHalfOfOpponents(true).map((playerId: string) => {
-              if (playerId === userId) return;
-              return (
-                <Opponent
-                  key={playerId}
-                  playerId={playerId}
-                  opponentData={gameData?.players[playerId]}
-                  attack={attack}
-                />
-              );
-            })}
-          </div>
-
-          {/* guess container + attack value and button */}
-          <GuessContainer
-            guess={guess}
-            playerData={playerData}
-            spellCheck={spellCheck}
-            setSpellCheck={setSpellCheck}
-            setIsAttack={attackMode}
-            isAttack={isAttack}
+        <div className=" flex flex-col items-center gap-y-3">
+          <WordContainer
+            word={gameData?.words?.SIX_LETTER_WORD?.word}
+            revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
+            type={gameData?.words?.SIX_LETTER_WORD?.type}
+            value={gameData?.words?.SIX_LETTER_WORD?.value}
+            attack={gameData?.words?.SIX_LETTER_WORD?.attack}
           />
-          <div className="flex w-1/4 justify-around">
+          <div className="flex flex-wrap justify-center gap-3">
+            <WordContainer
+              word={gameData?.words?.FIVE_LETTER_WORD?.word}
+              revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
+              type={gameData?.words?.FIVE_LETTER_WORD?.type}
+              value={gameData?.words?.FIVE_LETTER_WORD?.value}
+              attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
+            />
+            <WordContainer
+              word={gameData?.words?.FOUR_LETTER_WORD?.word}
+              revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
+              type={gameData?.words?.FOUR_LETTER_WORD?.type}
+              value={gameData?.words?.FOUR_LETTER_WORD?.value}
+              attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
+            />
+          </div>
+        </div>
+
+        <div className="flex w-screen items-center justify-around">
+          <div className="flex w-1/3 justify-center">
             {getHalfOfOpponents(false).map((playerId: string) => {
               if (playerId === userId) return;
               return (
@@ -210,13 +195,68 @@ const Survival: React.FC<SurvivalProps> = ({
               );
             })}
           </div>
-        </div>
 
-        {/* keyboard */}
-        <Keyboard disabled={false} handleKeyBoardLogic={handleKeyBoardLogic} />
+          {/* game ui layout -> health and shield + guess container + keybaord */}
+          {playerData?.eliminated ? (
+            <Eliminated exitMatch={exitMatch} />
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              {/* status indicators */}
+              <div className="flex w-[34vh] flex-col gap-2">
+                <div className=" flex w-full items-center justify-between gap-2">
+                  <StatusBar
+                    statusValue={playerData?.shield}
+                    color="bg-sky-400"
+                  />
+                  <Image className="" src={shield} alt="shield Icon" />
+                </div>
+
+                <div className="flex w-full items-center justify-between gap-2">
+                  <StatusBar
+                    statusValue={playerData?.health}
+                    color="bg-green-400"
+                  />
+                  <Image src={health} alt="shield Icon" />
+                </div>
+              </div>
+
+              <div>
+                {/* guess container + attack value and button */}
+                <GuessContainer
+                  guess={guess}
+                  playerData={playerData}
+                  spellCheck={spellCheck}
+                  setSpellCheck={setSpellCheck}
+                  setIsAttack={attackMode}
+                  isAttack={isAttack}
+                />
+              </div>
+
+              {/* keyboard */}
+              <Keyboard
+                disabled={false}
+                handleKeyBoardLogic={handleKeyBoardLogic}
+              />
+            </div>
+          )}
+
+          <div className="flex w-1/3 justify-center">
+            {getHalfOfOpponents(true).map((playerId: string) => {
+              if (playerId === userId) return;
+              return (
+                <Opponent
+                  key={playerId}
+                  playerId={playerId}
+                  opponentData={gameData?.players[playerId]}
+                  attack={attack}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default Survival;

@@ -120,7 +120,7 @@ export const handleCorrectGuess = async (
 
     // change this static value to a function to update the word values
 
-    await update(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
+    await set(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
       ...createUpdatedWordValues(word),
     });
   }
@@ -178,7 +178,10 @@ export const handleAttack = async (
     };
     if (shield - attackValue < 0) {
       updatedStatus.shield = 0;
-      updatedStatus.health = health - (attackValue - shield) < 0 ? 0 : health - (attackValue - shield);
+      updatedStatus.health =
+        health - (attackValue - shield) < 0
+          ? 0
+          : health - (attackValue - shield);
     } else if (shield - attackValue >= 0) {
       updatedStatus.shield = shield - attackValue;
       updatedStatus.health = health;
