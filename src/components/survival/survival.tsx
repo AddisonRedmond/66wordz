@@ -137,7 +137,7 @@ const Survival: React.FC<SurvivalProps> = ({
         />
       </>
     );
-  } else if (gameData?.lobbyData.gameStarted === true){
+  } else if (gameData?.lobbyData.gameStarted === true) {
     return (
       <div
         className={`flex flex-col items-center justify-around gap-12 ${
@@ -181,8 +181,8 @@ const Survival: React.FC<SurvivalProps> = ({
           </div>
         </div>
 
-        <div className="flex w-screen items-center justify-around">
-          <div className="flex w-1/3 justify-center">
+        <div className="flex w-screen items-center justify-around gap-4">
+          <div className="flex w-1/3 flex-wrap justify-around overflow-hidden">
             {getHalfOfOpponents(false).map((playerId: string) => {
               if (playerId === userId) return;
               return (
@@ -191,6 +191,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   playerId={playerId}
                   opponentData={gameData?.players[playerId]}
                   attack={attack}
+                  opponentCount={getHalfOfOpponents(false).length}
                 />
               );
             })}
@@ -240,7 +241,7 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
           )}
 
-          <div className="flex w-1/3 justify-center">
+          <div className="flex w-1/3 flex-wrap justify-around overflow-hidden">
             {getHalfOfOpponents(true).map((playerId: string) => {
               if (playerId === userId) return;
               return (
@@ -249,6 +250,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   playerId={playerId}
                   opponentData={gameData?.players[playerId]}
                   attack={attack}
+                  opponentCount={getHalfOfOpponents(true).length}
                 />
               );
             })}

@@ -79,6 +79,7 @@ export const handleCorrectGuess = async (
           type: getRandomType(4),
           value: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
           attack: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
+          revealedIndex: null,
         };
       case 5:
         return {
@@ -86,6 +87,7 @@ export const handleCorrectGuess = async (
           type: getRandomType(4),
           value: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
           attack: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+          revealedIndex: null,
         };
       case 6:
         return {
@@ -93,6 +95,7 @@ export const handleCorrectGuess = async (
           type: getRandomType(4),
           value: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
           attack: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
+          revealedIndex: null,
         };
     }
   };
@@ -131,14 +134,6 @@ export const handleCorrectGuess = async (
 export const checkSpelling = (word: string) => {
   return dictionary.includes(word.toLocaleUpperCase());
 };
-
-// export const handleCorrectGuess = (words: string[], guess: string) => {
-//   if(words.includes(guess)) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
 
 export const wordLength = (word: string) => {
   switch (word.length) {

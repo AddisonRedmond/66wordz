@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   CircularProgressbarWithChildren,
   CircularProgressbar,
@@ -13,6 +14,7 @@ type OpponentProps = {
     eliminated: boolean;
   };
   attack: (playerId: string) => void;
+  opponentCount: number;
 };
 
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
@@ -21,12 +23,21 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     shield: 0,
     eliminated: false,
   };
+
+  const opponentSizePercentage = 50 / Math.sqrt(props?.opponentCount ?? 0); // Using the square root for both width and height
   return (
-    <div
+    <motion.div
+      initial={{ scale: 0 }}
+      animate={{
+        scale: 1,
+        width: `${opponentSizePercentage}%`,
+        minWidth: "55px",
+      }}
+      exit={{ scale: 0 }}
       onClick={() => {
         props.attack(props.playerId);
       }}
-      className={`w-20 ${eliminated ? "opacity-50" : "opacity-100"}`}
+      className={`${eliminated ? "opacity-50" : "opacity-100"} aspect-square m-1`}
     >
       <CircularProgressbarWithChildren
         styles={buildStyles({
@@ -36,7 +47,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
         })}
         value={shield}
       >
-        <div className=" w-16">
+        <div className="w-10/12">
           <CircularProgressbarWithChildren
             styles={buildStyles({
               pathColor: "#4ADE80",
@@ -58,7 +69,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
           </CircularProgressbarWithChildren>
         </div>
       </CircularProgressbarWithChildren>
-    </div>
+    </motion.div>
   );
 };
 
