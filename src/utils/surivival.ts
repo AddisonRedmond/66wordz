@@ -2,7 +2,7 @@ import { ref, update, set } from "firebase/database";
 import { db } from "./firebase/firebase";
 import { handleGetNewWord } from "./game";
 import dictionary from "../utils/dictionary";
-function getRandomNumber(min: number, max: number): number {
+export function getRandomNumber(min: number, max: number): number {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
 }
@@ -185,8 +185,6 @@ export const handleAttack = async (
     if (updatedStatus.health <= 0) {
       updatedStatus.eliminated = true;
     }
-
-    console.log(updatedStatus);
 
     return updatedStatus;
   };

@@ -3,6 +3,8 @@ import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
 import sword from "../../../public/Sword.svg";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { getRandomNumber } from "~/utils/surivival";
 
 type WordContainerProps = {
   word?: string;
@@ -18,8 +20,6 @@ const WordContainer: React.FC<WordContainerProps> = ({
   type,
   ...props
 }: WordContainerProps) => {
-
-  console.log(revealedIndex?.includes(7))
   if (word) {
     const getType = () => {
       if (type === "shield") {
@@ -29,26 +29,63 @@ const WordContainer: React.FC<WordContainerProps> = ({
       }
       return shield;
     };
+
     return (
-      <div className="relative flex w-fit flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 px-2 py-1">
+      <motion.div className="relative flex w-fit flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 px-2 py-1">
         <div className="flex flex-col items-center justify-center font-semibold">
           <Image src={getType()} alt="status type" />
           <p className="text-sm">{props.value}</p>
         </div>
         {word.split("").map((letter: string, index: number) => {
           return (
-            <Tile
+            <motion.span
               key={index}
-              letter={letter}
-              revealed={revealedIndex?.includes(index)}
-            />
+              animate={
+                word.length - 1 === revealedIndex?.length
+                  ? {
+                      x: [
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                      ], // Random horizontal movement
+                      y: [
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                        getRandomNumber(-2, 2),
+                      ], //
+                    }
+                  : {
+                      x: 0,
+                      y: 0,
+                    }
+              }
+              transition={
+                word.length - 1 === revealedIndex?.length
+                  ? {
+                      duration: 0.3, // Duration of each rumble cycle
+                      repeat: Infinity, // Repeat the animation indefinitely
+                      repeatType: "mirror", // Reverse the animation between repeats
+                    }
+                  : {}
+              }
+            >
+              <Tile
+                key={index}
+                letter={letter}
+                revealed={revealedIndex?.includes(index)}
+              />
+            </motion.span>
           );
         })}
         <div className="flex flex-col items-center justify-center font-semibold">
           <Image src={sword} alt="status type" />
           <p className="text-sm">{props.attack}</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 };

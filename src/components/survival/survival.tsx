@@ -3,7 +3,7 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
@@ -19,6 +19,7 @@ import {
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "./loading-game";
+import { useAnimate } from "framer-motion";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -37,6 +38,19 @@ const Survival: React.FC<SurvivalProps> = ({
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
   const [isAttack, setIsAttack] = useState<boolean>(false);
+  const [correctGuess, setCorrectGuess] = useState<boolean>(false);
+  const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
+
+  const [scope, animate] = useAnimate();
+
+  // TODO: make a better correct guess animation
+
+  const control = { y: [0, -50], opacity: [100, 0], zIndex: [1, 1] };
+  useEffect(() => {
+    if (scope.current) {
+      animate(scope.current, control, { duration: 1.5 });
+    }
+  }, [correctGuess]);
 
   const handleKeyBoardLogic = (key: string) => {
     const words = Object.keys(gameData?.words ?? []).map((word: string) => {
@@ -61,12 +75,14 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData?.words[wordLength(guess)],
           );
           setGuess("");
+          setCorrectGuess(true);
         } else {
           // handle incorrect guess
           // reset guess
           // animation
 
           setGuess("");
+          setIncorrectGuess(true);
         }
       } else {
         // handle spell check is false
@@ -108,7 +124,7 @@ const Survival: React.FC<SurvivalProps> = ({
     setIsAttack(!isAttack);
   };
 
-  const attack = (playerId: string) => {
+  const attack = (playerId: string, func: () => void) => {
     if (!gameData?.players[playerId] || !isAttack) {
       return;
     } else {
@@ -119,6 +135,7 @@ const Survival: React.FC<SurvivalProps> = ({
         gameData.players[playerId]!,
         userId,
       );
+      func();
       setIsAttack(false);
     }
   };
@@ -192,6 +209,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   opponentData={gameData?.players[playerId]}
                   attack={attack}
                   opponentCount={getHalfOfOpponents(false).length}
+                  attackValue={playerData?.attack}
                 />
               );
             })}
@@ -201,28 +219,41 @@ const Survival: React.FC<SurvivalProps> = ({
           {playerData?.eliminated ? (
             <Eliminated exitMatch={exitMatch} />
           ) : (
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center">
               {/* status indicators */}
               <div className="flex w-[34vh] flex-col gap-2">
-                <div className=" flex w-full items-center justify-between gap-2">
+                <div className=" relative flex h-3 w-full items-center justify-between gap-2">
                   <StatusBar
                     statusValue={playerData?.shield}
                     color="bg-sky-400"
                   />
-                  <Image className="" src={shield} alt="shield Icon" />
+                  <Image
+                    className="absolute -right-6"
+                    src={shield}
+                    alt="shield Icon"
+                  />
                 </div>
 
-                <div className="flex w-full items-center justify-between gap-2">
+                <div className="relative flex w-full h-3 mb-2 items-center justify-between gap-2">
                   <StatusBar
                     statusValue={playerData?.health}
                     color="bg-green-400"
                   />
-                  <Image src={health} alt="shield Icon" />
+                  <Image
+                    className="absolute -right-6"
+                    src={health}
+                    alt="shield Icon"
+                  />
                 </div>
               </div>
 
-              <div>
+              <div className="relative">
                 {/* guess container + attack value and button */}
+                <div className="absolute top-0 w-full text-center">
+                  <p ref={scope} className="text-3xl font-bold text-green-500">
+                    Success!
+                  </p>
+                </div>
                 <GuessContainer
                   guess={guess}
                   playerData={playerData}
@@ -230,6 +261,8 @@ const Survival: React.FC<SurvivalProps> = ({
                   setSpellCheck={setSpellCheck}
                   setIsAttack={attackMode}
                   isAttack={isAttack}
+                  incorrectGuess={incorrectGuess}
+                  setIsIncorrectGuess={setIncorrectGuess}
                 />
               </div>
 
@@ -251,6 +284,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   opponentData={gameData?.players[playerId]}
                   attack={attack}
                   opponentCount={getHalfOfOpponents(true).length}
+                  attackValue={playerData?.attack}
                 />
               );
             })}

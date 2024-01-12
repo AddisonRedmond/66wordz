@@ -1447,6 +1447,8 @@ const dictionary: string[] = [
   "HINT",
   "HIRE",
   "HOLD",
+  "HUNK",
+  "HONK",
   "HOLE",
   "HOLT",
   "HOLY",

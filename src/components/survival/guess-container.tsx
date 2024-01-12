@@ -16,6 +16,8 @@ type GuessContainerProps = {
   setSpellCheck: Dispatch<SetStateAction<boolean>>;
   setIsAttack: Dispatch<SetStateAction<boolean>>;
   isAttack: boolean;
+  incorrectGuess: boolean;
+  setIsIncorrectGuess: Dispatch<SetStateAction<boolean>>;
 };
 
 const GuessContainer: React.FC<GuessContainerProps> = (
@@ -25,12 +27,27 @@ const GuessContainer: React.FC<GuessContainerProps> = (
 
   const control = {
     x: [-10, 10, -10, 10, 0],
+    // backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
+  };
+
+  const incorrectGuess = {
     backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
   };
+
   useEffect(() => {
     animate(scope.current, control, { duration: 0.3 });
     props.setSpellCheck(false);
   }, [props.spellCheck]);
+
+  useEffect(() => {
+    animate(scope.current, incorrectGuess, { duration: 0.3 });
+    props.setIsIncorrectGuess(false);
+  }, [props.incorrectGuess]);
+
+  // useEffect(() => {
+  //   animate(scope.current, correctGuess, { duration: 0.3 });
+  //   props.setIsCorrectGuess(false);
+  // }, [props.correctGuess]);
 
   return (
     <div className="relative">
@@ -47,8 +64,17 @@ const GuessContainer: React.FC<GuessContainerProps> = (
 
       <motion.button
         initial={{ scale: 1, translateY: "-50%" }}
-        animate={{ scale: props.isAttack ? 1.2 : 1, backgroundColor: props.isAttack ? "rgb(16 185 129)": "rgb(255 255 255)" }}
-        transition={props.isAttack ? { duration: 0.5, repeat: Infinity, repeatType: "reverse" }: {}}
+        animate={{
+          scale: props.isAttack ? 1.2 : 1,
+          backgroundColor: props.isAttack
+            ? "rgb(16 185 129)"
+            : "rgb(255 255 255)",
+        }}
+        transition={
+          props.isAttack
+            ? { duration: 0.5, repeat: Infinity, repeatType: "reverse" }
+            : {}
+        }
         onClick={() => props.setIsAttack(!props.isAttack)}
         className={`absolute -right-14 top-1/2 flex aspect-square w-12 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700  ${
           props.playerData?.attack === 0 ? "opacity-25" : "opacity-100"

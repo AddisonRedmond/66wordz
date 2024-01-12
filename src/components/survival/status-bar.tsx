@@ -1,15 +1,39 @@
-import { motion } from "framer-motion";
-
+import { motion, useAnimate } from "framer-motion";
+import { useEffect } from "react";
 type StatusBarProps = {
   statusValue?: number;
   color: string;
 };
 const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
+  const [scope, animate] = useAnimate();
+  const [scopeRed, animateRed] = useAnimate();
+
+  useEffect(() => {
+    if (scope && scopeRed) {
+      animate(scope.current, {
+        width: `${props.statusValue ? props.statusValue -.5 : 0}%`,
+      }).then(() => {
+        animate(scopeRed.current, {
+          width: `${props.statusValue ? props.statusValue -.5 : 0}%`,
+        })
+      });
+    }
+  }, [props.statusValue]);
   return (
-    <motion.div
-      animate={{ width: `${props.statusValue ? props.statusValue : 0}%` }}
-      className={`h-2 w-full rounded-full ${props.color}`}
-    ></motion.div>
+    <>
+      <motion.div
+        ref={scopeRed}
+        // animate={{
+        //   width: `${props.statusValue ? props.statusValue : 0}%`,
+        // }}
+        className={`absolute h-2 rounded-full bg-red-600`}
+      ></motion.div>
+      <motion.div
+        ref={scope}
+        // animate={{ width: `${props.statusValue ? props.statusValue : 0}%` }}
+        className={`absolute h-2 rounded-full ${props.color}`}
+      ></motion.div>
+    </>
   );
 };
 
