@@ -8,14 +8,16 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   const [scope, animate] = useAnimate();
   const [scopeRed, animateRed] = useAnimate();
 
+  // TODO: change this to delayed children variant, rather than useEffect
+
   useEffect(() => {
     if (scope && scopeRed) {
       animate(scope.current, {
-        width: `${props.statusValue ? props.statusValue -.5 : 0}%`,
+        width: `${props.statusValue ? props.statusValue - 0.5 : 0}%`,
       }).then(() => {
         animate(scopeRed.current, {
-          width: `${props.statusValue ? props.statusValue -.5 : 0}%`,
-        })
+          width: `${props.statusValue ? props.statusValue - 0.5 : 0}%`,
+        });
       });
     }
   }, [props.statusValue]);

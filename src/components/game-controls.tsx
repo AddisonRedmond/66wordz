@@ -20,23 +20,7 @@ const GameControls = (props: GameControlProps) => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="p-8">
-        {/* <div className="flex items-center space-x-2">
-          <input
-            id="solo-mode"
-            onChange={() => props.setIsSolo(!props.isSolo)}
-            checked={props.isSolo}
-            type="checkbox"
-            className="h-6 w-6 accent-violet-700 sm:h-4 sm:w-4"
-          />
-          <label
-            className="text-lg font-medium text-gray-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            htmlFor="solo-mode"
-          >
-            Solo Game
-          </label>
-        </div> */}
-      </div>
+
       <div className="relative">
         <button
           onClick={() => {

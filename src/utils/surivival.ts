@@ -7,6 +7,12 @@ export function getRandomNumber(min: number, max: number): number {
   return randomNumber;
 }
 
+const getInitials = (fullName: string): string => {
+  const names = fullName.split(" ");
+  const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
+  return initials;
+};
+
 function roundToNearestFiveOrZero(num: number): number {
   const remainder = num % 5;
   if (remainder <= 2.5) {
@@ -54,12 +60,17 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
   });
 };
 
-export const joinSurivivalLobby = async (lobbyId: string, userId: string) => {
+export const joinSurivivalLobby = async (
+  lobbyId: string,
+  userId: string,
+  fullName: string,
+) => {
   await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
     health: 100,
     shield: 50,
     attack: 0,
     eliminated: false,
+    initials: getInitials(fullName),
   });
 };
 

@@ -140,21 +140,7 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
-  if (gameData?.lobbyData.gameStarted === false) {
-    return (
-      <>
-        <button
-          onClick={() => exitMatch()}
-          className=" duration absolute right-72 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
-        >
-          QUIT GAME
-        </button>
-        <LoadingGame
-          expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
-        />
-      </>
-    );
-  } else if (gameData?.lobbyData.gameStarted === true) {
+  if (gameData) {
     return (
       <div
         className={`flex flex-col items-center justify-around gap-12 ${
@@ -172,32 +158,33 @@ const Survival: React.FC<SurvivalProps> = ({
           {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
         </div>
 
-        <div className=" flex flex-col items-center gap-y-3">
-          <WordContainer
-            word={gameData?.words?.SIX_LETTER_WORD?.word}
-            revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
-            type={gameData?.words?.SIX_LETTER_WORD?.type}
-            value={gameData?.words?.SIX_LETTER_WORD?.value}
-            attack={gameData?.words?.SIX_LETTER_WORD?.attack}
-          />
-          <div className="flex flex-wrap justify-center gap-3">
+        {gameData?.lobbyData.gameStarted && (
+          <div className=" flex flex-col items-center gap-y-3">
             <WordContainer
-              word={gameData?.words?.FIVE_LETTER_WORD?.word}
-              revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
-              type={gameData?.words?.FIVE_LETTER_WORD?.type}
-              value={gameData?.words?.FIVE_LETTER_WORD?.value}
-              attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
+              word={gameData?.words?.SIX_LETTER_WORD?.word}
+              revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
+              type={gameData?.words?.SIX_LETTER_WORD?.type}
+              value={gameData?.words?.SIX_LETTER_WORD?.value}
+              attack={gameData?.words?.SIX_LETTER_WORD?.attack}
             />
-            <WordContainer
-              word={gameData?.words?.FOUR_LETTER_WORD?.word}
-              revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
-              type={gameData?.words?.FOUR_LETTER_WORD?.type}
-              value={gameData?.words?.FOUR_LETTER_WORD?.value}
-              attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
-            />
+            <div className="flex flex-wrap justify-center gap-3">
+              <WordContainer
+                word={gameData?.words?.FIVE_LETTER_WORD?.word}
+                revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
+                type={gameData?.words?.FIVE_LETTER_WORD?.type}
+                value={gameData?.words?.FIVE_LETTER_WORD?.value}
+                attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
+              />
+              <WordContainer
+                word={gameData?.words?.FOUR_LETTER_WORD?.word}
+                revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
+                type={gameData?.words?.FOUR_LETTER_WORD?.type}
+                value={gameData?.words?.FOUR_LETTER_WORD?.value}
+                attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
+              />
+            </div>
           </div>
-        </div>
-
+        )}
         <div className="flex w-screen items-center justify-around gap-4">
           <div className="flex w-1/3 flex-wrap justify-around overflow-hidden">
             {getHalfOfOpponents(false).map((playerId: string) => {
@@ -214,12 +201,16 @@ const Survival: React.FC<SurvivalProps> = ({
               );
             })}
           </div>
-
-          {/* game ui layout -> health and shield + guess container + keybaord */}
-          {playerData?.eliminated ? (
+          {/* nester ternary check to see if game started, if it hasn't then load the timer, 
+          if it has then check if the player has been eliminate, if they haven't then load the game components */}
+          {!gameData?.lobbyData.gameStarted ? (
+            <LoadingGame
+              expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
+            />
+          ) : playerData?.eliminated ? (
             <Eliminated exitMatch={exitMatch} />
           ) : (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-y-5">
               {/* status indicators */}
               <div className="flex w-[34vh] flex-col gap-2">
                 <div className=" relative flex h-3 w-full items-center justify-between gap-2">
@@ -234,7 +225,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   />
                 </div>
 
-                <div className="relative flex w-full h-3 mb-2 items-center justify-between gap-2">
+                <div className="relative mb-2 flex h-3 w-full items-center justify-between gap-2">
                   <StatusBar
                     statusValue={playerData?.health}
                     color="bg-green-400"

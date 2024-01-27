@@ -3,6 +3,8 @@ import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
+import Image from "next/image";
+import bot from "../../../public/bot.svg";
 
 type OpponentProps = {
   playerId: string;
@@ -11,6 +13,7 @@ type OpponentProps = {
     shield: number;
     attack: number;
     eliminated: boolean;
+    initials?: string;
   };
   attack: (playerId: string, func: () => void) => void;
   attackValue?: number;
@@ -98,6 +101,15 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
               <p>❌</p>
             ) : (
               <>
+                {props.opponentData?.initials ? (
+                  <p>{props.opponentData?.initials}</p>
+                ) : (
+                  <div className="w-[1vw] aspect-square">
+                    <Image alt="robot icon" src={bot} />
+                  </div>
+                  
+                )}
+                {/* <p>{props.opponentData?.initials ?? "🤖"}</p> */}
                 <p className="text-sm text-sky-400">{shield}</p>
                 <p className="text-sm text-green-400">{health}</p>
               </>

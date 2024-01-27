@@ -132,7 +132,11 @@ export const publicGameRouter = createTRPCRouter({
             );
             break;
           case "SURVIVAL":
-            joinSurivivalLobby(player.lobbyId, userId);
+            joinSurivivalLobby(
+              player.lobbyId,
+              userId,
+              ctx.session.user.name ?? "N/A",
+            );
         }
 
         const playerCount = await ctx.db.players.count({

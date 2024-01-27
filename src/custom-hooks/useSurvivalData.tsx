@@ -11,6 +11,10 @@ interface WordObject {
     value: number;
     revealedIndex: number[] | undefined;
     attack: number;
+    // revealTimer: {
+    //   index: number;
+    //   endTime: number
+    // }
   };
 }
 
@@ -28,6 +32,7 @@ export type GameData = {
       shield: number;
       attack: number;
       eliminated: boolean;
+      initials?: string;
     };
   };
 };

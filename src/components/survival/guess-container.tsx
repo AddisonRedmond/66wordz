@@ -76,9 +76,9 @@ const GuessContainer: React.FC<GuessContainerProps> = (
             : {}
         }
         onClick={() => props.setIsAttack(!props.isAttack)}
-        className={`absolute -right-14 top-1/2 flex aspect-square w-12 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700  ${
-          props.playerData?.attack === 0 ? "opacity-25" : "opacity-100"
-        }`}
+        className={`absolute -right-14 top-1/2 flex aspect-square w-12 transform cursor-pointer flex-col items-center justify-center rounded-full border-4 border-zinc-700 duration-200 ease-in-out  ${
+          props.playerData?.attack === 0 ? "opacity-0" : "opacity-100"
+        } `}
       >
         <div className={`absolute -top-6`}>
           <p className="font-semibold">{props.playerData?.attack}</p>
