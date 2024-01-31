@@ -68,7 +68,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       animate={{
         scale: 1,
         width: `${opponentSizePercentage}%`,
-        minWidth: "55px",
+       
       }}
       exit={{ scale: 0 }}
       onClick={() => {
@@ -76,7 +76,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       }}
       className={`${
         eliminated ? "opacity-50" : "opacity-100"
-      } m-1 flex aspect-square items-center justify-start`}
+      } m-1 flex aspect-square items-center justify-start min-w-14`}
     >
       <CircularProgressbarWithChildren
         styles={buildStyles({
@@ -109,7 +109,6 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                   </div>
                   
                 )}
-                {/* <p>{props.opponentData?.initials ?? "🤖"}</p> */}
                 <p className="text-sm text-sky-400">{shield}</p>
                 <p className="text-sm text-green-400">{health}</p>
               </>

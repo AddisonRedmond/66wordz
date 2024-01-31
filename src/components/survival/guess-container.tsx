@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useAnimate } from "framer-motion";
-import Tile from "./tile";
+import SurvialTile from "./survival-tile";
 import Image from "next/image";
 import Sword from "../../../public/Sword.svg";
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -57,7 +57,7 @@ const GuessContainer: React.FC<GuessContainerProps> = (
       >
         <AnimatePresence>
           {props.guess.split("").map((letter: string, index: number) => {
-            return <Tile letter={letter} key={index} revealed={true} />;
+            return <SurvialTile letter={letter} key={index} revealed={true} />;
           })}
         </AnimatePresence>
       </div>

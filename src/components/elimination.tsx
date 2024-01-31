@@ -1,4 +1,4 @@
-import useGameLobbyData from "../custom-hooks/useGameLobbyData"; // Import your custom hook
+import useGameLobbyData from "../custom-hooks/useGameLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { db } from "~/utils/firebase/firebase";
 import GameGrid from "./game-grid";

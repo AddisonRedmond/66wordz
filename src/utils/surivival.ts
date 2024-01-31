@@ -1,7 +1,23 @@
-import { ref, update, set } from "firebase/database";
-import { db } from "./firebase/firebase";
+import {
+  ref,
+  update,
+  set,
+  db,
+  handleIncorrectSurvialGuess,
+  remove,
+} from "./firebase/firebase";
 import { handleGetNewWord } from "./game";
 import dictionary from "../utils/dictionary";
+
+export type WordObject = {
+  [key: string]: {
+    word: string;
+    type: "shield" | "health";
+    value: number;
+    attack: number;
+  };
+};
+
 export function getRandomNumber(min: number, max: number): number {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
@@ -134,6 +150,7 @@ export const handleCorrectGuess = async (
 
     // change this static value to a function to update the word values
 
+    await remove(ref(db, `SURVIVAL/${lobbyId}/${wordLength}_MATCHES`));
     await set(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
       ...createUpdatedWordValues(word),
     });
@@ -206,4 +223,56 @@ export const handleAttack = async (
   await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
     ...calcualteUpdatedStatus(attackValue, shield),
   });
+};
+
+const findMatchingIndexes = (
+  str1: string,
+  str2: string,
+  previousArray: number[],
+): number[] => {
+  const uniqueIndexes: Set<number> = new Set([]);
+
+  const minLength = Math.min(str1.length, str2.length);
+
+  for (let i = 0; i < minLength; i++) {
+    if (str1[i] === str2[i]) {
+      uniqueIndexes.add(i);
+    }
+  }
+
+  return Array.from(uniqueIndexes);
+};
+
+export const handleIncorrectGuess = async (
+  guess: string,
+  lobbyId: string,
+  userId: string,
+  words: WordObject,
+  currentMatchingIndexes: { [wordLength: string]: number[] | undefined },
+) => {
+  // check each word for matching indexes
+
+  Object.keys(words).forEach((keys: string) => {
+    const matchingIndexes = findMatchingIndexes(
+      words[keys]!.word,
+      guess,
+      currentMatchingIndexes[keys]!,
+    );
+    if (matchingIndexes.length === 0) {
+      return;
+    }
+    handleIncorrectSurvialGuess(
+      `SURVIVAL/${lobbyId}/${keys}_MATCHES`,
+      matchingIndexes,
+      userId,
+    );
+  });
+
+  // update all three words with the revealed indexes
+};
+
+export const extractMathingIndexes = (matchingIndexes: {
+  [wordLength: string]: number[];
+}) => {
+  const indexObjext: { [key: string]: number[] } = {};
 };

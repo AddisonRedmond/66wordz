@@ -15,6 +15,7 @@ import {
   handleCorrectGuess,
   wordLength,
   handleAttack,
+  handleIncorrectGuess,
 } from "~/utils/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
@@ -42,6 +43,8 @@ const Survival: React.FC<SurvivalProps> = ({
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
 
   const [scope, animate] = useAnimate();
+
+  const playerData = gameData?.players[userId];
 
   // TODO: make a better correct guess animation
 
@@ -81,8 +84,21 @@ const Survival: React.FC<SurvivalProps> = ({
           // reset guess
           // animation
 
+          // get current matching indexes
+          const matchingIndexes = {
+            fiveLetterWordMatches: gameData?.FIVE_LETTER_WORD_MATCHES?.[userId],
+            fourLetterWordMatches: gameData?.FOUR_LETTER_WORD_MATCHES?.[userId],
+            sixLetterWordMatches: gameData?.SIX_LETTER_WORD_MATCHES?.[userId],
+          };
           setGuess("");
           setIncorrectGuess(true);
+          handleIncorrectGuess(
+            guess,
+            lobbyId,
+            userId,
+            gameData!.words,
+            matchingIndexes,
+          );
         }
       } else {
         // handle spell check is false
@@ -97,8 +113,6 @@ const Survival: React.FC<SurvivalProps> = ({
     handleKeyBoardLogic(e.key);
   };
   useOnKeyUp(handleKeyUp, [guess, gameData]);
-
-  const playerData = gameData?.players[userId];
 
   const words = Object.keys(gameData?.words ?? []).sort(
     (a, b) => b.length - a.length,
@@ -162,25 +176,25 @@ const Survival: React.FC<SurvivalProps> = ({
           <div className=" flex flex-col items-center gap-y-3">
             <WordContainer
               word={gameData?.words?.SIX_LETTER_WORD?.word}
-              revealedIndex={gameData?.words?.SIX_LETTER_WORD?.revealedIndex}
               type={gameData?.words?.SIX_LETTER_WORD?.type}
               value={gameData?.words?.SIX_LETTER_WORD?.value}
               attack={gameData?.words?.SIX_LETTER_WORD?.attack}
+              match={gameData?.SIX_LETTER_WORD_MATCHES?.[userId]}
             />
             <div className="flex flex-wrap justify-center gap-3">
               <WordContainer
                 word={gameData?.words?.FIVE_LETTER_WORD?.word}
-                revealedIndex={gameData?.words?.FIVE_LETTER_WORD?.revealedIndex}
                 type={gameData?.words?.FIVE_LETTER_WORD?.type}
                 value={gameData?.words?.FIVE_LETTER_WORD?.value}
                 attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
+                match={gameData.FIVE_LETTER_WORD_MATCHES?.[userId]}
               />
               <WordContainer
                 word={gameData?.words?.FOUR_LETTER_WORD?.word}
-                revealedIndex={gameData?.words?.FOUR_LETTER_WORD?.revealedIndex}
                 type={gameData?.words?.FOUR_LETTER_WORD?.type}
                 value={gameData?.words?.FOUR_LETTER_WORD?.value}
                 attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
+                match={gameData.FOUR_LETTER_WORD_MATCHES?.[userId]}
               />
             </div>
           </div>

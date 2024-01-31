@@ -9,12 +9,7 @@ interface WordObject {
     word: string;
     type: "shield" | "health";
     value: number;
-    revealedIndex: number[] | undefined;
     attack: number;
-    // revealTimer: {
-    //   index: number;
-    //   endTime: number
-    // }
   };
 }
 
@@ -34,6 +29,15 @@ export type GameData = {
       eliminated: boolean;
       initials?: string;
     };
+  };
+  FOUR_LETTER_WORD_MATCHES?: {
+    [id: string]: number[];
+  };
+  FIVE_LETTER_WORD_MATCHES?: {
+    [id: string]: number[];
+  };
+  SIX_LETTER_WORD_MATCHES?: {
+    [id: string]: number[];
   };
 };
 const useSurvialData = (

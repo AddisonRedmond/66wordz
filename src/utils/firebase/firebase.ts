@@ -16,6 +16,8 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
+export { ref, set, update, remove };
+
 export const createNewMarathonLobby = async (
   gameType: GameType,
   lobbyId: string,
@@ -242,4 +244,14 @@ export const lobbyCleanUp = async (
 
 export const deleteLobby = async (gameType: string, lobbyId: string) => {
   await remove(ref(db, `${gameType}/${lobbyId}`));
+};
+
+export const handleIncorrectSurvialGuess = async (
+  path: string,
+  revealedIndex: number[],
+  userId: string,
+) => {
+  await update(ref(db, path), {
+    [userId]: revealedIndex,
+  });
 };
