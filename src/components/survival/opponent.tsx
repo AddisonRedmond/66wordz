@@ -29,21 +29,23 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     eliminated: false,
   };
 
-  const attackStrength = (inputNumber: number, axis: "x" | "y") => {
-    console.log(inputNumber);
-    const half = inputNumber / 16;
-    const resultArray: number[] = [];
-    if (axis === "x") {
-      for (let i = 0; i < 4; i++) {
-        resultArray.push(half, -half, 0);
-      }
-    } else if (axis === "y") {
-      resultArray.push(0, half, -half);
+  const attackStrength = (attackStrength: number) => {
+    if (attackStrength < 10 || attackStrength > 100) {
+      throw new Error("Input number must be between 10 and 100");
     }
 
-    resultArray.push(0);
+    const scaleArray: number[] = [];
 
-    return resultArray;
+    for (let i = 0; i < 5; i++) {
+      scaleArray.push(1 + attackStrength / 150);
+      scaleArray.push(0.75);
+    }
+
+    scaleArray.push(1);
+
+    console.log(scaleArray);
+
+    return scaleArray;
   };
 
   const attacked = () => {
@@ -51,9 +53,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       animate(
         scope.current,
         {
-          x: attackStrength(props.attackValue ?? 10, "x"),
-          y: attackStrength(props.attackValue ?? 10, "y"),
-          scale: [1, 1.1, 1, 1, 1.1, 1, 1, 1, 1.1, 1, 1, 1, 1.1, 1, 1, 1],
+          scale: attackStrength(props.attackValue ?? 0),
         },
         { duration: 0.65 },
       );
@@ -68,7 +68,6 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       animate={{
         scale: 1,
         width: `${opponentSizePercentage}%`,
-       
       }}
       exit={{ scale: 0 }}
       onClick={() => {
@@ -76,46 +75,46 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       }}
       className={`${
         eliminated ? "opacity-50" : "opacity-100"
-      } m-1 flex aspect-square items-center justify-start min-w-14`}
+      } m-1 flex aspect-square min-w-14 items-center justify-start`}
     >
-      <CircularProgressbarWithChildren
-        styles={buildStyles({
-          pathColor: "#4ADE80",
-          textSize: "50px",
-          textColor: "black",
-          trailColor: "",
-        })}
-        value={health}
-      >
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
         <CircularProgressbarWithChildren
           styles={buildStyles({
-            pathColor: "#38BDF8",
-            textSize: "50px",
+            pathColor: "#57E98F",
             textColor: "black",
-            trailColor: "transparent",
           })}
-          value={shield}
+          value={health}
+          strokeWidth={10}
         >
-          <div className="flex flex-col items-center justify-center font-semibold">
-            {eliminated ? (
-              <p>❌</p>
-            ) : (
-              <>
-                {props.opponentData?.initials ? (
-                  <p>{props.opponentData?.initials}</p>
-                ) : (
-                  <div className="w-[1vw] aspect-square">
-                    <Image alt="robot icon" src={bot} />
-                  </div>
-                  
-                )}
-                <p className="text-sm text-sky-400">{shield}</p>
-                <p className="text-sm text-green-400">{health}</p>
-              </>
-            )}
-          </div>
+          <CircularProgressbarWithChildren
+            styles={buildStyles({
+              pathColor: "#1E8BE1",
+              textColor: "black",
+              trailColor: "transparent",
+            })}
+            strokeWidth={10}
+            value={shield}
+          >
+            <div className=" flex flex-col items-center justify-center font-semibold">
+              {eliminated ? (
+                <p>❌</p>
+              ) : (
+                <>
+                  {props.opponentData?.initials ? (
+                    <p className={`text-[1vw]`}>{props.opponentData?.initials}</p>
+                  ) : (
+                    <div className={`aspect-square h-[1vw]`}>
+                      <Image alt="robot icon" src={bot} />
+                    </div>
+                  )}
+                  {/* <p className="text-sm text-sky-400">{shield}</p>
+                  <p className="text-sm text-green-400">{health}</p> */}
+                </>
+              )}
+            </div>
+          </CircularProgressbarWithChildren>
         </CircularProgressbarWithChildren>
-      </CircularProgressbarWithChildren>
+      </div>
     </motion.div>
   );
 };

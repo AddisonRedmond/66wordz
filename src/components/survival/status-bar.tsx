@@ -25,14 +25,10 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
     <>
       <motion.div
         ref={scopeRed}
-        // animate={{
-        //   width: `${props.statusValue ? props.statusValue : 0}%`,
-        // }}
         className={`absolute h-2 rounded-full bg-red-600`}
       ></motion.div>
       <motion.div
         ref={scope}
-        // animate={{ width: `${props.statusValue ? props.statusValue : 0}%` }}
         className={`absolute h-2 rounded-full ${props.color}`}
       ></motion.div>
     </>

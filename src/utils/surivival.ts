@@ -258,6 +258,9 @@ export const handleIncorrectGuess = async (
       guess,
       currentMatchingIndexes[keys]!,
     );
+
+    console.log(matchingIndexes);
+
     if (matchingIndexes.length === 0) {
       return;
     }

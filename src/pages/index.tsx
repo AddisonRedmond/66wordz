@@ -3,13 +3,16 @@ import Head from "next/head";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
-import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
 import Marathon from "~/components/marathon";
 import Elimination from "~/components/elimination";
 import { useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
+import GameCard from "~/components/game-card";
+import SurvivalImage from "../../public/survival.svg";
+import MarathonImage from "../../public/marathon.svg";
+import EliminationImage from "../../public/elimination.svg";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -17,11 +20,9 @@ const Home = () => {
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const [isSolo, setIsSolo] = useState<boolean>(false);
   const [gameMode, setGameMode] = useState<GameType>("MARATHON");
-  const joinGame = () => {
+  const joinGame = (gameMode: GameType) => {
     lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
-
-  const games: GameType[] = ["MARATHON", "ELIMINATION", "SURVIVAL"];
 
   const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
@@ -29,6 +30,7 @@ const Home = () => {
     // delete user from lobby db
     // delete user from firebase db
   };
+
   const handleStartGame = () => {
     if (lobby.data?.id) {
       switch (lobby.data.gameType) {
@@ -47,7 +49,7 @@ const Home = () => {
             <Elimination
               lobbyId={lobby.data.id}
               userId={session!.user.id}
-              gameType={gameMode}
+              gameType={lobby.data.gameType}
               exitMatch={exitMatch}
             />
           );
@@ -56,7 +58,7 @@ const Home = () => {
             <Survival
               lobbyId={lobby.data.id}
               userId={session!.user.id}
-              gameType={gameMode}
+              gameType={lobby.data.gameType}
               exitMatch={exitMatch}
             />
           );
@@ -82,14 +84,29 @@ const Home = () => {
           {lobby.data?.id ? (
             handleStartGame()
           ) : (
-            <GameControls
-              joinGame={joinGame}
-              gameMode={gameMode}
-              setGameMode={setGameMode}
-              setIsSolo={setIsSolo}
-              isSolo={isSolo}
-              games={games}
-            />
+            <div className="flex gap-2 flex-wrap justify-center">
+              <GameCard
+                gameMode="SURVIVAL"
+                gameAlt="sword image"
+                gameImage={SurvivalImage}
+                gameDescription="Survival game"
+                joinGame={joinGame}
+              />
+              <GameCard
+                gameMode="MARATHON"
+                gameAlt="clock image"
+                gameImage={MarathonImage}
+                gameDescription="Marathon game"
+                joinGame={joinGame}
+              />
+              <GameCard
+                gameMode="ELIMINATION"
+                gameAlt="elimination image"
+                gameImage={EliminationImage}
+                gameDescription="Elimination game"
+                joinGame={joinGame}
+              />
+            </div>
           )}
         </AnimatePresence>
       </motion.div>

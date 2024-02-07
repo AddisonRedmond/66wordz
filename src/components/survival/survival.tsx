@@ -5,6 +5,7 @@ import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
 import { useState, useEffect } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import shield from "../../../public/shield.svg";
 import health from "../../../public/health.svg";
 import StatusBar from "./status-bar";
@@ -41,8 +42,8 @@ const Survival: React.FC<SurvivalProps> = ({
   const [isAttack, setIsAttack] = useState<boolean>(false);
   const [correctGuess, setCorrectGuess] = useState<boolean>(false);
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
-
   const [scope, animate] = useAnimate();
+  const isMobile = useIsMobile();
 
   const playerData = gameData?.players[userId];
 
@@ -157,13 +158,13 @@ const Survival: React.FC<SurvivalProps> = ({
   if (gameData) {
     return (
       <div
-        className={`flex flex-col items-center justify-around gap-12 ${
+        className={`flex flex-col items-center justify-around gap-0 md:gap-12 ${
           isAttack ? `custom-cursor` : "cursor-default"
         }`}
       >
         <button
           onClick={() => exitMatch()}
-          className=" duration absolute right-72 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
+          className="duration absolute right-72 top-2 hidden rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
         >
           QUIT GAME
         </button>
@@ -199,22 +200,29 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
           </div>
         )}
-        <div className="flex w-screen items-center justify-around gap-4">
-          <div className="flex w-1/3 flex-wrap justify-around overflow-hidden">
-            {getHalfOfOpponents(false).map((playerId: string) => {
-              if (playerId === userId) return;
-              return (
-                <Opponent
-                  key={playerId}
-                  playerId={playerId}
-                  opponentData={gameData?.players[playerId]}
-                  attack={attack}
-                  opponentCount={getHalfOfOpponents(false).length}
-                  attackValue={playerData?.attack}
-                />
-              );
-            })}
+        {isMobile && (
+          <div className="h-20 w-full border-2 border-black">
+            <p>Mobile Info Panel</p>
           </div>
+        )}
+        <div className="flex w-screen items-center justify-center justy gap-4">
+          {!isMobile && (
+            <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">
+              {getHalfOfOpponents(false).map((playerId: string) => {
+                if (playerId === userId) return;
+                return (
+                  <Opponent
+                    key={playerId}
+                    playerId={playerId}
+                    opponentData={gameData?.players[playerId]}
+                    attack={attack}
+                    opponentCount={getHalfOfOpponents(false).length}
+                    attackValue={playerData?.attack}
+                  />
+                );
+              })}
+            </div>
+          )}
           {/* nester ternary check to see if game started, if it hasn't then load the timer, 
           if it has then check if the player has been eliminate, if they haven't then load the game components */}
           {!gameData?.lobbyData.gameStarted ? (
@@ -224,10 +232,10 @@ const Survival: React.FC<SurvivalProps> = ({
           ) : playerData?.eliminated ? (
             <Eliminated exitMatch={exitMatch} />
           ) : (
-            <div className="flex flex-col items-center gap-y-5">
+            <div className="flex flex-col items-center justify-center gap-y-5">
               {/* status indicators */}
-              <div className="flex w-[34vh] flex-col gap-2">
-                <div className=" relative flex h-3 w-full items-center justify-between gap-2">
+              <div className="flex w-[80vw] flex-col gap-2 md:w-[34vh]">
+                <div className=" relative flex h-3 w-full items-center justify-between  gap-2">
                   <StatusBar
                     statusValue={playerData?.shield}
                     color="bg-sky-400"
@@ -279,21 +287,23 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
           )}
 
-          <div className="flex w-1/3 flex-wrap justify-around overflow-hidden">
-            {getHalfOfOpponents(true).map((playerId: string) => {
-              if (playerId === userId) return;
-              return (
-                <Opponent
-                  key={playerId}
-                  playerId={playerId}
-                  opponentData={gameData?.players[playerId]}
-                  attack={attack}
-                  opponentCount={getHalfOfOpponents(true).length}
-                  attackValue={playerData?.attack}
-                />
-              );
-            })}
-          </div>
+          {!isMobile && (
+            <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">
+              {getHalfOfOpponents(true).map((playerId: string) => {
+                if (playerId === userId) return;
+                return (
+                  <Opponent
+                    key={playerId}
+                    playerId={playerId}
+                    opponentData={gameData?.players[playerId]}
+                    attack={attack}
+                    opponentCount={getHalfOfOpponents(true).length}
+                    attackValue={playerData?.attack}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     );

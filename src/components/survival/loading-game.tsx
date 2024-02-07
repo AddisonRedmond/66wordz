@@ -16,7 +16,7 @@ const LoadingGame: React.FC<LoadingGameProps> = ({
       <p className="text-lg">{`Game starting in`}</p>
       <div className="mt-2 flex justify-center gap-2">
         <div className="flex flex-col items-center">
-          <Tile letters={`${totalSeconds < 10 ? "0" : ""}${totalSeconds}`} />
+          <Tile backgroundColor="bg-zinc-800" letters={`${totalSeconds < 10 ? "0" : ""}${totalSeconds}`} />
         </div>
       </div>
     </div>
