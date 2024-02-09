@@ -3,7 +3,7 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import shield from "../../../public/shield.svg";
@@ -17,11 +17,13 @@ import {
   wordLength,
   handleAttack,
   handleIncorrectGuess,
+  getPlayerPosition,
 } from "~/utils/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "./loading-game";
 import { useAnimate } from "framer-motion";
+import AutoAttack from "./auto-attack";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -42,6 +44,9 @@ const Survival: React.FC<SurvivalProps> = ({
   const [isAttack, setIsAttack] = useState<boolean>(false);
   const [correctGuess, setCorrectGuess] = useState<boolean>(false);
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
+  const [autoAttack, setAutoAttack] = useState<
+    "first" | "last" | "random" | "off"
+  >("off");
   const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
 
@@ -70,6 +75,12 @@ const Survival: React.FC<SurvivalProps> = ({
       if (isSpellCheck) {
         if (words.includes(guess)) {
           // handle correct guess
+          const playerToAttack = getPlayerPosition(
+            gameData!.players,
+            autoAttack,
+            userId,
+          ) as string;
+
           handleCorrectGuess(
             lobbyId,
             userId,
@@ -78,6 +89,7 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData?.players?.[userId],
             gameData?.words[wordLength(guess)],
           );
+
           setGuess("");
           setCorrectGuess(true);
         } else {
@@ -87,10 +99,14 @@ const Survival: React.FC<SurvivalProps> = ({
 
           // get current matching indexes
           const matchingIndexes = {
-            fiveLetterWordMatches: gameData?.FIVE_LETTER_WORD_MATCHES?.[userId],
-            fourLetterWordMatches: gameData?.FOUR_LETTER_WORD_MATCHES?.[userId],
-            sixLetterWordMatches: gameData?.SIX_LETTER_WORD_MATCHES?.[userId],
+            FIVE_LETTER_WORD_MATCHES:
+              gameData?.FIVE_LETTER_WORD_MATCHES?.[userId],
+            FOUR_LETTER_WORD_MATCHES:
+              gameData?.FOUR_LETTER_WORD_MATCHES?.[userId],
+            SIX_LETTER_WORD_MATCHES:
+              gameData?.SIX_LETTER_WORD_MATCHES?.[userId],
           };
+
           setGuess("");
           setIncorrectGuess(true);
           handleIncorrectGuess(
@@ -114,10 +130,6 @@ const Survival: React.FC<SurvivalProps> = ({
     handleKeyBoardLogic(e.key);
   };
   useOnKeyUp(handleKeyUp, [guess, gameData]);
-
-  const words = Object.keys(gameData?.words ?? []).sort(
-    (a, b) => b.length - a.length,
-  );
 
   const getHalfOfOpponents = (even: boolean): string[] => {
     if (even) {
@@ -154,6 +166,8 @@ const Survival: React.FC<SurvivalProps> = ({
       setIsAttack(false);
     }
   };
+
+  console.log(autoAttack)
 
   if (gameData) {
     return (
@@ -200,12 +214,14 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
           </div>
         )}
-        {isMobile && (
+        {isMobile ? (
           <div className="h-20 w-full border-2 border-black">
             <p>Mobile Info Panel</p>
           </div>
+        ) : (
+          <AutoAttack autoAttack={autoAttack} setAutoAttack={setAutoAttack} />
         )}
-        <div className="flex w-screen items-center justify-center justy gap-4">
+        <div className="justy flex w-screen items-center justify-center gap-4">
           {!isMobile && (
             <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">
               {getHalfOfOpponents(false).map((playerId: string) => {

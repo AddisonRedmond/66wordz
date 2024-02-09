@@ -18,6 +18,54 @@ export type WordObject = {
   };
 };
 
+export const getPlayerPosition = (
+  players: {
+    [id: string]: {
+      health: number;
+      shield: number;
+      attack: number;
+      eliminated: boolean;
+      initials?: string;
+    };
+  },
+  autoAttack: "first" | "last" | "random" | "off",
+  playerId: string,
+) => {
+  const sortedPlayers: {} = Object.fromEntries(
+    Object.entries(players).sort(
+      (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
+    ),
+  );
+
+  switch (autoAttack) {
+    case "first":
+      if (playerId === Object.keys(sortedPlayers)[0]) {
+        return Object.keys(sortedPlayers)[1];
+      } else {
+        return Object.keys(sortedPlayers)[0];
+      }
+    case "last":
+      if (playerId === Object.keys(sortedPlayers).pop()) {
+        return Object.keys(sortedPlayers)[
+          Object.keys(sortedPlayers).length - 2
+        ];
+      } else {
+        return Object.keys(sortedPlayers).pop();
+      }
+    case "random":
+      const randomIndex = Math.floor(
+        Math.random() * Object.keys(players).length,
+      );
+      if (Object.keys(players)[randomIndex] !== playerId) {
+        return Object.keys(players)[randomIndex];
+      } else {
+        return Object.keys(players)[randomIndex - 1];
+      }
+    default:
+      return "";
+  }
+};
+
 export function getRandomNumber(min: number, max: number): number {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
@@ -44,6 +92,36 @@ const getRandomType = (number: number) => {
   } else if (number % 2 !== 0) {
     return "shield";
   }
+};
+
+const calcualteUpdatedStatus = (
+  attackValue: number,
+  shield: number,
+  health: number,
+) => {
+  const updatedStatus: {
+    health: number;
+    shield: number;
+    eliminated: boolean;
+  } = {
+    health: health,
+    shield: shield,
+    eliminated: false,
+  };
+  if (shield - attackValue < 0) {
+    updatedStatus.shield = 0;
+    updatedStatus.health =
+      health - (attackValue - shield) < 0 ? 0 : health - (attackValue - shield);
+  } else if (shield - attackValue >= 0) {
+    updatedStatus.shield = shield - attackValue;
+    updatedStatus.health = health;
+  }
+
+  if (updatedStatus.health <= 0) {
+    updatedStatus.eliminated = true;
+  }
+
+  return updatedStatus;
 };
 
 export const createNewSurivivalLobby = async (lobbyId: string) => {
@@ -94,7 +172,7 @@ export const handleCorrectGuess = async (
   lobbyId: string,
   userId: string,
   wordLength: "FOUR_LETTER_WORD" | "FIVE_LETTER_WORD" | "SIX_LETTER_WORD",
-  word: string,
+  guess: string,
   currentStatus?: { health: number; shield: number; attack: number },
   wordValues?: { type: "health" | "shield"; value: number; attack: number },
 ) => {
@@ -132,7 +210,6 @@ export const handleCorrectGuess = async (
       if (value1 + value2 >= 100) {
         return 100;
       } else {
-        console.log(value1 + value2);
         return value1 + value2;
       }
     } else {
@@ -152,7 +229,7 @@ export const handleCorrectGuess = async (
 
     await remove(ref(db, `SURVIVAL/${lobbyId}/${wordLength}_MATCHES`));
     await set(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
-      ...createUpdatedWordValues(word),
+      ...createUpdatedWordValues(guess),
     });
   }
 
@@ -189,7 +266,32 @@ export const handleAttack = async (
   attackerId: string,
 ) => {
   const { health, shield } = playerStatus;
-  const calcualteUpdatedStatus = (attackValue: number, shield: number) => {
+
+  if (!playerStatus.eliminated) {
+    await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
+    await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
+      ...calcualteUpdatedStatus(attackValue, shield, health),
+    });
+  }
+};
+
+const handleAutoAttack = async (
+  attack: number,
+  lobbyId: string,
+  playerToAttackId: string,
+  playerToAttackStatus: {
+    health: number;
+    shield: number;
+    attack: number;
+    eliminated: boolean;
+  },
+) => {
+  const { health, shield } = playerToAttackStatus;
+  const calcualteUpdatedStatus = (
+    attackValue: number,
+    shield: number,
+    health: number,
+  ) => {
     const updatedStatus: {
       health: number;
       shield: number;
@@ -217,28 +319,28 @@ export const handleAttack = async (
     return updatedStatus;
   };
 
-  calcualteUpdatedStatus(attackValue, shield);
-
-  await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
-  await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
-    ...calcualteUpdatedStatus(attackValue, shield),
+  await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerToAttackId}`), {
+    ...calcualteUpdatedStatus(attack, shield, health),
   });
 };
 
 const findMatchingIndexes = (
-  str1: string,
-  str2: string,
+  word: string,
+  guess: string,
   previousArray: number[],
 ): number[] => {
-  const uniqueIndexes: Set<number> = new Set([]);
+  let matchingIndex: number[] = [];
 
-  const minLength = Math.min(str1.length, str2.length);
-
-  for (let i = 0; i < minLength; i++) {
-    if (str1[i] === str2[i]) {
-      uniqueIndexes.add(i);
+  word.split("").forEach((letter: string, index: number) => {
+    if (letter === guess[index]) {
+      matchingIndex.push(index);
     }
-  }
+  });
+
+  const uniqueIndexes: Set<number> = new Set([
+    ...previousArray,
+    ...matchingIndex,
+  ]);
 
   return Array.from(uniqueIndexes);
 };
@@ -252,20 +354,19 @@ export const handleIncorrectGuess = async (
 ) => {
   // check each word for matching indexes
 
-  Object.keys(words).forEach((keys: string) => {
+  Object.keys(words).forEach((key: string) => {
     const matchingIndexes = findMatchingIndexes(
-      words[keys]!.word,
+      words[key]!.word,
       guess,
-      currentMatchingIndexes[keys]!,
+      currentMatchingIndexes[`${key}_MATCHES`] ?? [],
     );
-
-    console.log(matchingIndexes);
 
     if (matchingIndexes.length === 0) {
       return;
     }
+
     handleIncorrectSurvialGuess(
-      `SURVIVAL/${lobbyId}/${keys}_MATCHES`,
+      `SURVIVAL/${lobbyId}/${key}_MATCHES`,
       matchingIndexes,
       userId,
     );

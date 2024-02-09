@@ -18,7 +18,6 @@ const WordContainer: React.FC<WordContainerProps> = ({
   type,
   ...props
 }: WordContainerProps) => {
-  console.log(props.match);
   if (word) {
     const getType = () => {
       if (type === "shield") {
@@ -48,6 +47,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
             />
           );
         })}
+        {/* <div className="absolute -right-20 w-14 aspect-square rounded-full border-black border-2"></div> */}
       </motion.div>
     );
   }

@@ -43,13 +43,11 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
 
     scaleArray.push(1);
 
-    console.log(scaleArray);
-
     return scaleArray;
   };
 
   const attacked = () => {
-    if (scope.current) {
+    if (scope.current && !props.opponentData?.eliminated) {
       animate(
         scope.current,
         {
@@ -74,7 +72,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
         props.attack(props.playerId, attacked);
       }}
       className={`${
-        eliminated ? "opacity-50" : "opacity-100"
+        eliminated ? "cursor-not-allowed opacity-50" : "opacity-100"
       } m-1 flex aspect-square min-w-14 items-center justify-start`}
     >
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -101,7 +99,9 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
               ) : (
                 <>
                   {props.opponentData?.initials ? (
-                    <p className={`text-[1vw]`}>{props.opponentData?.initials}</p>
+                    <p className={`text-[1vw]`}>
+                      {props.opponentData?.initials}
+                    </p>
                   ) : (
                     <div className={`aspect-square h-[1vw]`}>
                       <Image alt="robot icon" src={bot} />
