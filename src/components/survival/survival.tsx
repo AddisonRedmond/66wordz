@@ -81,11 +81,24 @@ const Survival: React.FC<SurvivalProps> = ({
             userId,
           ) as string;
 
+          console.log(playerToAttack)
+
+          if (autoAttack !== "off") {
+            handleAttack(
+              lobbyId,
+              playerToAttack,
+              gameData!.players[userId]!.attack,
+              gameData!.players[playerToAttack]!,
+              userId,
+            );
+          }
+
           handleCorrectGuess(
             lobbyId,
             userId,
             wordLength(guess),
             guess,
+            autoAttack,
             gameData?.players?.[userId],
             gameData?.words[wordLength(guess)],
           );
@@ -166,8 +179,6 @@ const Survival: React.FC<SurvivalProps> = ({
       setIsAttack(false);
     }
   };
-
-  console.log(autoAttack)
 
   if (gameData) {
     return (

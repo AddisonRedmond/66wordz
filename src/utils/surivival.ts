@@ -31,8 +31,14 @@ export const getPlayerPosition = (
   autoAttack: "first" | "last" | "random" | "off",
   playerId: string,
 ) => {
+  // Filter out eliminated players
+  const activePlayers = Object.fromEntries(
+    Object.entries(players).filter(([id, player]) => !player.eliminated),
+  );
+
+  // Sort the active players
   const sortedPlayers: {} = Object.fromEntries(
-    Object.entries(players).sort(
+    Object.entries(activePlayers).sort(
       (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
     ),
   );
@@ -45,22 +51,19 @@ export const getPlayerPosition = (
         return Object.keys(sortedPlayers)[0];
       }
     case "last":
-      if (playerId === Object.keys(sortedPlayers).pop()) {
-        return Object.keys(sortedPlayers)[
-          Object.keys(sortedPlayers).length - 2
-        ];
+      const keys = Object.keys(sortedPlayers);
+      if (playerId === keys[keys.length - 1]) {
+        return keys[keys.length - 2];
       } else {
-        return Object.keys(sortedPlayers).pop();
+        return keys[keys.length - 1];
       }
     case "random":
       const randomIndex = Math.floor(
-        Math.random() * Object.keys(players).length,
+        Math.random() * Object.keys(activePlayers).length,
       );
-      if (Object.keys(players)[randomIndex] !== playerId) {
-        return Object.keys(players)[randomIndex];
-      } else {
-        return Object.keys(players)[randomIndex - 1];
-      }
+      const randomPlayerId = Object.keys(activePlayers)[randomIndex];
+      return randomPlayerId !== playerId ? randomPlayerId : "";
+
     default:
       return "";
   }
@@ -173,6 +176,7 @@ export const handleCorrectGuess = async (
   userId: string,
   wordLength: "FOUR_LETTER_WORD" | "FIVE_LETTER_WORD" | "SIX_LETTER_WORD",
   guess: string,
+  autoAttack: "first" | "last" | "random" | "off",
   currentStatus?: { health: number; shield: number; attack: number },
   wordValues?: { type: "health" | "shield"; value: number; attack: number },
 ) => {
@@ -217,13 +221,22 @@ export const handleCorrectGuess = async (
     }
   };
   if (wordValues) {
-    await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
-      attack: maxValueCheck(currentStatus?.attack, wordValues?.attack),
-      [wordValues.type]: maxValueCheck(
-        currentStatus?.[wordValues.type],
-        wordValues.value,
-      ),
-    });
+    if (autoAttack !== "off") {
+      await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
+        attack: maxValueCheck(currentStatus?.attack, wordValues?.attack),
+        [wordValues.type]: maxValueCheck(
+          currentStatus?.[wordValues.type],
+          wordValues.value,
+        ),
+      });
+    } else {
+      await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
+        [wordValues.type]: maxValueCheck(
+          currentStatus?.[wordValues.type],
+          wordValues.value,
+        ),
+      });
+    }
 
     // change this static value to a function to update the word values
 
