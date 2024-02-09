@@ -81,8 +81,6 @@ const Survival: React.FC<SurvivalProps> = ({
             userId,
           ) as string;
 
-          console.log(playerToAttack)
-
           if (autoAttack !== "off") {
             handleAttack(
               lobbyId,
@@ -199,39 +197,45 @@ const Survival: React.FC<SurvivalProps> = ({
         </div>
 
         {gameData?.lobbyData.gameStarted && (
-          <div className=" flex flex-col items-center gap-y-3">
-            <WordContainer
-              word={gameData?.words?.SIX_LETTER_WORD?.word}
-              type={gameData?.words?.SIX_LETTER_WORD?.type}
-              value={gameData?.words?.SIX_LETTER_WORD?.value}
-              attack={gameData?.words?.SIX_LETTER_WORD?.attack}
-              match={gameData?.SIX_LETTER_WORD_MATCHES?.[userId]}
-            />
-            <div className="flex flex-wrap justify-center gap-3">
+          <>
+            <div className=" flex flex-col items-center gap-y-3">
               <WordContainer
-                word={gameData?.words?.FIVE_LETTER_WORD?.word}
-                type={gameData?.words?.FIVE_LETTER_WORD?.type}
-                value={gameData?.words?.FIVE_LETTER_WORD?.value}
-                attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
-                match={gameData.FIVE_LETTER_WORD_MATCHES?.[userId]}
+                word={gameData?.words?.SIX_LETTER_WORD?.word}
+                type={gameData?.words?.SIX_LETTER_WORD?.type}
+                value={gameData?.words?.SIX_LETTER_WORD?.value}
+                attack={gameData?.words?.SIX_LETTER_WORD?.attack}
+                match={gameData?.SIX_LETTER_WORD_MATCHES?.[userId]}
               />
-              <WordContainer
-                word={gameData?.words?.FOUR_LETTER_WORD?.word}
-                type={gameData?.words?.FOUR_LETTER_WORD?.type}
-                value={gameData?.words?.FOUR_LETTER_WORD?.value}
-                attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
-                match={gameData.FOUR_LETTER_WORD_MATCHES?.[userId]}
-              />
+              <div className="flex flex-wrap justify-center gap-3">
+                <WordContainer
+                  word={gameData?.words?.FIVE_LETTER_WORD?.word}
+                  type={gameData?.words?.FIVE_LETTER_WORD?.type}
+                  value={gameData?.words?.FIVE_LETTER_WORD?.value}
+                  attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
+                  match={gameData.FIVE_LETTER_WORD_MATCHES?.[userId]}
+                />
+                <WordContainer
+                  word={gameData?.words?.FOUR_LETTER_WORD?.word}
+                  type={gameData?.words?.FOUR_LETTER_WORD?.type}
+                  value={gameData?.words?.FOUR_LETTER_WORD?.value}
+                  attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
+                  match={gameData.FOUR_LETTER_WORD_MATCHES?.[userId]}
+                />
+              </div>
             </div>
-          </div>
+            {isMobile ? (
+              <div className="h-20 w-full border-2 border-black">
+                <p>Mobile Info Panel</p>
+              </div>
+            ) : (
+              <AutoAttack
+                autoAttack={autoAttack}
+                setAutoAttack={setAutoAttack}
+              />
+            )}
+          </>
         )}
-        {isMobile ? (
-          <div className="h-20 w-full border-2 border-black">
-            <p>Mobile Info Panel</p>
-          </div>
-        ) : (
-          <AutoAttack autoAttack={autoAttack} setAutoAttack={setAutoAttack} />
-        )}
+
         <div className="justy flex w-screen items-center justify-center gap-4">
           {!isMobile && (
             <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">

@@ -185,26 +185,23 @@ export const handleCorrectGuess = async (
       case 4:
         return {
           word: handleGetNewWord(4),
-          type: getRandomType(4),
+          type: getRandomType(getRandomNumber(1, 4)),
           value: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
           attack: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
-          revealedIndex: null,
         };
       case 5:
         return {
           word: handleGetNewWord(5),
-          type: getRandomType(4),
-          value: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
-          revealedIndex: null,
+          type: getRandomType(getRandomNumber(1, 4)),
+          value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+          attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
         };
       case 6:
         return {
           word: handleGetNewWord(6),
-          type: getRandomType(4),
-          value: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
-          revealedIndex: null,
+          type: getRandomType(getRandomNumber(1, 4)),
+          value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
+          attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
         };
     }
   };
@@ -237,8 +234,6 @@ export const handleCorrectGuess = async (
         ),
       });
     }
-
-    // change this static value to a function to update the word values
 
     await remove(ref(db, `SURVIVAL/${lobbyId}/${wordLength}_MATCHES`));
     await set(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
@@ -279,62 +274,12 @@ export const handleAttack = async (
   attackerId: string,
 ) => {
   const { health, shield } = playerStatus;
-  console.log({"ATTACKIGN": playerId})
   if (!playerStatus.eliminated) {
     await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
       ...calcualteUpdatedStatus(attackValue, shield, health),
     });
   }
-};
-
-const handleAutoAttack = async (
-  attack: number,
-  lobbyId: string,
-  playerToAttackId: string,
-  playerToAttackStatus: {
-    health: number;
-    shield: number;
-    attack: number;
-    eliminated: boolean;
-  },
-) => {
-  const { health, shield } = playerToAttackStatus;
-  const calcualteUpdatedStatus = (
-    attackValue: number,
-    shield: number,
-    health: number,
-  ) => {
-    const updatedStatus: {
-      health: number;
-      shield: number;
-      eliminated: boolean;
-    } = {
-      health: health,
-      shield: shield,
-      eliminated: false,
-    };
-    if (shield - attackValue < 0) {
-      updatedStatus.shield = 0;
-      updatedStatus.health =
-        health - (attackValue - shield) < 0
-          ? 0
-          : health - (attackValue - shield);
-    } else if (shield - attackValue >= 0) {
-      updatedStatus.shield = shield - attackValue;
-      updatedStatus.health = health;
-    }
-
-    if (updatedStatus.health <= 0) {
-      updatedStatus.eliminated = true;
-    }
-
-    return updatedStatus;
-  };
-
-  await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerToAttackId}`), {
-    ...calcualteUpdatedStatus(attack, shield, health),
-  });
 };
 
 const findMatchingIndexes = (
