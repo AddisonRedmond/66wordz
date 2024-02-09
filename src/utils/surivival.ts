@@ -221,7 +221,7 @@ export const handleCorrectGuess = async (
     }
   };
   if (wordValues) {
-    if (autoAttack !== "off") {
+    if (autoAttack === "off") {
       await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
         attack: maxValueCheck(currentStatus?.attack, wordValues?.attack),
         [wordValues.type]: maxValueCheck(
@@ -279,7 +279,7 @@ export const handleAttack = async (
   attackerId: string,
 ) => {
   const { health, shield } = playerStatus;
-
+  console.log({"ATTACKIGN": playerId})
   if (!playerStatus.eliminated) {
     await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {

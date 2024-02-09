@@ -87,7 +87,7 @@ const Survival: React.FC<SurvivalProps> = ({
             handleAttack(
               lobbyId,
               playerToAttack,
-              gameData!.players[userId]!.attack,
+              gameData?.words[wordLength(guess)]?.attack ?? 0,
               gameData!.players[playerToAttack]!,
               userId,
             );
