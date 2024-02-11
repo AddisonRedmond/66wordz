@@ -12,7 +12,7 @@ import { z } from "zod";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
-import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/surivival";
+import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/survival/surivival";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))

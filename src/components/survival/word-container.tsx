@@ -11,6 +11,7 @@ type WordContainerProps = {
   value?: number;
   attack?: number;
   match?: number[];
+  infoDirection: "left" | "right";
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
@@ -47,7 +48,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
             />
           );
         })}
-        {/* <div className="absolute -right-20 w-14 aspect-square rounded-full border-black border-2"></div> */}
+
       </motion.div>
     );
   }

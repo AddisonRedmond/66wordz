@@ -5,9 +5,9 @@ import {
   db,
   handleIncorrectSurvialGuess,
   remove,
-} from "./firebase/firebase";
-import { handleGetNewWord } from "./game";
-import dictionary from "../utils/dictionary";
+} from "../firebase/firebase";
+import { handleGetNewWord } from "../game";
+import dictionary from "../dictionary";
 
 export type WordObject = {
   [key: string]: {
@@ -138,20 +138,20 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
       SIX_LETTER_WORD: {
         word: handleGetNewWord(6),
         type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
+        value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
+        attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
       },
       FIVE_LETTER_WORD: {
         word: handleGetNewWord(5),
         type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+        value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+        attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
       },
       FOUR_LETTER_WORD: {
         word: handleGetNewWord(4),
         type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
+        value: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
+        attack: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
       },
     },
   });

@@ -3,7 +3,7 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import shield from "../../../public/shield.svg";
@@ -18,7 +18,7 @@ import {
   handleAttack,
   handleIncorrectGuess,
   getPlayerPosition,
-} from "~/utils/surivival";
+} from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "./loading-game";
@@ -205,6 +205,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 value={gameData?.words?.SIX_LETTER_WORD?.value}
                 attack={gameData?.words?.SIX_LETTER_WORD?.attack}
                 match={gameData?.SIX_LETTER_WORD_MATCHES?.[userId]}
+                infoDirection="right"
               />
               <div className="flex flex-wrap justify-center gap-3">
                 <WordContainer
@@ -213,6 +214,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   value={gameData?.words?.FIVE_LETTER_WORD?.value}
                   attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
                   match={gameData.FIVE_LETTER_WORD_MATCHES?.[userId]}
+                  infoDirection="left"
                 />
                 <WordContainer
                   word={gameData?.words?.FOUR_LETTER_WORD?.word}
@@ -220,6 +222,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   value={gameData?.words?.FOUR_LETTER_WORD?.value}
                   attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
                   match={gameData.FOUR_LETTER_WORD_MATCHES?.[userId]}
+                  infoDirection="right"
                 />
               </div>
             </div>

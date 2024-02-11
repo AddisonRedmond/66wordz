@@ -11,8 +11,10 @@ import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCard from "~/components/game-card";
 import SurvivalImage from "../../public/survival.svg";
-import MarathonImage from "../../public/marathon.svg";
-import EliminationImage from "../../public/elimination.svg";
+import EliminationModal from "~/elimination/elimination-modal";
+import Rules from "~/components/rules";
+// import MarathonImage from "../../public/marathon.svg";
+// import EliminationImage from "../../public/elimination.svg";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -23,12 +25,18 @@ const Home = () => {
   const joinGame = (gameMode: GameType) => {
     lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
+  const [gameDescriptionOpen, setGameDescriptionOpen] =
+    useState<boolean>(false);
 
   const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
     lobby.reset();
     // delete user from lobby db
     // delete user from firebase db
+  };
+
+  const handleGameDescription = (gameMode: GameType, rules: any) => {
+    setGameDescriptionOpen(true);
   };
 
   const handleStartGame = () => {
@@ -84,15 +92,21 @@ const Home = () => {
           {lobby.data?.id ? (
             handleStartGame()
           ) : (
-            <div className="flex gap-2 flex-wrap justify-center">
+            <div className="flex flex-wrap justify-center gap-2">
+              {gameDescriptionOpen && (
+                <EliminationModal>
+                  <Rules rules="" />
+                </EliminationModal>
+              )}
               <GameCard
                 gameMode="SURVIVAL"
                 gameAlt="sword image"
                 gameImage={SurvivalImage}
-                gameDescription="Survival game"
                 joinGame={joinGame}
+                handleDescription={handleGameDescription}
+                rules={{}}
               />
-              <GameCard
+              {/* <GameCard
                 gameMode="MARATHON"
                 gameAlt="clock image"
                 gameImage={MarathonImage}
@@ -105,7 +119,7 @@ const Home = () => {
                 gameImage={EliminationImage}
                 gameDescription="Elimination game"
                 joinGame={joinGame}
-              />
+              /> */}
             </div>
           )}
         </AnimatePresence>
