@@ -4,7 +4,6 @@ import {
   set,
   db,
   handleIncorrectSurvialGuess,
-  remove,
 } from "../firebase/firebase";
 import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
@@ -15,6 +14,39 @@ export type WordObject = {
     type: "shield" | "health";
     value: number;
     attack: number;
+  };
+};
+
+export type PlayerData = {
+  [id: string]: {
+    health: number;
+    shield: number;
+    attack: number;
+    eliminated: boolean;
+    initials?: string;
+    words: {
+      SIX_LETTER_WORD: {
+        word: string;
+        type: "shield" | "health";
+        value: number;
+        attack: number;
+        matches: number[];
+      };
+      FIVE_LETTER_WORD: {
+        word: string;
+        type: "shield" | "health";
+        value: number;
+        attack: number;
+        matches: number[];
+      };
+      FOUR_LETTER_WORD: {
+        word: string;
+        type: "shield" | "health";
+        value: number;
+        attack: number;
+        matches: number[];
+      };
+    };
   };
 };
 
@@ -95,6 +127,8 @@ const getRandomType = (number: number) => {
   } else if (number % 2 !== 0) {
     return "shield";
   }
+
+  return "shield";
 };
 
 const calcualteUpdatedStatus = (
@@ -134,26 +168,6 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
       gameStartTime: new Date().getTime() + 60000,
       damangeValue: 0,
     },
-    words: {
-      SIX_LETTER_WORD: {
-        word: handleGetNewWord(6),
-        type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-      },
-      FIVE_LETTER_WORD: {
-        word: handleGetNewWord(5),
-        type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-      },
-      FOUR_LETTER_WORD: {
-        word: handleGetNewWord(4),
-        type: getRandomType(1),
-        value: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
-        attack: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
-      },
-    },
   });
 };
 
@@ -162,13 +176,40 @@ export const joinSurivivalLobby = async (
   userId: string,
   fullName: string,
 ) => {
-  await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
-    health: 100,
-    shield: 50,
-    attack: 0,
-    eliminated: false,
-    initials: getInitials(fullName),
-  });
+  const newPlayer: PlayerData = {
+    [userId]: {
+      health: 100,
+      shield: 50,
+      attack: 0,
+      eliminated: false,
+      initials: getInitials(fullName),
+      words: {
+        SIX_LETTER_WORD: {
+          word: handleGetNewWord(6),
+          type: getRandomType(1),
+          value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
+          attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
+          matches: [],
+        },
+        FIVE_LETTER_WORD: {
+          word: handleGetNewWord(5),
+          type: getRandomType(1),
+          value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+          attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
+          matches: [],
+        },
+        FOUR_LETTER_WORD: {
+          word: handleGetNewWord(4),
+          type: getRandomType(1),
+          value: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
+          attack: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
+          matches: [],
+        },
+      },
+    },
+  };
+
+  await update(ref(db, `SURVIVAL/${lobbyId}/players`), newPlayer);
 };
 
 export const handleCorrectGuess = async (
@@ -235,10 +276,12 @@ export const handleCorrectGuess = async (
       });
     }
 
-    await remove(ref(db, `SURVIVAL/${lobbyId}/${wordLength}_MATCHES`));
-    await set(ref(db, `SURVIVAL/${lobbyId}/words/${wordLength}`), {
-      ...createUpdatedWordValues(guess),
-    });
+    await set(
+      ref(db, `SURVIVAL/${lobbyId}/players/${userId}/words/${wordLength}`),
+      {
+        ...createUpdatedWordValues(guess),
+      },
+    );
   }
 
   // update word with new values
@@ -316,17 +359,17 @@ export const handleIncorrectGuess = async (
     const matchingIndexes = findMatchingIndexes(
       words[key]!.word,
       guess,
-      currentMatchingIndexes[`${key}_MATCHES`] ?? [],
+      currentMatchingIndexes[`${key}`] ?? [],
     );
 
     if (matchingIndexes.length === 0) {
       return;
     }
 
+    // update the mathcing index individually
     handleIncorrectSurvialGuess(
-      `SURVIVAL/${lobbyId}/${key}_MATCHES`,
+      `SURVIVAL/${lobbyId}/players/${userId}/words/${key}`,
       matchingIndexes,
-      userId,
     );
   });
 

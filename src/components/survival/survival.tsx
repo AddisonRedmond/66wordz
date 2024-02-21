@@ -62,8 +62,8 @@ const Survival: React.FC<SurvivalProps> = ({
   }, [correctGuess]);
 
   const handleKeyBoardLogic = (key: string) => {
-    const words = Object.keys(gameData?.words ?? []).map((word: string) => {
-      return gameData?.words[word]?.word ?? "ERROR";
+    const words = Object.keys(playerData!.words).map((key: string) => {
+      return playerData?.words[key as keyof typeof playerData.words]?.word;
     });
 
     if (key === "Backspace" && guess.length > 0) {
@@ -85,7 +85,7 @@ const Survival: React.FC<SurvivalProps> = ({
             handleAttack(
               lobbyId,
               playerToAttack,
-              gameData?.words[wordLength(guess)]?.attack ?? 0,
+              playerData?.words[wordLength(guess)]?.attack ?? 0,
               gameData!.players[playerToAttack]!,
               userId,
             );
@@ -98,7 +98,7 @@ const Survival: React.FC<SurvivalProps> = ({
             guess,
             autoAttack,
             gameData?.players?.[userId],
-            gameData?.words[wordLength(guess)],
+            playerData?.words[wordLength(guess)],
           );
 
           setGuess("");
@@ -110,12 +110,9 @@ const Survival: React.FC<SurvivalProps> = ({
 
           // get current matching indexes
           const matchingIndexes = {
-            FIVE_LETTER_WORD_MATCHES:
-              gameData?.FIVE_LETTER_WORD_MATCHES?.[userId],
-            FOUR_LETTER_WORD_MATCHES:
-              gameData?.FOUR_LETTER_WORD_MATCHES?.[userId],
-            SIX_LETTER_WORD_MATCHES:
-              gameData?.SIX_LETTER_WORD_MATCHES?.[userId],
+            FIVE_LETTER_WORD: playerData?.words.FIVE_LETTER_WORD.matches,
+            FOUR_LETTER_WORD: playerData?.words.FOUR_LETTER_WORD.matches,
+            SIX_LETTER_WORD: playerData?.words.SIX_LETTER_WORD.matches,
           };
 
           setGuess("");
@@ -124,7 +121,7 @@ const Survival: React.FC<SurvivalProps> = ({
             guess,
             lobbyId,
             userId,
-            gameData!.words,
+            playerData!.words,
             matchingIndexes,
           );
         }
@@ -200,28 +197,28 @@ const Survival: React.FC<SurvivalProps> = ({
           <>
             <div className=" flex flex-col items-center gap-y-3">
               <WordContainer
-                word={gameData?.words?.SIX_LETTER_WORD?.word}
-                type={gameData?.words?.SIX_LETTER_WORD?.type}
-                value={gameData?.words?.SIX_LETTER_WORD?.value}
-                attack={gameData?.words?.SIX_LETTER_WORD?.attack}
-                match={gameData?.SIX_LETTER_WORD_MATCHES?.[userId]}
+                word={playerData?.words?.SIX_LETTER_WORD?.word}
+                type={playerData?.words?.SIX_LETTER_WORD?.type}
+                value={playerData?.words?.SIX_LETTER_WORD?.value}
+                attack={playerData?.words?.SIX_LETTER_WORD?.attack}
+                match={playerData?.words?.SIX_LETTER_WORD.matches}
                 infoDirection="right"
               />
               <div className="flex flex-wrap justify-center gap-3">
                 <WordContainer
-                  word={gameData?.words?.FIVE_LETTER_WORD?.word}
-                  type={gameData?.words?.FIVE_LETTER_WORD?.type}
-                  value={gameData?.words?.FIVE_LETTER_WORD?.value}
-                  attack={gameData?.words?.FIVE_LETTER_WORD?.attack}
-                  match={gameData.FIVE_LETTER_WORD_MATCHES?.[userId]}
+                  word={playerData?.words?.FIVE_LETTER_WORD?.word}
+                  type={playerData?.words?.FIVE_LETTER_WORD?.type}
+                  value={playerData?.words?.FIVE_LETTER_WORD?.value}
+                  attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
+                  match={playerData?.words?.FIVE_LETTER_WORD.matches}
                   infoDirection="left"
                 />
                 <WordContainer
-                  word={gameData?.words?.FOUR_LETTER_WORD?.word}
-                  type={gameData?.words?.FOUR_LETTER_WORD?.type}
-                  value={gameData?.words?.FOUR_LETTER_WORD?.value}
-                  attack={gameData?.words?.FOUR_LETTER_WORD?.attack}
-                  match={gameData.FOUR_LETTER_WORD_MATCHES?.[userId]}
+                  word={playerData?.words?.FOUR_LETTER_WORD?.word}
+                  type={playerData?.words?.FOUR_LETTER_WORD?.type}
+                  value={playerData?.words?.FOUR_LETTER_WORD?.value}
+                  attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
+                  match={playerData?.words?.FOUR_LETTER_WORD.matches}
                   infoDirection="right"
                 />
               </div>

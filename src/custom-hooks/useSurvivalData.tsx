@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
-
-type WordType = "shield" | "health";
-
+import { PlayerData } from "~/utils/survival/surivival";
 interface WordObject {
   [key: string]: {
     word: string;
@@ -13,6 +11,8 @@ interface WordObject {
   };
 }
 
+// todo: add word expiration timer
+
 export type GameData = {
   lobbyData: {
     gameStarted: boolean;
@@ -20,26 +20,9 @@ export type GameData = {
     damageValue: number;
     damageTimer: number;
   };
-  words: WordObject;
-  players: {
-    [id: string]: {
-      health: number;
-      shield: number;
-      attack: number;
-      eliminated: boolean;
-      initials?: string;
-    };
-  };
-  FOUR_LETTER_WORD_MATCHES?: {
-    [id: string]: number[];
-  };
-  FIVE_LETTER_WORD_MATCHES?: {
-    [id: string]: number[];
-  };
-  SIX_LETTER_WORD_MATCHES?: {
-    [id: string]: number[];
-  };
+  players: PlayerData;
 };
+
 const useSurvialData = (
   db: Database,
   props: {

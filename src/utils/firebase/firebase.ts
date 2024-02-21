@@ -249,9 +249,8 @@ export const deleteLobby = async (gameType: string, lobbyId: string) => {
 export const handleIncorrectSurvialGuess = async (
   path: string,
   revealedIndex: number[],
-  userId: string,
 ) => {
   await update(ref(db, path), {
-    [userId]: revealedIndex,
+    matches: revealedIndex,
   });
 };
