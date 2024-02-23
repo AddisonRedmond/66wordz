@@ -4,7 +4,8 @@ import health from "../../../public/health.svg";
 import sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useTimer } from "react-timer-hook";
 type WordContainerProps = {
   word?: string;
   type?: "shield" | "health";
@@ -12,6 +13,7 @@ type WordContainerProps = {
   attack?: number;
   match?: number[];
   infoDirection: "left" | "right";
+  infoHeight: "top" | "bottom";
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
@@ -48,7 +50,18 @@ const WordContainer: React.FC<WordContainerProps> = ({
             />
           );
         })}
-
+        {/* <div
+          className={`absolute aspect-square w-8 ${props.infoDirection === "left" ? "-left-10" : "-right-10"} flex`}
+        >
+          <CircularProgressbar
+            value={80}
+            strokeWidth={50}
+            styles={buildStyles({
+              strokeLinecap: "butt",
+              pathColor: "#4ADE80",
+            })}
+          />
+        </div> */}
       </motion.div>
     );
   }

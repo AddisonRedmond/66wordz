@@ -17,6 +17,25 @@ export type WordObject = {
   };
 };
 
+export const survivalRules: { [header: string]: string[] } = {
+  "Health and Shield": [
+    "Guess 4, 5, or 6 letter word to reveal the hidden letters",
+    "Each word has a differnt type, either health or shield and always has an attack value",
+    "When you guess the word correctly, you will gain health or shield, and the attack value",
+  ],
+  Attack: [
+    "If you have auto attack set, a player will be attacked right away",
+    "If auto attack is off, you can attack a player at any time",
+    "To attack you must have a attack value greater than 0",
+    "click on the sword icon, then the player you want to attack",
+  ],
+  Tips: [
+    "If your health reaches 0, you are eliminated",
+    "Letters that are in the word but not in the correct position will be shown next to the word",
+    "If you click on the partial matches, the keyboard will adjust to that word",
+  ],
+};
+
 export type PlayerData = {
   [id: string]: {
     health: number;
@@ -50,19 +69,19 @@ export type PlayerData = {
   };
 };
 
+export type wordTimer = {
+  [id: string]: {
+    SIX_LETTER_WORD_TIMER: NodeJS.Timeout;
+    FIVE_LETTER_WORD_TIMER: NodeJS.Timeout;
+    FOUR_LETTER_WORD_TIMER: NodeJS.Timeout;
+  };
+};
+
 export const getPlayerPosition = (
-  players: {
-    [id: string]: {
-      health: number;
-      shield: number;
-      attack: number;
-      eliminated: boolean;
-      initials?: string;
-    };
-  },
+  players: PlayerData,
   autoAttack: "first" | "last" | "random" | "off",
   playerId: string,
-) => {
+): string => {
   // Filter out eliminated players
   const activePlayers = Object.fromEntries(
     Object.entries(players).filter(([id, player]) => !player.eliminated),
@@ -78,22 +97,22 @@ export const getPlayerPosition = (
   switch (autoAttack) {
     case "first":
       if (playerId === Object.keys(sortedPlayers)[0]) {
-        return Object.keys(sortedPlayers)[1];
+        return Object.keys(sortedPlayers)[1] as string;
       } else {
-        return Object.keys(sortedPlayers)[0];
+        return Object.keys(sortedPlayers)[0] as string;
       }
     case "last":
       const keys = Object.keys(sortedPlayers);
       if (playerId === keys[keys.length - 1]) {
-        return keys[keys.length - 2];
+        return keys[keys.length - 2] as string;
       } else {
-        return keys[keys.length - 1];
+        return keys[keys.length - 1] as string;
       }
     case "random":
       const randomIndex = Math.floor(
         Math.random() * Object.keys(activePlayers).length,
       );
-      const randomPlayerId = Object.keys(activePlayers)[randomIndex];
+      const randomPlayerId = Object.keys(activePlayers)[randomIndex] as string;
       return randomPlayerId !== playerId ? randomPlayerId : "";
 
     default:

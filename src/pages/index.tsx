@@ -13,15 +13,15 @@ import GameCard from "~/components/game-card";
 import SurvivalImage from "../../public/survival.svg";
 import EliminationModal from "~/elimination/elimination-modal";
 import Rules from "~/components/rules";
-// import MarathonImage from "../../public/marathon.svg";
-// import EliminationImage from "../../public/elimination.svg";
+import { survivalRules } from "~/utils/survival/surivival";
 
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const [isSolo, setIsSolo] = useState<boolean>(false);
-  const [gameMode, setGameMode] = useState<GameType>("MARATHON");
+  const [rules, setRules] = useState<{[header: string]: string[]}>({});
+  const [gameType, setGameType] = useState<GameType>("SURVIVAL");
   const joinGame = (gameMode: GameType) => {
     lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
@@ -35,8 +35,14 @@ const Home = () => {
     // delete user from firebase db
   };
 
-  const handleGameDescription = (gameMode: GameType, rules: any) => {
+  const handleGameDescription = (gameType: GameType, rules: string[]) => {
+    setRules(survivalRules);
+    setGameType(gameType);
     setGameDescriptionOpen(true);
+  };
+
+  const closeDescription = () => {
+    setGameDescriptionOpen(false);
   };
 
   const handleStartGame = () => {
@@ -95,16 +101,20 @@ const Home = () => {
             <div className="flex flex-wrap justify-center gap-2">
               {gameDescriptionOpen && (
                 <EliminationModal>
-                  <Rules rules="" />
+                  <Rules
+                    rules={rules}
+                    gameType={gameType}
+                    closeDescription={closeDescription}
+                  />
                 </EliminationModal>
               )}
               <GameCard
-                gameMode="SURVIVAL"
+                gameType="SURVIVAL"
                 gameAlt="sword image"
                 gameImage={SurvivalImage}
                 joinGame={joinGame}
                 handleDescription={handleGameDescription}
-                rules={{}}
+                rules={survivalRules}
               />
               {/* <GameCard
                 gameMode="MARATHON"

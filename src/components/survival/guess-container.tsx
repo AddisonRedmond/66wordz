@@ -44,11 +44,6 @@ const GuessContainer: React.FC<GuessContainerProps> = (
     props.setIsIncorrectGuess(false);
   }, [props.incorrectGuess]);
 
-  // useEffect(() => {
-  //   animate(scope.current, correctGuess, { duration: 0.3 });
-  //   props.setIsCorrectGuess(false);
-  // }, [props.correctGuess]);
-
   return (
     <div className="relative">
       <div

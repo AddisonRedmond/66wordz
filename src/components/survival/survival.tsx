@@ -24,6 +24,7 @@ import Eliminated from "./eliminated";
 import LoadingGame from "./loading-game";
 import { useAnimate } from "framer-motion";
 import AutoAttack from "./auto-attack";
+import MobileAutoAttack from "./mobile-auto-attack";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -79,7 +80,7 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData!.players,
             autoAttack,
             userId,
-          ) as string;
+          );
 
           if (autoAttack !== "off") {
             handleAttack(
@@ -182,6 +183,7 @@ const Survival: React.FC<SurvivalProps> = ({
           isAttack ? `custom-cursor` : "cursor-default"
         }`}
       >
+        {isMobile && isAttack && <div>Attack Mode</div>}
         <button
           onClick={() => exitMatch()}
           className="duration absolute right-72 top-2 hidden rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
@@ -203,6 +205,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 attack={playerData?.words?.SIX_LETTER_WORD?.attack}
                 match={playerData?.words?.SIX_LETTER_WORD.matches}
                 infoDirection="right"
+                infoHeight="top"
               />
               <div className="flex flex-wrap justify-center gap-3">
                 <WordContainer
@@ -212,6 +215,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
                   match={playerData?.words?.FIVE_LETTER_WORD.matches}
                   infoDirection="left"
+                  infoHeight="bottom"
                 />
                 <WordContainer
                   word={playerData?.words?.FOUR_LETTER_WORD?.word}
@@ -220,14 +224,27 @@ const Survival: React.FC<SurvivalProps> = ({
                   attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
                   match={playerData?.words?.FOUR_LETTER_WORD.matches}
                   infoDirection="right"
+                  infoHeight="bottom"
                 />
               </div>
             </div>
             {isMobile ? (
-              <div className="h-20 w-full border-2 border-black">
-                <p>Mobile Info Panel</p>
-              </div>
+              <MobileAutoAttack
+                first={
+                  gameData?.players[
+                    getPlayerPosition(gameData.players, "first", userId)
+                  ]!
+                }
+                last={
+                  gameData?.players[
+                    getPlayerPosition(gameData.players, "last", userId)
+                  ]!
+                }
+                autoAttack={autoAttack}
+                setAutoAttack={setAutoAttack}
+              />
             ) : (
+              // <> </>
               <AutoAttack
                 autoAttack={autoAttack}
                 setAutoAttack={setAutoAttack}
