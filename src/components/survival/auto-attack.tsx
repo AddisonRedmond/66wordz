@@ -5,13 +5,15 @@ type AutoAttackProps = {
 
 const AutoAttack: React.FC<AutoAttackProps> = (props: AutoAttackProps) => {
   return (
-    <div className="my-3 flex flex-col text-center sm:my-0 sm:gap-1">
+    <div className="flex flex-col items-center justify-center text-center sm:my-3 sm:gap-1">
       <div className="sm:mb-2">
         <p className="text-xs font-semibold sm:text-base">Auto Attack</p>
       </div>
       <div>
         <button
-          className="w-16 mb-2 rounded-full border-2 border-gray-200 p-1 text-sm font-semibold duration-150 ease-in-out hover:bg-gray-200"
+          className={`mb-2 w-16 rounded-full border-2 border-gray-200 p-1 text-sm font-semibold duration-150 ease-in-out hover:bg-gray-200 ${
+            props.autoAttack === "off" && " border-violet-500"
+          }`}
           onClick={() => {
             props.setAutoAttack("off");
           }}

@@ -22,7 +22,7 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
     }
   }, [props.statusValue]);
   return (
-    <>
+    <div>
       <motion.div
         ref={scopeRed}
         className={`absolute h-2 rounded-full bg-red-600`}
@@ -31,7 +31,7 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
         ref={scope}
         className={`absolute h-2 rounded-full ${props.color}`}
       ></motion.div>
-    </>
+    </div>
   );
 };
 

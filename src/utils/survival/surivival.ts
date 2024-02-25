@@ -93,6 +93,7 @@ export const getPlayerPosition = (
       (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
     ),
   );
+  
 
   switch (autoAttack) {
     case "first":
@@ -336,6 +337,7 @@ export const handleAttack = async (
   attackerId: string,
 ) => {
   const { health, shield } = playerStatus;
+
   if (!playerStatus.eliminated) {
     await set(ref(db, `SURVIVAL/${lobbyId}/players/${attackerId}/attack`), 0);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {

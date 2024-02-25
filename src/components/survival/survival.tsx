@@ -22,9 +22,10 @@ import {
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "./loading-game";
-import { useAnimate } from "framer-motion";
+import { AnimatePresence, useAnimate } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";
+import MobileAttack from "./mobile-attack";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -160,20 +161,34 @@ const Survival: React.FC<SurvivalProps> = ({
     setIsAttack(!isAttack);
   };
 
-  const attack = (playerId: string, func: () => void) => {
+  const attack = async (playerId: string, func?: () => void) => {
     if (!gameData?.players[playerId] || !isAttack) {
       return;
     } else {
-      handleAttack(
+      await handleAttack(
         lobbyId,
         playerId,
         gameData.players[userId]!.attack,
         gameData.players[playerId]!,
         userId,
       );
-      func();
-      setIsAttack(false);
+      if (func) {
+        func();
+      }
+      setTimeout(() => {
+        setIsAttack(false);
+      }, 1000);
     }
+  };
+
+  const getAllQualifiedPlayers = () => {
+    let count = 0;
+    Object.keys(gameData!.players).forEach((playerId) => {
+      if (gameData?.players[playerId]?.eliminated === false) {
+        count++;
+      }
+    });
+    return count;
   };
 
   if (gameData) {
@@ -183,7 +198,16 @@ const Survival: React.FC<SurvivalProps> = ({
           isAttack ? `custom-cursor` : "cursor-default"
         }`}
       >
-        {isMobile && isAttack && <div>Attack Mode</div>}
+        <AnimatePresence>
+          {isMobile && isAttack && (
+            <MobileAttack
+              setIsAttack={setIsAttack}
+              players={gameData.players}
+              userId={userId}
+              attack={attack}
+            />
+          )}
+        </AnimatePresence>
         <button
           onClick={() => exitMatch()}
           className="duration absolute right-72 top-2 hidden rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
@@ -196,66 +220,41 @@ const Survival: React.FC<SurvivalProps> = ({
         </div>
 
         {gameData?.lobbyData.gameStarted && (
-          <>
-            <div className=" flex flex-col items-center gap-y-3">
+          <div className=" flex flex-col items-center gap-y-3">
+            <WordContainer
+              word={playerData?.words?.SIX_LETTER_WORD?.word}
+              type={playerData?.words?.SIX_LETTER_WORD?.type}
+              value={playerData?.words?.SIX_LETTER_WORD?.value}
+              attack={playerData?.words?.SIX_LETTER_WORD?.attack}
+              match={playerData?.words?.SIX_LETTER_WORD.matches}
+              infoDirection="right"
+              infoHeight="top"
+            />
+            <div className="flex flex-wrap justify-center gap-3">
               <WordContainer
-                word={playerData?.words?.SIX_LETTER_WORD?.word}
-                type={playerData?.words?.SIX_LETTER_WORD?.type}
-                value={playerData?.words?.SIX_LETTER_WORD?.value}
-                attack={playerData?.words?.SIX_LETTER_WORD?.attack}
-                match={playerData?.words?.SIX_LETTER_WORD.matches}
+                word={playerData?.words?.FIVE_LETTER_WORD?.word}
+                type={playerData?.words?.FIVE_LETTER_WORD?.type}
+                value={playerData?.words?.FIVE_LETTER_WORD?.value}
+                attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
+                match={playerData?.words?.FIVE_LETTER_WORD.matches}
+                infoDirection="left"
+                infoHeight="bottom"
+              />
+              <WordContainer
+                word={playerData?.words?.FOUR_LETTER_WORD?.word}
+                type={playerData?.words?.FOUR_LETTER_WORD?.type}
+                value={playerData?.words?.FOUR_LETTER_WORD?.value}
+                attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
+                match={playerData?.words?.FOUR_LETTER_WORD.matches}
                 infoDirection="right"
-                infoHeight="top"
+                infoHeight="bottom"
               />
-              <div className="flex flex-wrap justify-center gap-3">
-                <WordContainer
-                  word={playerData?.words?.FIVE_LETTER_WORD?.word}
-                  type={playerData?.words?.FIVE_LETTER_WORD?.type}
-                  value={playerData?.words?.FIVE_LETTER_WORD?.value}
-                  attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
-                  match={playerData?.words?.FIVE_LETTER_WORD.matches}
-                  infoDirection="left"
-                  infoHeight="bottom"
-                />
-                <WordContainer
-                  word={playerData?.words?.FOUR_LETTER_WORD?.word}
-                  type={playerData?.words?.FOUR_LETTER_WORD?.type}
-                  value={playerData?.words?.FOUR_LETTER_WORD?.value}
-                  attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
-                  match={playerData?.words?.FOUR_LETTER_WORD.matches}
-                  infoDirection="right"
-                  infoHeight="bottom"
-                />
-              </div>
             </div>
-            {isMobile ? (
-              <MobileAutoAttack
-                first={
-                  gameData?.players[
-                    getPlayerPosition(gameData.players, "first", userId)
-                  ]!
-                }
-                last={
-                  gameData?.players[
-                    getPlayerPosition(gameData.players, "last", userId)
-                  ]!
-                }
-                autoAttack={autoAttack}
-                setAutoAttack={setAutoAttack}
-              />
-            ) : (
-              // <> </>
-              <AutoAttack
-                autoAttack={autoAttack}
-                setAutoAttack={setAutoAttack}
-              />
-            )}
-          </>
+          </div>
         )}
-
-        <div className="justy flex w-screen items-center justify-center gap-4">
+        <div className="flex w-screen justify-around">
           {!isMobile && (
-            <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">
+            <div className="flex w-1/4 flex-wrap justify-center overflow-hidden lg:w-1/3">
               {getHalfOfOpponents(false).map((playerId: string) => {
                 if (playerId === userId) return;
                 return (
@@ -271,19 +270,47 @@ const Survival: React.FC<SurvivalProps> = ({
               })}
             </div>
           )}
-          {/* nester ternary check to see if game started, if it hasn't then load the timer, 
+          <div className="flex w-screen flex-col items-center justify-center gap-4 sm:w-1/3">
+            {isMobile ? (
+              <div className="flex w-screen flex-col items-center justify-center">
+                <p className="font-semibold">
+                  Players Left - {getAllQualifiedPlayers()}
+                </p>
+                <MobileAutoAttack
+                  first={
+                    gameData?.players[
+                      getPlayerPosition(gameData.players, "first", userId)
+                    ]!
+                  }
+                  last={
+                    gameData?.players[
+                      getPlayerPosition(gameData.players, "last", userId)
+                    ]!
+                  }
+                  autoAttack={autoAttack}
+                  setAutoAttack={setAutoAttack}
+                />
+              </div>
+            ) : (
+              // <> </>
+              <AutoAttack
+                autoAttack={autoAttack}
+                setAutoAttack={setAutoAttack}
+              />
+            )}
+
+            {/* nester ternary check to see if game started, if it hasn't then load the timer, 
           if it has then check if the player has been eliminate, if they haven't then load the game components */}
-          {!gameData?.lobbyData.gameStarted ? (
-            <LoadingGame
-              expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
-            />
-          ) : playerData?.eliminated ? (
-            <Eliminated exitMatch={exitMatch} />
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-y-5">
-              {/* status indicators */}
-              <div className="flex w-[80vw] flex-col gap-2 md:w-[34vh]">
-                <div className=" relative flex h-3 w-full items-center justify-between  gap-2">
+            {!gameData?.lobbyData.gameStarted ? (
+              <LoadingGame
+                expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
+              />
+            ) : playerData?.eliminated ? (
+              <Eliminated exitMatch={exitMatch} />
+            ) : (
+              <div className="flex w-full flex-col items-center justify-center gap-y-5">
+                {/* status indicators */}
+                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between  gap-2">
                   <StatusBar
                     statusValue={playerData?.shield}
                     color="bg-sky-400"
@@ -295,7 +322,7 @@ const Survival: React.FC<SurvivalProps> = ({
                   />
                 </div>
 
-                <div className="relative mb-2 flex h-3 w-full items-center justify-between gap-2">
+                <div className="relative mb-2 flex h-3 w-10/12 max-w-96 items-center justify-between gap-2">
                   <StatusBar
                     statusValue={playerData?.health}
                     color="bg-green-400"
@@ -306,37 +333,39 @@ const Survival: React.FC<SurvivalProps> = ({
                     alt="shield Icon"
                   />
                 </div>
-              </div>
 
-              <div className="relative">
-                {/* guess container + attack value and button */}
-                <div className="absolute top-0 w-full text-center">
-                  <p ref={scope} className="text-3xl font-bold text-green-500">
-                    Success!
-                  </p>
+                <div className="relative">
+                  {/* guess container + attack value and button */}
+                  <div className="absolute top-0 w-full text-center">
+                    <p
+                      ref={scope}
+                      className="text-3xl font-bold text-green-500"
+                    >
+                      Success!
+                    </p>
+                  </div>
+                  <GuessContainer
+                    guess={guess}
+                    playerData={playerData}
+                    spellCheck={spellCheck}
+                    setSpellCheck={setSpellCheck}
+                    setIsAttack={attackMode}
+                    isAttack={isAttack}
+                    incorrectGuess={incorrectGuess}
+                    setIsIncorrectGuess={setIncorrectGuess}
+                  />
                 </div>
-                <GuessContainer
-                  guess={guess}
-                  playerData={playerData}
-                  spellCheck={spellCheck}
-                  setSpellCheck={setSpellCheck}
-                  setIsAttack={attackMode}
-                  isAttack={isAttack}
-                  incorrectGuess={incorrectGuess}
-                  setIsIncorrectGuess={setIncorrectGuess}
+
+                {/* keyboard */}
+                <Keyboard
+                  disabled={false}
+                  handleKeyBoardLogic={handleKeyBoardLogic}
                 />
               </div>
-
-              {/* keyboard */}
-              <Keyboard
-                disabled={false}
-                handleKeyBoardLogic={handleKeyBoardLogic}
-              />
-            </div>
-          )}
-
+            )}
+          </div>
           {!isMobile && (
-            <div className="flex w-1/3 flex-wrap justify-center overflow-hidden">
+            <div className="flex w-1/4 flex-wrap justify-center overflow-hidden lg:w-1/3">
               {getHalfOfOpponents(true).map((playerId: string) => {
                 if (playerId === userId) return;
                 return (

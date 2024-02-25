@@ -44,7 +44,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
   props: AutoAttackProps,
 ) => {
   return (
-    <div className="my-3 h-24 w-full text-center font-semibold">
+    <div className="mb-3 h-24 w-full text-center font-semibold">
       <p className="">Auto Attack</p>
 
       <div className=" flex  w-full items-end justify-around font-semibold">

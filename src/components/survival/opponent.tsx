@@ -15,7 +15,7 @@ type OpponentProps = {
     eliminated: boolean;
     initials?: string;
   };
-  attack: (playerId: string, func: () => void) => void;
+  attack: (playerId: string, func?: () => void) => void;
   attackValue?: number;
   opponentCount: number;
 };

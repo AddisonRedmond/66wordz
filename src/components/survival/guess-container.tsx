@@ -44,6 +44,7 @@ const GuessContainer: React.FC<GuessContainerProps> = (
     props.setIsIncorrectGuess(false);
   }, [props.incorrectGuess]);
 
+
   return (
     <div className="relative">
       <div
