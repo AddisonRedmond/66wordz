@@ -1,6 +1,4 @@
 import {
-  createNewEliminationLobby,
-  createNewMarathonLobby,
   deleteLobby,
   joinEliminationLobby,
   joinFirebaseLobby,
