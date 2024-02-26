@@ -20,7 +20,7 @@ const Home = () => {
   const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
   const joinGame = (gameMode: GameType) => {
-    lobby.mutate({ gameMode: gameMode, isSolo: true });
+    lobby.mutate({ gameMode: gameMode });
   };
   const [gameDescriptionOpen, setGameDescriptionOpen] =
     useState<boolean>(false);

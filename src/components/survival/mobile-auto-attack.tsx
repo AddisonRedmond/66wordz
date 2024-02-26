@@ -41,29 +41,35 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
               styles={buildStyles({
                 pathColor: "#57E98F",
                 textColor: "black",
+                strokeLinecap: "round",
+                pathTransitionDuration: 0.5,
               })}
               value={props?.first?.health ?? 0}
               strokeWidth={10}
             >
-              <CircularProgressbarWithChildren
-                styles={buildStyles({
-                  pathColor: "#1E8BE1",
-                  textColor: "black",
-                  trailColor: "transparent",
-                })}
-                strokeWidth={10}
-                value={props?.first?.shield ?? 0}
-              >
-                <div className=" flex flex-col items-center justify-center font-semibold">
-                  {props?.first?.eliminated ? (
-                    <p>❌</p>
-                  ) : (
-                    <p>
-                      {props?.first?.initials ? props.first.initials : "N/A"}
-                    </p>
-                  )}
-                </div>
-              </CircularProgressbarWithChildren>
+              <div className="h-full w-full">
+                <CircularProgressbarWithChildren
+                  styles={buildStyles({
+                    pathColor: "#1E8BE1",
+                    textColor: "black",
+                    trailColor: "transparent",
+                    strokeLinecap: "round",
+                    pathTransitionDuration: 0.5,
+                  })}
+                  strokeWidth={10}
+                  value={props?.first?.shield ?? 0}
+                >
+                  <div className=" flex flex-col items-center justify-center font-semibold">
+                    {props?.first?.eliminated ? (
+                      <p>❌</p>
+                    ) : (
+                      <p>
+                        {props?.first?.initials ? props.first.initials : "N/A"}
+                      </p>
+                    )}
+                  </div>
+                </CircularProgressbarWithChildren>
+              </div>
             </CircularProgressbarWithChildren>
           </div>
         </div>
@@ -81,23 +87,27 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
               value={props?.last?.health ?? 0}
               strokeWidth={10}
             >
-              <CircularProgressbarWithChildren
-                styles={buildStyles({
-                  pathColor: "#1E8BE1",
-                  textColor: "black",
-                  trailColor: "transparent",
-                })}
-                strokeWidth={10}
-                value={props?.last?.shield ?? 0}
-              >
-                <div className=" flex flex-col items-center justify-center font-semibold">
-                  {props?.last?.eliminated ? (
-                    <p>❌</p>
-                  ) : (
-                    <p>{props?.last?.initials ? props.last.initials : "N/A"}</p>
-                  )}
-                </div>
-              </CircularProgressbarWithChildren>
+              <div className="h-full w-full">
+                <CircularProgressbarWithChildren
+                  styles={buildStyles({
+                    pathColor: "#1E8BE1",
+                    textColor: "black",
+                    trailColor: "transparent",
+                  })}
+                  strokeWidth={10}
+                  value={props?.last?.shield ?? 0}
+                >
+                  <div className=" flex flex-col items-center justify-center font-semibold">
+                    {props?.last?.eliminated ? (
+                      <p>❌</p>
+                    ) : (
+                      <p>
+                        {props?.last?.initials ? props.last.initials : "N/A"}
+                      </p>
+                    )}
+                  </div>
+                </CircularProgressbarWithChildren>
+              </div>
             </CircularProgressbarWithChildren>
           </div>
         </div>

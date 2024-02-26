@@ -335,7 +335,7 @@ const Survival: React.FC<SurvivalProps> = ({
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />
             ) : (
-              <div className="flex w-full flex-col items-center justify-center gap-y-2">
+              <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 {/* status indicators */}
                 <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between  gap-2">
                   <StatusBar

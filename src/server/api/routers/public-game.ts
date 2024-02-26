@@ -12,10 +12,13 @@ import { z } from "zod";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
-import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/survival/surivival";
+import {
+  createNewSurivivalLobby,
+  joinSurivivalLobby,
+} from "~/utils/survival/surivival";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
-    .input(z.object({ gameMode: z.string(), isSolo: z.boolean() }))
+    .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // check if player is already part of a game
       const clientGameType = input.gameMode as GameType;
@@ -65,31 +68,6 @@ export const publicGameRouter = createTRPCRouter({
         //   create the new lobby in firebase realtime db
 
         switch (clientGameType) {
-          case "ELIMINATION":
-            await createNewEliminationLobby(clientGameType, newLobby.id, {
-              gameStarted: false,
-              initilizedTimeStamp: new Date(),
-              round: 1,
-              word: handleGetNewWord(),
-              gameStartTimer: new Date().getTime() + 60000,
-              roundTimer: new Date().getTime() + 240000,
-              pointsGoal: 300,
-            });
-            try {
-              fetch(`${env.BOT_SERVER}/register_elimination_lobby`, {
-                method: "POST",
-                body: JSON.stringify({ lobbyId: newLobby.id }),
-              });
-            } catch (e) {}
-            break;
-          case "MARATHON":
-            await createNewMarathonLobby(clientGameType, newLobby.id, {
-              gameStarted: false,
-              initilizedTimeStamp: new Date(),
-              gameStartTimer:
-                new Date().getTime() + (input.isSolo ? 5000 : 60000),
-            });
-            break;
           case "SURVIVAL":
             await createNewSurivivalLobby(newLobby.id);
             try {

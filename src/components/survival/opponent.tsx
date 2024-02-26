@@ -80,39 +80,43 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
           styles={buildStyles({
             pathColor: "#57E98F",
             textColor: "black",
+            strokeLinecap: "round",
+            pathTransitionDuration: 0.5,
           })}
           value={health}
           strokeWidth={10}
         >
-          <CircularProgressbarWithChildren
-            styles={buildStyles({
-              pathColor: "#1E8BE1",
-              textColor: "black",
-              trailColor: "transparent",
-            })}
-            strokeWidth={10}
-            value={shield}
-          >
-            <div className=" flex flex-col items-center justify-center font-semibold">
-              {eliminated ? (
-                <p>❌</p>
-              ) : (
-                <>
-                  {props.opponentData?.initials ? (
-                    <p className={`text-[1vw]`}>
-                      {props.opponentData?.initials}
-                    </p>
-                  ) : (
-                    <div className={`aspect-square h-[1vw]`}>
-                      <Image alt="robot icon" src={bot} />
-                    </div>
-                  )}
-                  {/* <p className="text-sm text-sky-400">{shield}</p>
-                  <p className="text-sm text-green-400">{health}</p> */}
-                </>
-              )}
-            </div>
-          </CircularProgressbarWithChildren>
+          <div className="h-full w-full">
+            <CircularProgressbarWithChildren
+              styles={buildStyles({
+                pathColor: "#1E8BE1",
+                textColor: "black",
+                trailColor: "transparent",
+                strokeLinecap: "round",
+                pathTransitionDuration: 0.5,
+              })}
+              strokeWidth={10}
+              value={shield}
+            >
+              <div className=" flex flex-col items-center justify-center font-semibold">
+                {eliminated ? (
+                  <p>❌</p>
+                ) : (
+                  <>
+                    {props.opponentData?.initials ? (
+                      <p className={`text-[1vw]`}>
+                        {props.opponentData?.initials}
+                      </p>
+                    ) : (
+                      <div className={`aspect-square h-[1vw]`}>
+                        <Image alt="robot icon" src={bot} />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </CircularProgressbarWithChildren>
+          </div>
         </CircularProgressbarWithChildren>
       </div>
     </motion.div>

@@ -76,15 +76,20 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                     styles={buildStyles({
                       pathColor: "#57E98F",
                       textColor: "black",
+                      strokeLinecap: "round",
+                      pathTransitionDuration: 0.5,
                     })}
                     value={props?.players[player]?.health ?? 0}
                     strokeWidth={10}
                   >
+                    <div className="h-full w-full"> 
                     <CircularProgressbarWithChildren
                       styles={buildStyles({
                         pathColor: "#1E8BE1",
                         textColor: "black",
                         trailColor: "transparent",
+                        strokeLinecap: "round",
+                        pathTransitionDuration: 0.5,
                       })}
                       strokeWidth={10}
                       value={props?.players[player]?.shield ?? 0}
@@ -107,6 +112,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                         )}
                       </div>
                     </CircularProgressbarWithChildren>
+                    </div>
                   </CircularProgressbarWithChildren>
                 </motion.div>
               );
