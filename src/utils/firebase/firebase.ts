@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, update, remove } from "firebase/database";
 import { env } from "~/env.mjs";
-
+import { GameType } from "@prisma/client";
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_API_KEY,
   authDomain: env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -16,8 +16,10 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
+export { ref, set, update, remove };
+
 export const createNewMarathonLobby = async (
-  gameType: string,
+  gameType: GameType,
   lobbyId: string,
   lobbyData?: {
     gameStarted: boolean;
@@ -32,7 +34,7 @@ export const createNewMarathonLobby = async (
 };
 
 export const createNewEliminationLobby = async (
-  gameType: string,
+  gameType: GameType,
   lobbyId: string,
   lobbyData?: {
     gameStarted: boolean;
@@ -53,7 +55,7 @@ export const createNewEliminationLobby = async (
 export const joinFirebaseLobby = async (
   lobbyId: string,
   userId: string,
-  gameType: string,
+  gameType: GameType,
   guessCount: number | null,
   word?: string,
 ) => {
@@ -77,7 +79,7 @@ export const updateGuessesAndAllGuesses = async (
   userId: string,
   guesses: string[],
   allGuesses: string[],
-  gameType: string,
+  gameType: GameType,
 ) => {
   return await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: guesses,
@@ -91,7 +93,7 @@ export const updateGuessesAndWord = async (
   guesses: string[],
   word: string,
   timer: number,
-  gameType: string,
+  gameType: GameType,
   correctGuessCount: number,
 ) => {
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
@@ -107,7 +109,7 @@ export const updateWord = async (
   lobbyId: string,
   userId: string,
   word: string,
-  gameType: string,
+  gameType: GameType,
 ) => {
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     word: word,
@@ -119,7 +121,7 @@ export const updateTimerAndGuesses = async (
   userId: string,
   closestWord: string,
   timer: number,
-  gameType: string,
+  gameType: GameType,
 ) => {
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     guesses: [closestWord],
@@ -131,7 +133,7 @@ export const updateTimerAndGuesses = async (
 export const handleStartTimer = async (
   lobbyId: string,
   userId: string,
-  gameType: string,
+  gameType: GameType,
 ) => {
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     timer: new Date().getTime() + 180000,
@@ -141,7 +143,7 @@ export const handleStartTimer = async (
 export const handleRemoveUserFromLobby = async (
   lobbyId: string,
   userId: string,
-  gameType: string,
+  gameType: GameType,
 ) => {
   await remove(ref(db, `${gameType}/${lobbyId}/players/${userId}`));
 };
@@ -149,27 +151,27 @@ export const handleRemoveUserFromLobby = async (
 export const handleIdleUser = async (
   lobbyId: string,
   userId: string,
-  gameType: string,
+  gameType: GameType,
 ) => {
   await update(ref(db, `${gameType}/${lobbyId}/players/${userId}`), {
     inActive: true,
   });
 };
 
-export const startGame = async (lobbyId: string, gameType: string) => {
+export const startGame = async (lobbyId: string, gameType: GameType) => {
   await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: true,
     startTime: new Date().getTime(),
   });
 };
 
-export const stopGame = async (lobbyId: string, gameType: string) => {
+export const stopGame = async (lobbyId: string, gameType: GameType) => {
   await update(ref(db, `${gameType}/${lobbyId}/lobbyData`), {
     gameStarted: false,
   });
 };
 
-export const endGame = async (lobbyId: string, gameType: string) => {
+export const endGame = async (lobbyId: string, gameType: GameType) => {
   await remove(ref(db, `${gameType}/${lobbyId}`));
 };
 
@@ -228,7 +230,7 @@ export const handleEliminationWinner = async (
 };
 
 export const lobbyCleanUp = async (
-  gameType: string,
+  gameType: GameType,
   lobbyId: string,
   userId: string,
 ) => {
@@ -242,4 +244,13 @@ export const lobbyCleanUp = async (
 
 export const deleteLobby = async (gameType: string, lobbyId: string) => {
   await remove(ref(db, `${gameType}/${lobbyId}`));
+};
+
+export const handleIncorrectSurvialGuess = async (
+  path: string,
+  revealedIndex: number[],
+) => {
+  await update(ref(db, path), {
+    matches: revealedIndex,
+  });
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
+import { GameType } from "@prisma/client";
 
 export type GameData = {
   lobbyData: {
@@ -24,7 +25,7 @@ const useMarathonLobbyData = (
   props: {
     userId: string;
     lobbyId: string;
-    gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
+    gameType: GameType;
   },
 ) => {
   const [gameData, setGameData] = useState<GameData | null>(null);

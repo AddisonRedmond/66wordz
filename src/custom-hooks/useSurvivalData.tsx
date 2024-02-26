@@ -1,39 +1,21 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
-type LobbyData = {
-  gameStarted: boolean;
-  round: number;
-  word: string;
-  nextRoundStartTime?: Date;
-  gameStartTimer?: number;
-  previousWord?: string;
-  roundTimer: number;
-  pointsGoal: number;
-};
+import { PlayerData } from "~/utils/survival/surivival";
 
-export type PlayerPoints = {
-  [keyof: string]: {
-    points: number;
-  };
-};
+// todo: add word expiration timer
 
-type RoundData = {
-  [keyof: string]: {
-    guessCount: number;
-    matchingIndex?: number[];
-  };
-};
 export type GameData = {
-  players: never[];
-  lobbyData: LobbyData;
-  playerPoints: PlayerPoints;
-  roundData?: RoundData;
-  winner?: { [keyof: string]: string };
-  botPoints?: PlayerPoints;
+  lobbyData: {
+    gameStarted: boolean;
+    gameStartTime: number;
+    damageValue: number;
+    damageTimer: number;
+  };
+  players: PlayerData;
 };
 
-const useGameLobbyData = (
+const useSurvialData = (
   db: Database,
   props: {
     userId: string;
@@ -61,4 +43,4 @@ const useGameLobbyData = (
   return gameData;
 };
 
-export default useGameLobbyData;
+export default useSurvialData;

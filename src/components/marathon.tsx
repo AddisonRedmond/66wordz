@@ -13,17 +13,17 @@ import { motion } from "framer-motion";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import GameGrid from "./game-grid";
-import Keyboard from "./keyboard";
 import Timer from "./timer";
 import GameStartTimer from "./game-start-timer";
 import { startSoloGame, startUserTimer } from "~/utils/firebase/marathon";
 import LoadingPlayers from "./loading-players";
 import TotalTime from "./marathon/total-time";
 import EliminationModal from "~/elimination/elimination-modal";
+import { GameType } from "@prisma/client";
 type MarathonProps = {
   lobbyId: string;
   userId: string;
-  gameType: "MARATHON" | "ELIMINATION" | "ITEMS";
+  gameType: GameType;
   exitMatch: () => void;
   isSolo: boolean;
 };
@@ -44,7 +44,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   // const endGame = api.public.endGame.useMutation();
   const gameData = useMarathonLobbyData(db, props);
 
-  const [matches, setMatches] = useState<Matches>({
+  const [, setMatches] = useState<Matches>({
     fullMatch: [],
     partialMatch: [],
     noMatch: [],
@@ -267,11 +267,11 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
                       setSpellCheck={setFireSpellCheck}
                     />
                   </div>
-                  <Keyboard
+                  {/* <Keyboard
                     matches={matches}
                     disabled={!gameData.lobbyData.gameStarted}
                     handleKeyBoardLogic={handleKeyBoardLogic}
-                  />
+                  /> */}
                 </div>
               </motion.div>
             </>

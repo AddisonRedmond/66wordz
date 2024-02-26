@@ -3,50 +3,57 @@ import Head from "next/head";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
-import GameControls from "~/components/game-controls";
 import Header from "~/components/hearder";
-import Marathon from "~/components/marathon";
-import Elimination from "~/components/elimination";
 import { useState } from "react";
+import { GameType } from "@prisma/client";
+import Survival from "~/components/survival/survival";
+import GameCard from "~/components/game-card";
+import SurvivalImage from "../../public/survival.svg";
+import EliminationModal from "~/elimination/elimination-modal";
+import Rules from "~/components/rules";
+import { survivalRules } from "~/utils/survival/surivival";
+
 const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
-  const [isSolo, setIsSolo] = useState<boolean>(false);
-  const [gameMode, setGameMode] = useState<
-    "MARATHON" | "ELIMINATION" | "ITEMS"
-  >("ELIMINATION");
-  const joinGame = () => {
+  const [rules, setRules] = useState<{ [header: string]: string[] }>({});
+  const [gameType, setGameType] = useState<GameType>("SURVIVAL");
+  const joinGame = (gameMode: GameType) => {
     lobby.mutate({ gameMode: gameMode, isSolo: true });
   };
+  const [gameDescriptionOpen, setGameDescriptionOpen] =
+    useState<boolean>(false);
 
-  const exitMatch = () => {
+  const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
     lobby.reset();
     // delete user from lobby db
     // delete user from firebase db
   };
+
+  const handleGameDescription = (gameType: GameType) => {
+    setRules(survivalRules);
+    setGameType(gameType);
+    setGameDescriptionOpen(true);
+  };
+
+  const closeDescription = () => {
+    setGameDescriptionOpen(false);
+  };
+
   const handleStartGame = () => {
     if (lobby.data?.id) {
-      if (lobby.data.gameType === "MARATHON") {
-        return (
-          <Marathon
-            lobbyId={lobby.data.id}
-            userId={session!.user.id}
-            gameType={lobby.data.gameType}
-            exitMatch={exitMatch}
-            isSolo={isSolo}
-          />
-        );
-      } else if (lobby.data.gameType === "ELIMINATION") {
-        return (
-          <Elimination
-            lobbyId={lobby.data.id}
-            userId={session!.user.id}
-            gameType={gameMode}
-            exitMatch={exitMatch}
-          />
-        );
+      switch (lobby.data.gameType) {
+        case "SURVIVAL":
+          return (
+            <Survival
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={lobby.data.gameType}
+              exitMatch={exitMatch}
+            />
+          );
       }
     }
   };
@@ -69,13 +76,25 @@ const Home = () => {
           {lobby.data?.id ? (
             handleStartGame()
           ) : (
-            <GameControls
-              joinGame={joinGame}
-              gameMode={gameMode}
-              setGameMode={setGameMode}
-              setIsSolo={setIsSolo}
-              isSolo={isSolo}
-            />
+            <div className="flex flex-wrap justify-center gap-2">
+              {gameDescriptionOpen && (
+                <EliminationModal>
+                  <Rules
+                    rules={rules}
+                    gameType={gameType}
+                    closeDescription={closeDescription}
+                  />
+                </EliminationModal>
+              )}
+              <GameCard
+                gameType="SURVIVAL"
+                gameAlt="sword image"
+                gameImage={SurvivalImage}
+                joinGame={joinGame}
+                handleDescription={handleGameDescription}
+                rules={survivalRules}
+              />
+            </div>
           )}
         </AnimatePresence>
       </motion.div>

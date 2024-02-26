@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { signOut } from "next-auth/react";
+import signout from "../../../public/signout.svg";
+import Image from "next/image";
 
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
@@ -20,13 +22,18 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         {/* <p className="cursor-pointer rounded-md p-1">Game Stats</p> */}
-        <p onClick={()=>props.issueModalIsOpen(true)} className="cursor-pointer rounded-md p-1">Report Issue</p>
+        <p
+          onClick={() => props.issueModalIsOpen(true)}
+          className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
+        >
+          Report Issue
+        </p>
 
         <button
           onClick={() => signOut()}
-          className="font-semibol rounded-md bg-white p-2 text-black duration-150 ease-in-out hover:bg-gray-300"
+          className="font-semibol rounded-md p-2 text-black duration-150 ease-in-out hover:bg-gray-500"
         >
-          Logout
+          <Image src={signout} alt="signout icon" height={25} />
         </button>
       </div>
     </motion.div>

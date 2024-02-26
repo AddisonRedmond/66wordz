@@ -3,7 +3,7 @@ import Delete from "../../public/Delete.svg";
 import { motion } from "framer-motion";
 type KeyboardProps = {
   disabled: boolean;
-  matches: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { full: string[]; partial: string[]; none: string[] };
   handleKeyBoardLogic: (letter: string) => void;
 };
 
@@ -16,27 +16,28 @@ const KeyboardRow = ({
 }: {
   letters: string;
   specialKey?: JSX.Element;
-  matches: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { full: string[]; partial: string[]; none: string[] };
   disabled: boolean;
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
   const handleColors = (letter: string) => {
-    if (matches.fullMatch.includes(letter)) {
+    if (!matches) return;
+    if (matches?.full && matches.full.includes(letter)) {
       return "#00DFA2";
-    } else if (matches.partialMatch.includes(letter)) {
+    } else if (matches?.partial && matches.partial.includes(letter)) {
       return "#F6FA70";
-    } else if (matches.noMatch.includes(letter)) {
+    } else if (matches?.none && matches.none.includes(letter)) {
       return "#545B77";
     }
   };
   return (
-    <div className="flex gap-1">
+    <>
       {letters.split("").map((letter: string) => {
         return (
           <motion.p
             onClick={() => handleKeyBoardLogic(letter)}
             animate={{ backgroundColor: handleColors(letter) }}
-            className={`flex aspect-square w-8 sm:w-10 ${
+            className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md border-2 border-neutral-500 bg-neutral-200 font-bold sm:border-none`}
             key={letter}
@@ -46,7 +47,7 @@ const KeyboardRow = ({
         );
       })}
       {specialKey}
-    </div>
+    </>
   );
 };
 
@@ -55,8 +56,8 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex w-full flex-col items-center gap-1">
-      <div className="flex">
+    <div className="flex w-11/12 flex-col items-center gap-1">
+      <div className="flex w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
@@ -64,7 +65,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           disabled={props.disabled}
         />
       </div>
-      <div className="flex">
+      <div className="flex w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
@@ -86,37 +87,37 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           }
         />
       </div>
-      <div className="flex">
+      <div className="flex w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
           letters={bottomRow}
           disabled={props.disabled}
           specialKey={
-            <p
+            <button
               onClick={() => props.handleKeyBoardLogic("Enter")}
               className={`${
                 props.disabled ? "cursor-not-allowed" : "cursor-pointer"
               }  hidden cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold sm:visible sm:flex`}
             >
               ENTER
-            </p>
+            </button>
           }
         />
       </div>
       <div className="sm:invisibile visible flex w-full justify-around text-center text-lg font-semibold">
-        <p
+        <button
           onClick={() => props.handleKeyBoardLogic("Enter")}
-          className="my-auto flex h-10 w-1/4 flex-col justify-center rounded-md border-2 border-neutral-700 sm:hidden"
+          className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
         >
           Enter
-        </p>
-        <p
+        </button>
+        <button
           onClick={() => props.handleKeyBoardLogic("Backspace")}
-          className="my-auto flex h-10 w-1/4 flex-col justify-center rounded-md border-2 border-neutral-700 sm:hidden"
+          className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
         >
           Delete
-        </p>
+        </button>
       </div>
     </div>
   );
