@@ -1,8 +1,6 @@
 import { signIn } from "next-auth/react";
 import Head from "next/head";
-import Facebook from "../../public/Facebook.svg";
-import Google from "../../public/Google.svg";
-import Image from "next/image";
+
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { motion } from "framer-motion";

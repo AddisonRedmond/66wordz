@@ -1,10 +1,4 @@
-import {
-  ref,
-  update,
-  set,
-  db,
-  handleIncorrectSurvialGuess,
-} from "../firebase/firebase";
+import { ref, update, set, db } from "../firebase/firebase";
 import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 
@@ -17,7 +11,10 @@ export type WordData = {
   };
 };
 
-export type WordLength = "FOUR_LETTER_WORD" | "FIVE_LETTER_WORD" | "SIX_LETTER_WORD";
+export type WordLength =
+  | "FOUR_LETTER_WORD"
+  | "FIVE_LETTER_WORD"
+  | "SIX_LETTER_WORD";
 
 export const survivalRules: { [header: string]: string[] } = {
   "Health and Shield": [
@@ -80,11 +77,11 @@ export const getPlayerPosition = (
 ): string => {
   // Filter out eliminated players
   const activePlayers = Object.fromEntries(
-    Object.entries(players).filter(([id, player]) => !player.eliminated),
+    Object.entries(players).filter(([, player]) => !player.eliminated),
   );
 
   // Sort the active players
-  const sortedPlayers: {} = Object.fromEntries(
+  const sortedPlayers: PlayerData = Object.fromEntries(
     Object.entries(activePlayers).sort(
       (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
     ),
@@ -109,7 +106,7 @@ export const getPlayerPosition = (
         Math.random() * Object.keys(activePlayers).length,
       );
       const randomPlayerId = Object.keys(activePlayers)[randomIndex] as string;
-      return randomPlayerId !== playerId ? randomPlayerId : "";
+      return randomPlayerId === playerId ? "" : randomPlayerId;
 
     default:
       return "";
@@ -403,10 +400,4 @@ export const handleIncorrectGuess = (
       matches,
     );
   });
-};
-
-export const extractMathingIndexes = (matchingIndexes: {
-  [wordLength: string]: number[];
-}) => {
-  const indexObjext: { [key: string]: number[] } = {};
 };

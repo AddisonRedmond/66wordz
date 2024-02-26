@@ -13,7 +13,6 @@ import { motion } from "framer-motion";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import GameGrid from "./game-grid";
-import Keyboard from "./keyboard";
 import Timer from "./timer";
 import GameStartTimer from "./game-start-timer";
 import { startSoloGame, startUserTimer } from "~/utils/firebase/marathon";
@@ -45,7 +44,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
   // const endGame = api.public.endGame.useMutation();
   const gameData = useMarathonLobbyData(db, props);
 
-  const [matches, setMatches] = useState<Matches>({
+  const [, setMatches] = useState<Matches>({
     fullMatch: [],
     partialMatch: [],
     noMatch: [],

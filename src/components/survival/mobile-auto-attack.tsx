@@ -18,8 +18,8 @@ type PlayerDataWithoutId = {
 };
 
 type AutoAttackProps = {
-  first: PlayerDataWithoutId;
-  last: PlayerDataWithoutId;
+  first?: PlayerDataWithoutId;
+  last?: PlayerDataWithoutId;
   setAutoAttack: (autoAttack: "first" | "last" | "random" | "off") => void;
   autoAttack: "first" | "last" | "random" | "off";
 };
@@ -42,7 +42,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                 pathColor: "#57E98F",
                 textColor: "black",
               })}
-              value={props.first.health}
+              value={props?.first?.health ?? 0}
               strokeWidth={10}
             >
               <CircularProgressbarWithChildren
@@ -52,13 +52,15 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                   trailColor: "transparent",
                 })}
                 strokeWidth={10}
-                value={props.first.shield}
+                value={props?.first?.shield ?? 0}
               >
                 <div className=" flex flex-col items-center justify-center font-semibold">
-                  {props.first.eliminated ? (
+                  {props?.first?.eliminated ? (
                     <p>❌</p>
                   ) : (
-                    <p>{props.first.initials ? props.first.initials : "N/A"}</p>
+                    <p>
+                      {props?.first?.initials ? props.first.initials : "N/A"}
+                    </p>
                   )}
                 </div>
               </CircularProgressbarWithChildren>
@@ -76,7 +78,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                 pathColor: "#57E98F",
                 textColor: "black",
               })}
-              value={props.last.health}
+              value={props?.last?.health ?? 0}
               strokeWidth={10}
             >
               <CircularProgressbarWithChildren
@@ -86,13 +88,13 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                   trailColor: "transparent",
                 })}
                 strokeWidth={10}
-                value={props.last.shield}
+                value={props?.last?.shield ?? 0}
               >
                 <div className=" flex flex-col items-center justify-center font-semibold">
-                  {props.last.eliminated ? (
+                  {props?.last?.eliminated ? (
                     <p>❌</p>
                   ) : (
-                    <p>{props.last.initials ? props.last.initials : "N/A"}</p>
+                    <p>{props?.last?.initials ? props.last.initials : "N/A"}</p>
                   )}
                 </div>
               </CircularProgressbarWithChildren>

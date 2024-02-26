@@ -6,7 +6,7 @@ type StatusBarProps = {
 };
 const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   const [scope, animate] = useAnimate();
-  const [scopeRed, animateRed] = useAnimate();
+  const [scopeRed] = useAnimate();
 
   // TODO: change this to delayed children variant, rather than useEffect
 

@@ -4,9 +4,8 @@ import health from "../../../public/health.svg";
 import sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { useTimer } from "react-timer-hook";
 import { WordLength } from "~/utils/survival/surivival";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 type WordContainerProps = {
   word?: string;
   type?: "shield" | "health";
@@ -29,11 +28,11 @@ const WordContainer: React.FC<WordContainerProps> = ({
   if (word) {
     const getType = () => {
       if (type === "shield") {
-        return shield;
+        return shield as string | StaticImport;
       } else if (type === "health") {
-        return health;
+        return health as string | StaticImport;
       }
-      return shield;
+      return shield as string | StaticImport;
     };
 
     return (

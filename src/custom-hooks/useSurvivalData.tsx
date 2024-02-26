@@ -2,14 +2,6 @@ import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
 import { PlayerData } from "~/utils/survival/surivival";
-interface WordObject {
-  [key: string]: {
-    word: string;
-    type: "shield" | "health";
-    value: number;
-    attack: number;
-  };
-}
 
 // todo: add word expiration timer
 

@@ -6,7 +6,7 @@ type RulesProps = {
   closeDescription: () => void;
 };
 
-const Rules: React.FC<RulesProps> = (props: RulesProps, gameType: GameType) => {
+const Rules: React.FC<RulesProps> = (props: RulesProps) => {
   return (
     <div className="px-3">
       <div className="flex justify-between">

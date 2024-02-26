@@ -305,12 +305,12 @@ const Survival: React.FC<SurvivalProps> = ({
                       first={
                         gameData?.players[
                           getPlayerPosition(gameData.players, "first", userId)
-                        ]!
+                        ]
                       }
                       last={
                         gameData?.players[
                           getPlayerPosition(gameData.players, "last", userId)
-                        ]!
+                        ]
                       }
                       autoAttack={autoAttack}
                       setAutoAttack={setAutoAttack}

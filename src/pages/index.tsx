@@ -4,8 +4,6 @@ import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence, motion } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
-import Marathon from "~/components/marathon";
-import Elimination from "~/components/elimination";
 import { useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
@@ -19,8 +17,7 @@ const Home = () => {
   const { data: session } = useSession();
   const lobby = api.public.joinPublicGame.useMutation();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
-  const [isSolo, setIsSolo] = useState<boolean>(false);
-  const [rules, setRules] = useState<{[header: string]: string[]}>({});
+  const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
   const joinGame = (gameMode: GameType) => {
     lobby.mutate({ gameMode: gameMode, isSolo: true });
@@ -35,7 +32,7 @@ const Home = () => {
     // delete user from firebase db
   };
 
-  const handleGameDescription = (gameType: GameType, rules: string[]) => {
+  const handleGameDescription = (gameType: GameType) => {
     setRules(survivalRules);
     setGameType(gameType);
     setGameDescriptionOpen(true);
@@ -48,25 +45,6 @@ const Home = () => {
   const handleStartGame = () => {
     if (lobby.data?.id) {
       switch (lobby.data.gameType) {
-        case "MARATHON":
-          return (
-            <Marathon
-              lobbyId={lobby.data.id}
-              userId={session!.user.id}
-              gameType={lobby.data.gameType}
-              exitMatch={exitMatch}
-              isSolo={isSolo}
-            />
-          );
-        case "ELIMINATION":
-          return (
-            <Elimination
-              lobbyId={lobby.data.id}
-              userId={session!.user.id}
-              gameType={lobby.data.gameType}
-              exitMatch={exitMatch}
-            />
-          );
         case "SURVIVAL":
           return (
             <Survival
@@ -116,20 +94,6 @@ const Home = () => {
                 handleDescription={handleGameDescription}
                 rules={survivalRules}
               />
-              {/* <GameCard
-                gameMode="MARATHON"
-                gameAlt="clock image"
-                gameImage={MarathonImage}
-                gameDescription="Marathon game"
-                joinGame={joinGame}
-              />
-              <GameCard
-                gameMode="ELIMINATION"
-                gameAlt="elimination image"
-                gameImage={EliminationImage}
-                gameDescription="Elimination game"
-                joinGame={joinGame}
-              /> */}
             </div>
           )}
         </AnimatePresence>

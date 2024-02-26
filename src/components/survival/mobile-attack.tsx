@@ -62,7 +62,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
         className="relative z-50 m-auto  flex h-5/6 w-[80vw] flex-col items-center justify-between rounded-md py-2"
       >
         <div className=" flex h-5/6 flex-wrap justify-center gap-2 overflow-auto">
-          {Object.keys(props.players).map((player: string, index: number) => {
+          {Object.keys(props.players).map((player: string) => {
             if (player !== props.userId) {
               return (
                 <motion.div
