@@ -268,11 +268,11 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
                       setSpellCheck={setFireSpellCheck}
                     />
                   </div>
-                  <Keyboard
+                  {/* <Keyboard
                     matches={matches}
                     disabled={!gameData.lobbyData.gameStarted}
                     handleKeyBoardLogic={handleKeyBoardLogic}
-                  />
+                  /> */}
                 </div>
               </motion.div>
             </>

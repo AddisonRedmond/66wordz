@@ -513,11 +513,11 @@ const Elimination: React.FC<EliminationProps> = (props: EliminationProps) => {
                           setSpellCheck={setFireSpellCheck}
                         />
                       </div>
-                      <Keyboard
+                      {/* <Keyboard
                         disabled={isDisabled()}
                         matches={keyBoardMatches}
                         handleKeyBoardLogic={handleKeyBoardLogic}
-                      />
+                      /> */}
                     </>
                   )}
               </div>

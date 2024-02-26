@@ -3,7 +3,7 @@ import Delete from "../../public/Delete.svg";
 import { motion } from "framer-motion";
 type KeyboardProps = {
   disabled: boolean;
-  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { full: string[]; partial: string[]; none: string[] };
   handleKeyBoardLogic: (letter: string) => void;
 };
 
@@ -16,17 +16,17 @@ const KeyboardRow = ({
 }: {
   letters: string;
   specialKey?: JSX.Element;
-  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  matches?: { full: string[]; partial: string[]; none: string[] };
   disabled: boolean;
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
   const handleColors = (letter: string) => {
     if (!matches) return;
-    if (matches.fullMatch.includes(letter)) {
+    if (matches?.full && matches.full.includes(letter)) {
       return "#00DFA2";
-    } else if (matches.partialMatch.includes(letter)) {
+    } else if (matches?.partial && matches.partial.includes(letter)) {
       return "#F6FA70";
-    } else if (matches.noMatch.includes(letter)) {
+    } else if (matches?.none && matches.none.includes(letter)) {
       return "#545B77";
     }
   };
@@ -37,7 +37,7 @@ const KeyboardRow = ({
           <motion.p
             onClick={() => handleKeyBoardLogic(letter)}
             animate={{ backgroundColor: handleColors(letter) }}
-            className={`flex aspect-square w-[10%] max-w-12 min-w-8 ${
+            className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md border-2 border-neutral-500 bg-neutral-200 font-bold sm:border-none`}
             key={letter}

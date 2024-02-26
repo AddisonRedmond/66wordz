@@ -6,14 +6,19 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { useTimer } from "react-timer-hook";
+import { WordLength } from "~/utils/survival/surivival";
 type WordContainerProps = {
   word?: string;
   type?: "shield" | "health";
   value?: number;
   attack?: number;
-  match?: number[];
+  match?: string[];
   infoDirection: "left" | "right";
   infoHeight: "top" | "bottom";
+  focus: WordLength;
+  setFocus: (focus: WordLength) => void;
+  id: WordLength;
+  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
@@ -32,7 +37,10 @@ const WordContainer: React.FC<WordContainerProps> = ({
     };
 
     return (
-      <motion.div className="relative flex w-fit flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 px-2 py-1">
+      <motion.div
+        onClick={() => props.setFocus(props.id)}
+        className={`relative flex w-fit cursor-pointer flex-row items-center justify-center gap-2 rounded-md border-2 duration-150 ease-in-out ${props.focus === props.id ? "border-violet-500" : "border-zinc-200"}  bg-stone-300 px-2 py-1`}
+      >
         <div className="flex flex-col items-center justify-center font-semibold">
           <Image height={20} src={sword} alt="status type" />
           <p className="text-sm">{props.attack}</p>
@@ -46,7 +54,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
             <SurvivalTile
               key={index}
               letter={letter}
-              revealed={props.match?.includes(index)}
+              revealed={props.match?.includes(letter)}
             />
           );
         })}

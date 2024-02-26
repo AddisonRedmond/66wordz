@@ -8,7 +8,7 @@ import {
 import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 
-export type WordObject = {
+export type WordData = {
   [key: string]: {
     word: string;
     type: "shield" | "health";
@@ -16,6 +16,8 @@ export type WordObject = {
     attack: number;
   };
 };
+
+export type WordLength = "FOUR_LETTER_WORD" | "FIVE_LETTER_WORD" | "SIX_LETTER_WORD";
 
 export const survivalRules: { [header: string]: string[] } = {
   "Health and Shield": [
@@ -36,6 +38,18 @@ export const survivalRules: { [header: string]: string[] } = {
   ],
 };
 
+export type WordObject = {
+  word: string;
+  type: "shield" | "health";
+  value: number;
+  attack: number;
+  matches?: {
+    full: string[];
+    partial: string[];
+    none: string[];
+  };
+};
+
 export type PlayerData = {
   [id: string]: {
     health: number;
@@ -44,27 +58,9 @@ export type PlayerData = {
     eliminated: boolean;
     initials?: string;
     words: {
-      SIX_LETTER_WORD: {
-        word: string;
-        type: "shield" | "health";
-        value: number;
-        attack: number;
-        matches: number[];
-      };
-      FIVE_LETTER_WORD: {
-        word: string;
-        type: "shield" | "health";
-        value: number;
-        attack: number;
-        matches: number[];
-      };
-      FOUR_LETTER_WORD: {
-        word: string;
-        type: "shield" | "health";
-        value: number;
-        attack: number;
-        matches: number[];
-      };
+      SIX_LETTER_WORD: WordObject;
+      FIVE_LETTER_WORD: WordObject;
+      FOUR_LETTER_WORD: WordObject;
     };
   };
 };
@@ -93,7 +89,6 @@ export const getPlayerPosition = (
       (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
     ),
   );
-  
 
   switch (autoAttack) {
     case "first":
@@ -209,21 +204,18 @@ export const joinSurivivalLobby = async (
           type: getRandomType(1),
           value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
           attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-          matches: [],
         },
         FIVE_LETTER_WORD: {
           word: handleGetNewWord(5),
           type: getRandomType(1),
           value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
           attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-          matches: [],
         },
         FOUR_LETTER_WORD: {
           word: handleGetNewWord(4),
           type: getRandomType(1),
           value: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
           attack: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
-          matches: [],
         },
       },
     },
@@ -346,55 +338,71 @@ export const handleAttack = async (
   }
 };
 
-const findMatchingIndexes = (
-  word: string,
+export const handleMatched = (
   guess: string,
-  previousArray: number[],
-): number[] => {
-  let matchingIndex: number[] = [];
+  word: string,
+  previousMatches?: {
+    full?: string[];
+    partial?: string[];
+    none?: string[];
+  },
+): { full: string[]; partial: string[]; none: string[] } => {
+  const full = new Set<string>([...(previousMatches?.full ?? [])]);
+  const partial = new Set<string>([...(previousMatches?.partial ?? [])]);
+  const none = new Set<string>([...(previousMatches?.none ?? [])]);
 
-  word.split("").forEach((letter: string, index: number) => {
-    if (letter === guess[index]) {
-      matchingIndex.push(index);
+  guess.split("").forEach((letter: string, index: number) => {
+    if (word[index] === letter) {
+      full.add(letter);
+    } else if (word.includes(letter)) {
+      partial.add(letter);
+    } else {
+      none.add(letter);
     }
   });
 
-  const uniqueIndexes: Set<number> = new Set([
-    ...previousArray,
-    ...matchingIndex,
-  ]);
+  const matches = {
+    full: Array.from(full),
+    partial: Array.from(partial),
+    none: Array.from(none),
+  };
 
-  return Array.from(uniqueIndexes);
+  return matches;
 };
 
-export const handleIncorrectGuess = async (
+type MatchingIndexes = {
+  [key: string]:
+    | {
+        full?: string[];
+        partial?: string[];
+        none?: string[];
+      }
+    | undefined;
+};
+
+export const handleIncorrectGuess = (
   guess: string,
   lobbyId: string,
   userId: string,
-  words: WordObject,
-  currentMatchingIndexes: { [wordLength: string]: number[] | undefined },
+  words: WordData,
+  currentMatchingIndexes: MatchingIndexes,
 ) => {
-  // check each word for matching indexes
-
-  Object.keys(words).forEach((key: string) => {
-    const matchingIndexes = findMatchingIndexes(
-      words[key]!.word,
+  // check each word for full, partial, and no matches
+  Object.keys(words).forEach((wordLength) => {
+    const matches = handleMatched(
       guess,
-      currentMatchingIndexes[`${key}`] ?? [],
+      words[wordLength]!.word,
+      currentMatchingIndexes[wordLength],
     );
 
-    if (matchingIndexes.length === 0) {
-      return;
-    }
-
-    // update the mathcing index individually
-    handleIncorrectSurvialGuess(
-      `SURVIVAL/${lobbyId}/players/${userId}/words/${key}`,
-      matchingIndexes,
+    update(
+      ref(
+        db,
+        `SURVIVAL/${lobbyId}/players/${userId}/words/${wordLength}/matches`,
+      ),
+      matches,
     );
   });
-
-  // update all three words with the revealed indexes
 };
 
 export const extractMathingIndexes = (matchingIndexes: {

@@ -18,6 +18,7 @@ import {
   handleAttack,
   handleIncorrectGuess,
   getPlayerPosition,
+  WordLength,
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
@@ -49,6 +50,7 @@ const Survival: React.FC<SurvivalProps> = ({
   const [autoAttack, setAutoAttack] = useState<
     "first" | "last" | "random" | "off"
   >("off");
+  const [focus, setFocus] = useState<WordLength>("FOUR_LETTER_WORD");
   const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
 
@@ -191,6 +193,16 @@ const Survival: React.FC<SurvivalProps> = ({
     return count;
   };
 
+  const getMatches = () => {
+    if (focus === "FOUR_LETTER_WORD") {
+      return playerData?.words.FOUR_LETTER_WORD.matches;
+    } else if (focus === "FIVE_LETTER_WORD") {
+      return playerData?.words.FIVE_LETTER_WORD.matches;
+    } else if (focus === "SIX_LETTER_WORD") {
+      return playerData?.words.SIX_LETTER_WORD.matches;
+    }
+  };
+
   if (gameData) {
     return (
       <div
@@ -226,9 +238,12 @@ const Survival: React.FC<SurvivalProps> = ({
               type={playerData?.words?.SIX_LETTER_WORD?.type}
               value={playerData?.words?.SIX_LETTER_WORD?.value}
               attack={playerData?.words?.SIX_LETTER_WORD?.attack}
-              match={playerData?.words?.SIX_LETTER_WORD.matches}
+              match={playerData?.words?.SIX_LETTER_WORD?.matches?.full}
+              focus={focus}
+              setFocus={setFocus}
               infoDirection="right"
               infoHeight="top"
+              id={"SIX_LETTER_WORD"}
             />
             <div className="flex flex-wrap justify-center gap-3">
               <WordContainer
@@ -236,18 +251,24 @@ const Survival: React.FC<SurvivalProps> = ({
                 type={playerData?.words?.FIVE_LETTER_WORD?.type}
                 value={playerData?.words?.FIVE_LETTER_WORD?.value}
                 attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
-                match={playerData?.words?.FIVE_LETTER_WORD.matches}
+                match={playerData?.words?.FIVE_LETTER_WORD?.matches?.full}
+                focus={focus}
+                setFocus={setFocus}
                 infoDirection="left"
                 infoHeight="bottom"
+                id={"FIVE_LETTER_WORD"}
               />
               <WordContainer
                 word={playerData?.words?.FOUR_LETTER_WORD?.word}
                 type={playerData?.words?.FOUR_LETTER_WORD?.type}
                 value={playerData?.words?.FOUR_LETTER_WORD?.value}
                 attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
-                match={playerData?.words?.FOUR_LETTER_WORD.matches}
+                match={playerData?.words?.FOUR_LETTER_WORD?.matches?.full}
+                focus={focus}
+                setFocus={setFocus}
                 infoDirection="right"
                 infoHeight="bottom"
+                id={"FOUR_LETTER_WORD"}
               />
             </div>
           </div>
@@ -271,32 +292,38 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
           )}
           <div className="flex w-screen flex-col items-center justify-center gap-4 sm:w-1/3">
-            {isMobile ? (
-              <div className="flex w-screen flex-col items-center justify-center">
-                <p className="font-semibold">
-                  Players Left - {getAllQualifiedPlayers()}
-                </p>
-                <MobileAutoAttack
-                  first={
-                    gameData?.players[
-                      getPlayerPosition(gameData.players, "first", userId)
-                    ]!
-                  }
-                  last={
-                    gameData?.players[
-                      getPlayerPosition(gameData.players, "last", userId)
-                    ]!
-                  }
-                  autoAttack={autoAttack}
-                  setAutoAttack={setAutoAttack}
-                />
-              </div>
-            ) : (
-              // <> </>
-              <AutoAttack
-                autoAttack={autoAttack}
-                setAutoAttack={setAutoAttack}
-              />
+            {/* nested ternairy. Only render out auto attack if game has started*/}
+
+            {gameData?.lobbyData.gameStarted && (
+              <>
+                {isMobile ? (
+                  <div className="flex w-screen flex-col items-center justify-center">
+                    <p className="font-semibold">
+                      Players Left - {getAllQualifiedPlayers()}
+                    </p>
+                    <MobileAutoAttack
+                      first={
+                        gameData?.players[
+                          getPlayerPosition(gameData.players, "first", userId)
+                        ]!
+                      }
+                      last={
+                        gameData?.players[
+                          getPlayerPosition(gameData.players, "last", userId)
+                        ]!
+                      }
+                      autoAttack={autoAttack}
+                      setAutoAttack={setAutoAttack}
+                    />
+                  </div>
+                ) : (
+                  // <> </>
+                  <AutoAttack
+                    autoAttack={autoAttack}
+                    setAutoAttack={setAutoAttack}
+                  />
+                )}
+              </>
             )}
 
             {/* nester ternary check to see if game started, if it hasn't then load the timer, 
@@ -308,7 +335,7 @@ const Survival: React.FC<SurvivalProps> = ({
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />
             ) : (
-              <div className="flex w-full flex-col items-center justify-center gap-y-5">
+              <div className="flex w-full flex-col items-center justify-center gap-y-2">
                 {/* status indicators */}
                 <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between  gap-2">
                   <StatusBar
@@ -360,6 +387,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 <Keyboard
                   disabled={false}
                   handleKeyBoardLogic={handleKeyBoardLogic}
+                  matches={getMatches()}
                 />
               </div>
             )}

@@ -2,6 +2,7 @@ import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
+import { WordObject } from "~/utils/survival/surivival";
 
 type PlayerDataWithoutId = {
   health: number;
@@ -10,27 +11,9 @@ type PlayerDataWithoutId = {
   eliminated: boolean;
   initials?: string;
   words: {
-    SIX_LETTER_WORD: {
-      word: string;
-      type: "shield" | "health";
-      value: number;
-      attack: number;
-      matches: number[];
-    };
-    FIVE_LETTER_WORD: {
-      word: string;
-      type: "shield" | "health";
-      value: number;
-      attack: number;
-      matches: number[];
-    };
-    FOUR_LETTER_WORD: {
-      word: string;
-      type: "shield" | "health";
-      value: number;
-      attack: number;
-      matches: number[];
-    };
+    SIX_LETTER_WORD: WordObject;
+    FIVE_LETTER_WORD: WordObject;
+    FOUR_LETTER_WORD: WordObject;
   };
 };
 
