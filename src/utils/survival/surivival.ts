@@ -3,11 +3,14 @@ import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 
 export type WordData = {
-  [key: string]: {
-    word: string;
-    type: "shield" | "health";
-    value: number;
-    attack: number;
+  word: string;
+  type: "shield" | "health";
+  value: number;
+  attack: number;
+  matches?: {
+    full: string[];
+    partial: string[];
+    none: string[];
   };
 };
 
@@ -18,20 +21,16 @@ export type WordLength =
 
 export const survivalRules: { [header: string]: string[] } = {
   "Health and Shield": [
-    "Guess 4, 5, or 6 letter word to reveal the hidden letters",
-    "Each word has a differnt type, either health or shield and always has an attack value",
-    "When you guess the word correctly, you will gain health or shield, and the attack value",
+    "Start typing 5 letter word to guess",
+    "Matches, partial matches, and no matches will be indicated on the keyboard",
+    "When you guess the word correctly, you will gain the values for that word",
+    "If your health reaches 0, you are eliminated",
   ],
   Attack: [
     "If you have auto attack set, a player will be attacked right away",
     "If auto attack is off, you can attack a player at any time",
     "To attack you must have a attack value greater than 0",
-    "click on the sword icon, then the player you want to attack",
-  ],
-  Tips: [
-    "If your health reaches 0, you are eliminated",
-    "Letters that are in the word but not in the correct position will be shown next to the word",
-    "If you click on the partial matches, the keyboard will adjust to that word",
+    "Click on the sword icon, then the player you want to attack",
   ],
 };
 
@@ -54,11 +53,7 @@ export type PlayerData = {
     attack: number;
     eliminated: boolean;
     initials?: string;
-    words: {
-      SIX_LETTER_WORD: WordObject;
-      FIVE_LETTER_WORD: WordObject;
-      FOUR_LETTER_WORD: WordObject;
-    };
+    word: WordObject;
   };
 };
 
@@ -177,7 +172,7 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
   await set(ref(db, `SURVIVAL/${lobbyId}`), {
     lobbyData: {
       gameStarted: false,
-      gameStartTime: new Date().getTime() + 60000,
+      gameStartTime: new Date().getTime() + 30000,
       damangeValue: 0,
     },
   });
@@ -195,25 +190,11 @@ export const joinSurivivalLobby = async (
       attack: 0,
       eliminated: false,
       initials: getInitials(fullName),
-      words: {
-        SIX_LETTER_WORD: {
-          word: handleGetNewWord(6),
-          type: getRandomType(1),
-          value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-        },
-        FIVE_LETTER_WORD: {
-          word: handleGetNewWord(5),
-          type: getRandomType(1),
-          value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-        },
-        FOUR_LETTER_WORD: {
-          word: handleGetNewWord(4),
-          type: getRandomType(1),
-          value: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
-        },
+      word: {
+        word: handleGetNewWord(5),
+        type: getRandomType(1),
+        value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
+        attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
       },
     },
   };
@@ -224,36 +205,33 @@ export const joinSurivivalLobby = async (
 export const handleCorrectGuess = async (
   lobbyId: string,
   userId: string,
-  wordLength: "FOUR_LETTER_WORD" | "FIVE_LETTER_WORD" | "SIX_LETTER_WORD",
   guess: string,
   autoAttack: "first" | "last" | "random" | "off",
   currentStatus?: { health: number; shield: number; attack: number },
   wordValues?: { type: "health" | "shield"; value: number; attack: number },
 ) => {
-  const createUpdatedWordValues = (word: string) => {
-    switch (word.length) {
-      case 4:
-        return {
-          word: handleGetNewWord(4),
-          type: getRandomType(getRandomNumber(1, 4)),
-          value: roundToNearestFiveOrZero(getRandomNumber(20, 30)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(10, 25)),
-        };
-      case 5:
-        return {
-          word: handleGetNewWord(5),
-          type: getRandomType(getRandomNumber(1, 4)),
-          value: roundToNearestFiveOrZero(getRandomNumber(25, 35)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
-        };
-      case 6:
-        return {
-          word: handleGetNewWord(6),
-          type: getRandomType(getRandomNumber(1, 4)),
-          value: roundToNearestFiveOrZero(getRandomNumber(35, 45)),
-          attack: roundToNearestFiveOrZero(getRandomNumber(50, 75)),
-        };
+  const determineType = (currentStatus?: {
+    health: number;
+    shield: number;
+    attack: number;
+  }) => {
+    if (!currentStatus) {
+      return "shield";
     }
+
+    if (currentStatus.health > currentStatus.shield) {
+      return "shield";
+    } else {
+      return "health";
+    }
+  };
+  const createUpdatedWordValues = () => {
+    return {
+      word: handleGetNewWord(5),
+      type: determineType(currentStatus),
+      value: roundToNearestFiveOrZero(getRandomNumber(30, 40)),
+      attack: roundToNearestFiveOrZero(getRandomNumber(30, 50)),
+    };
   };
   // check to make sure attack + current attack is not greater than 100
   const maxValueCheck = (value1?: number, value2?: number) => {
@@ -268,6 +246,8 @@ export const handleCorrectGuess = async (
     }
   };
   if (wordValues) {
+    console.log(maxValueCheck(currentStatus?.attack, wordValues?.attack));
+
     if (autoAttack === "off") {
       await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
         attack: maxValueCheck(currentStatus?.attack, wordValues?.attack),
@@ -285,12 +265,9 @@ export const handleCorrectGuess = async (
       });
     }
 
-    await set(
-      ref(db, `SURVIVAL/${lobbyId}/players/${userId}/words/${wordLength}`),
-      {
-        ...createUpdatedWordValues(guess),
-      },
-    );
+    await set(ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word`), {
+      ...createUpdatedWordValues(),
+    });
   }
 
   // update word with new values
@@ -367,37 +344,25 @@ export const handleMatched = (
   return matches;
 };
 
-type MatchingIndexes = {
-  [key: string]:
-    | {
-        full?: string[];
-        partial?: string[];
-        none?: string[];
-      }
-    | undefined;
-};
+type MatchingIndexes =
+  | {
+      full?: string[];
+      partial?: string[];
+      none?: string[];
+    }
+  | undefined;
 
 export const handleIncorrectGuess = (
   guess: string,
   lobbyId: string,
   userId: string,
-  words: WordData,
-  currentMatchingIndexes: MatchingIndexes,
+  word: WordData,
 ) => {
   // check each word for full, partial, and no matches
-  Object.keys(words).forEach((wordLength) => {
-    const matches = handleMatched(
-      guess,
-      words[wordLength]!.word,
-      currentMatchingIndexes[wordLength],
-    );
+  const matches = handleMatched(guess, word.word, word.matches);
 
-    update(
-      ref(
-        db,
-        `SURVIVAL/${lobbyId}/players/${userId}/words/${wordLength}/matches`,
-      ),
-      matches,
-    );
-  });
+  update(
+    ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word/matches`),
+    matches,
+  );
 };

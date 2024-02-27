@@ -14,11 +14,9 @@ import Opponent from "./opponent";
 import {
   checkSpelling,
   handleCorrectGuess,
-  wordLength,
   handleAttack,
   handleIncorrectGuess,
   getPlayerPosition,
-  WordLength,
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
@@ -27,6 +25,8 @@ import { AnimatePresence, useAnimate } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
+import useSound from "use-sound";
+import Confetti from "react-confetti";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -50,11 +50,19 @@ const Survival: React.FC<SurvivalProps> = ({
   const [autoAttack, setAutoAttack] = useState<
     "first" | "last" | "random" | "off"
   >("off");
-  const [focus, setFocus] = useState<WordLength>("FOUR_LETTER_WORD");
   const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
-
   const playerData = gameData?.players[userId];
+
+  const [popSound] = useSound("/sounds/pop.m4a", {
+    volume: 1,
+    playbackRate: 1.5,
+  });
+
+  const [deleteSound] = useSound("/sounds/delete.m4a", {
+    volume: 1,
+    playbackRate: 1.5,
+  });
 
   // TODO: make a better correct guess animation
 
@@ -66,18 +74,19 @@ const Survival: React.FC<SurvivalProps> = ({
   }, [correctGuess]);
 
   const handleKeyBoardLogic = (key: string) => {
-    const words = Object.keys(playerData!.words).map((key: string) => {
-      return playerData?.words[key as keyof typeof playerData.words]?.word;
-    });
+    const word = playerData?.word?.word;
 
     if (key === "Backspace" && guess.length > 0) {
-      setGuess((prevGuess) => prevGuess.slice(0, -1));
-    } else if (key === "Enter") {
+      setGuess((prevGuess) => {
+        deleteSound();
+        return prevGuess.slice(0, -1);
+      });
+    } else if (key === "Enter" && guess.length >= 5) {
       // spell check word
       const isSpellCheck = checkSpelling(guess);
       // if correct
       if (isSpellCheck) {
-        if (words.includes(guess)) {
+        if (word === guess) {
           // handle correct guess
           const playerToAttack = getPlayerPosition(
             gameData!.players,
@@ -89,7 +98,7 @@ const Survival: React.FC<SurvivalProps> = ({
             handleAttack(
               lobbyId,
               playerToAttack,
-              playerData?.words[wordLength(guess)]?.attack ?? 0,
+              playerData?.word.attack ?? 0,
               gameData!.players[playerToAttack]!,
               userId,
             );
@@ -98,11 +107,10 @@ const Survival: React.FC<SurvivalProps> = ({
           handleCorrectGuess(
             lobbyId,
             userId,
-            wordLength(guess),
             guess,
             autoAttack,
             gameData?.players?.[userId],
-            playerData?.words[wordLength(guess)],
+            playerData?.word,
           );
 
           setGuess("");
@@ -113,27 +121,17 @@ const Survival: React.FC<SurvivalProps> = ({
           // animation
 
           // get current matching indexes
-          const matchingIndexes = {
-            FIVE_LETTER_WORD: playerData?.words.FIVE_LETTER_WORD.matches,
-            FOUR_LETTER_WORD: playerData?.words.FOUR_LETTER_WORD.matches,
-            SIX_LETTER_WORD: playerData?.words.SIX_LETTER_WORD.matches,
-          };
 
           setGuess("");
           setIncorrectGuess(true);
-          handleIncorrectGuess(
-            guess,
-            lobbyId,
-            userId,
-            playerData!.words,
-            matchingIndexes,
-          );
+          handleIncorrectGuess(guess, lobbyId, userId, playerData!.word);
         }
       } else {
         // handle spell check is false
         setSpellCheck(true);
       }
-    } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 6) {
+    } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 5) {
+      popSound();
       setGuess((prevGuess) => `${prevGuess}${key}`.toUpperCase());
     }
   };
@@ -193,17 +191,22 @@ const Survival: React.FC<SurvivalProps> = ({
     return count;
   };
 
-  const getMatches = () => {
-    if (focus === "FOUR_LETTER_WORD") {
-      return playerData?.words.FOUR_LETTER_WORD.matches;
-    } else if (focus === "FIVE_LETTER_WORD") {
-      return playerData?.words.FIVE_LETTER_WORD.matches;
-    } else if (focus === "SIX_LETTER_WORD") {
-      return playerData?.words.SIX_LETTER_WORD.matches;
-    }
-  };
-
   if (gameData) {
+    if (gameData.lobbyData.winner === userId) {
+      return (
+        <div className="grid w-full place-content-center">
+          <Confetti width={window.innerWidth}/>
+          <p className=" text-3xl font-semibold">You Won!</p>
+          <button
+            onClick={() => exitMatch()}
+            className="duration rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
+          >
+            LEAVE GAME
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div
         className={`flex flex-col items-center justify-around gap-0 md:gap-12 ${
@@ -232,45 +235,15 @@ const Survival: React.FC<SurvivalProps> = ({
         </div>
 
         {gameData?.lobbyData.gameStarted && (
-          <div className=" flex flex-col items-center gap-y-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <WordContainer
-              word={playerData?.words?.SIX_LETTER_WORD?.word}
-              type={playerData?.words?.SIX_LETTER_WORD?.type}
-              value={playerData?.words?.SIX_LETTER_WORD?.value}
-              attack={playerData?.words?.SIX_LETTER_WORD?.attack}
-              match={playerData?.words?.SIX_LETTER_WORD?.matches?.full}
-              focus={focus}
-              setFocus={setFocus}
-              infoDirection="right"
-              infoHeight="top"
-              id={"SIX_LETTER_WORD"}
+              word={playerData?.word.word}
+              type={playerData?.word.type}
+              value={playerData?.word.value}
+              attack={playerData?.word.attack}
+              match={playerData?.word.matches?.full}
+              eliminated={playerData?.eliminated}
             />
-            <div className="flex flex-wrap justify-center gap-3">
-              <WordContainer
-                word={playerData?.words?.FIVE_LETTER_WORD?.word}
-                type={playerData?.words?.FIVE_LETTER_WORD?.type}
-                value={playerData?.words?.FIVE_LETTER_WORD?.value}
-                attack={playerData?.words?.FIVE_LETTER_WORD?.attack}
-                match={playerData?.words?.FIVE_LETTER_WORD?.matches?.full}
-                focus={focus}
-                setFocus={setFocus}
-                infoDirection="left"
-                infoHeight="bottom"
-                id={"FIVE_LETTER_WORD"}
-              />
-              <WordContainer
-                word={playerData?.words?.FOUR_LETTER_WORD?.word}
-                type={playerData?.words?.FOUR_LETTER_WORD?.type}
-                value={playerData?.words?.FOUR_LETTER_WORD?.value}
-                attack={playerData?.words?.FOUR_LETTER_WORD?.attack}
-                match={playerData?.words?.FOUR_LETTER_WORD?.matches?.full}
-                focus={focus}
-                setFocus={setFocus}
-                infoDirection="right"
-                infoHeight="bottom"
-                id={"FOUR_LETTER_WORD"}
-              />
-            </div>
           </div>
         )}
         <div className="flex w-screen justify-around">
@@ -387,7 +360,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 <Keyboard
                   disabled={false}
                   handleKeyBoardLogic={handleKeyBoardLogic}
-                  matches={getMatches()}
+                  matches={playerData?.word.matches}
                 />
               </div>
             )}

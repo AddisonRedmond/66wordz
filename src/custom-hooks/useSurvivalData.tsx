@@ -9,8 +9,7 @@ export type GameData = {
   lobbyData: {
     gameStarted: boolean;
     gameStartTime: number;
-    damageValue: number;
-    damageTimer: number;
+    winner: string;
   };
   players: PlayerData;
 };

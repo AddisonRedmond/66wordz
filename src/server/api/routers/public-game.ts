@@ -93,20 +93,6 @@ export const publicGameRouter = createTRPCRouter({
           });
 
         switch (clientGameType) {
-          case "ELIMINATION":
-            joinEliminationLobby(
-              `${clientGameType}/${player.lobbyId}/playerPoints/${userId}`,
-            );
-            break;
-          case "MARATHON":
-            joinFirebaseLobby(
-              player.lobbyId,
-              userId,
-              clientGameType,
-              0,
-              handleGetNewWord(),
-            );
-            break;
           case "SURVIVAL":
             joinSurivivalLobby(
               player.lobbyId,
