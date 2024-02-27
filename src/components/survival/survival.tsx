@@ -195,7 +195,7 @@ const Survival: React.FC<SurvivalProps> = ({
     if (gameData.lobbyData.winner === userId) {
       return (
         <div className="grid w-full place-content-center">
-          <Confetti />
+          <Confetti width={window.innerWidth}/>
           <p className=" text-3xl font-semibold">You Won!</p>
           <button
             onClick={() => exitMatch()}
