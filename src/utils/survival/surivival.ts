@@ -344,14 +344,6 @@ export const handleMatched = (
   return matches;
 };
 
-type MatchingIndexes =
-  | {
-      full?: string[];
-      partial?: string[];
-      none?: string[];
-    }
-  | undefined;
-
 export const handleIncorrectGuess = (
   guess: string,
   lobbyId: string,
