@@ -36,7 +36,7 @@ const KeyboardRow = ({
         return (
           <motion.p
             onClick={() => handleKeyBoardLogic(letter)}
-            animate={{ backgroundColor: handleColors(letter) }}
+            animate={{ backgroundColor: handleColors(letter), color: (handleColors(letter) === "#545B77" ? "white": "black") }}
             className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md border-2 border-neutral-500 bg-neutral-200 font-bold sm:border-none`}

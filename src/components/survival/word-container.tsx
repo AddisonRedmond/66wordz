@@ -4,7 +4,6 @@ import health from "../../../public/health.svg";
 import sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { WordLength } from "~/utils/survival/surivival";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 type WordContainerProps = {
   word?: string;
@@ -12,12 +11,7 @@ type WordContainerProps = {
   value?: number;
   attack?: number;
   match?: string[];
-  infoDirection: "left" | "right";
-  infoHeight: "top" | "bottom";
-  focus: WordLength;
-  setFocus: (focus: WordLength) => void;
-  id: WordLength;
-  matches?: { fullMatch: string[]; partialMatch: string[]; noMatch: string[] };
+  eliminated?: boolean;
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
@@ -37,8 +31,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
 
     return (
       <motion.div
-        onClick={() => props.setFocus(props.id)}
-        className={`relative flex w-fit cursor-pointer flex-row items-center justify-center gap-2 rounded-md border-2 duration-150 ease-in-out ${props.focus === props.id ? "border-violet-500" : "border-zinc-200"}  bg-stone-300 px-2 py-1`}
+        className={`"border-zinc-200" relative flex w-fit cursor-pointer flex-row items-center justify-center gap-2 rounded-md border-2 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
       >
         <div className="flex flex-col items-center justify-center font-semibold">
           <Image height={20} src={sword} alt="status type" />
@@ -53,22 +46,10 @@ const WordContainer: React.FC<WordContainerProps> = ({
             <SurvivalTile
               key={index}
               letter={letter}
-              revealed={props.match?.includes(letter)}
+              revealed={props.match?.includes(letter) || props?.eliminated}
             />
           );
         })}
-        {/* <div
-          className={`absolute aspect-square w-8 ${props.infoDirection === "left" ? "-left-10" : "-right-10"} flex`}
-        >
-          <CircularProgressbar
-            value={80}
-            strokeWidth={50}
-            styles={buildStyles({
-              strokeLinecap: "butt",
-              pathColor: "#4ADE80",
-            })}
-          />
-        </div> */}
       </motion.div>
     );
   }

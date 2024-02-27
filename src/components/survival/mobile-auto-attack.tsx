@@ -10,11 +10,7 @@ type PlayerDataWithoutId = {
   attack: number;
   eliminated: boolean;
   initials?: string;
-  words: {
-    SIX_LETTER_WORD: WordObject;
-    FIVE_LETTER_WORD: WordObject;
-    FOUR_LETTER_WORD: WordObject;
-  };
+  word: WordObject;
 };
 
 type AutoAttackProps = {

@@ -30,10 +30,6 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
   };
 
   const attackStrength = (attackStrength: number) => {
-    if (attackStrength < 10 || attackStrength > 100) {
-      throw new Error("Input number must be between 10 and 100");
-    }
-
     const scaleArray: number[] = [];
 
     for (let i = 0; i < 5; i++) {
