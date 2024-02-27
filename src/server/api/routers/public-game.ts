@@ -1,13 +1,10 @@
 import {
   deleteLobby,
-  joinEliminationLobby,
-  joinFirebaseLobby,
   lobbyCleanUp,
   startGame,
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
 import {
