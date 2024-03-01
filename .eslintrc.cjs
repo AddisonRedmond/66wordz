@@ -14,7 +14,7 @@ const config = {
     // Disable specific TypeScript rules causing errors
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
-    "@typescript-eslint/consistent-type-definitions": "warn",
+    "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/no-unsafe-argument": "warn",
     "@typescript-eslint/no-unsafe-call": "warn",
     "@typescript-eslint/no-explicit-any": "warn",

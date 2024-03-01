@@ -1,4 +1,4 @@
-import { motion, useAnimate } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   CircularProgressbarWithChildren,
   buildStyles,
@@ -18,7 +18,6 @@ type MobileAttackProps = {
 const MobileAttack: React.FC<MobileAttackProps> = (
   props: MobileAttackProps,
 ) => {
-  const [scope, animate] = useAnimate();
 
   return (
     <motion.div
@@ -42,7 +41,6 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                   key={player}
                   className={`aspect-square h-fit w-1/5 rounded-full duration-150 ease-in-out ${props.autoAttack === player && "bg-violet-300"}`}
                   style={{ position: "relative" }}
-                  ref={scope}
                   onClick={() => {
                     props.setAutoAttack(player);
                     props.setMobileMenuOpen(false);

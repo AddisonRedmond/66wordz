@@ -106,14 +106,6 @@ const getInitials = (fullName: string): string => {
   return initials;
 };
 
-function roundToNearestFiveOrZero(num: number): number {
-  const remainder = num % 5;
-  if (remainder <= 2.5) {
-    return num - remainder;
-  } else {
-    return num + (5 - remainder);
-  }
-}
 
 const getRandomType = (number: number) => {
   if (number % 2 === 0) {

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useAnimate } from "framer-motion";
+import { AnimatePresence, useAnimate } from "framer-motion";
 import SurvialTile from "./survival-tile";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
