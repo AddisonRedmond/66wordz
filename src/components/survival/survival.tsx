@@ -1,6 +1,6 @@
 import { GameType } from "@prisma/client";
 import useSurvialData from "../../custom-hooks/useSurvivalData";
-import { db, set } from "~/utils/firebase/firebase";
+import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
 import { useState, useEffect } from "react";
