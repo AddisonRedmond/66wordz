@@ -81,17 +81,13 @@ const Navbar: React.FC = () => {
             {!submitIssue.data && !submitIssue.isError && (
               <div className="px-2">
                 <p className=" text-2xl font-semibold">Report a Bug or Issue</p>
-                <p className=" text-xs">
-                  Let us know the issue and <br />
-                  we will fix it as soon as we can! 😊
-                </p>
+  
                 <div className="mt-3">
                   <select
                     onChange={(e) => handleUpdateType(e)}
                     className="rounded-md border-2"
                   >
-                    <option value="MARATHON">MARATHON</option>
-                    <option value="ELIMINATION">ELIMINATION</option>
+                    <option value="SURVIVAL">SURVIVAL</option>
                     <option value="OTHER">OTHER</option>
                   </select>
                   <label className="flex flex-row">{`Character Count ${message.length} out of 300`}</label>
@@ -103,7 +99,7 @@ const Navbar: React.FC = () => {
                   <textarea
                     value={message}
                     onChange={(e) => handleUpdateMessage(e)}
-                    className=" h-32 w-full rounded-md border-2 border-gray-400 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className=" max-h-44 h-32 w-full rounded-sm border-2 border-gray-400 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
                     placeholder={
                       messageNotLongEnough
                         ? "Summay isn't log enough"

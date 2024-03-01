@@ -28,6 +28,8 @@ import MobileAttack from "./mobile-attack";
 import useSound from "use-sound";
 import Confetti from "react-confetti";
 
+export type AutoAttackOption = "first" | "last" | "random" | string;
+
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -44,12 +46,10 @@ const Survival: React.FC<SurvivalProps> = ({
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
-  const [isAttack, setIsAttack] = useState<boolean>(false);
   const [correctGuess, setCorrectGuess] = useState<boolean>(false);
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
-  const [autoAttack, setAutoAttack] = useState<
-    "first" | "last" | "random" | "off"
-  >("off");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
   const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
@@ -73,7 +73,13 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   }, [correctGuess]);
 
-  const handleKeyBoardLogic = (key: string) => {
+  const targetOpponent = (playerId: string) => {
+    if (gameData?.players[playerId]?.eliminated === false) {
+      setAutoAttack(playerId);
+    }
+  };
+
+  const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
 
     if (key === "Backspace" && guess.length > 0) {
@@ -94,27 +100,26 @@ const Survival: React.FC<SurvivalProps> = ({
             userId,
           );
 
-          if (autoAttack !== "off") {
-            handleAttack(
-              lobbyId,
-              playerToAttack,
-              playerData?.word.attack ?? 0,
-              gameData!.players[playerToAttack]!,
-              userId,
-            );
-          }
+          const eliminated = await handleAttack(
+            lobbyId,
+            playerToAttack,
+            playerData?.word.attack ?? 0,
+            gameData!.players[playerToAttack]!,
+          );
 
           handleCorrectGuess(
             lobbyId,
             userId,
-            guess,
-            autoAttack,
             gameData?.players?.[userId],
             playerData?.word,
           );
 
           setGuess("");
           setCorrectGuess(true);
+
+          if (eliminated) {
+            setAutoAttack("first");
+          }
         } else {
           // handle incorrect guess
           // reset guess
@@ -153,34 +158,6 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
-  const attackMode = () => {
-    if (playerData?.attack === 0) {
-      setIsAttack(false);
-      return;
-    }
-    setIsAttack(!isAttack);
-  };
-
-  const attack = async (playerId: string, func?: () => void) => {
-    if (!gameData?.players[playerId] || !isAttack) {
-      return;
-    } else {
-      await handleAttack(
-        lobbyId,
-        playerId,
-        gameData.players[userId]!.attack,
-        gameData.players[playerId]!,
-        userId,
-      );
-      if (func) {
-        func();
-      }
-      setTimeout(() => {
-        setIsAttack(false);
-      }, 1000);
-    }
-  };
-
   const getAllQualifiedPlayers = () => {
     let count = 0;
     Object.keys(gameData!.players).forEach((playerId) => {
@@ -195,7 +172,7 @@ const Survival: React.FC<SurvivalProps> = ({
     if (gameData.lobbyData.winner === userId) {
       return (
         <div className="grid w-full place-content-center">
-          <Confetti width={window.innerWidth}/>
+          <Confetti width={window.innerWidth} />
           <p className=" text-3xl font-semibold">You Won!</p>
           <button
             onClick={() => exitMatch()}
@@ -209,18 +186,11 @@ const Survival: React.FC<SurvivalProps> = ({
 
     return (
       <div
-        className={`flex flex-col items-center justify-around gap-0 md:gap-12 ${
-          isAttack ? `custom-cursor` : "cursor-default"
-        }`}
+        className={`flex cursor-pointer flex-col items-center justify-around gap-3`}
       >
         <AnimatePresence>
-          {isMobile && isAttack && (
-            <MobileAttack
-              setIsAttack={setIsAttack}
-              players={gameData.players}
-              userId={userId}
-              attack={attack}
-            />
+          {isMobile && mobileMenuOpen && (
+            <MobileAttack players={gameData.players} userId={userId} setMobileMenuOpen={setMobileMenuOpen} setAutoAttack={targetOpponent} autoAttack={autoAttack} />
           )}
         </AnimatePresence>
         <button
@@ -230,21 +200,16 @@ const Survival: React.FC<SurvivalProps> = ({
           QUIT GAME
         </button>
         {/* div for game info */}
-        <div>
-          {/* <StrikeTimer expiryTimestamp={gameData?.lobbyData.damageTimer} /> */}
-        </div>
 
         {gameData?.lobbyData.gameStarted && (
-          <div className="flex flex-wrap justify-center gap-3">
-            <WordContainer
-              word={playerData?.word.word}
-              type={playerData?.word.type}
-              value={playerData?.word.value}
-              attack={playerData?.word.attack}
-              match={playerData?.word.matches?.full}
-              eliminated={playerData?.eliminated}
-            />
-          </div>
+          <WordContainer
+            word={playerData?.word.word}
+            type={playerData?.word.type}
+            value={playerData?.word.value}
+            attack={playerData?.word.attack}
+            match={playerData?.word.matches?.full}
+            eliminated={playerData?.eliminated}
+          />
         )}
         <div className="flex w-screen justify-around">
           {!isMobile && (
@@ -256,9 +221,9 @@ const Survival: React.FC<SurvivalProps> = ({
                     key={playerId}
                     playerId={playerId}
                     opponentData={gameData?.players[playerId]}
-                    attack={attack}
                     opponentCount={getHalfOfOpponents(false).length}
-                    attackValue={playerData?.attack}
+                    setAutoAttack={targetOpponent}
+                    autoAttack={autoAttack}
                   />
                 );
               })}
@@ -287,13 +252,18 @@ const Survival: React.FC<SurvivalProps> = ({
                       }
                       autoAttack={autoAttack}
                       setAutoAttack={setAutoAttack}
+                      setMobileMenuOpen={setMobileMenuOpen}
+                      target={
+                        gameData?.players[
+                          getPlayerPosition(gameData.players, autoAttack, userId)
+                        ]
+                      }
                     />
                   </div>
                 ) : (
-                  // <> </>
                   <AutoAttack
                     autoAttack={autoAttack}
-                    setAutoAttack={setAutoAttack}
+                    setAutoAttack={targetOpponent}
                   />
                 )}
               </>
@@ -349,8 +319,6 @@ const Survival: React.FC<SurvivalProps> = ({
                     playerData={playerData}
                     spellCheck={spellCheck}
                     setSpellCheck={setSpellCheck}
-                    setIsAttack={attackMode}
-                    isAttack={isAttack}
                     incorrectGuess={incorrectGuess}
                     setIsIncorrectGuess={setIncorrectGuess}
                   />
@@ -374,9 +342,9 @@ const Survival: React.FC<SurvivalProps> = ({
                     key={playerId}
                     playerId={playerId}
                     opponentData={gameData?.players[playerId]}
-                    attack={attack}
                     opponentCount={getHalfOfOpponents(true).length}
-                    attackValue={playerData?.attack}
+                    setAutoAttack={targetOpponent}
+                    autoAttack={autoAttack}
                   />
                 );
               })}

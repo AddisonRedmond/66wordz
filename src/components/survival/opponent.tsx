@@ -5,19 +5,19 @@ import {
 } from "react-circular-progressbar";
 import Image from "next/image";
 import bot from "../../../public/bot.svg";
+import { AutoAttackOption } from "./survival";
 
 type OpponentProps = {
   playerId: string;
   opponentData?: {
     health: number;
     shield: number;
-    attack: number;
     eliminated: boolean;
     initials?: string;
   };
-  attack: (playerId: string, func?: () => void) => void;
-  attackValue?: number;
   opponentCount: number;
+  setAutoAttack: (autoAttack: AutoAttackOption) => void;
+  autoAttack: AutoAttackOption;
 };
 
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
@@ -29,30 +29,6 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     eliminated: false,
   };
 
-  const attackStrength = (attackStrength: number) => {
-    const scaleArray: number[] = [];
-
-    for (let i = 0; i < 5; i++) {
-      scaleArray.push(1 + attackStrength / 150);
-      scaleArray.push(0.75);
-    }
-
-    scaleArray.push(1);
-
-    return scaleArray;
-  };
-
-  const attacked = () => {
-    if (scope.current && !props.opponentData?.eliminated) {
-      animate(
-        scope.current,
-        {
-          scale: attackStrength(props.attackValue ?? 0),
-        },
-        { duration: 0.65 },
-      );
-    }
-  };
 
   const opponentSizePercentage = 50 / Math.sqrt(props?.opponentCount ?? 0); // Using the square root for both width and height
   return (
@@ -64,19 +40,20 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
         width: `${opponentSizePercentage}%`,
       }}
       exit={{ scale: 0 }}
-      onClick={() => {
-        props.attack(props.playerId, attacked);
-      }}
       className={`${
         eliminated ? "cursor-not-allowed opacity-50" : "opacity-100"
-      } m-1 flex aspect-square min-w-14 items-center justify-start`}
+      } m-1 flex min-w-14 items-center justify-start`}
     >
-      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div
+        onClick={() => props.setAutoAttack(props.playerId)}
+        className={`w-full rounded-full duration-150 ease-in-out ${props.autoAttack === props.playerId && "bg-violet-300"}`}
+      >
         <CircularProgressbarWithChildren
           styles={buildStyles({
             pathColor: "#57E98F",
             textColor: "black",
             strokeLinecap: "round",
+            trailColor: "#d3d3d3",
             pathTransitionDuration: 0.5,
           })}
           value={health}

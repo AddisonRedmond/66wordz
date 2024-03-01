@@ -10,6 +10,7 @@ export type GameData = {
     gameStarted: boolean;
     gameStartTime: number;
     winner: string;
+    guessTime?: number;
   };
   players: PlayerData;
 };

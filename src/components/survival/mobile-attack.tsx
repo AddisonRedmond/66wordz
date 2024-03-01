@@ -6,46 +6,19 @@ import {
 import { PlayerData } from "~/utils/survival/surivival";
 import bot from "../../../public/bot.svg";
 import Image from "next/image";
+import { AutoAttackOption } from "./survival";
 type MobileAttackProps = {
-  setIsAttack: (value: boolean) => void;
   players: PlayerData;
   userId: string;
-  attack: (playerId: string, func?: () => void) => void;
+  setMobileMenuOpen: (isOpen: boolean) => void;
+  setAutoAttack: (autoAttack: AutoAttackOption) => void;
+  autoAttack: AutoAttackOption;
 };
 
 const MobileAttack: React.FC<MobileAttackProps> = (
   props: MobileAttackProps,
 ) => {
   const [scope, animate] = useAnimate();
-
-  const attackStrength = (attackStrength: number) => {
-    if (attackStrength < 10 || attackStrength > 100) {
-      throw new Error("Input number must be between 10 and 100");
-    }
-
-    const scaleArray: number[] = [];
-
-    for (let i = 0; i < 5; i++) {
-      scaleArray.push(1 + attackStrength / 150);
-      scaleArray.push(0.75);
-    }
-
-    scaleArray.push(1);
-
-    return scaleArray;
-  };
-
-  const attacked = (playerId: string) => {
-    if (scope.current && !props.players?.[playerId]?.eliminated) {
-      animate(
-        scope.current,
-        {
-          scale: attackStrength(props.players[props.userId]?.attack ?? 0),
-        },
-        { duration: 0.65 },
-      );
-    }
-  };
 
   return (
     <motion.div
@@ -66,11 +39,14 @@ const MobileAttack: React.FC<MobileAttackProps> = (
             if (player !== props.userId) {
               return (
                 <motion.div
-                  onClick={() => props.attack(player, () => attacked(player))}
                   key={player}
-                  className="aspect-square w-1/5"
+                  className={`aspect-square h-fit w-1/5 rounded-full duration-150 ease-in-out ${props.autoAttack === player && "bg-violet-300"}`}
                   style={{ position: "relative" }}
                   ref={scope}
+                  onClick={() => {
+                    props.setAutoAttack(player);
+                    props.setMobileMenuOpen(false);
+                  }}
                 >
                   <CircularProgressbarWithChildren
                     styles={buildStyles({
@@ -82,36 +58,40 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                     value={props?.players[player]?.health ?? 0}
                     strokeWidth={10}
                   >
-                    <div className="h-full w-full"> 
-                    <CircularProgressbarWithChildren
-                      styles={buildStyles({
-                        pathColor: "#1E8BE1",
-                        textColor: "black",
-                        trailColor: "transparent",
-                        strokeLinecap: "round",
-                        pathTransitionDuration: 0.5,
-                      })}
-                      strokeWidth={10}
-                      value={props?.players[player]?.shield ?? 0}
-                    >
-                      <div className=" flex flex-col items-center justify-center font-semibold">
-                        {props.players[player]?.eliminated ? (
-                          <p>❌</p>
-                        ) : (
-                          <>
-                            {props.players[player]?.initials ? (
-                              <p>{props.players[player]?.initials}</p>
-                            ) : (
-                              <div className={`aspect-square`}>
-                                <Image alt="robot icon" width={20} src={bot} />
-                              </div>
-                            )}
-                            {/* <p className="text-sm text-sky-400">{shield}</p>
+                    <div className={`h-full w-full`}>
+                      <CircularProgressbarWithChildren
+                        styles={buildStyles({
+                          pathColor: "#1E8BE1",
+                          textColor: "black",
+                          trailColor: "transparent",
+                          strokeLinecap: "round",
+                          pathTransitionDuration: 0.5,
+                        })}
+                        strokeWidth={10}
+                        value={props?.players[player]?.shield ?? 0}
+                      >
+                        <div className=" flex flex-col items-center justify-center font-semibold">
+                          {props.players[player]?.eliminated ? (
+                            <p>❌</p>
+                          ) : (
+                            <>
+                              {props.players[player]?.initials ? (
+                                <p>{props.players[player]?.initials}</p>
+                              ) : (
+                                <div className={`aspect-square`}>
+                                  <Image
+                                    alt="robot icon"
+                                    width={20}
+                                    src={bot}
+                                  />
+                                </div>
+                              )}
+                              {/* <p className="text-sm text-sky-400">{shield}</p>
                         <p className="text-sm text-green-400">{health}</p> */}
-                          </>
-                        )}
-                      </div>
-                    </CircularProgressbarWithChildren>
+                            </>
+                          )}
+                        </div>
+                      </CircularProgressbarWithChildren>
                     </div>
                   </CircularProgressbarWithChildren>
                 </motion.div>
@@ -120,7 +100,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
           })}
         </div>
         <button
-          onClick={() => props.setIsAttack(false)}
+          onClick={() => props.setMobileMenuOpen(false)}
           className="mt-2 w-4/6 rounded-md bg-zinc-600 p-2 font-semibold text-white"
         >
           Close

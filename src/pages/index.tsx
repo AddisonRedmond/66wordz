@@ -57,7 +57,7 @@ const Home = () => {
       }
     }
   };
-
+// pebid17998@artgulin.com
   return (
     <>
       <Head>
@@ -69,7 +69,7 @@ const Home = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex min-h-screen flex-col items-center justify-evenly"
+        className="flex min-h-screen flex-col items-center justify-evenly min-w-[375px]"
       >
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
         <AnimatePresence>

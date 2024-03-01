@@ -5,6 +5,7 @@ import sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import AnimateLetter from "./animated-letter";
 type WordContainerProps = {
   word?: string;
   type?: "shield" | "health";
@@ -31,15 +32,15 @@ const WordContainer: React.FC<WordContainerProps> = ({
 
     return (
       <motion.div
-        className={`"border-zinc-200" relative flex w-fit cursor-pointer flex-row items-center justify-center gap-2 rounded-md border-2 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+        className={`flex w-fit flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
       >
-        <div className="flex flex-col items-center justify-center font-semibold">
-          <Image height={20} src={sword} alt="status type" />
-          <p className="text-sm">{props.attack}</p>
+        <div className="flex h-full flex-col items-center justify-center font-semibold">
+          <Image height={21} src={sword} alt="status type" />
+          <AnimateLetter letters={props.attack} />
         </div>
-        <div className="flex flex-col items-center justify-center font-semibold">
-          <Image height={20} src={getType()} alt="status type" />
-          <p className="text-sm">{props.value}</p>
+        <div className="flex h-full flex-col items-center justify-center font-semibold">
+          <Image height={21} src={getType()} alt="status type" />
+          <AnimateLetter letters={props.value} />
         </div>
         {word.split("").map((letter: string, index: number) => {
           return (
