@@ -195,9 +195,9 @@ const Survival: React.FC<SurvivalProps> = ({
         </AnimatePresence>
         <button
           onClick={() => exitMatch()}
-          className="duration absolute right-72 top-2 hidden rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
+          className="duration absolute sm:right-72 sm:top-2 top-2 right-20 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
         >
-          QUIT GAME
+          QUIT
         </button>
         {/* div for game info */}
 

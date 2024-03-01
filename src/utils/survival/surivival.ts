@@ -26,12 +26,11 @@ export const survivalRules: { [header: string]: string[] } = {
     "Matches, partial matches, and no matches will be indicated on the keyboard",
     "When you guess the word correctly, you will gain the values for that word",
     "If your health reaches 0, you are eliminated",
+    "Each incorrect guess will reduce the values of the word",
   ],
   Attack: [
-    "If you have auto attack set, a player will be attacked right away",
-    "If auto attack is off, you can attack a player at any time",
-    "To attack you must have a attack value greater than 0",
-    "Click on the sword icon, then the player you want to attack",
+    "Select who you want to damage when you guess a word correctly",
+    "You can choose, first, last, random, or a specific player to attack",
   ],
 };
 
