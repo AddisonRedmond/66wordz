@@ -1,6 +1,6 @@
 import { GameType } from "@prisma/client";
 import useSurvialData from "../../custom-hooks/useSurvivalData";
-import { db } from "~/utils/firebase/firebase";
+import { db, set } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
 import { useState, useEffect } from "react";
@@ -167,6 +167,10 @@ const Survival: React.FC<SurvivalProps> = ({
     });
     return count;
   };
+
+  if(gameData?.players[autoAttack]?.eliminated === true) {
+    setAutoAttack("first");
+  }
 
   if (gameData) {
     if (gameData.lobbyData.winner === userId) {
