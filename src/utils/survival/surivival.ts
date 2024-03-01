@@ -171,8 +171,8 @@ export const joinSurivivalLobby = async (
       word: {
         word: handleGetNewWord(5),
         type: getRandomType(1),
-        value: 40,
-        attack: 50,
+        value: 70,
+        attack: 90,
       },
     },
   };
