@@ -3,6 +3,9 @@ import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
+const ATTACK_VALUE = 90;
+const TYPE_VALUE = 70;
+
 export type WordObject = {
   word: string;
   type: "shield" | "health";
@@ -171,8 +174,8 @@ export const joinSurivivalLobby = async (
       word: {
         word: handleGetNewWord(5),
         type: getRandomType(1),
-        value: 70,
-        attack: 90,
+        value: TYPE_VALUE,
+        attack: ATTACK_VALUE,
       },
     },
   };
@@ -204,8 +207,8 @@ export const handleCorrectGuess = async (
     return {
       word: handleGetNewWord(5),
       type: determineType(currentStatus),
-      value: 40,
-      attack: 50,
+      value: TYPE_VALUE,
+      attack: ATTACK_VALUE,
     };
   };
   // check to make sure attack + current attack is not greater than 100
