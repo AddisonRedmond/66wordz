@@ -76,6 +76,8 @@ const Survival: React.FC<SurvivalProps> = ({
   const targetOpponent = (playerId: string) => {
     if (gameData?.players[playerId]?.eliminated === false) {
       setAutoAttack(playerId);
+    } else if( playerId === "random" || playerId === "first" || playerId === "last") {
+      setAutoAttack(playerId);
     }
   };
 
@@ -171,6 +173,7 @@ const Survival: React.FC<SurvivalProps> = ({
   if(gameData?.players[autoAttack]?.eliminated === true) {
     setAutoAttack("first");
   }
+
 
   if (gameData) {
     if (gameData.lobbyData.winner === userId) {
