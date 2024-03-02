@@ -22,12 +22,12 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         {/* <p className="cursor-pointer rounded-md p-1">Game Stats</p> */}
-        <p
+        <button
           onClick={() => props.issueModalIsOpen(true)}
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
         >
           Report Issue
-        </p>
+        </button>
 
         <button
           onClick={() => signOut()}
