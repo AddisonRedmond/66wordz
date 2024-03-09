@@ -12,24 +12,40 @@ import SurvivalImage from "../../public/survival.svg";
 import EliminationModal from "~/elimination/elimination-modal";
 import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
+import CreateLobby from "~/components/create-lobby";
 
 const Home = () => {
   const { data: session } = useSession();
-  const lobby = api.public.joinPublicGame.useMutation();
+  const quickPlay = api.public.joinPublicGame.useMutation();
+  const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const joinGame = (gameMode: GameType) => {
-    lobby.mutate({ gameMode: gameMode });
+  const joinGame = async (gameMode: GameType) => {
+    await quickPlay.mutateAsync({ gameMode: gameMode });
+    lobby.refetch();
   };
+
+  const createLobby = api.createGame.createLobby.useMutation();
   const [gameDescriptionOpen, setGameDescriptionOpen] =
     useState<boolean>(false);
+  const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
+  const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
 
   const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
-    lobby.reset();
+    lobby.remove();
     // delete user from lobby db
     // delete user from firebase db
+  };
+
+  const handleCreateLobby = async (
+    lobbyName: string,
+    enableBots: boolean,
+    passKey?: string,
+  ) => {
+    await createLobby.mutateAsync({ lobbyName, passKey, enableBots });
+    lobby.refetch();
   };
 
   const handleGameDescription = (gameType: GameType) => {
@@ -43,7 +59,7 @@ const Home = () => {
   };
 
   const handleStartGame = () => {
-    if (lobby.data?.id) {
+    if (lobby.data) {
       switch (lobby.data.gameType) {
         case "SURVIVAL":
           return (
@@ -57,7 +73,6 @@ const Home = () => {
       }
     }
   };
-// pebid17998@artgulin.com
   return (
     <>
       <Head>
@@ -69,7 +84,7 @@ const Home = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex min-h-screen flex-col items-center justify-evenly min-w-[375px]"
+        className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly"
       >
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
         <AnimatePresence>
@@ -86,14 +101,23 @@ const Home = () => {
                   />
                 </EliminationModal>
               )}
-              <GameCard
-                gameType="SURVIVAL"
-                gameAlt="sword image"
-                gameImage={SurvivalImage}
-                joinGame={joinGame}
-                handleDescription={handleGameDescription}
-                rules={survivalRules}
-              />
+              {isCreateLobby && (
+                <CreateLobby
+                  setIsCreateLobby={setIsCreateLobby}
+                  handleCreateLobby={handleCreateLobby}
+                />
+              )}
+              {isCreateLobby === false && isJoinLobby === false && (
+                <GameCard
+                  gameType="SURVIVAL"
+                  gameAlt="skull and crossbones image"
+                  gameImage={SurvivalImage}
+                  joinGame={joinGame}
+                  handleDescription={handleGameDescription}
+                  rules={survivalRules}
+                  setIsCreateLobby={setIsCreateLobby}
+                />
+              )}
             </div>
           )}
         </AnimatePresence>

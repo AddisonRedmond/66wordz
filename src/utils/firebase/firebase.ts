@@ -16,7 +16,6 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export { ref, set, update, remove };
 
 export const createNewMarathonLobby = async (
   gameType: GameType,

@@ -57,7 +57,6 @@ export const publicGameRouter = createTRPCRouter({
         const newLobby: { id: string } = await ctx.db.lobby.create({
           data: {
             gameType: clientGameType,
-            started: clientGameType === "MARATHON",
           },
         });
         //   create the new lobby in firebase realtime db
