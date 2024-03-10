@@ -1,6 +1,6 @@
 import {
   deleteLobby,
-  lobbyCleanUp,
+  removePlayerFromLobby,
   startGame,
 } from "~/utils/firebase/firebase";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -183,8 +183,12 @@ export const publicGameRouter = createTRPCRouter({
     if (playerCount === 0) {
       await ctx.db.lobby.delete({ where: { id: lobbyId } });
       deleteLobby(lobby!.gameType, lobbyId);
-    } else {
-      await lobbyCleanUp(lobby!.gameType, lobbyId, user);
+    } else if(lobby?.name && lobby.started === false){
+      // remove user from firebase lobby
+      // update owner if user is owner
+      // await removePlayerFromLobby(lobbyId, user);
+     
+      
     }
   }),
 });

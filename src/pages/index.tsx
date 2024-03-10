@@ -117,6 +117,7 @@ const Home = () => {
               )}
               {isJoinLobby && (
                 <JoinLobby
+                  errorMessage={joinLobby.data}
                   setIsJoinLobby={setIsJoinLobby}
                   handleJoinLobby={handleJoinLobby}
                 />

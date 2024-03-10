@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
 import { ref, set, update } from "firebase/database";
-import { db, startGame } from "~/utils/firebase/firebase";
+import { db } from "~/utils/firebase/firebase";
 import { getInitials } from "~/utils/survival/surivival";
 import { handleGetNewWord } from "~/utils/game";
 
@@ -45,7 +45,6 @@ export const createLobbyRouter = createTRPCRouter({
           name: lobbyName,
           passkey: passKey,
           bot: enableBots,
-          ownerId: ctx.session.user.id,
         },
       });
 
@@ -166,7 +165,11 @@ export const createLobbyRouter = createTRPCRouter({
       where: { userId: ctx.session.user.id },
     });
 
-    if (!lobby) return;
+    const playerCount = await ctx.db.players.count({
+      where: { lobbyId: lobby?.lobbyId },
+    });
+
+    if (!lobby || playerCount < 10) return;
 
     await ctx.db.lobby.update({
       where: { id: lobby.lobbyId },

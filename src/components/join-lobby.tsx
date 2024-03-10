@@ -1,14 +1,20 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
-
+import { useEffect, useRef } from "react";
+import toast, { Toaster } from "react-hot-toast";
 type JoinLobbyProps = {
   setIsJoinLobby: (isCreateLobby: boolean) => void;
   handleJoinLobby: (lobbyId: string, passKey?: string) => void;
+  errorMessage: any;
 };
 
 const JoinLobby: React.FC<JoinLobbyProps> = (props: JoinLobbyProps) => {
   const lobbyId = useRef<HTMLInputElement>(null);
   const passkey = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (props.errorMessage) toast.error(props.errorMessage);
+  }, [props.errorMessage]);
+
   return (
     <motion.div
       initial={{ scale: 0 }}
@@ -54,6 +60,7 @@ const JoinLobby: React.FC<JoinLobbyProps> = (props: JoinLobbyProps) => {
       >
         Cancel
       </button>
+      <Toaster />
     </motion.div>
   );
 };

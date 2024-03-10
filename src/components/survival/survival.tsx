@@ -314,6 +314,8 @@ const Survival: React.FC<SurvivalProps> = ({
                 gameOwner={gameData.lobbyData.owner}
                 isGameOwner={gameData.lobbyData.owner === userId}
                 startGame={ownerStart}
+                playerCount={Object.keys(gameData.players).length}
+                exitMatch={exitMatch}
               />
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />

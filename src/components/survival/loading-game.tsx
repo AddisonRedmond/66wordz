@@ -1,34 +1,52 @@
 import { useTimer } from "react-timer-hook";
 import Tile from "../tile";
-
 type LoadingGameProps = {
   expiryTimestamp: Date;
   gameOwner?: string;
   isGameOwner?: boolean;
   startGame: () => void;
+  playerCount: number;
+  exitMatch: () => void;
 };
 const LoadingGame: React.FC<LoadingGameProps> = ({
   expiryTimestamp,
   gameOwner,
   ...props
 }: LoadingGameProps) => {
+  if (gameOwner) {
+    return (
+      <div className="text-center font-semibold">
+        <p className="text-lg">Waiting for players . . .</p>
+        <p className="text-lg">"10 player minimum"</p>
+        {props.isGameOwner && (
+          <div className="flex flex-col">
+            <button
+              onClick={() => {
+                props.playerCount > 10 && props.startGame();
+              }}
+              className={`my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600 ${props.playerCount > 10 ? "cursor-pointer" : "cursor-not-allowed"}`}
+            >
+              Start Game
+            </button>
+            <button
+              className={`rounded-full border-2 border-zinc-800 bg-white p-2 text-black  duration-150 ease-in-out hover:bg-zinc-300`}
+              onClick={() => props.exitMatch()}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
   const { totalSeconds } = useTimer({
     autoStart: true,
     expiryTimestamp,
   });
   return (
     <div className="text-center font-semibold">
-      <p className="text-lg">
-        {!gameOwner ? "Game starting in" : "Waiting for players . . ."}
-      </p>
-      {props.isGameOwner && (
-        <button
-          onClick={() => props.startGame()}
-          className=" my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600"
-        >
-          Start Game
-        </button>
-      )}
+      <p className="text-lg">Game starting in</p>
+
       <div className="mt-2 flex justify-center gap-2">
         <div className="flex flex-col items-center">
           {!gameOwner && (
