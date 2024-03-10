@@ -6,10 +6,11 @@ type GameCardProps = {
   gameType: GameType;
   gameImage: string;
   gameAlt: string;
-  joinGame: (gameMode: GameType) => void;
+  quickPlay: (gameMode: GameType) => void;
   handleDescription: (gameMode: GameType, rules: any) => void;
   rules: any;
   setIsCreateLobby: (isCreateLobby: boolean) => void;
+  setIsJoinLobby: (isJoinLobby: boolean) => void;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
@@ -33,7 +34,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
       <div className="grid place-content-center gap-2">
         <button
           onClick={() => {
-            props.joinGame(props.gameType);
+            props.quickPlay(props.gameType);
           }}
           className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
         >
@@ -49,7 +50,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         </button>
         <button
           onClick={() => {
-            console.log("Join a game")
+            props.setIsJoinLobby(true);
           }}
           className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
         >

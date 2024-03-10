@@ -27,7 +27,7 @@ import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
 import useSound from "use-sound";
 import Confetti from "react-confetti";
-
+import copy from "../../../public/copy.svg";
 export type AutoAttackOption = "first" | "last" | "random" | string;
 
 type SurvivalProps = {
@@ -146,14 +146,17 @@ const Survival: React.FC<SurvivalProps> = ({
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   const getHalfOfOpponents = (even: boolean): string[] => {
-    const allUserIds = Object.keys(gameData?.players ?? []);
+    const allUserIds = Object.keys(gameData?.players ?? []).filter((user) => {
+      user !== userId;
+    });
+
     if (even) {
       return Object.keys(gameData?.players ?? []).filter(
-        (_, index: number) => index % 2 === 0 && allUserIds[index] === userId,
+        (_, index: number) => index % 2 === 0,
       );
     } else {
       return Object.keys(gameData?.players ?? []).filter(
-        (_, index: number) => index % 2 !== 0 && allUserIds[index] === userId,
+        (_, index: number) => index % 2 !== 0,
       );
     }
   };
@@ -192,6 +195,18 @@ const Survival: React.FC<SurvivalProps> = ({
       <div
         className={`flex cursor-pointer flex-col items-center justify-around gap-3`}
       >
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-lg font-semibold">Lobby ID: {lobbyId}</p>
+          <Image
+            onClick={() => {
+              navigator.clipboard.writeText(lobbyId);
+            }}
+            width={20}
+            src={copy}
+            alt="Copy Lobby ID"
+            title="copy"
+          />
+        </div>
         <AnimatePresence>
           {isMobile && mobileMenuOpen && (
             <MobileAttack

@@ -13,24 +13,32 @@ import EliminationModal from "~/elimination/elimination-modal";
 import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
-
+import JoinLobby from "~/components/join-lobby";
 const Home = () => {
   const { data: session } = useSession();
   const quickPlay = api.public.joinPublicGame.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
+  const joinLobby = api.createGame.joinLobby.useMutation();
+  const createLobby = api.createGame.createLobby.useMutation();
+
   const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const joinGame = async (gameMode: GameType) => {
-    await quickPlay.mutateAsync({ gameMode: gameMode });
-    lobby.refetch();
-  };
-
-  const createLobby = api.createGame.createLobby.useMutation();
   const [gameDescriptionOpen, setGameDescriptionOpen] =
     useState<boolean>(false);
   const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
   const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
+
+  const handleQuickPlay = async (gameMode: GameType) => {
+    await quickPlay.mutateAsync({ gameMode: gameMode });
+    lobby.refetch();
+  };
+
+  const handleJoinLobby = async (lobbyId?: string, passKey?: string) => {
+    if (!lobbyId) return alert("Please enter a lobby id");
+    await joinLobby.mutateAsync({ lobbyId, passKey });
+    lobby.refetch();
+  };
 
   const exitMatch: () => void = () => {
     lobbyCleanUp.mutate();
@@ -107,15 +115,22 @@ const Home = () => {
                   handleCreateLobby={handleCreateLobby}
                 />
               )}
+              {isJoinLobby && (
+                <JoinLobby
+                  setIsJoinLobby={setIsJoinLobby}
+                  handleJoinLobby={handleJoinLobby}
+                />
+              )}
               {isCreateLobby === false && isJoinLobby === false && (
                 <GameCard
                   gameType="SURVIVAL"
                   gameAlt="skull and crossbones image"
                   gameImage={SurvivalImage}
-                  joinGame={joinGame}
+                  quickPlay={handleQuickPlay}
                   handleDescription={handleGameDescription}
                   rules={survivalRules}
                   setIsCreateLobby={setIsCreateLobby}
+                  setIsJoinLobby={setIsJoinLobby}
                 />
               )}
             </div>
