@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
 import { ref, set, update } from "firebase/database";
-import { db } from "~/utils/firebase/firebase";
+import { db, startGame } from "~/utils/firebase/firebase";
 import { getInitials } from "~/utils/survival/surivival";
 import { handleGetNewWord } from "~/utils/game";
 
@@ -114,7 +114,7 @@ export const createLobbyRouter = createTRPCRouter({
       }
       // check if passkey is correct
 
-      if (lobby.passkey !== input.passKey) {
+      if (lobby.passkey && lobby.passkey !== input.passKey) {
         return "Incorrect Passkey";
       }
       // check if lobby is full
@@ -158,6 +158,26 @@ export const createLobbyRouter = createTRPCRouter({
         [ctx.session.user.id]: playerData,
       });
     }),
+
+  startGame: protectedProcedure.mutation(async ({ ctx }) => {
+    // change lobby.started to true
+
+    const lobby = await ctx.db.players.findUnique({
+      where: { userId: ctx.session.user.id },
+    });
+
+    if (!lobby) return;
+
+    await ctx.db.lobby.update({
+      where: { id: lobby.lobbyId },
+      data: { started: true },
+    });
+
+    // change firebase lobby gameStarted to true
+    await update(ref(db, `SURVIVAL/${lobby?.lobbyId}/lobbyData/`), {
+      gameStarted: true,
+    });
+  }),
 
   getLobby: protectedProcedure.query(async ({ ctx }) => {
     const existingGame = await ctx.db.players.findUnique({

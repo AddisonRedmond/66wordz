@@ -5,6 +5,7 @@ type LoadingGameProps = {
   expiryTimestamp: Date;
   gameOwner?: string;
   isGameOwner?: boolean;
+  startGame: () => void;
 };
 const LoadingGame: React.FC<LoadingGameProps> = ({
   expiryTimestamp,
@@ -20,7 +21,14 @@ const LoadingGame: React.FC<LoadingGameProps> = ({
       <p className="text-lg">
         {!gameOwner ? "Game starting in" : "Waiting for players . . ."}
       </p>
-      {props.isGameOwner && <button className=" bg-zinc-800 ease-in-out duration-150 hover:bg-zinc-600 text-white rounded-full p-2 my-3">Start Game</button>}
+      {props.isGameOwner && (
+        <button
+          onClick={() => props.startGame()}
+          className=" my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600"
+        >
+          Start Game
+        </button>
+      )}
       <div className="mt-2 flex justify-center gap-2">
         <div className="flex flex-col items-center">
           {!gameOwner && (

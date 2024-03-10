@@ -28,6 +28,7 @@ import MobileAttack from "./mobile-attack";
 import useSound from "use-sound";
 import Confetti from "react-confetti";
 import copy from "../../../public/copy.svg";
+import { api } from "~/utils/api";
 export type AutoAttackOption = "first" | "last" | "random" | string;
 
 type SurvivalProps = {
@@ -44,6 +45,9 @@ const Survival: React.FC<SurvivalProps> = ({
   exitMatch,
 }: SurvivalProps) => {
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
+
+  const startGame = api.createGame.startGame.useMutation();
+
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
   const [correctGuess, setCorrectGuess] = useState<boolean>(false);
@@ -65,6 +69,10 @@ const Survival: React.FC<SurvivalProps> = ({
   });
 
   // TODO: make a better correct guess animation
+
+  const ownerStart = () => {
+    startGame.mutate();
+  };
 
   const control = { y: [0, -50], opacity: [100, 0], zIndex: [1, 1] };
   useEffect(() => {
@@ -305,6 +313,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
                 gameOwner={gameData.lobbyData.owner}
                 isGameOwner={gameData.lobbyData.owner === userId}
+                startGame={ownerStart}
               />
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />
