@@ -76,9 +76,9 @@ export const createLobbyRouter = createTRPCRouter({
           lobbyData: {
             name: lobbyName,
             passkey: passKey,
-            owner: ctx.session.user.id,
             gameStarted: false,
             initialStartTime: new Date().getTime(),
+            owner: ctx.session.user.id,
           },
           players: {
             [ctx.session.user.id]: playerData,
