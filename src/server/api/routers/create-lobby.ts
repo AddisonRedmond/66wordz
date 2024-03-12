@@ -5,6 +5,7 @@ import { ref, set, update } from "firebase/database";
 import { db } from "~/utils/firebase/firebase";
 import { getInitials } from "~/utils/survival/surivival";
 import { handleGetNewWord } from "~/utils/game";
+import { env } from "~/env.mjs";
 
 const MAX_PLAYERS = 67;
 const ATTACK_VALUE = 90;
@@ -85,6 +86,18 @@ export const createLobbyRouter = createTRPCRouter({
           },
         },
       });
+
+      try {
+        fetch(`${env.BOT_SERVER}/register_custom_survival_lobby`, {
+          method: "POST",
+          body: JSON.stringify({
+            lobbyId: newLobby.id,
+            enableBots: enableBots,
+          }),
+        });
+      } catch (e) {
+        console.log(e);
+      }
 
       return newLobby;
 
@@ -169,7 +182,7 @@ export const createLobbyRouter = createTRPCRouter({
       where: { lobbyId: lobby?.lobbyId },
     });
 
-    if (!lobby || playerCount < 10) return;
+    if (!lobby || playerCount < 2) return;
 
     await ctx.db.lobby.update({
       where: { id: lobby.lobbyId },

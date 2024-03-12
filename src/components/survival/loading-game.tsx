@@ -17,14 +17,14 @@ const LoadingGame: React.FC<LoadingGameProps> = ({
     return (
       <div className="text-center font-semibold">
         <p className="text-lg">Waiting for players . . .</p>
-        <p className="text-lg">"10 player minimum"</p>
+        <p className="text-lg">"2 player minimum"</p>
         {props.isGameOwner && (
           <div className="flex flex-col">
             <button
               onClick={() => {
-                props.playerCount > 10 && props.startGame();
+                props.playerCount >= 2 && props.startGame();
               }}
-              className={`my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600 ${props.playerCount > 10 ? "cursor-pointer" : "cursor-not-allowed"}`}
+              className={`my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600 ${props.playerCount >= 2 ? "cursor-pointer" : "cursor-not-allowed"}`}
             >
               Start Game
             </button>
