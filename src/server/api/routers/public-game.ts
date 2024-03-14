@@ -1,8 +1,6 @@
-import {
-  deleteLobby,
-  lobbyCleanUp,
-  startGame,
-} from "~/utils/firebase/firebase";
+import { deleteLobby, db, startGame } from "~/utils/firebase/firebase";
+import { ref, get, remove, update } from "firebase/database";
+
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { env } from "~/env.mjs";
@@ -57,7 +55,6 @@ export const publicGameRouter = createTRPCRouter({
         const newLobby: { id: string } = await ctx.db.lobby.create({
           data: {
             gameType: clientGameType,
-            started: clientGameType === "MARATHON",
           },
         });
         //   create the new lobby in firebase realtime db
@@ -184,8 +181,21 @@ export const publicGameRouter = createTRPCRouter({
     if (playerCount === 0) {
       await ctx.db.lobby.delete({ where: { id: lobbyId } });
       deleteLobby(lobby!.gameType, lobbyId);
-    } else {
-      await lobbyCleanUp(lobby!.gameType, lobbyId, user);
+    } else if (lobby?.name && lobby.started === false) {
+      remove(ref(db, `SURVIVAL/${lobby.id}/players/${user}`));
+
+      const lobbyData = await get(ref(db, `SURVIVAL/${lobby.id}`));
+
+      if (lobbyData.val().lobbyData.owner === user) {
+        const playerIds = Object.keys(lobbyData.val().players).filter(
+          (id) => id !== user,
+        );
+
+        await update(ref(db, `SURVIVAL/${lobby.id}/lobbyData/`), {
+          owner: playerIds[0],
+        });
+      }
+      return;
     }
   }),
 });

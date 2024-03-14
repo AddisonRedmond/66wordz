@@ -16,8 +16,6 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 export const db = getDatabase();
 
-export { ref, set, update, remove };
-
 export const createNewMarathonLobby = async (
   gameType: GameType,
   lobbyId: string,
@@ -229,16 +227,12 @@ export const handleEliminationWinner = async (
   });
 };
 
-export const lobbyCleanUp = async (
-  gameType: GameType,
-  lobbyId: string,
-  userId: string,
-) => {
-  if (gameType === "MARATHON") {
-    await remove(ref(db, `MARATHON/${lobbyId}/players/${userId}`));
-  } else if (gameType === "ELIMINATION") {
-    await remove(ref(db, `ELIMINATION/${lobbyId}/playerPoints/${userId}`));
-    await remove(ref(db, `ELIMINATION/${lobbyId}/roundData/${userId}`));
+export const removePlayerFromLobby = async (lobbyId: string, updateOwner: boolean) => {
+  await remove(ref(db, `SURVIVAL/${lobbyId}`));
+  if (updateOwner) {
+    await update(ref(db, `SURVIVAL/`), {
+      owner: null,
+    });
   }
 };
 

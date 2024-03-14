@@ -27,7 +27,7 @@ import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
 import useSound from "use-sound";
 import Confetti from "react-confetti";
-
+import { api } from "~/utils/api";
 export type AutoAttackOption = "first" | "last" | "random" | string;
 
 type SurvivalProps = {
@@ -44,6 +44,9 @@ const Survival: React.FC<SurvivalProps> = ({
   exitMatch,
 }: SurvivalProps) => {
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
+
+  const startGame = api.createGame.startGame.useMutation();
+
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
   const [correctGuess, setCorrectGuess] = useState<boolean>(false);
@@ -66,6 +69,10 @@ const Survival: React.FC<SurvivalProps> = ({
 
   // TODO: make a better correct guess animation
 
+  const ownerStart = () => {
+    startGame.mutate();
+  };
+
   const control = { y: [0, -50], opacity: [100, 0], zIndex: [1, 1] };
   useEffect(() => {
     if (scope.current) {
@@ -74,15 +81,20 @@ const Survival: React.FC<SurvivalProps> = ({
   }, [correctGuess]);
 
   const targetOpponent = (playerId: string) => {
-    if (gameData?.players[playerId]?.eliminated === false) {
-      setAutoAttack(playerId);
-    } else if( playerId === "random" || playerId === "first" || playerId === "last") {
+    if (
+      !gameData?.players[playerId]?.eliminated ||
+      playerId === "random" ||
+      playerId === "first" ||
+      playerId === "last"
+    ) {
       setAutoAttack(playerId);
     }
   };
 
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
+
+    if (playerData?.eliminated) return;
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => {
@@ -123,12 +135,6 @@ const Survival: React.FC<SurvivalProps> = ({
             setAutoAttack("first");
           }
         } else {
-          // handle incorrect guess
-          // reset guess
-          // animation
-
-          // get current matching indexes
-
           setGuess("");
           setIncorrectGuess(true);
           handleIncorrectGuess(guess, lobbyId, userId, playerData!.word);
@@ -170,10 +176,9 @@ const Survival: React.FC<SurvivalProps> = ({
     return count;
   };
 
-  if(gameData?.players[autoAttack]?.eliminated === true) {
+  if (gameData?.players[autoAttack]?.eliminated === true) {
     setAutoAttack("first");
   }
-
 
   if (gameData) {
     if (gameData.lobbyData.winner === userId) {
@@ -197,12 +202,18 @@ const Survival: React.FC<SurvivalProps> = ({
       >
         <AnimatePresence>
           {isMobile && mobileMenuOpen && (
-            <MobileAttack players={gameData.players} userId={userId} setMobileMenuOpen={setMobileMenuOpen} setAutoAttack={targetOpponent} autoAttack={autoAttack} />
+            <MobileAttack
+              players={gameData.players}
+              userId={userId}
+              setMobileMenuOpen={setMobileMenuOpen}
+              setAutoAttack={targetOpponent}
+              autoAttack={autoAttack}
+            />
           )}
         </AnimatePresence>
         <button
           onClick={() => exitMatch()}
-          className="duration absolute sm:right-72 sm:top-2 top-2 right-20 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:block "
+          className="duration absolute right-20 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
         >
           QUIT
         </button>
@@ -262,7 +273,11 @@ const Survival: React.FC<SurvivalProps> = ({
                       setMobileMenuOpen={setMobileMenuOpen}
                       target={
                         gameData?.players[
-                          getPlayerPosition(gameData.players, autoAttack, userId)
+                          getPlayerPosition(
+                            gameData.players,
+                            autoAttack,
+                            userId,
+                          )
                         ]
                       }
                     />
@@ -281,6 +296,12 @@ const Survival: React.FC<SurvivalProps> = ({
             {!gameData?.lobbyData.gameStarted ? (
               <LoadingGame
                 expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
+                gameOwner={gameData.lobbyData.owner}
+                isGameOwner={gameData.lobbyData.owner === userId}
+                startGame={ownerStart}
+                playerCount={Object.keys(gameData.players).length}
+                exitMatch={exitMatch}
+                lobbyId={lobbyId}
               />
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />

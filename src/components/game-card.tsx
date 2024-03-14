@@ -1,21 +1,31 @@
 import Image from "next/image";
 import { GameType } from "@prisma/client";
 import info from "../../public/info.svg";
-
+import { motion } from "framer-motion";
 type GameCardProps = {
   gameType: GameType;
   gameImage: string;
   gameAlt: string;
-  joinGame: (gameMode: GameType) => void;
-  handleDescription: (gameMode: GameType, rules: any) => void;
-  rules: any;
+  quickPlay: (gameMode: GameType) => void;
+  handleDescription: (
+    gameMode: GameType,
+    rules: { [header: string]: string[] },
+  ) => void;
+  rules: { [header: string]: string[] };
+  setIsCreateLobby: (isCreateLobby: boolean) => void;
+  setIsJoinLobby: (isJoinLobby: boolean) => void;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
   return (
-    <div className="relative flex w-36 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white">
+    <motion.div
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      exit={{ scale: 0 }}
+      className="relative flex w-44 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
+    >
       <h2 className=" mt-2 text-xl font-semibold">{props.gameType}</h2>
-      <div className=" grid h-24 content-center">
+      <div className=" grid h-24 content-center ">
         <Image
           width={50}
           height={50}
@@ -24,14 +34,33 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         />
       </div>
 
-      <button
-        onClick={() => {
-          props.joinGame(props.gameType);
-        }}
-        className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
-      >
-        Play
-      </button>
+      <div className="grid place-content-center gap-2">
+        <button
+          onClick={() => {
+            props.quickPlay(props.gameType);
+          }}
+          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
+        >
+          Quick Play
+        </button>
+        <button
+          onClick={() => {
+            props.setIsCreateLobby(true);
+          }}
+          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
+        >
+          Create
+        </button>
+        <button
+          onClick={() => {
+            props.setIsJoinLobby(true);
+          }}
+          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
+        >
+          Join
+        </button>
+      </div>
+
       <Image
         onClick={() => props.handleDescription(props.gameType, props.rules)}
         className="absolute right-1 top-1 cursor-pointer"
@@ -40,7 +69,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         alt={"Info icon"}
         title="show instructions for game"
       />
-    </div>
+    </motion.div>
   );
 };
 

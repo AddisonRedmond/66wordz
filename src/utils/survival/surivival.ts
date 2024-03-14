@@ -1,4 +1,5 @@
-import { ref, update, set, db } from "../firebase/firebase";
+import { db } from "../firebase/firebase";
+import { ref, set, update } from "firebase/database";
 import { handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
@@ -103,12 +104,14 @@ export function getRandomNumber(min: number, max: number): number {
   return randomNumber;
 }
 
-const getInitials = (fullName: string): string => {
+export const getInitials = (fullName?: string | null): string => {
+  if (!fullName) {
+    return "";
+  }
   const names = fullName.split(" ");
   const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
   return initials;
 };
-
 
 const getRandomType = (number: number) => {
   if (number % 2 === 0) {
@@ -269,7 +272,7 @@ export const handleAttack = async (
   const { health, shield } = playerStatus;
 
   if (!playerStatus.eliminated) {
-    const updatedStatus =  calcualteUpdatedStatus(attackValue, shield, health);
+    const updatedStatus = calcualteUpdatedStatus(attackValue, shield, health);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
       ...updatedStatus,
     });
