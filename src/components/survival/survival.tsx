@@ -94,7 +94,7 @@ const Survival: React.FC<SurvivalProps> = ({
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
 
-    if(playerData?.eliminated) return;
+    if (playerData?.eliminated) return;
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => {
@@ -155,10 +155,6 @@ const Survival: React.FC<SurvivalProps> = ({
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   const getHalfOfOpponents = (even: boolean): string[] => {
-    const allUserIds = Object.keys(gameData?.players ?? []).filter((user) => {
-      user !== userId;
-    });
-
     if (even) {
       return Object.keys(gameData?.players ?? []).filter(
         (_, index: number) => index % 2 === 0,

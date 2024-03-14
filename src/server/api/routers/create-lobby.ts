@@ -11,7 +11,18 @@ const MAX_PLAYERS = 67;
 const ATTACK_VALUE = 90;
 const TYPE_VALUE = 70;
 
-type PlayerDataObject = {};
+type PlayerDataObject = {
+  health: number,
+  shield: number,
+  eliminated: boolean,
+  initials: string,
+  word: {
+    word: string,
+    type: string,
+    value: number,
+    attack: number,
+  },
+};
 
 export const createLobbyRouter = createTRPCRouter({
   createLobby: protectedProcedure
