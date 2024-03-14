@@ -1,5 +1,8 @@
 import { useTimer } from "react-timer-hook";
 import Tile from "../tile";
+import Image from "next/image";
+import copy from "../../../public/copy.svg";
+
 type LoadingGameProps = {
   expiryTimestamp: Date;
   gameOwner?: string;
@@ -7,6 +10,7 @@ type LoadingGameProps = {
   startGame: () => void;
   playerCount: number;
   exitMatch: () => void;
+  lobbyId: string;
 };
 const LoadingGame: React.FC<LoadingGameProps> = ({
   expiryTimestamp,
@@ -16,8 +20,20 @@ const LoadingGame: React.FC<LoadingGameProps> = ({
   if (gameOwner) {
     return (
       <div className="text-center font-semibold">
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-lg font-semibold">Lobby ID: {props.lobbyId}</p>
+          <Image
+            onClick={() => {
+              navigator.clipboard.writeText(props.lobbyId);
+            }}
+            width={20}
+            src={copy}
+            alt="Copy Lobby ID"
+            title="copy"
+          />
+        </div>
+
         <p className="text-lg">Waiting for players . . .</p>
-        <p className="text-lg">"2 player minimum"</p>
         {props.isGameOwner && (
           <div className="flex flex-col">
             <button

@@ -27,7 +27,6 @@ import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
 import useSound from "use-sound";
 import Confetti from "react-confetti";
-import copy from "../../../public/copy.svg";
 import { api } from "~/utils/api";
 export type AutoAttackOption = "first" | "last" | "random" | string;
 
@@ -94,6 +93,8 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
+
+    if(playerData?.eliminated) return;
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => {
@@ -203,18 +204,6 @@ const Survival: React.FC<SurvivalProps> = ({
       <div
         className={`flex cursor-pointer flex-col items-center justify-around gap-3`}
       >
-        <div className="flex items-center justify-center gap-3">
-          <p className="text-lg font-semibold">Lobby ID: {lobbyId}</p>
-          <Image
-            onClick={() => {
-              navigator.clipboard.writeText(lobbyId);
-            }}
-            width={20}
-            src={copy}
-            alt="Copy Lobby ID"
-            title="copy"
-          />
-        </div>
         <AnimatePresence>
           {isMobile && mobileMenuOpen && (
             <MobileAttack
@@ -316,6 +305,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 startGame={ownerStart}
                 playerCount={Object.keys(gameData.players).length}
                 exitMatch={exitMatch}
+                lobbyId={lobbyId}
               />
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />

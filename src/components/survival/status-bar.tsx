@@ -9,7 +9,6 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   const [scopeRed] = useAnimate();
 
   // TODO: change this to delayed children variant, rather than useEffect
-
   useEffect(() => {
     if (scope && scopeRed) {
       animate(scope.current, {

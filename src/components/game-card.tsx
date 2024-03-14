@@ -7,8 +7,11 @@ type GameCardProps = {
   gameImage: string;
   gameAlt: string;
   quickPlay: (gameMode: GameType) => void;
-  handleDescription: (gameMode: GameType, rules: any) => void;
-  rules: any;
+  handleDescription: (
+    gameMode: GameType,
+    rules: { [header: string]: string[] },
+  ) => void;
+  rules: { [header: string]: string[] };
   setIsCreateLobby: (isCreateLobby: boolean) => void;
   setIsJoinLobby: (isJoinLobby: boolean) => void;
 };
