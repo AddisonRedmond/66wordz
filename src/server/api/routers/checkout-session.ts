@@ -25,6 +25,6 @@ export const checkoutRouter = createTRPCRouter({
       automatic_tax: { enabled: true },
     });
 
-    return session.url;
+    return session.id;
   }),
 });

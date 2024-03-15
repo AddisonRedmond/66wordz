@@ -3,7 +3,7 @@ import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
 import { api } from "~/utils/api";
-import { useRouter } from "next/router";
+import getStripe from "~/utils/get-stripejs";
 
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
@@ -13,11 +13,14 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
   const upgrade = api.upgrade.createCheckout.useMutation();
-  const { push } = useRouter();
+  
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
-    if (!checkoutURL) return;
-    push(checkoutURL);
+    const stripe = await getStripe();
+    console.log(checkoutURL);
+    if (stripe !== null && checkoutURL) {
+      await stripe.redirectToCheckout({ sessionId: checkoutURL });
+    }
   };
 
   return (
