@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
+import { api } from "~/utils/api";
+import { useRouter } from "next/router";
 
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
@@ -10,6 +12,14 @@ type DesktopNavbarProps = {
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
+  const upgrade = api.upgrade.createCheckout.useMutation();
+  const { push } = useRouter();
+  const handleUpgrade = async () => {
+    const checkoutURL = await upgrade.mutateAsync();
+    if (!checkoutURL) return;
+    push(checkoutURL);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
@@ -22,6 +32,12 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         {/* <p className="cursor-pointer rounded-md p-1">Game Stats</p> */}
+        <button
+          onClick={() => handleUpgrade()}
+          className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
+        >
+          Upgrade
+        </button>
         <button
           onClick={() => props.issueModalIsOpen(true)}
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"

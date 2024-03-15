@@ -32,6 +32,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     BOT_SERVER: z.string(),
+    STRIPE_SECRET_KEY: z.string().min(1),
   },
 
   /**
@@ -48,6 +49,7 @@ export const env = createEnv({
     NEXT_PUBLIC_MESSAGING_SENDER_ID: z.string().min(1),
     NEXT_PUBLIC_APP_ID: z.string().min(1),
     NEXT_PUBLIC_MEASUREMENT_ID: z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
   },
 
   /**
@@ -62,6 +64,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     BOT_SERVER: process.env.BOT_SERVER,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NEXT_PUBLIC_AUTH_DOMAIN: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -73,6 +76,8 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
     NEXT_PUBLIC_MEASUREMENT_ID: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
