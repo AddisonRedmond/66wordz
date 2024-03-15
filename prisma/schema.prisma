@@ -57,7 +57,9 @@ model User {
     gamesPlayed   Int       @default(0)
     Players       Players[]
     issues        Issues[]
-    lobbyOwner    Lobby?
+    lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
+    hasUpgraded   Boolean   @default(false)
+    lobbyId       String?
 }
 
 model VerificationToken {
@@ -80,10 +82,9 @@ model Lobby {
     player   Players[]
     gameType GameType
     bot      Boolean   @default(false)
-    owner    User?     @relation(fields: [ownerId], references: [id])
-    ownerId  String?   @unique
     passkey  String?
     name     String?
+    User     User[]
 }
 
 model Players {

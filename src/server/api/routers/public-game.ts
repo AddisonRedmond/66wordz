@@ -37,15 +37,15 @@ export const publicGameRouter = createTRPCRouter({
       const findLobby = async () => {
         const lobby: { id: string; started: boolean }[] = await ctx.db
           .$queryRaw`
-          SELECT l.id, l.started, l.gameType
-          FROM Lobby l
-          WHERE (
+        SELECT l.id, l.started, l.gameType
+        FROM Lobby l
+        WHERE (
             SELECT COUNT(*) FROM Players p WHERE p.lobbyId = l.id
-          ) < 67
-          AND l.started = false
-          AND l.gameType = ${clientGameType}
-          LIMIT 1;
-      `;
+        ) < 67
+        AND l.started = false
+        AND l.gameType = ${clientGameType}
+        LIMIT 1;
+         `;
         return lobby[0];
       };
 
