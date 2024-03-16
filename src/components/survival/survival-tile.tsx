@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 type SurvivalTile = {
   letter?: string;
@@ -16,7 +16,7 @@ const SurvivalTile: React.FC<SurvivalTile> = ({
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{
         scale: 1,
@@ -28,17 +28,17 @@ const SurvivalTile: React.FC<SurvivalTile> = ({
     >
       <AnimatePresence>
         {!!revealed && (
-          <motion.p
+          <m.p
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             transition={{ duration: 0.07 }}
           >
             {letter}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };
 

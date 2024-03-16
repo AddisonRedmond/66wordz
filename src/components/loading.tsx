@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const Loading: React.FC = () => {
   const container = {
@@ -19,7 +19,7 @@ const Loading: React.FC = () => {
   };
 
   return (
-    <motion.div
+    <m.div
         className="flex justify-center gap-2"
         initial={{ scale: 0, opacity: 0 }}
         exit={{ scale: 0, opacity: 0 }}
@@ -28,7 +28,7 @@ const Loading: React.FC = () => {
       >
         {"LOADING".split("").map((letter: string, index: number) => {
           return (
-            <motion.div
+            <m.div
               key={index}
               variants={tile}
               transition={{
@@ -45,10 +45,10 @@ const Loading: React.FC = () => {
               >
                 {letter}
               </p>
-            </motion.div>
+            </m.div>
           );
         })}
-      </motion.div>
+      </m.div>
   );
 };
 

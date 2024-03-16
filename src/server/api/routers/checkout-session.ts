@@ -1,5 +1,4 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { z } from "zod";
 import { env } from "~/env.mjs";
 import Stripe from "stripe";
 const YOUR_DOMAIN = "http://localhost:3000";

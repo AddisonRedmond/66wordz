@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { GameType } from "@prisma/client";
 import info from "../../public/info.svg";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 type GameCardProps = {
   gameType: GameType;
   gameImage: string;
@@ -18,7 +18,7 @@ type GameCardProps = {
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
@@ -69,7 +69,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         alt={"Info icon"}
         title="show instructions for game"
       />
-    </motion.div>
+    </m.div>
   );
 };
 

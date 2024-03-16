@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Delete from "../../public/Delete.svg";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 type KeyboardProps = {
   disabled: boolean;
   matches?: { full: string[]; partial: string[]; none: string[] };
@@ -34,7 +34,7 @@ const KeyboardRow = ({
     <>
       {letters.split("").map((letter: string) => {
         return (
-          <motion.p
+          <m.p
             onClick={() => handleKeyBoardLogic(letter)}
             animate={{ backgroundColor: handleColors(letter), color: (handleColors(letter) === "#545B77" ? "white": "black") }}
             className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
@@ -43,7 +43,7 @@ const KeyboardRow = ({
             key={letter}
           >
             {letter}
-          </motion.p>
+          </m.p>
         );
       })}
       {specialKey}

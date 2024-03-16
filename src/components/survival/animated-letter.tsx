@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 type AnimateLetterProps = {
   letters?: string | number;
   backgroundColor?: string;
@@ -10,7 +10,7 @@ const AnimateLetter: React.FC<AnimateLetterProps> = (
   const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
   if (props.letters) {
     return (
-      <motion.div
+      <m.div
         initial={{ scale: 0, opacity: 0 }}
         exit={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -29,7 +29,7 @@ const AnimateLetter: React.FC<AnimateLetterProps> = (
               >
                 {numbers.map((alphabetLetter: string, index: number) => {
                   return (
-                    <motion.p
+                    <m.p
                       className="flex items-center justify-center"
                       animate={{
                         y: `-${numbers.indexOf(letter) * 20}px`,
@@ -43,13 +43,13 @@ const AnimateLetter: React.FC<AnimateLetterProps> = (
                       key={`${index}letter`}
                     >
                       {alphabetLetter}
-                    </motion.p>
+                    </m.p>
                   );
                 })}
               </div>
             );
           })}
-      </motion.div>
+      </m.div>
     );
   }
 };

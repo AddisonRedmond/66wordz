@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   CircularProgressbarWithChildren,
   buildStyles,
@@ -31,7 +31,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
 
   const opponentSizePercentage = 50 / Math.sqrt(props?.opponentCount ?? 0); // Using the square root for both width and height
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{
         scale: 1,
@@ -90,7 +90,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
           </div>
         </CircularProgressbarWithChildren>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

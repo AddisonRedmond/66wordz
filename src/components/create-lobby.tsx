@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useState } from "react";
 
 type CreateLobbyProps = {
@@ -30,7 +30,7 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
@@ -84,7 +84,7 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
       >
         Cancel
       </button>
-    </motion.div>
+    </m.div>
   );
 };
 

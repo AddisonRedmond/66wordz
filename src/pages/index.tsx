@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { AuthContext, authRequired } from "~/utils/authRequired";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import { useState } from "react";
@@ -88,7 +88,7 @@ const Home = () => {
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -137,7 +137,7 @@ const Home = () => {
             </div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
@@ -24,7 +24,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
@@ -55,7 +55,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           <Image src={signout} alt="signout icon" height={25} />
         </button>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

@@ -8,7 +8,7 @@ import {
 import { db, updateGuessesAndAllGuesses } from "~/utils/firebase/firebase";
 import words from "~/utils/dictionary";
 import "react-toastify/dist/ReactToastify.css";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 // import Confetti from "react-dom-confetti";
 import useMarathonLobbyData from "../custom-hooks/useMarathonLobbyData";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
@@ -235,7 +235,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
           {gameData.lobbyData.gameStarted ? (
             <>
               {/* <Confetti active={modalIsOpen} config={config} /> */}
-              <motion.div
+              <m.div
                 exit={{ scale: 0 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -273,7 +273,7 @@ const Marathon: React.FC<MarathonProps> = (props: MarathonProps) => {
                     handleKeyBoardLogic={handleKeyBoardLogic}
                   /> */}
                 </div>
-              </motion.div>
+              </m.div>
             </>
           ) : (
             <div>

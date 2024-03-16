@@ -3,11 +3,11 @@ import Head from "next/head";
 
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export default function Login() {
   return (
-    <motion.div exit={{ opacity: 0 }}>
+    <m.div exit={{ opacity: 0 }}>
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
@@ -29,7 +29,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
