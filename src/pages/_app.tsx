@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import "~/styles/globals.css";
 import Navbar from "../components/navbar/navbar";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,8 +17,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <AnimatePresence>
+        <LazyMotion features={domAnimation}>
         {router.pathname !== "/login" && <Navbar key="navbar" />}
         <Component {...pageProps} />
+        </LazyMotion>
       </AnimatePresence>
     </SessionProvider>
   );
