@@ -14,6 +14,7 @@ type GameCardProps = {
   rules: { [header: string]: string[] };
   setIsCreateLobby: (isCreateLobby: boolean) => void;
   setIsJoinLobby: (isJoinLobby: boolean) => void;
+  isPremiumUser?: Boolean;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
@@ -43,14 +44,16 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         >
           Quick Play
         </button>
-        <button
-          onClick={() => {
-            props.setIsCreateLobby(true);
-          }}
-          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
-        >
-          Create
-        </button>
+        {props.isPremiumUser && (
+          <button
+            onClick={() => {
+              props.setIsCreateLobby(true);
+            }}
+            className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
+          >
+            Create
+          </button>
+        )}
         <button
           onClick={() => {
             props.setIsJoinLobby(true);

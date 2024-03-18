@@ -21,6 +21,7 @@ const Home = () => {
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
+  const user = api.getUser.isPremiumUser.useQuery();
 
   const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
@@ -132,6 +133,7 @@ const Home = () => {
                   rules={survivalRules}
                   setIsCreateLobby={setIsCreateLobby}
                   setIsJoinLobby={setIsJoinLobby}
+                  isPremiumUser={user.data?.isPremiumUser}
                 />
               )}
             </div>
