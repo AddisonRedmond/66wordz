@@ -4,7 +4,7 @@ import signout from "../../../public/signout.svg";
 import Image from "next/image";
 import { api } from "~/utils/api";
 import getStripe from "~/utils/get-stripejs";
-
+import Link from "next/link";
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
 };
@@ -13,7 +13,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
   const upgrade = api.upgrade.createCheckout.useMutation();
-  
+
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
     const stripe = await getStripe();
@@ -47,6 +47,15 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         >
           Report Issue
         </button>
+
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/profile">Profile</Link>
+        </button>
+
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/">Home</Link>
+        </button>
+
 
         <button
           onClick={() => signOut()}

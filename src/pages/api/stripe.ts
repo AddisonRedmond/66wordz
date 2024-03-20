@@ -42,10 +42,29 @@ const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (event.type) {
       case "checkout.session.completed":
         const paymentIntent = event.data.object;
-        console.log(paymentIntent.metadata);
+        const subData = await stripe.subscriptions.retrieve(
+          paymentIntent.subscription as string,
+        );
+
         await db.user.update({
           where: { id: paymentIntent.metadata!.userId },
-          data: { hasUpgraded: true, updagradeDate: new Date() },
+          data: {
+            subscriptionId: paymentIntent.subscription as string,
+            customerId: paymentIntent.customer as string,
+            cancelAtPeriodEnd: subData.cancel_at_period_end,
+            currentPeriodEnd: subData.current_period_end,
+          },
+        });
+        break;
+
+      case "customer.subscription.updated":
+        const subscription = event.data.object;
+        await db.user.update({
+          where: { id: subscription.metadata.userId },
+          data: {
+            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+            currentPeriodEnd: subscription.current_period_end,
+          },
         });
         break;
       default:

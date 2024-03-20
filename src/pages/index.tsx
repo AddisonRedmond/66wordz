@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react";
-import Head from "next/head";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence, m } from "framer-motion";
 import { api } from "~/utils/api";
@@ -83,64 +82,57 @@ const Home = () => {
     }
   };
   return (
-    <>
-      <Head>
-        <title>66 Wordz</title>
-        <meta name="66 wordz" content="Log in screen for 66 wordz" />
-        <link rel="icon" href="/favicon.png" />
-      </Head>
-      <m.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly"
-      >
-        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
-        <AnimatePresence>
-          {lobby.data?.id ? (
-            handleStartGame()
-          ) : (
-            <div className="flex flex-wrap justify-center gap-2">
-              {gameDescriptionOpen && (
-                <EliminationModal>
-                  <Rules
-                    rules={rules}
-                    gameType={gameType}
-                    closeDescription={closeDescription}
-                  />
-                </EliminationModal>
-              )}
-              {isCreateLobby && (
-                <CreateLobby
-                  setIsCreateLobby={setIsCreateLobby}
-                  handleCreateLobby={handleCreateLobby}
+    <m.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly"
+    >
+      <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
+      <AnimatePresence>
+        {lobby.data?.id ? (
+          handleStartGame()
+        ) : (
+          <div className="flex flex-wrap justify-center gap-2">
+            {gameDescriptionOpen && (
+              <EliminationModal>
+                <Rules
+                  rules={rules}
+                  gameType={gameType}
+                  closeDescription={closeDescription}
                 />
-              )}
-              {isJoinLobby && (
-                <JoinLobby
-                  errorMessage={joinLobby.data}
-                  setIsJoinLobby={setIsJoinLobby}
-                  handleJoinLobby={handleJoinLobby}
-                />
-              )}
-              {isCreateLobby === false && isJoinLobby === false && (
-                <GameCard
-                  gameType="SURVIVAL"
-                  gameAlt="skull and crossbones image"
-                  gameImage={SurvivalImage}
-                  quickPlay={handleQuickPlay}
-                  handleDescription={handleGameDescription}
-                  rules={survivalRules}
-                  setIsCreateLobby={setIsCreateLobby}
-                  setIsJoinLobby={setIsJoinLobby}
-                  isPremiumUser={user.data?.isPremiumUser}
-                />
-              )}
-            </div>
-          )}
-        </AnimatePresence>
-      </m.div>
-    </>
+              </EliminationModal>
+            )}
+            {isCreateLobby && (
+              <CreateLobby
+                setIsCreateLobby={setIsCreateLobby}
+                handleCreateLobby={handleCreateLobby}
+              />
+            )}
+            {isJoinLobby && (
+              <JoinLobby
+                errorMessage={joinLobby.data}
+                setIsJoinLobby={setIsJoinLobby}
+                handleJoinLobby={handleJoinLobby}
+              />
+            )}
+            {isCreateLobby === false && isJoinLobby === false && (
+              <GameCard
+                gameType="SURVIVAL"
+                gameAlt="skull and crossbones image"
+                gameImage={SurvivalImage}
+                quickPlay={handleQuickPlay}
+                handleDescription={handleGameDescription}
+                rules={survivalRules}
+                setIsCreateLobby={setIsCreateLobby}
+                setIsJoinLobby={setIsJoinLobby}
+                isPremiumUser={user.data?.isPremiumUser}
+              />
+            )}
+          </div>
+        )}
+      </AnimatePresence>
+    </m.div>
   );
 };
 export default Home;

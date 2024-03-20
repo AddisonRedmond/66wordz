@@ -29,4 +29,60 @@ export const checkoutRouter = createTRPCRouter({
 
     return session.id;
   }),
+  cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+      typescript: true,
+      apiVersion: "2023-10-16",
+    });
+
+    const subscriptionId = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+
+    if (!subscriptionId?.subscriptionId) {
+      throw new Error("No subscription found");
+    }
+
+    const subscription = await stripe.subscriptions.update(
+      subscriptionId?.subscriptionId,
+      {
+        metadata: {
+          userId: ctx.session.user.id,
+        },
+        cancel_at_period_end: true,
+      },
+    );
+
+    // console.log(
+    //   await stripe.subscriptions.retrieve(subscriptionId?.subscriptionId),
+    // );
+    return { successfullyCancelled: subscription.cancel_at_period_end };
+  }),
+
+  reactiveateSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+      typescript: true,
+      apiVersion: "2023-10-16",
+    });
+
+    const subscriptionId = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+
+    if (!subscriptionId?.subscriptionId) {
+      throw new Error("No subscription found");
+    }
+
+    const subscription = await stripe.subscriptions.update(
+      subscriptionId?.subscriptionId,
+      {
+        metadata: {
+          userId: ctx.session.user.id,
+        },
+        cancel_at_period_end: false,
+      },
+    );
+
+    return { successfullyReactivated: subscription.cancel_at_period_end };
+  }),
 });
