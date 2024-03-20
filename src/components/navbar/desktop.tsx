@@ -7,6 +7,7 @@ import getStripe from "~/utils/get-stripejs";
 import Link from "next/link";
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
+  isPremiumUser: boolean | undefined;
 };
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
@@ -34,13 +35,14 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         <p>66</p>
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
-        {/* <p className="cursor-pointer rounded-md p-1">Game Stats</p> */}
-        <button
-          onClick={() => handleUpgrade()}
-          className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
-        >
-          Upgrade
-        </button>
+        {!props.isPremiumUser && (
+          <button
+            onClick={() => handleUpgrade()}
+            className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
+          >
+            Upgrade
+          </button>
+        )}
         <button
           onClick={() => props.issueModalIsOpen(true)}
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
@@ -55,7 +57,6 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
           <Link href="/">Home</Link>
         </button>
-
 
         <button
           onClick={() => signOut()}

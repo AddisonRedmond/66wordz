@@ -16,6 +16,9 @@ const Navbar: React.FC = () => {
     useState<boolean>(false);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
   const submitIssue = api.reportIssue.reportIssue.useMutation();
+
+  const isPremiumUser = api.getUser.isPremiumUser.useQuery();
+
   const isMobile = useIsMobile();
 
   const handleUpdateMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -133,7 +136,10 @@ const Navbar: React.FC = () => {
         {isMobile ? (
           <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
         ) : (
-          <DesktopNavbar issueModalIsOpen={setShowModal} />
+          <DesktopNavbar
+            issueModalIsOpen={setShowModal}
+            isPremiumUser={isPremiumUser.data?.isPremiumUser}
+          />
         )}
       </AnimatePresence>
     </>
