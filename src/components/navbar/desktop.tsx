@@ -43,19 +43,19 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
             Upgrade
           </button>
         )}
+
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/">Home</Link>
+        </button>
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/profile">Profile</Link>
+        </button>
+
         <button
           onClick={() => props.issueModalIsOpen(true)}
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
         >
           Report Issue
-        </button>
-
-        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
-          <Link href="/profile">Profile</Link>
-        </button>
-
-        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
-          <Link href="/">Home</Link>
         </button>
 
         <button

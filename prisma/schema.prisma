@@ -60,6 +60,9 @@ model User {
     lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
 
+    freeGameTimeStamp Int?
+    freeGameCount     Int  @default(0)
+
     subscriptionId    String?
     customerId        String?
     cancelAtPeriodEnd Boolean?
