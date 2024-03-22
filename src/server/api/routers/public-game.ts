@@ -13,8 +13,11 @@ export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      // check if player has reached the max number of games for the day
+
       // check if player is already part of a game
       const clientGameType = input.gameMode as GameType;
+
       const rejoin: {
         userId: string;
         lobbyId: string;
@@ -32,6 +35,14 @@ export const publicGameRouter = createTRPCRouter({
         });
       }
 
+      // const user = await ctx.db.user.findUnique({
+      //   where: { id: ctx.session.user.id },
+      // });
+
+      // if(user!.currentPeriodEnd === null || user!.currentPeriodEnd > Date.now() / 1000) {
+        
+      // }
+
       // check data base for a lobby that has < 67 players and hasn't started yet
 
       const findLobby = async () => {
@@ -43,7 +54,7 @@ export const publicGameRouter = createTRPCRouter({
             SELECT COUNT(*) FROM "Players" p WHERE p."lobbyId" = l.id
           ) < 67
           AND l.started = false
-          AND l."gameType" = ${'SURVIVAL'}::"GameType"
+          AND l."gameType" = ${"SURVIVAL"}::"GameType"
           LIMIT 1;
          `;
         return lobby[0];

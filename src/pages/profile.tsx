@@ -6,6 +6,7 @@ import { AuthContext, authRequired } from "~/utils/authRequired";
 const Profile: NextPage = () => {
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
+  const test = api.upgrade.reactiveateSubscription.useMutation();
 
   return (
     <div className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly">
@@ -33,6 +34,7 @@ const Profile: NextPage = () => {
             Cancel Subscription
           </button>
         )}
+     
     </div>
   );
 };

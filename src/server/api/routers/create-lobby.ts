@@ -6,22 +6,27 @@ import { db } from "~/utils/firebase/firebase";
 import { getInitials } from "~/utils/survival/surivival";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
+import {
+  hasBeen24Hours,
+  hasMoreFreeGames,
+  isPremiumUser,
+} from "~/utils/game-limit";
 
 const MAX_PLAYERS = 67;
 const ATTACK_VALUE = 90;
 const TYPE_VALUE = 70;
 
 type PlayerDataObject = {
-  health: number,
-  shield: number,
-  eliminated: boolean,
-  initials: string,
+  health: number;
+  shield: number;
+  eliminated: boolean;
+  initials: string;
   word: {
-    word: string,
-    type: string,
-    value: number,
-    attack: number,
-  },
+    word: string;
+    type: string;
+    value: number;
+    attack: number;
+  };
 };
 
 export const createLobbyRouter = createTRPCRouter({
@@ -34,6 +39,19 @@ export const createLobbyRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // check if player has reached the max number of games for the day
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+      const isPremiumUser = () => {
+        if (user?.currentPeriodEnd === null) return false;
+        return user!.currentPeriodEnd > Date.now() / 1000;
+      };
+
+      if (!isPremiumUser()) {
+        return "User is not a premium user";
+      }
+
       const { lobbyName, passKey, enableBots } = input;
       const uid = new ShortUniqueId({ length: 6 });
       const lobbyId = uid.rnd();
@@ -118,6 +136,27 @@ export const createLobbyRouter = createTRPCRouter({
   joinLobby: protectedProcedure
     .input(z.object({ lobbyId: z.string(), passKey: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+      // check if user is premium user, if they are, proceed
+      if (!isPremiumUser(user!)) {
+      }
+
+      // if not premium user, check if time stamp is greater than 24 hours old,
+      if (hasBeen24Hours(user!)) {
+      }
+
+      // if it is reset the timestamp to today at 12:00am and reset the free game count to 1
+
+      // if not premium user, and time stamp is not greater than 24 hours
+      //  check to see if user has exceeded or equal the max number of games for the day
+
+      if (hasMoreFreeGames(user!)) {
+      }
+
+      // if they haven't proceed
+
       // check if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({
         where: { userId: ctx.session.user.id },

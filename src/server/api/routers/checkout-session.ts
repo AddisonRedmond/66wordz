@@ -83,6 +83,7 @@ export const checkoutRouter = createTRPCRouter({
       },
     );
 
-    return { successfullyReactivated: subscription.cancel_at_period_end };
+    console.log(subscription)
+    return;
   }),
 });
