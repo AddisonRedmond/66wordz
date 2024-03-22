@@ -58,6 +58,7 @@ const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
         break;
 
       case "customer.subscription.updated":
+        console.log("🔔  Subscription updated!");
         const subscription = event.data.object;
         await db.user.update({
           where: { id: subscription.metadata.userId },

@@ -30,6 +30,13 @@ export const checkoutRouter = createTRPCRouter({
     return session.id;
   }),
   cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+    if (user?.cancelAtPeriodEnd === null || user?.cancelAtPeriodEnd === true) {
+      return;
+    }
+
     const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       typescript: true,
       apiVersion: "2023-10-16",
@@ -53,9 +60,8 @@ export const checkoutRouter = createTRPCRouter({
       },
     );
 
-    // console.log(
-    //   await stripe.subscriptions.retrieve(subscriptionId?.subscriptionId),
-    // );
+    await ctx.db.user.update({ where: { id: ctx.session.user.id }, data: { cancelAtPeriodEnd: true } });
+
     return { successfullyCancelled: subscription.cancel_at_period_end };
   }),
 
@@ -83,7 +89,7 @@ export const checkoutRouter = createTRPCRouter({
       },
     );
 
-    console.log(subscription)
+    console.log(subscription);
     return;
   }),
 });
