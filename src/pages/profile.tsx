@@ -1,11 +1,14 @@
-import { NextPage } from "next/types";
+import { GetServerSideProps, NextPage } from "next/types";
 import Header from "~/components/hearder";
 import { api } from "~/utils/api";
 import Image from "next/image";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import toast, { Toaster } from "react-hot-toast";
+import { getSession } from "next-auth/react";
+import { db } from "~/server/db";
 
-const Profile: NextPage = () => {
+const Profile: NextPage = (props: any) => {
+  console.log(props);
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
   const test = api.upgrade.reactiveateSubscription.useMutation();
@@ -19,6 +22,12 @@ const Profile: NextPage = () => {
         ? "✅Successfully cancelled✅"
         : "Failed to cancel subscription",
     );
+  };
+
+  const getFullDate = (dateMiliseconds: number) => {
+    const date = new Date(dateMiliseconds * 1000);
+    console.log(date);
+    return date.toDateString();
   };
 
   return (
@@ -35,8 +44,18 @@ const Profile: NextPage = () => {
             className="mb-4 rounded-full"
           />
         )}
-        <p>{user.data?.name}</p>
-        <p>{user.data?.email}</p>
+        <p>
+          <span className="font-semibold">Name:</span> {user.data?.name}
+        </p>
+        <p>
+          <span className="font-semibold">Email:</span> {user.data?.email}
+        </p>
+        {user.data?.currentPeriodEnd && (
+          <p>
+            <span className="font-semibold">Next bill:</span>{" "}
+            {getFullDate(user.data?.currentPeriodEnd)}
+          </p>
+        )}
       </div>
 
       {!user.data?.cancelAtPeriodEnd &&
@@ -57,6 +76,22 @@ const Profile: NextPage = () => {
 
 export default Profile;
 
-export async function getServerSideProps(context: AuthContext) {
-  return await authRequired(context, false);
-}
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getSession({ req });
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+
+  return {
+    props: {
+      user,
+    },
+  };
+};
