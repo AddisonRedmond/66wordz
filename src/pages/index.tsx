@@ -96,7 +96,7 @@ const Home = () => {
           handleStartGame()
         ) : (
           <div className="flex flex-col flex-wrap justify-center gap-2 text-center">
-            {user.isSuccess && (
+            {user.isSuccess && user.data && (
               <p>{getRemaningGames(user.data)} games remaning</p>
             )}
             {gameDescriptionOpen && (
