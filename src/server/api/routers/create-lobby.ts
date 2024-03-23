@@ -140,12 +140,27 @@ export const createLobbyRouter = createTRPCRouter({
         where: { id: ctx.session.user.id },
       });
       // check if user is premium user, if they are, proceed
-      if (!isPremiumUser(user!)) {
+      if (isPremiumUser(user!) === false) {
+        if (hasBeen24Hours(user!)) {
+          // reset the timestamp to today at 12:00am and reset the free game count to 1
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+              freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
+              freeGameCount: 1,
+            },
+          });
+        } else if (hasMoreFreeGames(user!)) {
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: { freeGameCount: user!.freeGameCount + 1 },
+          });
+        } else {
+          return "User has reached the maximum number of free games for the day";
+        }
       }
 
       // if not premium user, check if time stamp is greater than 24 hours old,
-      if (hasBeen24Hours(user!)) {
-      }
 
       // if it is reset the timestamp to today at 12:00am and reset the free game count to 1
 

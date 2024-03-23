@@ -6,7 +6,22 @@ export const isPremiumUser = (user: User) => {
 };
 
 export const hasBeen24Hours = (user: User) => {
-  return user.freeGameTimeStamp && user.freeGameTimeStamp <= Date.now() / 1000;
+  // check if time stamp is null
+  if (user.freeGameTimeStamp === null) {
+    return true;
+  }
+
+  const twentyFourHoursInMillis = 24 * 60 * 60; // 24 hours in milliseconds
+  const currentTime = Date.now() / 1000; // Current time in milliseconds since Unix epoch
+
+  // Calculate the difference between current time and provided timestamp
+  const timeDifference = currentTime - user.freeGameTimeStamp;
+
+  // Check if the time difference is greater than or equal to 24 hours
+  console.log("HERE!!");
+  console.log(timeDifference);
+  console.log(twentyFourHoursInMillis);
+  return timeDifference >= twentyFourHoursInMillis;
 };
 
 export const hasMoreFreeGames = (user: User) => {

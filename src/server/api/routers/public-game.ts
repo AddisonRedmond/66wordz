@@ -9,11 +9,37 @@ import {
   createNewSurivivalLobby,
   joinSurivivalLobby,
 } from "~/utils/survival/surivival";
+import { isPremiumUser, hasBeen24Hours, hasMoreFreeGames } from "~/utils/game-limit";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // check if player has reached the max number of games for the day
+
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+      // check if user is premium user, if they are, proceed
+      if (isPremiumUser(user!) === false) {
+        if (hasBeen24Hours(user!)) {
+          console.log("24 hours has passed")
+          // reset the timestamp to today at 12:00am and reset the free game count to 1
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+              freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
+              freeGameCount: 1,
+            },
+          });
+        } else if (hasMoreFreeGames(user!)) {
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: { freeGameCount: user!.freeGameCount + 1 },
+          });
+        } else {
+          return "User has reached the maximum number of free games for the day";
+        }
+      }
 
       // check if player is already part of a game
       const clientGameType = input.gameMode as GameType;

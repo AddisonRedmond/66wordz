@@ -2,13 +2,10 @@ import { GetServerSideProps, NextPage } from "next/types";
 import Header from "~/components/hearder";
 import { api } from "~/utils/api";
 import Image from "next/image";
-import { AuthContext, authRequired } from "~/utils/authRequired";
 import toast, { Toaster } from "react-hot-toast";
 import { getSession } from "next-auth/react";
-import { db } from "~/server/db";
 
-const Profile: NextPage = (props: any) => {
-  console.log(props);
+const Profile: NextPage = () => {
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
   const test = api.upgrade.reactiveateSubscription.useMutation();
@@ -87,11 +84,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-
   return {
-    props: {
-      user,
-    },
+    props: {},
   };
 };
