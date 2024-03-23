@@ -18,9 +18,6 @@ export const hasBeen24Hours = (user: User) => {
   const timeDifference = currentTime - user.freeGameTimeStamp;
 
   // Check if the time difference is greater than or equal to 24 hours
-  console.log("HERE!!");
-  console.log(timeDifference);
-  console.log(twentyFourHoursInMillis);
   return timeDifference >= twentyFourHoursInMillis;
 };
 
@@ -34,4 +31,12 @@ export const hasMoreFreeGames = (user: User) => {
   // if so, reset the timestamp to today at 12:00am
 
   // if its not, check free game count
+};
+
+export const getRemaningGames = (user: User) => {
+  console.log(user);
+  if (hasBeen24Hours(user)) {
+    return 3;
+  }
+  return 3 - user.freeGameCount;
 };

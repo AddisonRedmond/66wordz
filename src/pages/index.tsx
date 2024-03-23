@@ -13,6 +13,7 @@ import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
+import { getRemaningGames } from "~/utils/game-limit";
 const Home = () => {
   const { data: session } = useSession();
   const quickPlay = api.public.joinPublicGame.useMutation();
@@ -20,7 +21,8 @@ const Home = () => {
   const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
-  const user = api.getUser.isPremiumUser.useQuery();
+  const premiumUser = api.getUser.isPremiumUser.useQuery();
+  const user = api.getUser.getUser.useQuery();
 
   const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
@@ -93,7 +95,10 @@ const Home = () => {
         {lobby.data?.id ? (
           handleStartGame()
         ) : (
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-col flex-wrap justify-center gap-2 text-center">
+            {user.isSuccess && (
+              <p>{getRemaningGames(user.data)} games remaning</p>
+            )}
             {gameDescriptionOpen && (
               <EliminationModal>
                 <Rules
@@ -126,7 +131,7 @@ const Home = () => {
                 rules={survivalRules}
                 setIsCreateLobby={setIsCreateLobby}
                 setIsJoinLobby={setIsJoinLobby}
-                isPremiumUser={user.data?.isPremiumUser}
+                isPremiumUser={premiumUser.data?.isPremiumUser}
               />
             )}
           </div>

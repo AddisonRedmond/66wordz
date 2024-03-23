@@ -9,7 +9,11 @@ import {
   createNewSurivivalLobby,
   joinSurivivalLobby,
 } from "~/utils/survival/surivival";
-import { isPremiumUser, hasBeen24Hours, hasMoreFreeGames } from "~/utils/game-limit";
+import {
+  isPremiumUser,
+  hasBeen24Hours,
+  hasMoreFreeGames,
+} from "~/utils/game-limit";
 export const publicGameRouter = createTRPCRouter({
   joinPublicGame: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
@@ -22,7 +26,6 @@ export const publicGameRouter = createTRPCRouter({
       // check if user is premium user, if they are, proceed
       if (isPremiumUser(user!) === false) {
         if (hasBeen24Hours(user!)) {
-          console.log("24 hours has passed")
           // reset the timestamp to today at 12:00am and reset the free game count to 1
           await ctx.db.user.update({
             where: { id: ctx.session.user.id },
@@ -66,7 +69,7 @@ export const publicGameRouter = createTRPCRouter({
       // });
 
       // if(user!.currentPeriodEnd === null || user!.currentPeriodEnd > Date.now() / 1000) {
-        
+
       // }
 
       // check data base for a lobby that has < 67 players and hasn't started yet
