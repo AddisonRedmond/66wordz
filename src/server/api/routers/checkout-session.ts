@@ -18,7 +18,7 @@ export const checkoutRouter = createTRPCRouter({
       },
       line_items: [
         {
-          price: "price_1OudZ2KOAAy2nRAZDErp78vY", // Use the Price ID of your recurring price
+          price: env.STRIPE_GOLD_MONTHLY_PRICE_ID, // Use the Price ID of your recurring price
           quantity: 1,
         },
       ],
@@ -60,7 +60,10 @@ export const checkoutRouter = createTRPCRouter({
       },
     );
 
-    await ctx.db.user.update({ where: { id: ctx.session.user.id }, data: { cancelAtPeriodEnd: true } });
+    await ctx.db.user.update({
+      where: { id: ctx.session.user.id },
+      data: { cancelAtPeriodEnd: true },
+    });
 
     return { successfullyCancelled: subscription.cancel_at_period_end };
   }),
