@@ -1,6 +1,5 @@
 import { deleteLobby, db, startGame } from "~/utils/firebase/firebase";
 import { ref, get, remove, update } from "firebase/database";
-
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { env } from "~/env.mjs";

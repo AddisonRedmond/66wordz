@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import EliminationModal from "../../elimination/elimination-modal";
+import Modal from "~/components/modal";
 import { api } from "~/utils/api";
 import DesktopNavbar from "./desktop";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {showModal && (
-        <EliminationModal>
+        <Modal>
           <>
             {submitIssue.isSuccess && (
               <div className="rounded-md bg-green-500 p-2 text-white">
@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
               </div>
             )}
           </>
-        </EliminationModal>
+        </Modal>
       )}
       <AnimatePresence>
         {isMobile ? (

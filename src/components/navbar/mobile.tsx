@@ -1,7 +1,6 @@
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import burger from "../../../public/burger.svg";
-import bug from "../../../public/bug.svg";
 import profile from "../../../public/profile.png";
 import signout from "../../../public/signout.svg";
 import home from "../../../public/home.png";
@@ -60,11 +59,10 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
                 </div>
               </Link>
 
-              {/* <div className="flex justify-between rounded-md bg-neutral-700 px-2 py-1">
-                <p>Report issue</p>
-                <Image height={28} width={28} src={bug} alt="bug icon" />
-              </div> */}
-              <div onClick={()=> signOut()} className="flex justify-between rounded-md bg-neutral-700 px-2 py-1">
+              <div
+                onClick={() => signOut()}
+                className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
+              >
                 <p>Log out</p>
                 <Image
                   height={28}
@@ -79,7 +77,9 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
       </AnimatePresence>
       <div className="flex w-screen justify-between px-8">
         <div className="cursor-pointer text-4xl font-semibold text-white">
-          <p className="mix-blend-difference">66</p>
+          <p className="mix-blend-difference">
+            <Link href="/">66</Link>
+          </p>
         </div>
         <div>
           <Image

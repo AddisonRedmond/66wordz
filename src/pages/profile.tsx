@@ -29,7 +29,7 @@ const Profile: NextPage = () => {
   return (
     <div className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly">
       <Toaster />
-      <Header isLoading={false} desktopOnly={true} />
+      <Header isLoading={false} desktopOnly={false} />
       <div className="font-medium">
         {user.data?.image && (
           <Image

@@ -32,7 +32,9 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       className="absolute top-0 flex h-14 w-screen items-center justify-between px-8"
     >
       <div className="cursor-pointer text-4xl font-semibold">
-        <p>66</p>
+        <Link href="/">
+          <p>66</p>
+        </Link>
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         {!props.isPremiumUser && (
