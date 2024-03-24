@@ -1,6 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { publicGameRouter } from "./routers/public-game";
-import { eliminationRouter } from "./routers/elimination";
 import { reportIssueRouter } from "./routers/issue-report";
 import { createLobbyRouter } from "./routers/create-lobby";
 import { checkoutRouter } from "./routers/checkout-session";
@@ -12,7 +11,6 @@ import { getUserRouter } from "./routers/get-user";
  */
 export const appRouter = createTRPCRouter({
   public: publicGameRouter,
-  elimination: eliminationRouter,
   reportIssue: reportIssueRouter,
   createGame: createLobbyRouter,
   upgrade: checkoutRouter,

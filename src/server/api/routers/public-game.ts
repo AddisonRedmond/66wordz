@@ -172,32 +172,6 @@ export const publicGameRouter = createTRPCRouter({
       // if there is NOT create a new row in the DB and add the user to template to the firebase lobby
     }),
 
-  endGame: protectedProcedure.mutation(async ({ ctx }) => {
-    const user = ctx.session.user.id;
-    const lobbyId = await ctx.db.players.delete({
-      where: { userId: user },
-    });
-    const playerCount = await ctx.db.players.count({
-      where: {
-        lobbyId: lobbyId.lobbyId,
-      },
-    });
-
-    return playerCount;
-  }),
-  manualStart: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.lobby.update({
-        where: {
-          id: input,
-        },
-        data: {
-          started: true,
-        },
-      });
-    }),
-
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
     const user = ctx.session.user.id;
     const { lobbyId } = await ctx.db.players.delete({
