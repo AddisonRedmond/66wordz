@@ -34,7 +34,6 @@ export const hasMoreFreeGames = (user: User) => {
 };
 
 export const getRemaningGames = (user: User) => {
-  console.log(user);
   if (hasBeen24Hours(user)) {
     return 3;
   }

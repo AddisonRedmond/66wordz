@@ -147,30 +147,13 @@ export const createLobbyRouter = createTRPCRouter({
             where: { id: ctx.session.user.id },
             data: {
               freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
-              freeGameCount: 1,
+              freeGameCount: 0,
             },
           });
-        } else if (hasMoreFreeGames(user!)) {
-          await ctx.db.user.update({
-            where: { id: ctx.session.user.id },
-            data: { freeGameCount: user!.freeGameCount + 1 },
-          });
-        } else {
+        } else if (hasMoreFreeGames(user!) === false) {
           return "User has reached the maximum number of free games for the day";
         }
       }
-
-      // if not premium user, check if time stamp is greater than 24 hours old,
-
-      // if it is reset the timestamp to today at 12:00am and reset the free game count to 1
-
-      // if not premium user, and time stamp is not greater than 24 hours
-      //  check to see if user has exceeded or equal the max number of games for the day
-
-      if (hasMoreFreeGames(user!)) {
-      }
-
-      // if they haven't proceed
 
       // check if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({
@@ -238,7 +221,6 @@ export const createLobbyRouter = createTRPCRouter({
 
   startGame: protectedProcedure.mutation(async ({ ctx }) => {
     // change lobby.started to true
-
     const lobby = await ctx.db.players.findUnique({
       where: { userId: ctx.session.user.id },
     });

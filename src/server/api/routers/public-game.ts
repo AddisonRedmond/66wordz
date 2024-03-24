@@ -31,15 +31,10 @@ export const publicGameRouter = createTRPCRouter({
             where: { id: ctx.session.user.id },
             data: {
               freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
-              freeGameCount: 1,
+              freeGameCount: 0,
             },
           });
-        } else if (hasMoreFreeGames(user!)) {
-          await ctx.db.user.update({
-            where: { id: ctx.session.user.id },
-            data: { freeGameCount: user!.freeGameCount + 1 },
-          });
-        } else {
+        } else if (hasMoreFreeGames(user!) === false) {
           return "User has reached the maximum number of free games for the day";
         }
       }

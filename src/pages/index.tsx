@@ -13,7 +13,7 @@ import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
-import { getRemaningGames } from "~/utils/game-limit";
+import { getRemaningGames, isPremiumUser } from "~/utils/game-limit";
 const Home = () => {
   const { data: session } = useSession();
   const quickPlay = api.public.joinPublicGame.useMutation();
@@ -95,9 +95,9 @@ const Home = () => {
         {lobby.data?.id ? (
           handleStartGame()
         ) : (
-          <div className="flex flex-col flex-wrap justify-center gap-2 text-center">
-            {user.isSuccess && user.data && (
-              <p>{getRemaningGames(user.data)} games remaning</p>
+          <div className="flex flex-col flex-wrap justify-center gap-2 items-center">
+            {user.isSuccess && user.data && !premiumUser.data?.isPremiumUser &&  (
+              <p className="text-lg font-semibold">{getRemaningGames(user.data)} free games remaning</p>
             )}
             {gameDescriptionOpen && (
               <EliminationModal>

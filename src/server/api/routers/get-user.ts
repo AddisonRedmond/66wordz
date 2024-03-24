@@ -8,12 +8,10 @@ export const getUserRouter = createTRPCRouter({
       where: { id: userId },
     });
 
-    if (userData.currentPeriodEnd === null)
-      return { isPremiumUser: false };
+    if (userData.currentPeriodEnd === null) return { isPremiumUser: false };
 
     return {
-      isPremiumUser:
-      userData.currentPeriodEnd > Date.now() / 1000,
+      isPremiumUser: userData.currentPeriodEnd > Date.now() / 1000,
     };
   }),
   getUser: protectedProcedure.query(async ({ ctx }) => {
@@ -21,5 +19,14 @@ export const getUserRouter = createTRPCRouter({
     const userData = await ctx.db.user.findUnique({ where: { id: userId } });
 
     return userData;
+  }),
+
+  incrementFreeGameCount: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    await ctx.db.user.update({
+      where: { id: userId },
+      data: { freeGameCount: { increment: 1 } },
+    });
+    return true;
   }),
 });
