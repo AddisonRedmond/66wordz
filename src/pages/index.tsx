@@ -45,6 +45,7 @@ const Home = () => {
   const exitMatch: () => void = async () => {
     await lobbyCleanUp.mutateAsync();
     lobby.remove();
+    user.refetch();
     // delete user from lobby db
     // delete user from firebase db
   };
