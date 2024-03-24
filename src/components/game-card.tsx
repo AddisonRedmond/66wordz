@@ -14,7 +14,7 @@ type GameCardProps = {
   rules: { [header: string]: string[] };
   setIsCreateLobby: (isCreateLobby: boolean) => void;
   setIsJoinLobby: (isJoinLobby: boolean) => void;
-  isPremiumUser?: Boolean;
+  isPremiumUser?: boolean;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {

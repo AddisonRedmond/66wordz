@@ -8,7 +8,6 @@ import { getSession } from "next-auth/react";
 const Profile: NextPage = () => {
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
-  const test = api.upgrade.reactiveateSubscription.useMutation();
 
   const handleCancelSubscription = async () => {
     const cancelled = await cancelSubscription.mutateAsync();
@@ -73,7 +72,7 @@ const Profile: NextPage = () => {
 
 export default Profile;
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
   if (!session) {
     return {

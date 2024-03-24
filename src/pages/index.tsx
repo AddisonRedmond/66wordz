@@ -13,7 +13,7 @@ import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
-import { getRemaningGames, isPremiumUser } from "~/utils/game-limit";
+import { getRemaningGames } from "~/utils/game-limit";
 const Home = () => {
   const { data: session } = useSession();
   const quickPlay = api.public.joinPublicGame.useMutation();

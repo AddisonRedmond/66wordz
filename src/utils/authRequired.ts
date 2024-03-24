@@ -14,7 +14,6 @@ export type AuthContext = {
 export const authRequired = async (
   context: AuthContext,
   isLogin: boolean,
-  userData?: any,
 ) => {
   const session = await getSession(context);
 
