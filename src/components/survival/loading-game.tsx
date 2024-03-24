@@ -31,7 +31,11 @@ const LoadingCustomGame = (
         />
       </div>
 
-      <p className="text-lg">Waiting for players . . .</p>
+      <p className="text-lg">
+        {props.playerCount - 1}{" "}
+        {props.playerCount - 1 === 1 ? "player " : "players "}
+        in lobby
+      </p>
       {props.isGameOwner && (
         <div className="flex flex-col">
           <button

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Dispatch, SetStateAction, useState } from "react";
 import { GameType } from "@prisma/client";
 
@@ -20,7 +20,6 @@ const GameControls = (props: GameControlProps) => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-
       <div className="relative">
         <button
           onClick={() => {
@@ -32,7 +31,7 @@ const GameControls = (props: GameControlProps) => {
         </button>
         <AnimatePresence>
           {menuIsOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -30, height: 10 }}
               animate={{
                 opacity: 1,
@@ -56,7 +55,7 @@ const GameControls = (props: GameControlProps) => {
                   </p>
                 );
               })}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

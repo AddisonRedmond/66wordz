@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type TileProps = {
   letters: string;
@@ -47,7 +47,7 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
   ];
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0, opacity: 0 }}
       exit={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -63,7 +63,7 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
           >
             {alphabet.map((alphabetLetter: string, index: number) => {
               return (
-                <motion.p
+                <m.p
                   className="flex h-full items-center justify-center"
                   animate={{
                     y: `-${alphabet.indexOf(letter) * 7}vh`,
@@ -77,13 +77,13 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
                   key={`${index}letter`}
                 >
                   {alphabetLetter}
-                </motion.p>
+                </m.p>
               );
             })}
           </div>
         );
       })}
-    </motion.div>
+    </m.div>
   );
 };
 

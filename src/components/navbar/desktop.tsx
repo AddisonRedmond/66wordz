@@ -1,17 +1,31 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
-
+import { api } from "~/utils/api";
+import getStripe from "~/utils/get-stripejs";
+import Link from "next/link";
 type DesktopNavbarProps = {
   issueModalIsOpen: (isOpen: boolean) => void;
+  isPremiumUser: boolean | undefined;
 };
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
+  const upgrade = api.upgrade.createCheckout.useMutation();
+
+  const handleUpgrade = async () => {
+    const checkoutURL = await upgrade.mutateAsync();
+    const stripe = await getStripe();
+    console.log(checkoutURL);
+    if (stripe !== null && checkoutURL) {
+      await stripe.redirectToCheckout({ sessionId: checkoutURL });
+    }
+  };
+
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
@@ -21,7 +35,22 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         <p>66</p>
       </div>
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
-        {/* <p className="cursor-pointer rounded-md p-1">Game Stats</p> */}
+        {!props.isPremiumUser && (
+          <button
+            onClick={() => handleUpgrade()}
+            className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
+          >
+            Upgrade
+          </button>
+        )}
+
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/">Home</Link>
+        </button>
+        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/profile">Profile</Link>
+        </button>
+
         <button
           onClick={() => props.issueModalIsOpen(true)}
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
@@ -36,7 +65,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           <Image src={signout} alt="signout icon" height={25} />
         </button>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

@@ -3,7 +3,7 @@
  * for Docker builds.
  */
 await import("./src/env.mjs");
-import bundleAnalyzer from '@next/bundle-analyzer';
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -18,12 +18,13 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [{ hostname: "lh3.googleusercontent.com" }],
+  },
 };
 
 const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: process.env.ANALYZE === "true",
 });
-
-
 
 export default withBundleAnalyzer(config);

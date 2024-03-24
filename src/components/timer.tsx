@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 
@@ -32,7 +32,7 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className={`${
@@ -45,7 +45,7 @@ const Timer: React.FC<TimerProps> = ({
           </div>
         )}
         <div className="h-1 w-[100%] bg-white">
-          <motion.div
+          <m.div
             initial={{ width: "100%" }}
             animate={{ width: `${toTotalSeconds(minutes, seconds)}%` }}
             transition={{ duration: 1, ease: "linear" }}
@@ -54,9 +54,9 @@ const Timer: React.FC<TimerProps> = ({
               height: opponent ? "100% " : "10px",
               backgroundColor: "green",
             }}
-          ></motion.div>
+          ></m.div>
         </div>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 };

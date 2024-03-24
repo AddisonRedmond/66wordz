@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type ModalProps = {
   placement?: number;
@@ -14,7 +14,7 @@ const Modal: React.FC<ModalProps> = ({
   exitMatch,
 }: ModalProps) => {
   return (
-    <motion.dialog
+    <m.dialog
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
@@ -48,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({
           </button>
         </div>
       </div>
-    </motion.dialog>
+    </m.dialog>
   );
 };
 

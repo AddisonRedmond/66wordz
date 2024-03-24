@@ -1,6 +1,6 @@
 import Loading from "./loading";
 import Tile from "./tile";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type HeaderProps = {
   isLoading: boolean;
@@ -11,15 +11,15 @@ const Header: React.FC<HeaderProps> = ({ isLoading, desktopOnly }: HeaderProps) 
   return (
     <>
       {isLoading ? (
-        <motion.div
+        <m.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
         >
           <Loading />
-        </motion.div>
+        </m.div>
       ) : (
-        <motion.div
+        <m.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ isLoading, desktopOnly }: HeaderProps) 
           <div className="animate-bounce rounded-full bg-black px-2 text-xl font-semibold text-white">
             <p className="">Beta</p>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </>
   );

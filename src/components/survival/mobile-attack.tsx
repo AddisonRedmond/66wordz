@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   CircularProgressbarWithChildren,
   buildStyles,
@@ -20,13 +20,13 @@ const MobileAttack: React.FC<MobileAttackProps> = (
 ) => {
 
   return (
-    <motion.div
+    <m.div
       className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center overflow-auto bg-gray-400 bg-opacity-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <motion.dialog
+      <m.dialog
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0 }}
@@ -37,7 +37,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
           {Object.keys(props.players).map((player: string) => {
             if (player !== props.userId) {
               return (
-                <motion.div
+                <m.div
                   key={player}
                   className={`aspect-square h-fit w-1/5 rounded-full duration-150 ease-in-out ${props.autoAttack === player && "bg-violet-300"}`}
                   style={{ position: "relative" }}
@@ -92,7 +92,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                       </CircularProgressbarWithChildren>
                     </div>
                   </CircularProgressbarWithChildren>
-                </motion.div>
+                </m.div>
               );
             }
           })}
@@ -103,8 +103,8 @@ const MobileAttack: React.FC<MobileAttackProps> = (
         >
           Close
         </button>
-      </motion.dialog>
-    </motion.div>
+      </m.dialog>
+    </m.div>
   );
 };
 

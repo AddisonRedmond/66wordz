@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Points from "./points";
 
 type OpponentProps = {
@@ -15,7 +15,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
     return opponentPoints >= props.targetPoints;
   };
   return (
-    <motion.div
+    <m.div
       className="rounded-md border-2 border-zinc-400 p-2"
       initial={{ scale: 0 }}
       animate={{
@@ -32,17 +32,17 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
       <AnimatePresence>
         <div className="mt-2 flex flex-row justify-center gap-1">
           {isQualified() ? (
-            <motion.p
+            <m.p
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
             >
               QUALIFIED
-            </motion.p>
+            </m.p>
           ) : (
             Array.from({ length: props.wordLength }).map((_, index: number) => {
               return (
-                <motion.div
+                <m.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0 }}
@@ -52,13 +52,13 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                       ? "bg-[#00DFA2]"
                       : "bg-stone-500"
                   }`}
-                ></motion.div>
+                ></m.div>
               );
             })
           )}
         </div>
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };
 

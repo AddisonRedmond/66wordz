@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 type JoinLobbyProps = {
@@ -16,7 +16,7 @@ const JoinLobby: React.FC<JoinLobbyProps> = (props: JoinLobbyProps) => {
   }, [props.errorMessage]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
@@ -61,7 +61,7 @@ const JoinLobby: React.FC<JoinLobbyProps> = (props: JoinLobbyProps) => {
         Cancel
       </button>
       <Toaster />
-    </motion.div>
+    </m.div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { motion, useAnimate } from "framer-motion";
+import { m, useAnimate } from "framer-motion";
 import { useEffect } from "react";
 type StatusBarProps = {
   statusValue?: number;
@@ -22,14 +22,14 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   }, [props.statusValue]);
   return (
     <div>
-      <motion.div
+      <m.div
         ref={scopeRed}
         className={`absolute h-2 rounded-full bg-red-600`}
-      ></motion.div>
-      <motion.div
+      ></m.div>
+      <m.div
         ref={scope}
         className={`absolute h-2 rounded-full ${props.color}`}
-      ></motion.div>
+      ></m.div>
     </div>
   );
 };

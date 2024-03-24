@@ -6,22 +6,27 @@ import { db } from "~/utils/firebase/firebase";
 import { getInitials } from "~/utils/survival/surivival";
 import { handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
+import {
+  hasBeen24Hours,
+  hasMoreFreeGames,
+  isPremiumUser,
+} from "~/utils/game-limit";
 
 const MAX_PLAYERS = 67;
 const ATTACK_VALUE = 90;
 const TYPE_VALUE = 70;
 
 type PlayerDataObject = {
-  health: number,
-  shield: number,
-  eliminated: boolean,
-  initials: string,
+  health: number;
+  shield: number;
+  eliminated: boolean;
+  initials: string;
   word: {
-    word: string,
-    type: string,
-    value: number,
-    attack: number,
-  },
+    word: string;
+    type: string;
+    value: number;
+    attack: number;
+  };
 };
 
 export const createLobbyRouter = createTRPCRouter({
@@ -34,6 +39,19 @@ export const createLobbyRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // check if player has reached the max number of games for the day
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+      const isPremiumUser = () => {
+        if (user?.currentPeriodEnd === null) return false;
+        return user!.currentPeriodEnd > Date.now() / 1000;
+      };
+
+      if (!isPremiumUser()) {
+        return "User is not a premium user";
+      }
+
       const { lobbyName, passKey, enableBots } = input;
       const uid = new ShortUniqueId({ length: 6 });
       const lobbyId = uid.rnd();
@@ -118,6 +136,25 @@ export const createLobbyRouter = createTRPCRouter({
   joinLobby: protectedProcedure
     .input(z.object({ lobbyId: z.string(), passKey: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+      // check if user is premium user, if they are, proceed
+      if (isPremiumUser(user!) === false) {
+        if (hasBeen24Hours(user!)) {
+          // reset the timestamp to today at 12:00am and reset the free game count to 1
+          await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+              freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
+              freeGameCount: 0,
+            },
+          });
+        } else if (hasMoreFreeGames(user!) === false) {
+          return "User has reached the maximum number of free games for the day";
+        }
+      }
+
       // check if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({
         where: { userId: ctx.session.user.id },
@@ -184,7 +221,6 @@ export const createLobbyRouter = createTRPCRouter({
 
   startGame: protectedProcedure.mutation(async ({ ctx }) => {
     // change lobby.started to true
-
     const lobby = await ctx.db.players.findUnique({
       where: { userId: ctx.session.user.id },
     });

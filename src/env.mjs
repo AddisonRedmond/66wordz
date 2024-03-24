@@ -28,10 +28,13 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
+    STRIPE_GOLD_MONTHLY_PRICE_ID: z.string().min(1),
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     BOT_SERVER: z.string(),
+    STRIPE_SECRET_KEY: z.string().min(1),
+    STRIPE_WEBHOOK_SECRET: z.string().min(1),
   },
 
   /**
@@ -48,6 +51,7 @@ export const env = createEnv({
     NEXT_PUBLIC_MESSAGING_SENDER_ID: z.string().min(1),
     NEXT_PUBLIC_APP_ID: z.string().min(1),
     NEXT_PUBLIC_MEASUREMENT_ID: z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
   },
 
   /**
@@ -63,6 +67,10 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     BOT_SERVER: process.env.BOT_SERVER,
 
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    STRIPE_GOLD_MONTHLY_PRICE_ID: process.env.STRIPE_GOLD_MONTHLY_PRICE_ID,
+
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NEXT_PUBLIC_AUTH_DOMAIN: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
     NEXT_PUBLIC_FIREBASE_DATABASE_URL:
@@ -73,6 +81,8 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
     NEXT_PUBLIC_MEASUREMENT_ID: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

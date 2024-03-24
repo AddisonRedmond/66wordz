@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 type OpponentModalProps = {
   children: JSX.Element | JSX.Element[];
@@ -11,13 +11,13 @@ const OpponentModal: React.FC<OpponentModalProps> = (
   return (
     <AnimatePresence>
       {props.isOpen && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center overflow-auto bg-gray-400 bg-opacity-50"
         >
-          <motion.dialog
+          <m.dialog
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
@@ -25,8 +25,8 @@ const OpponentModal: React.FC<OpponentModalProps> = (
             className="relative z-50 m-auto  rounded-md py-2"
           >
             {props.children}
-          </motion.dialog>
-        </motion.div>
+          </m.dialog>
+        </m.div>
       )}
     </AnimatePresence>
   );

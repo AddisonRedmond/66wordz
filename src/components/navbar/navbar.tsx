@@ -5,6 +5,7 @@ import DesktopNavbar from "./desktop";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobielNavbar from "./mobile";
 import { AnimatePresence } from "framer-motion";
+
 const Navbar: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [issueType, setIssueType] = useState<
@@ -15,6 +16,9 @@ const Navbar: React.FC = () => {
     useState<boolean>(false);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
   const submitIssue = api.reportIssue.reportIssue.useMutation();
+
+  const isPremiumUser = api.getUser.isPremiumUser.useQuery();
+
   const isMobile = useIsMobile();
 
   const handleUpdateMessage = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -81,7 +85,7 @@ const Navbar: React.FC = () => {
             {!submitIssue.data && !submitIssue.isError && (
               <div className="px-2">
                 <p className=" text-2xl font-semibold">Report a Bug or Issue</p>
-  
+
                 <div className="mt-3">
                   <select
                     onChange={(e) => handleUpdateType(e)}
@@ -99,7 +103,7 @@ const Navbar: React.FC = () => {
                   <textarea
                     value={message}
                     onChange={(e) => handleUpdateMessage(e)}
-                    className=" max-h-44 h-32 w-full rounded-sm border-2 border-gray-400 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className=" h-32 max-h-44 w-full rounded-sm border-2 border-gray-400 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600"
                     placeholder={
                       messageNotLongEnough
                         ? "Summay isn't log enough"
@@ -132,7 +136,10 @@ const Navbar: React.FC = () => {
         {isMobile ? (
           <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
         ) : (
-          <DesktopNavbar issueModalIsOpen={setShowModal} />
+          <DesktopNavbar
+            issueModalIsOpen={setShowModal}
+            isPremiumUser={isPremiumUser.data?.isPremiumUser}
+          />
         )}
       </AnimatePresence>
     </>

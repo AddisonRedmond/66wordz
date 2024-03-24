@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import burger from "../../../public/burger.svg";
 import signout from "../../../public/signout.svg";
@@ -13,7 +13,7 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
   props: MobileNavbarProps,
 ) => {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -23,7 +23,7 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
     >
       <AnimatePresence>
         {props.menuIsOpen && (
-          <motion.div
+          <m.div
             transition={{ duration: 0.3, type: "just" }}
             initial={{ opacity: 1, y: "-10vh" }}
             animate={{ opacity: 1, y: 0 }}
@@ -44,7 +44,7 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
                 alt="close icon"
               />
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
       <div className="flex w-screen justify-between px-8">
@@ -60,7 +60,7 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
           />
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };
 

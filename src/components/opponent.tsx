@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { handleColor } from "~/utils/game";
 import Timer from "./timer";
 
@@ -22,7 +22,7 @@ const Opponent: React.FC<OpponentProps> = ({
   tempTime.setSeconds(tempTime.getSeconds() + 100);
   const opponentSizePercentage = 100 / Math.sqrt(numOfOpponents); // Using the square root for both width and height
   return (
-    <motion.div
+    <m.div
       initial={{ scale: 0 }}
       animate={{
         scale: 1,
@@ -40,7 +40,7 @@ const Opponent: React.FC<OpponentProps> = ({
               <>
                 {Array.from({ length: 5 }).map((_, tileIndex: number) => {
                   return (
-                    <motion.div
+                    <m.div
                       initial={{ backgroundColor: "#F5F5F4" }}
                       animate={
                         guesses
@@ -55,7 +55,7 @@ const Opponent: React.FC<OpponentProps> = ({
                       }
                       key={`${tileIndex}${index}`}
                       className="aspect-square w-1/5 bg-black"
-                    ></motion.div>
+                    ></m.div>
                   );
                 })}
               </>
@@ -63,7 +63,7 @@ const Opponent: React.FC<OpponentProps> = ({
           </div>
         );
       })}
-    </motion.div>
+    </m.div>
   );
 };
 

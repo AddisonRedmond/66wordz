@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type PointsProps = {
   pointsTarget: number;
@@ -15,12 +15,12 @@ const Points: React.FC<PointsProps> = (props: PointsProps) => {
       {props.showPoints && (
         <p className="text-center font-semibold">{`${props.totalPoints} out of ${props.pointsTarget} points`}</p>
       )}
-      <motion.div
+      <m.div
         animate={{ width: `${CalcualtePointsPrecentage()}%`, maxWidth: "100%" }}
         className={`${
           props.showPoints ? "h-1 sm:h-3" : "h-1"
         } rounded-full bg-green-600`}
-      ></motion.div>
+      ></m.div>
     </div>
   );
 };

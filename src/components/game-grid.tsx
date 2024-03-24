@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useAnimate } from "framer-motion";
+import { AnimatePresence, m, useAnimate } from "framer-motion";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { handleColor } from "~/utils/game";
 
@@ -34,7 +34,7 @@ const WordTile: React.FC<WordTileProps> = ({
   match,
 }: WordTileProps) => {
   return (
-    <motion.div
+    <m.div
       initial={{ backgroundColor: "#F5F5F4" }}
       animate={
         match
@@ -45,17 +45,17 @@ const WordTile: React.FC<WordTileProps> = ({
     >
       <AnimatePresence>
         {letter && (
-          <motion.p
+          <m.p
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             transition={{ duration: 0.07 }}
           >
             {letter}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -71,7 +71,7 @@ const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
     props.setSpellCheck(false);
   }, [props.spellCheck]);
   return (
-    <motion.div ref={scope} className="flex gap-1">
+    <m.div ref={scope} className="flex gap-1">
       {Array.from({ length: 5 }).map((_, index: number) => {
         return (
           <WordTile
@@ -83,7 +83,7 @@ const WordRow: React.FC<WordRowProps> = (props: WordRowProps) => {
           />
         );
       })}
-    </motion.div>
+    </m.div>
   );
 };
 

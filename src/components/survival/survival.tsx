@@ -46,6 +46,7 @@ const Survival: React.FC<SurvivalProps> = ({
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
 
   const startGame = api.createGame.startGame.useMutation();
+  const incrementGamesPlayed = api.getUser.incrementFreeGameCount.useMutation();
 
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
@@ -79,6 +80,13 @@ const Survival: React.FC<SurvivalProps> = ({
       animate(scope.current, control, { duration: 1.5 });
     }
   }, [correctGuess]);
+
+  useEffect(() => {
+    if (gameData?.lobbyData.gameStarted === true) {
+      // increment games played for user
+      incrementGamesPlayed.mutate();
+    }
+  }, [gameData?.lobbyData.gameStarted]);
 
   const targetOpponent = (playerId: string) => {
     if (
@@ -211,12 +219,7 @@ const Survival: React.FC<SurvivalProps> = ({
             />
           )}
         </AnimatePresence>
-        <button
-          onClick={() => exitMatch()}
-          className="duration absolute right-20 top-2 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-        >
-          QUIT
-        </button>
+
         {/* div for game info */}
 
         {gameData?.lobbyData.gameStarted && (
@@ -294,15 +297,23 @@ const Survival: React.FC<SurvivalProps> = ({
             {/* nester ternary check to see if game started, if it hasn't then load the timer, 
           if it has then check if the player has been eliminate, if they haven't then load the game components */}
             {!gameData?.lobbyData.gameStarted ? (
-              <LoadingGame
-                expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
-                gameOwner={gameData.lobbyData.owner}
-                isGameOwner={gameData.lobbyData.owner === userId}
-                startGame={ownerStart}
-                playerCount={Object.keys(gameData.players).length}
-                exitMatch={exitMatch}
-                lobbyId={lobbyId}
-              />
+              <>
+                <button
+                  onClick={() => exitMatch()}
+                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+                >
+                  QUIT
+                </button>
+                <LoadingGame
+                  expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
+                  gameOwner={gameData.lobbyData.owner}
+                  isGameOwner={gameData.lobbyData.owner === userId}
+                  startGame={ownerStart}
+                  playerCount={Object.keys(gameData.players).length}
+                  exitMatch={exitMatch}
+                  lobbyId={lobbyId}
+                />
+              </>
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />
             ) : (
@@ -358,6 +369,12 @@ const Survival: React.FC<SurvivalProps> = ({
                   handleKeyBoardLogic={handleKeyBoardLogic}
                   matches={playerData?.word.matches}
                 />
+                <button
+                  onClick={() => exitMatch()}
+                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+                >
+                  QUIT
+                </button>
               </div>
             )}
           </div>
