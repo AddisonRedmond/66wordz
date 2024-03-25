@@ -18,7 +18,7 @@ export default function Login() {
           <Tile letters={"66"} />
           <Tile letters="WORDZ" />
         </div>
-        <div className="flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
+        <div className="relative flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <div className="flex items-center gap-10">
             <button
               onClick={() => signIn()}
@@ -26,6 +26,11 @@ export default function Login() {
             >
               SIGN IN
             </button>
+          </div>
+          <div className=" text-zinc-600 absolute bottom-2 flex w-full justify-around">
+            <p>Terms of Service</p>
+            <p>Privacy Policy</p>
+            <p>Refund Policy</p>
           </div>
         </div>
       </div>

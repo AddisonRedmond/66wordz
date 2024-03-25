@@ -1,8 +1,9 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
+import { getSession } from "next-auth/react";
 
 const Collapse = () => {
   return (
-    <div className="rounded-md border-4 border-black w-96 h-14">
+    <div className="h-14 w-96 rounded-md border-4 border-black">
       <p>Privacy</p>
     </div>
   );
@@ -26,3 +27,19 @@ const Policies: NextPage = () => {
 };
 
 export default Policies;
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const session = await getSession({ req });
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
