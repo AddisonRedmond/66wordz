@@ -28,9 +28,10 @@ export default function Login() {
               SIGN IN
             </button>
           </div>
-          <div className=" text-zinc-600 absolute bottom-2 flex w-full justify-around">
+          <div className=" absolute bottom-2 flex w-full justify-around text-zinc-600">
             <Link href="terms-of-service">Terms of Service</Link>
-            <p>Privacy Policy</p>
+            <Link href="privacy">Privacy Policy</Link>
+
             <p>Refund Policy</p>
           </div>
         </div>

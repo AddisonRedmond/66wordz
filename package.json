@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@prisma/client": "^5.11.0",
+    "@tailwindcss/typography": "^0.5.10",
     "@types/bad-words": "^3.0.3",
     "@types/cors": "^2.8.17",
     "@types/eslint": "^8.56.5",
