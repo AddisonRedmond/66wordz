@@ -1,3 +1,4 @@
+import { GameType } from "@prisma/client";
 import { m } from "framer-motion";
 import { useState } from "react";
 
@@ -8,6 +9,7 @@ type CreateLobbyProps = {
     enableBots: boolean,
     passKey?: string | undefined,
   ) => void;
+  gameType: GameType;
 };
 
 const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
@@ -36,7 +38,13 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
       exit={{ scale: 0 }}
       className="flex flex-col gap-2"
     >
-      <h2 className="text-xl font-semibold">Create Survival Lobby</h2>
+      <h2 className="text-xl font-semibold">
+        Create{" "}
+        <span className="text-xl font-bold text-zinc-600">
+          {props.gameType}
+        </span>{" "}
+        Lobby
+      </h2>
       <div className="flex flex-col">
         <label htmlFor="lobby-name" className="font-semibold">
           Lobby Name

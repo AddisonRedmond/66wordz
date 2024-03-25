@@ -60,6 +60,11 @@ const Home = () => {
     lobby.refetch();
   };
 
+  const enableCreateLobby = (gameType: GameType) => {
+    setIsCreateLobby(true);
+    setGameType(gameType);
+  };
+
   const handleGameDescription = (gameType: GameType) => {
     setRules(survivalRules);
     setGameType(gameType);
@@ -118,6 +123,7 @@ const Home = () => {
               <CreateLobby
                 setIsCreateLobby={setIsCreateLobby}
                 handleCreateLobby={handleCreateLobby}
+                gameType={gameType}
               />
             )}
             {isJoinLobby && (
@@ -128,7 +134,7 @@ const Home = () => {
               />
             )}
             {isCreateLobby === false && isJoinLobby === false && (
-              <div className="flex flex-wrap gap-3 items-center justify-center">
+              <div className="flex flex-wrap items-center justify-center gap-3">
                 <GameCard
                   gameType="SURVIVAL"
                   gameAlt="skull and crossbones image"
@@ -136,7 +142,7 @@ const Home = () => {
                   quickPlay={handleQuickPlay}
                   handleDescription={handleGameDescription}
                   rules={survivalRules}
-                  setIsCreateLobby={setIsCreateLobby}
+                  enableCreateLobby={enableCreateLobby}
                   setIsJoinLobby={setIsJoinLobby}
                   isPremiumUser={premiumUser.data?.isPremiumUser}
                 />
@@ -147,7 +153,7 @@ const Home = () => {
                   quickPlay={handleQuickPlay}
                   handleDescription={handleGameDescription}
                   rules={survivalRules}
-                  setIsCreateLobby={setIsCreateLobby}
+                  enableCreateLobby={enableCreateLobby}
                   setIsJoinLobby={setIsJoinLobby}
                   isPremiumUser={premiumUser.data?.isPremiumUser}
                 />

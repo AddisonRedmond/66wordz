@@ -12,9 +12,9 @@ type GameCardProps = {
     rules: { [header: string]: string[] },
   ) => void;
   rules: { [header: string]: string[] };
-  setIsCreateLobby: (isCreateLobby: boolean) => void;
   setIsJoinLobby: (isJoinLobby: boolean) => void;
   isPremiumUser?: boolean;
+  enableCreateLobby: (gameType: GameType) => void;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
@@ -47,7 +47,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         {props.isPremiumUser && (
           <button
             onClick={() => {
-              props.setIsCreateLobby(true);
+              props.enableCreateLobby(props.gameType);
             }}
             className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
           >
