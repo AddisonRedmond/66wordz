@@ -15,6 +15,7 @@ import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
 import EliminationImage from "../../public/elimination.png";
 import Modal from "~/components/modal";
+import Navbar from "~/components/navbar/navbar";
 const Home = () => {
   const { data: session } = useSession();
   const quickPlay = api.public.joinPublicGame.useMutation();
@@ -91,78 +92,81 @@ const Home = () => {
     }
   };
   return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly"
-    >
-      <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
-      <AnimatePresence>
-        {lobby.data?.id ? (
-          handleStartGame()
-        ) : (
-          <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-            {user.isSuccess &&
-              user.data &&
-              !premiumUser.data?.isPremiumUser && (
-                <p className="text-lg font-semibold">
-                  {getRemaningGames(user.data)} free games remaning
-                </p>
+    <>
+      <Navbar key="navbar" />
+      <m.div
+        // initial={{ opacity: 0 }}
+        // animate={{ opacity: 1 }}
+        // exit={{ opacity: 0 }}
+        className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly"
+      >
+        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
+        <AnimatePresence>
+          {lobby.data?.id ? (
+            handleStartGame()
+          ) : (
+            <div className="flex flex-col flex-wrap items-center justify-center gap-2">
+              {user.isSuccess &&
+                user.data &&
+                !premiumUser.data?.isPremiumUser && (
+                  <p className="text-lg font-semibold">
+                    {getRemaningGames(user.data)} free games remaning
+                  </p>
+                )}
+              {gameDescriptionOpen && (
+                <Modal>
+                  <Rules
+                    rules={rules}
+                    gameType={gameType}
+                    closeDescription={closeDescription}
+                  />
+                </Modal>
               )}
-            {gameDescriptionOpen && (
-              <Modal>
-                <Rules
-                  rules={rules}
+              {isCreateLobby && (
+                <CreateLobby
+                  setIsCreateLobby={setIsCreateLobby}
+                  handleCreateLobby={handleCreateLobby}
                   gameType={gameType}
-                  closeDescription={closeDescription}
                 />
-              </Modal>
-            )}
-            {isCreateLobby && (
-              <CreateLobby
-                setIsCreateLobby={setIsCreateLobby}
-                handleCreateLobby={handleCreateLobby}
-                gameType={gameType}
-              />
-            )}
-            {isJoinLobby && (
-              <JoinLobby
-                errorMessage={joinLobby.data}
-                setIsJoinLobby={setIsJoinLobby}
-                handleJoinLobby={handleJoinLobby}
-              />
-            )}
-            {isCreateLobby === false && isJoinLobby === false && (
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <GameCard
-                  gameType="SURVIVAL"
-                  gameAlt="skull and crossbones image"
-                  gameImage={SurvivalImage}
-                  quickPlay={handleQuickPlay}
-                  handleDescription={handleGameDescription}
-                  rules={survivalRules}
-                  enableCreateLobby={enableCreateLobby}
+              )}
+              {isJoinLobby && (
+                <JoinLobby
+                  errorMessage={joinLobby.data}
                   setIsJoinLobby={setIsJoinLobby}
-                  isPremiumUser={premiumUser.data?.isPremiumUser}
+                  handleJoinLobby={handleJoinLobby}
                 />
-                <GameCard
-                  gameType="ELIMINATION"
-                  gameAlt="Elimination image"
-                  gameImage={EliminationImage}
-                  quickPlay={handleQuickPlay}
-                  handleDescription={handleGameDescription}
-                  rules={survivalRules}
-                  enableCreateLobby={enableCreateLobby}
-                  setIsJoinLobby={setIsJoinLobby}
-                  isPremiumUser={premiumUser.data?.isPremiumUser}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </AnimatePresence>
-    </m.div>
+              )}
+              {isCreateLobby === false && isJoinLobby === false && (
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <GameCard
+                    gameType="SURVIVAL"
+                    gameAlt="skull and crossbones image"
+                    gameImage={SurvivalImage}
+                    quickPlay={handleQuickPlay}
+                    handleDescription={handleGameDescription}
+                    rules={survivalRules}
+                    enableCreateLobby={enableCreateLobby}
+                    setIsJoinLobby={setIsJoinLobby}
+                    isPremiumUser={premiumUser.data?.isPremiumUser}
+                  />
+                  <GameCard
+                    gameType="ELIMINATION"
+                    gameAlt="Elimination image"
+                    gameImage={EliminationImage}
+                    quickPlay={handleQuickPlay}
+                    handleDescription={handleGameDescription}
+                    rules={survivalRules}
+                    enableCreateLobby={enableCreateLobby}
+                    setIsJoinLobby={setIsJoinLobby}
+                    isPremiumUser={premiumUser.data?.isPremiumUser}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </AnimatePresence>
+      </m.div>
+    </>
   );
 };
 export default Home;

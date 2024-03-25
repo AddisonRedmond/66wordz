@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
 import { getSession } from "next-auth/react";
+import Navbar from "~/components/navbar/navbar";
 
 const Profile: NextPage = () => {
   const user = api.getUser.getUser.useQuery();
@@ -27,46 +28,49 @@ const Profile: NextPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly">
-      <Toaster />
-      <Header isLoading={false} desktopOnly={false} />
-      <div className="font-medium">
-        {user.data?.image && (
-          <Image
-            src={user.data?.image}
-            width={50}
-            height={50}
-            alt="profile image"
-            className="mb-4 rounded-full"
-          />
-        )}
-        <p>
-          <span className="font-semibold">Name:</span> {user.data?.name}
-        </p>
-        <p>
-          <span className="font-semibold">Email:</span> {user.data?.email}
-        </p>
-        {user.data?.currentPeriodEnd && (
+    <>
+      <Navbar key="navbar" />
+      <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
+        <Toaster />
+        <Header isLoading={false} desktopOnly={false} />
+        <div className="font-medium">
+          {user.data?.image && (
+            <Image
+              src={user.data?.image}
+              width={50}
+              height={50}
+              alt="profile image"
+              className="mb-4 rounded-full"
+            />
+          )}
           <p>
-            <span className="font-semibold">Next bill:</span>{" "}
-            {getFullDate(user.data?.currentPeriodEnd)}
+            <span className="font-semibold">Name:</span> {user.data?.name}
           </p>
-        )}
-      </div>
+          <p>
+            <span className="font-semibold">Email:</span> {user.data?.email}
+          </p>
+          {user.data?.currentPeriodEnd && (
+            <p>
+              <span className="font-semibold">Next bill:</span>{" "}
+              {getFullDate(user.data?.currentPeriodEnd)}
+            </p>
+          )}
+        </div>
 
-      {!user.data?.cancelAtPeriodEnd &&
-        user.data?.cancelAtPeriodEnd !== null &&
-        user.isSuccess && (
-          <button
-            onClick={() => {
-              handleCancelSubscription();
-            }}
-            className=" rounded-full border-4 border-red-600 p-2 font-semibold duration-150 ease-in-out hover:bg-red-600 hover:text-white"
-          >
-            Cancel Subscription
-          </button>
-        )}
-    </div>
+        {!user.data?.cancelAtPeriodEnd &&
+          user.data?.cancelAtPeriodEnd !== null &&
+          user.isSuccess && (
+            <button
+              onClick={() => {
+                handleCancelSubscription();
+              }}
+              className=" rounded-full border-4 border-red-600 p-2 font-semibold duration-150 ease-in-out hover:bg-red-600 hover:text-white"
+            >
+              Cancel Subscription
+            </button>
+          )}
+      </div>
+    </>
   );
 };
 

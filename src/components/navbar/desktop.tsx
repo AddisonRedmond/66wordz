@@ -53,13 +53,6 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           <Link href="/profile">Profile</Link>
         </button>
 
-        <Link
-          className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
-          href="/policies"
-        >
-          Policies
-        </Link>
-
         <button
           onClick={() => signOut()}
           className="font-semibol rounded-md p-2 text-black duration-150 ease-in-out hover:bg-gray-500"
