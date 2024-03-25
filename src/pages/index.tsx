@@ -95,7 +95,7 @@ const Home = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly py-8"
+      className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly"
     >
       <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
       <AnimatePresence>

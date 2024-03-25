@@ -29,7 +29,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}
-      className="absolute top-0 flex h-14 w-screen items-center justify-between px-8"
+      className="sticky top-0 flex h-14 w-screen items-center justify-between px-8"
     >
       <div className="cursor-pointer text-4xl font-semibold">
         <Link href="/">
@@ -53,12 +53,12 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           <Link href="/profile">Profile</Link>
         </button>
 
-        <button
-          onClick={() => props.issueModalIsOpen(true)}
+        <Link
           className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
+          href="/policies"
         >
-          Report Issue
-        </button>
+          Policies
+        </Link>
 
         <button
           onClick={() => signOut()}

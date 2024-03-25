@@ -23,8 +23,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <AnimatePresence>
         <LazyMotion features={domAnimation}>
-          {router.pathname !== "/login" && <Navbar key="navbar" />}
-          <Component {...pageProps} />
+          <div className="flex h-screen flex-col">
+            {router.pathname !== "/login" && <Navbar key="navbar" />}
+            <Component {...pageProps} />
+          </div>
         </LazyMotion>
       </AnimatePresence>
     </SessionProvider>
