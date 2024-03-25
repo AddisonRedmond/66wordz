@@ -14,6 +14,7 @@ import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
 import EliminationImage from "../../public/elimination.png";
+import Elimination from "~/components/elimination/elimination";
 import Modal from "~/components/modal";
 import Navbar from "~/components/navbar/navbar";
 const Home = () => {
@@ -88,6 +89,8 @@ const Home = () => {
               exitMatch={exitMatch}
             />
           );
+        case "ELIMINATION":
+          return <Elimination />;
       }
     }
   };
