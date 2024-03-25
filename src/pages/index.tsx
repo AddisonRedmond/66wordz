@@ -13,6 +13,7 @@ import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
+import EliminationImage from "../../public/elimination.png";
 import Modal from "~/components/modal";
 const Home = () => {
   const { data: session } = useSession();
@@ -89,7 +90,7 @@ const Home = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly"
+      className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly py-8"
     >
       <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
       <AnimatePresence>
@@ -127,17 +128,30 @@ const Home = () => {
               />
             )}
             {isCreateLobby === false && isJoinLobby === false && (
-              <GameCard
-                gameType="SURVIVAL"
-                gameAlt="skull and crossbones image"
-                gameImage={SurvivalImage}
-                quickPlay={handleQuickPlay}
-                handleDescription={handleGameDescription}
-                rules={survivalRules}
-                setIsCreateLobby={setIsCreateLobby}
-                setIsJoinLobby={setIsJoinLobby}
-                isPremiumUser={premiumUser.data?.isPremiumUser}
-              />
+              <div className="flex flex-wrap gap-3 items-center justify-center">
+                <GameCard
+                  gameType="SURVIVAL"
+                  gameAlt="skull and crossbones image"
+                  gameImage={SurvivalImage}
+                  quickPlay={handleQuickPlay}
+                  handleDescription={handleGameDescription}
+                  rules={survivalRules}
+                  setIsCreateLobby={setIsCreateLobby}
+                  setIsJoinLobby={setIsJoinLobby}
+                  isPremiumUser={premiumUser.data?.isPremiumUser}
+                />
+                <GameCard
+                  gameType="ELIMINATION"
+                  gameAlt="Elimination image"
+                  gameImage={EliminationImage}
+                  quickPlay={handleQuickPlay}
+                  handleDescription={handleGameDescription}
+                  rules={survivalRules}
+                  setIsCreateLobby={setIsCreateLobby}
+                  setIsJoinLobby={setIsJoinLobby}
+                  isPremiumUser={premiumUser.data?.isPremiumUser}
+                />
+              </div>
             )}
           </div>
         )}

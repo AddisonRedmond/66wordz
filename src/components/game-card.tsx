@@ -1,10 +1,10 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { GameType } from "@prisma/client";
 import info from "../../public/info.svg";
 import { m } from "framer-motion";
 type GameCardProps = {
   gameType: GameType;
-  gameImage: string;
+  gameImage: StaticImageData;
   gameAlt: string;
   quickPlay: (gameMode: GameType) => void;
   handleDescription: (
@@ -23,7 +23,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
-      className="relative flex w-44 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
+      className="relative flex w-48 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
     >
       <h2 className=" mt-2 text-xl font-semibold">{props.gameType}</h2>
       <div className=" grid h-24 content-center ">
