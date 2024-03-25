@@ -31,8 +31,7 @@ export default function Login() {
           <div className=" absolute bottom-2 flex w-full justify-around text-zinc-600">
             <Link href="terms-of-service">Terms of Service</Link>
             <Link href="privacy">Privacy Policy</Link>
-
-            <p>Refund Policy</p>
+            <Link href="refund">Refund Policy</Link>
           </div>
         </div>
       </div>
