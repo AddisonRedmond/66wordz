@@ -15,19 +15,14 @@ const Header: React.FC<HeaderProps> = ({
     <>
       {isLoading ? (
         <m.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
           <Loading />
         </m.div>
       ) : (
-        <m.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          className="flex flex-col items-center gap-3 mt-20 mb-4"
-        >
+        <m.div className="mb-4 mt-20 flex flex-col items-center gap-3">
           <Tile letters={"66"} desktopOnly={desktopOnly} />
           <Tile letters="WORDZ" desktopOnly={desktopOnly} />
 

@@ -4,7 +4,6 @@ import { api } from "~/utils/api";
 import DesktopNavbar from "./desktop";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobielNavbar from "./mobile";
-import { AnimatePresence } from "framer-motion";
 
 const Navbar: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -132,16 +131,14 @@ const Navbar: React.FC = () => {
           </>
         </Modal>
       )}
-      <AnimatePresence>
-        {isMobile ? (
-          <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
-        ) : (
-          <DesktopNavbar
-            issueModalIsOpen={setShowModal}
-            isPremiumUser={isPremiumUser.data?.isPremiumUser}
-          />
-        )}
-      </AnimatePresence>
+      {isMobile ? (
+        <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
+      ) : (
+        <DesktopNavbar
+          issueModalIsOpen={setShowModal}
+          isPremiumUser={isPremiumUser.data?.isPremiumUser}
+        />
+      )}
     </>
   );
 };

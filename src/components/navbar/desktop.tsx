@@ -26,9 +26,9 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
 
   return (
     <m.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="sticky top-0 flex h-14 w-screen items-center justify-between px-8"
     >
       <div className="cursor-pointer text-4xl font-semibold">

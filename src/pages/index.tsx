@@ -94,12 +94,7 @@ const Home = () => {
   return (
     <>
       <Navbar key="navbar" />
-      <m.div
-        // initial={{ opacity: 0 }}
-        // animate={{ opacity: 1 }}
-        // exit={{ opacity: 0 }}
-        className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly"
-      >
+      <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
         <AnimatePresence>
           {lobby.data?.id ? (
@@ -165,7 +160,7 @@ const Home = () => {
             </div>
           )}
         </AnimatePresence>
-      </m.div>
+      </div>
     </>
   );
 };

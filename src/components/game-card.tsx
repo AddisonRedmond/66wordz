@@ -20,9 +20,9 @@ type GameCardProps = {
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
   return (
     <m.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      exit={{ scale: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="relative flex w-48 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
     >
       <h2 className=" mt-2 text-xl font-semibold">{props.gameType}</h2>
