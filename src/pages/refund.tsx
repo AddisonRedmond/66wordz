@@ -5,7 +5,7 @@ const Refund = () => {
   return (
     <div className="flex-grow">
       <div className="flex items-center justify-between p-4">
-        <Link href="/" className="cursor-pointer text-4xl font-semibold">
+        <Link href="/login" className="cursor-pointer text-4xl font-semibold">
           66
         </Link>
         <button
@@ -78,8 +78,9 @@ const Refund = () => {
         <h3>Contact Us</h3>
         <p>
           If you have any questions about our Gold account refund policy or
-          would like to request a refund, please contact us at [insert contact
-          information].
+          would like to request a refund, please contact us at{" "}
+          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>.
+          .
         </p>
       </main>
     </div>

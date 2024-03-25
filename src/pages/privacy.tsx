@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
   return (
     <div className="flex-grow">
       <div className="flex items-center justify-between p-4">
-        <Link href="/" className="cursor-pointer text-4xl font-semibold">
+        <Link href="/login" className="cursor-pointer text-4xl font-semibold">
           66
         </Link>
         <button
@@ -105,7 +105,9 @@ const PrivacyPolicy = () => {
         <h3>8. Contact Us</h3>
         <p className="m-0">
           If you have any questions or concerns about this Privacy Policy,
-          please contact us at [Insert Contact Information].
+          please contact us at{" "}
+          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>.
+          .
         </p>
 
         <p>

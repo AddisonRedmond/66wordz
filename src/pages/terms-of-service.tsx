@@ -5,7 +5,9 @@ const TermsOfService = () => {
   return (
     <div className="flex-grow">
       <div className="flex items-center justify-between p-4">
-        <Link href="/" className="cursor-pointer text-4xl font-semibold">66</Link>
+        <Link href="/login" className="cursor-pointer text-4xl font-semibold">
+          66
+        </Link>
         <button
           onClick={() => signIn()}
           className=" rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
@@ -32,7 +34,7 @@ const TermsOfService = () => {
         </p>
         <h3>2. Use of the App</h3>
         <p className="m-0">
-          2.1. You must be at least 18 years old to use the App.
+          2.1. You must be at least 13 years old to use the App.
         </p>
         <p className="m-0">
           2.2. You are responsible for all activities conducted through your
@@ -106,7 +108,8 @@ const TermsOfService = () => {
         <h3>11. Contact Us</h3>
         <p className="m-0">
           If you have any questions or concerns about these Terms, please
-          contact us at [Insert Contact Information].
+          contact us at{" "}
+          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>.
         </p>
 
         <p>
