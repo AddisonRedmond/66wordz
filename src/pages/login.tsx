@@ -4,6 +4,7 @@ import Head from "next/head";
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { m } from "framer-motion";
+import Link from "next/link";
 
 export default function Login() {
   return (
@@ -28,7 +29,7 @@ export default function Login() {
             </button>
           </div>
           <div className=" text-zinc-600 absolute bottom-2 flex w-full justify-around">
-            <p>Terms of Service</p>
+            <Link href="terms-of-service">Terms of Service</Link>
             <p>Privacy Policy</p>
             <p>Refund Policy</p>
           </div>
