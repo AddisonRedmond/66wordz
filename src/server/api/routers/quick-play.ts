@@ -13,11 +13,16 @@ import {
   hasBeen24Hours,
   hasMoreFreeGames,
 } from "~/utils/game-limit";
-export const publicGameRouter = createTRPCRouter({
-  joinPublicGame: protectedProcedure
+import {
+  createNewEliminationLobby,
+  joinEliminationLobby,
+} from "~/utils/elimination";
+export const quickPlayRouter = createTRPCRouter({
+  quickPlay: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // check if player has reached the max number of games for the day
+      const gameMode = input.gameMode as GameType;
 
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
@@ -58,16 +63,6 @@ export const publicGameRouter = createTRPCRouter({
         });
       }
 
-      // const user = await ctx.db.user.findUnique({
-      //   where: { id: ctx.session.user.id },
-      // });
-
-      // if(user!.currentPeriodEnd === null || user!.currentPeriodEnd > Date.now() / 1000) {
-
-      // }
-
-      // check data base for a lobby that has < 67 players and hasn't started yet
-
       const findLobby = async () => {
         const lobby: { id: string; started: boolean }[] = await ctx.db
           .$queryRaw`
@@ -77,7 +72,7 @@ export const publicGameRouter = createTRPCRouter({
             SELECT COUNT(*) FROM "Players" p WHERE p."lobbyId" = l.id
           ) < 67
           AND l.started = false
-          AND l."gameType" = ${"SURVIVAL"}::"GameType"
+          AND l."gameType" = ${gameMode}::"GameType"
           LIMIT 1;
          `;
         return lobby[0];
@@ -104,6 +99,9 @@ export const publicGameRouter = createTRPCRouter({
             } catch (e) {
               console.log(e);
             }
+
+          case "ELIMINATION":
+            await createNewEliminationLobby(newLobby.id);
         }
 
         return newLobby;
@@ -125,6 +123,13 @@ export const publicGameRouter = createTRPCRouter({
             joinSurivivalLobby(
               player.lobbyId,
               userId,
+              ctx.session.user.name ?? "N/A",
+            );
+
+          case "ELIMINATION":
+            joinEliminationLobby(
+              userId,
+              player.lobbyId,
               ctx.session.user.name ?? "N/A",
             );
         }

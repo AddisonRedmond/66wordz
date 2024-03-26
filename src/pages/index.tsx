@@ -19,9 +19,9 @@ import Modal from "~/components/modal";
 import Navbar from "~/components/navbar/navbar";
 const Home = () => {
   const { data: session } = useSession();
-  const quickPlay = api.public.joinPublicGame.useMutation();
+  const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
-  const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
+  const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
   const premiumUser = api.getUser.isPremiumUser.useQuery();

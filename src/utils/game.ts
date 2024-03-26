@@ -189,3 +189,13 @@ export const calculateTimePlayed = (startTime: number, endTime: number) => {
 
   return `${minutes} mins ${seconds} secs`;
 };
+
+
+export const getInitials = (fullName?: string | null): string => {
+  if (!fullName) {
+    return "";
+  }
+  const names = fullName.split(" ");
+  const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
+  return initials;
+};

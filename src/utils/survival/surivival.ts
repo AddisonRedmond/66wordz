@@ -1,6 +1,6 @@
 import { db } from "../firebase/firebase";
 import { ref, set, update } from "firebase/database";
-import { handleGetNewWord } from "../game";
+import { getInitials, handleGetNewWord } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
@@ -103,15 +103,6 @@ export function getRandomNumber(min: number, max: number): number {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
 }
-
-export const getInitials = (fullName?: string | null): string => {
-  if (!fullName) {
-    return "";
-  }
-  const names = fullName.split(" ");
-  const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
-  return initials;
-};
 
 const getRandomType = (number: number) => {
   if (number % 2 === 0) {

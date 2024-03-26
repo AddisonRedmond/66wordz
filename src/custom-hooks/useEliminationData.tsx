@@ -1,39 +1,29 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
-type LobbyData = {
+export type EliminationLobbyData = {
   gameStarted: boolean;
   round: number;
-  word: string;
   nextRoundStartTime?: Date;
   gameStartTimer?: number;
-  previousWord?: string;
   roundTimer: number;
   pointsGoal: number;
 };
 
-export type PlayerPoints = {
+export type EliminationPlayerData = {
   [keyof: string]: {
     points: number;
+    initials?: string;
+    isBot: boolean;
   };
 };
 
-type RoundData = {
-  [keyof: string]: {
-    guessCount: number;
-    matchingIndex?: number[];
-  };
-};
 export type GameData = {
-  players: never[];
-  lobbyData: LobbyData;
-  playerPoints: PlayerPoints;
-  roundData?: RoundData;
-  winner?: { [keyof: string]: string };
-  botPoints?: PlayerPoints;
+  lobbyData: EliminationLobbyData;
+  playerData: EliminationPlayerData;
 };
 
-const useGameLobbyData = (
+const useEliminationData = (
   db: Database,
   props: {
     userId: string;
@@ -61,4 +51,4 @@ const useGameLobbyData = (
   return gameData;
 };
 
-export default useGameLobbyData;
+export default useEliminationData;

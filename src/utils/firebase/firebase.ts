@@ -31,25 +31,6 @@ export const createNewMarathonLobby = async (
   return lobbyId;
 };
 
-export const createNewEliminationLobby = async (
-  gameType: GameType,
-  lobbyId: string,
-  lobbyData?: {
-    gameStarted: boolean;
-    initilizedTimeStamp: Date;
-    gameStartTimer: number;
-    round: number;
-    word: string;
-    roundTimer: number;
-    pointsGoal: number;
-  },
-) => {
-  await set(ref(db, `${gameType}/${lobbyId}`), {
-    lobbyData,
-  });
-  return lobbyId;
-};
-
 export const joinFirebaseLobby = async (
   lobbyId: string,
   userId: string,
@@ -227,7 +208,10 @@ export const handleEliminationWinner = async (
   });
 };
 
-export const removePlayerFromLobby = async (lobbyId: string, updateOwner: boolean) => {
+export const removePlayerFromLobby = async (
+  lobbyId: string,
+  updateOwner: boolean,
+) => {
   await remove(ref(db, `SURVIVAL/${lobbyId}`));
   if (updateOwner) {
     await update(ref(db, `SURVIVAL/`), {

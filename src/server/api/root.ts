@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { publicGameRouter } from "./routers/public-game";
+import { quickPlayRouter } from "./routers/quick-play";
 import { reportIssueRouter } from "./routers/issue-report";
 import { createLobbyRouter } from "./routers/create-lobby";
 import { checkoutRouter } from "./routers/checkout-session";
@@ -10,7 +10,7 @@ import { getUserRouter } from "./routers/get-user";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  public: publicGameRouter,
+  quickPlay: quickPlayRouter,
   reportIssue: reportIssueRouter,
   createGame: createLobbyRouter,
   upgrade: checkoutRouter,
