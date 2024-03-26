@@ -12,7 +12,6 @@ type GameCardProps = {
     rules: { [header: string]: string[] },
   ) => void;
   rules: { [header: string]: string[] };
-  setIsJoinLobby: (isJoinLobby: boolean) => void;
   isPremiumUser?: boolean;
   enableCreateLobby: (gameType: GameType) => void;
 };
@@ -54,16 +53,7 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
             Create
           </button>
         )}
-        <button
-          onClick={() => {
-            props.setIsJoinLobby(true);
-          }}
-          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
-        >
-          Join
-        </button>
       </div>
-
       <Image
         onClick={() => props.handleDescription(props.gameType, props.rules)}
         className="absolute right-1 top-1 cursor-pointer"

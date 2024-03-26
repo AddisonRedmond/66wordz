@@ -56,9 +56,10 @@ const Home = () => {
   const handleCreateLobby = async (
     lobbyName: string,
     enableBots: boolean,
+    gameType: GameType,
     passKey?: string,
   ) => {
-    await createLobby.mutateAsync({ lobbyName, passKey, enableBots });
+    await createLobby.mutateAsync({ lobbyName, passKey, enableBots, gameType });
     lobby.refetch();
   };
 
@@ -90,7 +91,14 @@ const Home = () => {
             />
           );
         case "ELIMINATION":
-          return <Elimination />;
+          return (
+            <Elimination
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={lobby.data.gameType}
+              exitMatch={exitMatch}
+            />
+          );
       }
     }
   };
@@ -99,6 +107,16 @@ const Home = () => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
+        <div>
+          {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
+            <button
+              onClick={() => setIsJoinLobby(true)}
+              className="rounded-full bg-black p-3 text-2xl font-semibold text-white duration-150 ease-in-out hover:bg-zinc-600"
+            >
+              Join Lobby
+            </button>
+          )}
+        </div>
         <AnimatePresence>
           {lobby.data?.id ? (
             handleStartGame()
@@ -134,6 +152,7 @@ const Home = () => {
                   handleJoinLobby={handleJoinLobby}
                 />
               )}
+
               {isCreateLobby === false && isJoinLobby === false && (
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <GameCard
@@ -144,7 +163,6 @@ const Home = () => {
                     handleDescription={handleGameDescription}
                     rules={survivalRules}
                     enableCreateLobby={enableCreateLobby}
-                    setIsJoinLobby={setIsJoinLobby}
                     isPremiumUser={premiumUser.data?.isPremiumUser}
                   />
                   <GameCard
@@ -155,7 +173,6 @@ const Home = () => {
                     handleDescription={handleGameDescription}
                     rules={survivalRules}
                     enableCreateLobby={enableCreateLobby}
-                    setIsJoinLobby={setIsJoinLobby}
                     isPremiumUser={premiumUser.data?.isPremiumUser}
                   />
                 </div>

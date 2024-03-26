@@ -7,6 +7,7 @@ type CreateLobbyProps = {
   handleCreateLobby: (
     lobbyName: string,
     enableBots: boolean,
+    gameType: GameType,
     passKey?: string | undefined,
   ) => void;
   gameType: GameType;
@@ -81,7 +82,14 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
       </div>
       <button
         disabled={lobbyName.length < 1 || lobbyName.length > 20}
-        onClick={() => props.handleCreateLobby(lobbyName, enableBots, passkey)}
+        onClick={() =>
+          props.handleCreateLobby(
+            lobbyName,
+            enableBots,
+            props.gameType,
+            passkey,
+          )
+        }
         className=" h-10 rounded-full bg-black text-xl font-medium text-white duration-150 ease-in-out hover:bg-zinc-500 disabled:cursor-not-allowed disabled:opacity-10 disabled:hover:bg-black"
       >
         Create

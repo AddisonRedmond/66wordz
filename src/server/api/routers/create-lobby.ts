@@ -36,6 +36,7 @@ export const createLobbyRouter = createTRPCRouter({
         lobbyName: z.string(),
         passKey: z.string().optional(),
         enableBots: z.boolean(),
+        gameType: z.enum(["SURVIVAL", "ELIMINATION", "MARATHON"])
       }),
     )
     .mutation(async ({ ctx, input }) => {
