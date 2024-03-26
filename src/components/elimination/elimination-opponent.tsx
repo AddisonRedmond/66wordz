@@ -1,3 +1,5 @@
+import PointsContainer from "./points-container";
+
 type EliminationOpponentProps = {
   opponentCount: number;
 };
@@ -11,15 +13,19 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
     <div
       style={{
         width: `${opponentSizePercentage}%`,
-        // height: `${opponentSizePercentage / 2}%`,
+        minWidth: "85px",
+        minHeight: "20px",
       }}
-      className={`flex items-center justify-center gap-1 h-fit rounded-md border-2 border-black p-2`}
+      className={`flex h-fit flex-col gap-2 rounded-md border-2 border-black p-2`}
     >
-      <div className="aspect-square w-1/5 bg-black"></div>
-      <div className="aspect-square w-1/5 bg-black"></div>
-      <div className="aspect-square w-1/5 bg-black"></div>
-      <div className="aspect-square w-1/5 bg-black"></div>
-      <div className="aspect-square w-1/5 bg-black"></div>
+      <PointsContainer points={200} pointsGoal={300} opponent={true} />
+      <div className="flex h-fit items-center justify-center gap-1">
+        <div className="aspect-square w-1/5 min-w-[5px] bg-emerald-500"></div>
+        <div className="aspect-square w-1/5 min-w-[5px] bg-emerald-500"></div>
+        <div className="aspect-square w-1/5 min-w-[5px] bg-zinc-500"></div>
+        <div className="aspect-square w-1/5 min-w-[5px] bg-zinc-500"></div>
+        <div className="aspect-square w-1/5 min-w-[5px] bg-emerald-500"></div>
+      </div>
     </div>
   );
 };

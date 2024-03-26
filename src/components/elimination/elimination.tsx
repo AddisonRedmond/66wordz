@@ -41,21 +41,30 @@ const Elimination: React.FC<EliminationProps> = ({
 
   return (
     <div className="flex w-screen flex-grow justify-center">
-      <div className="flex w-1/3 flex-wrap justify-around gap-3 gap-x-1 gap-y-2 overflow-hidden">
+      <div className="flex w-1/3 flex-wrap justify-center gap-3 gap-x-1 gap-y-2 overflow-hidden">
         {players &&
-          Object.keys(Array.from({ length: 33 })).map(
+          Object.keys(Array.from({ length: 2 })).map(
             (playerId: string, index: number) => {
-              return <EliminationOpponent key={index} opponentCount={33} />;
+              return <EliminationOpponent key={index} opponentCount={2} />;
             },
           )}
       </div>
-      <div className="flex flex-col items-center justify-center w-1/3">
+      <div className="flex w-1/3 min-w-[370px] flex-col items-center justify-center">
         {/* word to guess */}
-        <div className="flex h-1/2 flex-col justify-evenly">
+        <div className="flex h-1/2 flex-col justify-evenly text-center">
+          <p className="text-xl font-semibold">Round 2</p>
           <WordContainer word="HELLO" revealIndex={playerData?.revealIndex} />
           {/* game details n stuff */}
           {/* points */}
           {/* word youre guessing input*/}
+          <div className="flex justify-between">
+            <p>1st place</p>
+            <div className="text-center">
+              <p>Time Left</p>
+              <p>3:00</p>
+            </div>
+            <p>Round 2</p>
+          </div>
           <div className="flex flex-col gap-2">
             <PointsContainer
               points={playerData?.points ?? 0}
@@ -74,11 +83,11 @@ const Elimination: React.FC<EliminationProps> = ({
           QUIT
         </button>
       </div>
-      <div className="flex w-1/3 flex-wrap justify-around gap-3 gap-x-1 gap-y-2 overflow-hidden">
+      <div className="flex w-1/3 flex-wrap justify-center gap-3 gap-x-1 gap-y-2 overflow-hidden">
         {players &&
-          Object.keys(Array.from({ length: 33 })).map(
+          Object.keys(Array.from({ length: 3 })).map(
             (playerId: string, index: number) => {
-              return <EliminationOpponent key={index} opponentCount={33} />;
+              return <EliminationOpponent key={index} opponentCount={3} />;
             },
           )}
       </div>

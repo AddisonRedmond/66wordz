@@ -17,7 +17,7 @@ const WordContainer: React.FC<WordContainerProps> = (
           return (
             <div
               key={index}
-              className={`grid aspect-square h-[5vh] place-content-center rounded-md duration-200 ease-in-out ${props?.revealIndex?.includes(index) ? "bg-emerald-400" : "bg-white"} text-[4vh] font-bold`}
+              className={`grid aspect-square h-[5vh] place-content-center rounded-md border-2 border-zinc-400 duration-200 ease-in-out ${props?.revealIndex?.includes(index) ? "bg-emerald-400" : "bg-white"} text-[4vh] font-bold`}
             >
               <AnimatePresence>
                 {props?.revealIndex?.includes(index) && (
