@@ -15,6 +15,7 @@ const Header: React.FC<HeaderProps> = ({
     <>
       {isLoading ? (
         <m.div
+          className="h-1/5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -22,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
           <Loading />
         </m.div>
       ) : (
-        <m.div className="mb-4 mt-20 flex flex-col items-center gap-3">
+        <m.div className="h-1/5 mb-4 flex flex-col items-center gap-3">
           <Tile letters={"66"} desktopOnly={desktopOnly} />
           <Tile letters="WORDZ" desktopOnly={desktopOnly} />
 

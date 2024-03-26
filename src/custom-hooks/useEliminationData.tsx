@@ -15,12 +15,19 @@ export type EliminationPlayerData = {
     points: number;
     initials?: string;
     isBot: boolean;
+    word: string;
+    matchingIndexs?: {
+      full: string[];
+      partial: string[];
+      none: string[];
+    };
+    revealIndex?: number[];
   };
 };
 
 export type GameData = {
   lobbyData: EliminationLobbyData;
-  playerData: EliminationPlayerData;
+  players: EliminationPlayerData;
 };
 
 const useEliminationData = (

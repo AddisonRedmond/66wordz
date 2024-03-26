@@ -3,8 +3,7 @@ import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
 import { ref, set, update } from "firebase/database";
 import { db } from "~/utils/firebase/firebase";
-import { getInitials } from "~/utils/survival/surivival";
-import { handleGetNewWord } from "~/utils/game";
+import { getInitials, handleGetNewWord } from "~/utils/game";
 import { env } from "~/env.mjs";
 import {
   hasBeen24Hours,
@@ -36,7 +35,7 @@ export const createLobbyRouter = createTRPCRouter({
         lobbyName: z.string(),
         passKey: z.string().optional(),
         enableBots: z.boolean(),
-        gameType: z.enum(["SURVIVAL", "ELIMINATION", "MARATHON"])
+        gameType: z.enum(["SURVIVAL", "ELIMINATION", "MARATHON"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {

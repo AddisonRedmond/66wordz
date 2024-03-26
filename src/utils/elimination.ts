@@ -4,7 +4,7 @@ import {
   EliminationLobbyData,
   EliminationPlayerData,
 } from "~/custom-hooks/useEliminationData";
-import { getInitials } from "./game";
+import { getInitials, handleGetNewWord } from "./game";
 
 export const createNewEliminationLobby = async (lobbyId: string) => {
   const lobbyData: EliminationLobbyData = {
@@ -24,7 +24,14 @@ export const joinEliminationLobby = async (
   userName: string,
 ) => {
   const player: EliminationPlayerData = {
-    [playerId]: { points: 0, isBot: false, initials: getInitials(userName) },
+    [playerId]: {
+      points: 0,
+      isBot: false,
+      initials: getInitials(userName),
+      word: handleGetNewWord(5),
+      matchingIndexs: { full: [], partial: [], none: [] },
+      revealIndex: [],
+    },
   };
 
   await update(ref(db, `ELIMINATION/${lobbyId}`), {
