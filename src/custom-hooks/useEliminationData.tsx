@@ -5,8 +5,8 @@ export type EliminationLobbyData = {
   gameStarted: boolean;
   round: number;
   nextRoundStartTime?: Date;
-  gameStartTimer?: number;
-  roundTimer: number;
+  gameStartTimer: number;
+  roundTimer?: number;
   pointsGoal: number;
 };
 

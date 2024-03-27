@@ -10,7 +10,7 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
   const lobbyData: EliminationLobbyData = {
     gameStarted: false,
     round: 1,
-    roundTimer: 120000,
+    gameStartTimer: new Date().getTime() + 30000,
     pointsGoal: 300,
   };
   await set(ref(db, `ELIMINATION/${lobbyId}`), {
