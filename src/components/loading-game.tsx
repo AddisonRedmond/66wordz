@@ -1,7 +1,7 @@
 import { useTimer } from "react-timer-hook";
-import Tile from "../tile";
+import Tile from "./tile";
 import Image from "next/image";
-import copy from "../../../public/copy.svg";
+import copy from "../../public/copy.svg";
 
 type LoadingGameProps = {
   expiryTimestamp: Date;

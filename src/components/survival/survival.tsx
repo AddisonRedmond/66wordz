@@ -20,7 +20,7 @@ import {
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
-import LoadingGame from "./loading-game";
+import LoadingGame from "../loading-game";
 import { AnimatePresence, useAnimate } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";

@@ -8,7 +8,7 @@ import { useState } from "react";
 import PointsContainer from "./points-container";
 import Keyboard from "../keyboard";
 import EliminationOpponent from "./elimination-opponent";
-import LoadingGame from "../survival/loading-game";
+import LoadingGame from "../loading-game";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
