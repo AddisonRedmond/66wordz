@@ -29,7 +29,21 @@ const Elimination: React.FC<EliminationProps> = ({
   const [guess, setGuess] = useState<string>("");
 
   const handleKeyBoardLogic = (event: any) => {
-    //
+    // if backspace check to make sure guess is not empty
+    
+    // check if guess.length is greater than word.length
+    // if it is, dont add more letters
+
+    // check key
+    // key needs to be one char, A-Z
+    // if its not, return
+
+    // if key is enter, check if guess is spelled correctly
+    // if it is check if guess === word
+    // if it does, handle correct guess
+
+    // if it doesnt, handle incorrect guess
+
     if (event.key === "Backspace") {
       setGuess((prev) => prev.slice(0, -1));
     } else if (event.key === "Enter") {
@@ -74,7 +88,7 @@ const Elimination: React.FC<EliminationProps> = ({
               <div className="flex h-1/2 flex-col justify-evenly text-center">
                 <p className="text-xl font-semibold">{`Round ${gameData?.lobbyData.round}`}</p>
                 <WordContainer
-                  word="HELLO"
+                  word={playerData?.word}
                   revealIndex={playerData?.revealIndex}
                 />
                 {/* game details n stuff */}
