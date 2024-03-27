@@ -16,6 +16,7 @@ export type EliminationPlayerData = {
     initials?: string;
     isBot: boolean;
     word: string;
+    wordValue: number;
     matchingIndexs?: {
       full: string[];
       partial: string[];

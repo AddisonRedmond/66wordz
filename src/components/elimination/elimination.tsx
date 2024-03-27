@@ -28,28 +28,36 @@ const Elimination: React.FC<EliminationProps> = ({
   const players = gameData?.players;
   const [guess, setGuess] = useState<string>("");
 
-  const handleKeyBoardLogic = (event: any) => {
+  const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
+    const key = typeof e === "string" ? e : e.key;
+
     // if backspace check to make sure guess is not empty
-    
     // check if guess.length is greater than word.length
     // if it is, dont add more letters
+    if (key === "Backspace") {
+      if (guess.length === 0) return;
+      setGuess((prev) => prev.slice(0, -1));
+    }
 
     // check key
     // key needs to be one char, A-Z
     // if its not, return
+    if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 5) {
+      setGuess((prev) => prev + key);
+    }
 
     // if key is enter, check if guess is spelled correctly
     // if it is check if guess === word
     // if it does, handle correct guess
-
-    // if it doesnt, handle incorrect guess
-
-    if (event.key === "Backspace") {
-      setGuess((prev) => prev.slice(0, -1));
-    } else if (event.key === "Enter") {
-      setGuess("");
-    } else if (event.key.length === 1) {
-      setGuess((prev) => prev + event.key);
+    if (key === "Enter" && guess.length === 5) {
+      // spell check here
+      if (playerData?.word === guess) {
+        // handle correct guess
+        console.log("correct guess");
+      } else {
+        // handle incorrect guess
+        setGuess("");
+      }
     }
   };
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
@@ -95,10 +103,14 @@ const Elimination: React.FC<EliminationProps> = ({
                 {/* points */}
                 {/* word youre guessing input*/}
                 <div className="flex justify-between">
-                  <p className="font-semibold">1st place</p>
                   <div className="text-center font-semibold">
                     <p>Time Left</p>
                     <p>3:00</p>
+                  </div>
+                  <p className="font-semibold">1st place</p>
+                  <div className="text-center font-semibold">
+                    <p>Word Value</p>
+                    <p>{`${playerData?.wordValue} pts`}</p>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">

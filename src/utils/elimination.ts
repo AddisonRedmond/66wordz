@@ -29,6 +29,7 @@ export const joinEliminationLobby = async (
       isBot: false,
       initials: getInitials(userName),
       word: handleGetNewWord(5),
+      wordValue: 100,
       matchingIndexs: { full: [], partial: [], none: [] },
       revealIndex: [],
     },
@@ -38,3 +39,7 @@ export const joinEliminationLobby = async (
     players: player,
   });
 };
+
+export const handleCorrectGuess = async (path: string, payLoad: string) => {};
+
+export const handleIncorrectGuess = async () => {};
