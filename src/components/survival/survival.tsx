@@ -46,7 +46,6 @@ const Survival: React.FC<SurvivalProps> = ({
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
 
   const startGame = api.createGame.startGame.useMutation();
-  const incrementGamesPlayed = api.getUser.incrementFreeGameCount.useMutation();
 
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
@@ -80,13 +79,6 @@ const Survival: React.FC<SurvivalProps> = ({
       animate(scope.current, control, { duration: 1.5 });
     }
   }, [correctGuess]);
-
-  useEffect(() => {
-    if (gameData?.lobbyData.gameStarted === true) {
-      // increment games played for user
-      incrementGamesPlayed.mutate();
-    }
-  }, [gameData?.lobbyData.gameStarted]);
 
   const targetOpponent = (playerId: string) => {
     if (

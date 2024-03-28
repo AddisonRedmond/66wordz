@@ -35,14 +35,6 @@ const Elimination: React.FC<EliminationProps> = ({
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [isIncorrectGuess, setIsIncorrectGuess] = useState<boolean>(false);
   const [guess, setGuess] = useState<string>("");
-  const incrementGamesPlayed = api.getUser.incrementFreeGameCount.useMutation();
-
-  useEffect(() => {
-    if (gameData?.lobbyData.gameStarted === true) {
-      // increment games played for user
-      incrementGamesPlayed.mutate();
-    }
-  }, [gameData?.lobbyData.gameStarted]);
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
