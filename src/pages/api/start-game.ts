@@ -39,6 +39,11 @@ export default async function handler(
   const lobbyId = data.lobbyId;
   //   cors isnt working btw/ origin can be any, need to fix
 
+  await db.user.updateMany({
+    where: lobbyId,
+    data: { freeGameCount: { increment: 1 } },
+  });
+
   await db.lobby.update({ where: { id: lobbyId }, data: { started: true } });
   res.status(200).end();
 }
