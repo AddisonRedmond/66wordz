@@ -44,6 +44,7 @@ export const quickPlayRouter = createTRPCRouter({
       }
 
       // check if player is already part of a game
+
       const clientGameType = input.gameMode as GameType;
 
       const rejoin: {
@@ -56,6 +57,7 @@ export const quickPlayRouter = createTRPCRouter({
       });
 
       if (rejoin) {
+        console.log("rejoin");
         return await ctx.db.lobby.findUnique({
           where: {
             id: rejoin.lobbyId,

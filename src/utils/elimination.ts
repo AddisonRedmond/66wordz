@@ -38,8 +38,8 @@ export const joinEliminationLobby = async (
     },
   };
 
-  await update(ref(db, `ELIMINATION/${lobbyId}`), {
-    players: player,
+  await update(ref(db, `ELIMINATION/${lobbyId}/players/`), {
+    ...player,
   });
 };
 
