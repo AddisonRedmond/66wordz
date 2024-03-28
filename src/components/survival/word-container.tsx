@@ -5,7 +5,7 @@ import sword from "../../../public/Sword.svg";
 import Image from "next/image";
 import { m } from "framer-motion";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import AnimateLetter from "./animated-letter";
+import AnimateLetter from "../animated-letter";
 type WordContainerProps = {
   word?: string;
   type?: "shield" | "health";

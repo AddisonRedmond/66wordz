@@ -2,6 +2,8 @@ import { m, AnimatePresence } from "framer-motion";
 
 type WordContainerProps = {
   guess: string;
+  isSpellCheck: boolean,
+  setIsSpellCheck: (value: boolean) => void;
 };
 
 const GuessContainer: React.FC<WordContainerProps> = (

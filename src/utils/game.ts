@@ -17,35 +17,6 @@ const timeAdjustmentValues: { [key: number]: number } = {
   6: 10000,
 };
 
-export const handleMatched = (
-  guesses: string[],
-  word: string,
-): { fullMatch: string[]; partialMatch: string[]; noMatch: string[] } => {
-  const fullMatch: string[] = [];
-  const partialMatch: string[] = [];
-  const noMatch: string[] = [];
-  if (guesses.length) {
-    guesses.forEach((guess: string) => {
-      guess.split("").forEach((letter: string, index: number) => {
-        const letterArray = word.split("");
-        if (letterArray[index] === letter) {
-          fullMatch.push(letter);
-        } else if (letterArray.includes(letter)) {
-          partialMatch.push(letter);
-        } else {
-          noMatch.push(letter);
-        }
-      });
-    });
-  }
-
-  return {
-    fullMatch: fullMatch,
-    partialMatch: partialMatch,
-    noMatch: noMatch,
-  };
-};
-
 export const formatGameData = (
   dataObject:
     | {
@@ -190,7 +161,6 @@ export const calculateTimePlayed = (startTime: number, endTime: number) => {
   return `${minutes} mins ${seconds} secs`;
 };
 
-
 export const getInitials = (fullName?: string | null): string => {
   if (!fullName) {
     return "";
@@ -198,4 +168,36 @@ export const getInitials = (fullName?: string | null): string => {
   const names = fullName.split(" ");
   const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
   return initials;
+};
+
+export const handleMatched = (
+  guess: string,
+  word: string,
+  previousMatches?: {
+    full?: string[];
+    partial?: string[];
+    none?: string[];
+  },
+): { full: string[]; partial: string[]; none: string[] } => {
+  const full = new Set<string>([...(previousMatches?.full ?? [])]);
+  const partial = new Set<string>([...(previousMatches?.partial ?? [])]);
+  const none = new Set<string>([...(previousMatches?.none ?? [])]);
+
+  guess.split("").forEach((letter: string, index: number) => {
+    if (word[index] === letter) {
+      full.add(letter);
+    } else if (word.includes(letter)) {
+      partial.add(letter);
+    } else {
+      none.add(letter);
+    }
+  });
+
+  const matches = {
+    full: Array.from(full),
+    partial: Array.from(partial),
+    none: Array.from(none),
+  };
+
+  return matches;
 };

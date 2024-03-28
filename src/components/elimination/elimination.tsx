@@ -4,11 +4,17 @@ import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import GuessContainer from "./guess-container";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PointsContainer from "./points-container";
 import Keyboard from "../keyboard";
 import EliminationOpponent from "./elimination-opponent";
 import LoadingGame from "../loading-game";
+import { handleIncorrectGuess, handleCorrectGuess } from "~/utils/elimination";
+import AnimateLetter from "../animated-letter";
+import { checkSpelling } from "~/utils/survival/surivival";
+import RoundTimer from "./round-timer";
+import { api } from "~/utils/api";
+
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -26,15 +32,28 @@ const Elimination: React.FC<EliminationProps> = ({
   const gameData = useEliminationData(db, { userId, lobbyId, gameType });
   const playerData = gameData?.players[userId];
   const players = gameData?.players;
+  const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [guess, setGuess] = useState<string>("");
+  const incrementGamesPlayed = api.getUser.incrementFreeGameCount.useMutation();
+
+  useEffect(() => {
+    if (gameData?.lobbyData.gameStarted === true) {
+      // increment games played for user
+      incrementGamesPlayed.mutate();
+    }
+  }, [gameData?.lobbyData.gameStarted]);
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
-    const key = typeof e === "string" ? e : e.key;
-
+    const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
+    console.log(playerData?.points, gameData?.lobbyData.pointsGoal);
+    if (playerData!.points >= gameData!.lobbyData.pointsGoal) {
+      console.log("IDIOT");
+      return;
+    }
     // if backspace check to make sure guess is not empty
     // check if guess.length is greater than word.length
     // if it is, dont add more letters
-    if (key === "Backspace") {
+    if (key === "BACKSPACE") {
       if (guess.length === 0) return;
       setGuess((prev) => prev.slice(0, -1));
     }
@@ -49,17 +68,31 @@ const Elimination: React.FC<EliminationProps> = ({
     // if key is enter, check if guess is spelled correctly
     // if it is check if guess === word
     // if it does, handle correct guess
-    if (key === "Enter" && guess.length === 5) {
+    if (key === "ENTER" && guess.length === 5) {
+      if (checkSpelling(guess) === false) {
+        setIsSpellCheck(true);
+        return;
+      }
       // spell check here
       if (playerData?.word === guess) {
         // handle correct guess
-        console.log("correct guess");
+        handleCorrectGuess(
+          `${gameType}/${lobbyId}/players/${userId}`,
+          playerData,
+        );
+        setGuess("");
       } else {
         // handle incorrect guess
+        handleIncorrectGuess(
+          `${gameType}/${lobbyId}/players/${userId}`,
+          playerData!,
+          guess,
+        );
         setGuess("");
       }
     }
   };
+
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
   if (gameData) {
     return (
@@ -74,6 +107,7 @@ const Elimination: React.FC<EliminationProps> = ({
                   revealIndex={players[playerId]?.revealIndex}
                   points={players[playerId]?.points ?? 0}
                   pointsGoal={gameData?.lobbyData.pointsGoal ?? 300}
+                  initials={players[playerId]?.initials}
                 />
               );
             })}
@@ -83,7 +117,7 @@ const Elimination: React.FC<EliminationProps> = ({
           {!gameData?.lobbyData.gameStarted ? (
             <div className="mb-5">
               <LoadingGame
-                expiryTimestamp={new Date(gameData.lobbyData.gameStartTimer)}
+                expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
                 lobbyId={lobbyId}
                 startGame={() => {}}
                 exitMatch={exitMatch}
@@ -103,14 +137,23 @@ const Elimination: React.FC<EliminationProps> = ({
                 {/* points */}
                 {/* word youre guessing input*/}
                 <div className="flex justify-between">
-                  <div className="text-center font-semibold">
-                    <p>Time Left</p>
-                    <p>3:00</p>
-                  </div>
+                  {gameData.lobbyData.roundTimer && (
+                    <RoundTimer
+                      expiryTimeStamp={gameData.lobbyData.roundTimer}
+                    />
+                  )}
                   <p className="font-semibold">1st place</p>
                   <div className="text-center font-semibold">
                     <p>Word Value</p>
-                    <p>{`${playerData?.wordValue} pts`}</p>
+                    <div className="flex flex-row justify-center">
+                      <AnimateLetter
+                        letters={
+                          playerData?.wordValue! < 100
+                            ? `${0}${playerData?.wordValue}`
+                            : playerData?.wordValue
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -118,14 +161,13 @@ const Elimination: React.FC<EliminationProps> = ({
                     points={playerData?.points ?? 0}
                     pointsGoal={gameData?.lobbyData.pointsGoal ?? 300}
                   />
-                  <GuessContainer guess={guess} />
+                  <GuessContainer isSpellCheck={isSpellCheck} setIsSpellCheck={setIsSpellCheck} guess={guess} />
                 </div>
-                {/* keyboard */}
-                {/* opponents */}
               </div>
               <Keyboard
                 disabled={false}
                 handleKeyBoardLogic={handleKeyBoardLogic}
+                matches={playerData?.matches}
               />
             </>
           )}
@@ -147,6 +189,7 @@ const Elimination: React.FC<EliminationProps> = ({
                   revealIndex={players[playerId]?.revealIndex}
                   points={players[playerId]?.points ?? 0}
                   pointsGoal={gameData?.lobbyData.pointsGoal ?? 300}
+                  initials={players[playerId]?.initials}
                 />
               );
             })}

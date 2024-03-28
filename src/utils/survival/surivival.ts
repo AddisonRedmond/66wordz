@@ -1,6 +1,6 @@
 import { db } from "../firebase/firebase";
 import { ref, set, update } from "firebase/database";
-import { getInitials, handleGetNewWord } from "../game";
+import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
@@ -272,37 +272,7 @@ export const handleAttack = async (
   return false;
 };
 
-export const handleMatched = (
-  guess: string,
-  word: string,
-  previousMatches?: {
-    full?: string[];
-    partial?: string[];
-    none?: string[];
-  },
-): { full: string[]; partial: string[]; none: string[] } => {
-  const full = new Set<string>([...(previousMatches?.full ?? [])]);
-  const partial = new Set<string>([...(previousMatches?.partial ?? [])]);
-  const none = new Set<string>([...(previousMatches?.none ?? [])]);
 
-  guess.split("").forEach((letter: string, index: number) => {
-    if (word[index] === letter) {
-      full.add(letter);
-    } else if (word.includes(letter)) {
-      partial.add(letter);
-    } else {
-      none.add(letter);
-    }
-  });
-
-  const matches = {
-    full: Array.from(full),
-    partial: Array.from(partial),
-    none: Array.from(none),
-  };
-
-  return matches;
-};
 
 export const handleIncorrectGuess = (
   guess: string,

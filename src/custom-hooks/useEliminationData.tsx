@@ -5,25 +5,28 @@ export type EliminationLobbyData = {
   gameStarted: boolean;
   round: number;
   nextRoundStartTime?: Date;
-  gameStartTimer: number;
+  gameStartTime: number;
   roundTimer?: number;
   pointsGoal: number;
 };
 
-export type EliminationPlayerData = {
-  [keyof: string]: {
-    points: number;
-    initials?: string;
-    isBot: boolean;
-    word: string;
-    wordValue: number;
-    matchingIndexs?: {
-      full: string[];
-      partial: string[];
-      none: string[];
-    };
-    revealIndex?: number[];
+export type PlayerObject = {
+  points: number;
+  initials?: string;
+  isBot: boolean;
+  word: string;
+  wordValue: number;
+  matches?: {
+    full: string[];
+    partial: string[];
+    none: string[];
   };
+  revealIndex?: number[];
+  eliminated?: boolean;
+};
+
+export type EliminationPlayerData = {
+  [keyof: string]: PlayerObject
 };
 
 export type GameData = {

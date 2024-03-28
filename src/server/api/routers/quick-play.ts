@@ -92,16 +92,31 @@ export const quickPlayRouter = createTRPCRouter({
           case "SURVIVAL":
             await createNewSurivivalLobby(newLobby.id);
             try {
-              fetch(`${env.BOT_SERVER}/register_survival_lobby`, {
-                method: "POST",
-                body: JSON.stringify({ lobbyId: newLobby.id }),
-              });
+              fetch(
+                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ lobbyId: newLobby.id }),
+                },
+              );
             } catch (e) {
               console.log(e);
             }
+            break;
 
           case "ELIMINATION":
             await createNewEliminationLobby(newLobby.id);
+            try {
+              fetch(
+                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ lobbyId: newLobby.id }),
+                },
+              );
+            } catch (e) {
+              console.log(e);
+            }
         }
 
         return newLobby;

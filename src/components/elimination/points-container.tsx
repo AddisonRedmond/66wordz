@@ -12,16 +12,19 @@ const PointsContainer: React.FC<PointsContainerProps> = (
   };
 
   return (
-    <div
-      className={`relative ${props.opponent ? "h-1" : "h-2"} w-full rounded-full bg-zinc-300`}
-    >
+    <div>
+      {!props.opponent && <p className="text-sm font-semibold">{`${props.points}/${props.pointsGoal}pts`}</p>}
       <div
-        style={{
-          width: `${calculatePercentage(props.points, props.pointsGoal)}%`,
-          maxWidth: "100%",
-        }}
-        className={`absolute left-0 top-0 ${props.opponent ? "h-1" : "h-2"}  rounded-full bg-emerald-500 duration-300 ease-in-out`}
-      ></div>
+        className={`relative ${props.opponent ? "h-1" : "h-2"} w-full rounded-full bg-zinc-300`}
+      >
+        <div
+          style={{
+            width: `${calculatePercentage(props.points, props.pointsGoal)}%`,
+            maxWidth: "100%",
+          }}
+          className={`absolute left-0 top-0 ${props.opponent ? "h-1" : "h-2"}  rounded-full bg-emerald-500 duration-300 ease-in-out`}
+        ></div>
+      </div>
     </div>
   );
 };

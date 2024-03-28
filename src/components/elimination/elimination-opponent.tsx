@@ -5,6 +5,7 @@ type EliminationOpponentProps = {
   revealIndex?: number[];
   points: number;
   pointsGoal: number;
+  initials?: string;
 };
 
 const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
@@ -21,16 +22,36 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
         minHeight: "20px",
         maxWidth: "300px",
       }}
-      className={`flex h-fit flex-col gap-2 rounded-md border-2 border-black p-2`}
+      className=" items-center"
     >
-      <PointsContainer points={props.points} pointsGoal={props.pointsGoal} opponent={true} />
-      <div className="flex h-fit items-center justify-center gap-1">
-        {Array.from({ length: 5 }, (_, index) => (
-          <div
-            key={index}
-            className={`aspect-square w-1/5 min-w-[5px] ${props.revealIndex?.includes(index) ? "bg-emerald-500" : "bg-zinc-300"}`}
-          ></div>
-        ))}
+      <p
+        style={{
+          marginLeft: "5px",
+          borderTop: "2px solid black",
+          borderLeft: "2px solid black",
+          borderRight: "2px solid black",
+          borderBottom: "0px",
+        }}
+        className="w-fit rounded-t-md text-xs font-semibold bg-black text-white px-1"
+      >
+        {props?.initials ?? "N/A"}
+      </p>
+      <div
+        className={`flex h-full w-full flex-col gap-2 rounded-md border-2 border-zinc-500 p-2`}
+      >
+        <PointsContainer
+          points={props.points}
+          pointsGoal={props.pointsGoal}
+          opponent={true}
+        />
+        <div className="flex h-fit items-center justify-center gap-1">
+          {Array.from({ length: 5 }, (_, index) => (
+            <div
+              key={index}
+              className={`aspect-square w-1/5 min-w-[5px] ${props.revealIndex?.includes(index) ? "bg-emerald-500" : "bg-zinc-300"}`}
+            ></div>
+          ))}
+        </div>
       </div>
     </div>
   );
