@@ -16,7 +16,10 @@ const GuessContainer: React.FC<WordContainerProps> = (
 
   const control = {
     x: [-10, 10, -10, 10, 0],
-    // backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
+  };
+
+  const incorrectGuess = {
+    backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
   };
 
   useEffect(() => {
@@ -29,7 +32,7 @@ const GuessContainer: React.FC<WordContainerProps> = (
     props.setIsIncorrectGuess(false);
   }, [props.isIncorrectGuess]);
   return (
-    <div ref={scope} className="flex h-[7vh] w-full flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2 duration-150 ease-in-out">
+    <div ref={scope} className="flex h-[7vh] w-full flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2">
       <AnimatePresence>
         {props.guess
           .toUpperCase()

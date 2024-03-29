@@ -17,8 +17,16 @@ import EliminationImage from "../../public/elimination.png";
 import Elimination from "~/components/elimination/elimination";
 import Modal from "~/components/modal";
 import Navbar from "~/components/navbar/navbar";
+import { useRouter } from "next/router";
 const Home = () => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push("/login");
+    },
+  });
+
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
@@ -102,12 +110,14 @@ const Home = () => {
       }
     }
   };
+
   return (
     <>
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
-        <div>
+        <div className="flex flex-col gap-3">
+          <p className="text-xl font-semibold">Join Custom Lobby</p>
           {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
             <button
               onClick={() => setIsJoinLobby(true)}

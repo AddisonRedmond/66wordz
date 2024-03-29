@@ -3,10 +3,18 @@ import Header from "~/components/hearder";
 import { api } from "~/utils/api";
 import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import Navbar from "~/components/navbar/navbar";
+import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
+  const router = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push("/login");
+    },
+  });
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
 
