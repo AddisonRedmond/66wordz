@@ -9,7 +9,7 @@ import PointsContainer from "./points-container";
 import Keyboard from "../keyboard";
 import EliminationOpponent from "./elimination-opponent";
 import LoadingGame from "../loading-game";
-import { handleIncorrectGuess, handleCorrectGuess } from "~/utils/elimination";
+import { handleIncorrectGuess, handleCorrectGuess, calculatePlacement } from "~/utils/elimination";
 import AnimateLetter from "../animated-letter";
 import { checkSpelling } from "~/utils/survival/surivival";
 import RoundTimer from "./round-timer";
@@ -37,6 +37,7 @@ const Elimination: React.FC<EliminationProps> = ({
   const [guess, setGuess] = useState<string>("");
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
+    if(gameData?.lobbyData.gameStarted === false) return;
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
     if (playerData!.points >= gameData!.lobbyData.pointsGoal) {
       return;
@@ -100,6 +101,7 @@ const Elimination: React.FC<EliminationProps> = ({
                   points={players[playerId]?.points ?? 0}
                   pointsGoal={gameData?.lobbyData.pointsGoal ?? 300}
                   initials={players[playerId]?.initials}
+                  eliminated={players[playerId]?.eliminated}
                 />
               );
             })}
@@ -126,11 +128,11 @@ const Elimination: React.FC<EliminationProps> = ({
                 />
 
                 <div className="flex items-center">
-                  <div className="rounded-l-md border-2 border-zinc-800 bg-zinc-800 font-semibold text-white px-3">
-                    <p>1st</p>
+                  <div className="rounded-l-md border-2 border-zinc-800 bg-zinc-800 px-3 font-semibold text-white">
+                    <p>{calculatePlacement(gameData.players, userId)}</p>
                     <p>place</p>
                   </div>
-                  <div className="h-full w-full flex flex-col px-3 justify-center rounded-r-md border-2 border-zinc-800">
+                  <div className="flex h-full w-full flex-col justify-center rounded-r-md border-2 border-zinc-800 px-3">
                     <div className="">
                       {gameData.lobbyData.roundTimer && (
                         <RoundTimer
@@ -138,7 +140,7 @@ const Elimination: React.FC<EliminationProps> = ({
                         />
                       )}
 
-                      <div className="flex text-center font-medium justify-between">
+                      <div className="flex justify-between text-center font-medium">
                         <p className="text-sm ">Word Value: </p>
                         <div className="flex flex-row justify-center text-lg">
                           <AnimateLetter
@@ -178,7 +180,7 @@ const Elimination: React.FC<EliminationProps> = ({
 
           <button
             onClick={() => exitMatch()}
-            className="rounded-md mt-4 bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+            className="mt-4 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
           >
             QUIT
           </button>
@@ -194,6 +196,7 @@ const Elimination: React.FC<EliminationProps> = ({
                   points={players[playerId]?.points ?? 0}
                   pointsGoal={gameData?.lobbyData.pointsGoal ?? 300}
                   initials={players[playerId]?.initials}
+                  eliminated={players[playerId]?.eliminated}
                 />
               );
             })}

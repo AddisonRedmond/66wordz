@@ -108,6 +108,15 @@ export const handleIncorrectGuess = async (
   });
 };
 
-export const calculatePlacement = () => {
-  //
+export const calculatePlacement = (players: EliminationPlayerData, playerId: string) => {
+  // return index of user id
+  const sortedPlayers = Object.entries(players).sort(
+    (a, b) => b[1].points - a[1].points,
+  );
+
+  const sortedId = sortedPlayers.map((player) => player[0]);
+  console.log(playerId)
+  console.log(sortedId.indexOf(`${playerId}`) + 1)
+
+  return sortedId.indexOf(playerId) + 1;
 };

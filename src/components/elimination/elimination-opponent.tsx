@@ -7,6 +7,7 @@ type EliminationOpponentProps = {
   points: number;
   pointsGoal: number;
   initials?: string;
+  eliminated?: boolean;
 };
 
 const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
@@ -21,7 +22,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0 }}
-        transition={{ duration: 0.3, ease: "linear"}}
+        transition={{ duration: 0.3, ease: "linear" }}
         style={{
           width: `${opponentSizePercentage}%`,
           minWidth: "85px",
@@ -45,19 +46,32 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
         <div
           className={`flex h-full w-full flex-col gap-2 rounded-md border-2 border-zinc-500 p-2`}
         >
-          <PointsContainer
-            points={props.points}
-            pointsGoal={props.pointsGoal}
-            opponent={true}
-          />
-          <div className="flex h-fit items-center justify-center gap-1">
-            {Array.from({ length: 5 }, (_, index) => (
-              <div
-                key={index}
-                className={`aspect-square w-1/5 min-w-[5px] ${props.revealIndex?.includes(index) ? "bg-emerald-500" : "bg-zinc-300"}`}
-              ></div>
-            ))}
-          </div>
+          {props.eliminated ? (
+            <m.p
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              className="text-center"
+            >
+              ❌
+            </m.p>
+          ) : (
+            <>
+              <PointsContainer
+                points={props.points}
+                pointsGoal={props.pointsGoal}
+                opponent={true}
+              />
+              <div className="flex h-fit items-center justify-center gap-1">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <div
+                    key={index}
+                    className={`aspect-square w-1/5 min-w-[5px] ${props.revealIndex?.includes(index) ? "bg-emerald-500" : "bg-zinc-300"}`}
+                  ></div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </m.div>
     </AnimatePresence>
