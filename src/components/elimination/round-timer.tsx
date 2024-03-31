@@ -13,7 +13,7 @@ const RoundTimer: React.FC<RoundTimerProps> = (props: RoundTimerProps) => {
   return (
     <div className="flex items-center justify-between text-center text-sm">
       <p className="font-medium">Time Left:</p>
-      <p className="font-semibold text-lg">
+      <p className="text-lg font-semibold">
         {minutes + ":" + (seconds < 10 ? "0" + seconds : seconds)}
       </p>
     </div>

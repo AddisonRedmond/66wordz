@@ -108,15 +108,19 @@ export const handleIncorrectGuess = async (
   });
 };
 
-export const calculatePlacement = (players: EliminationPlayerData, playerId: string) => {
+export const calculatePlacement = (
+  players: EliminationPlayerData,
+  playerId: string,
+) => {
   // return index of user id
-  const sortedPlayers = Object.entries(players).sort(
-    (a, b) => b[1].points - a[1].points,
-  );
 
-  const sortedId = sortedPlayers.map((player) => player[0]);
-  console.log(playerId)
-  console.log(sortedId.indexOf(`${playerId}`) + 1)
+  const sortedPlayers = Object.keys(players)
+    .filter((playerId) => {
+      return !players[playerId]!.eliminated;
+    })
+    .sort((a, b) => players[b]!.points - players[a]!.points);
 
-  return sortedId.indexOf(playerId) + 1;
+  // filter out eliminated players
+
+  return sortedPlayers.indexOf(playerId) + 1;
 };

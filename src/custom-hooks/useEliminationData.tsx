@@ -4,10 +4,11 @@ import { GameType } from "@prisma/client";
 export type EliminationLobbyData = {
   gameStarted: boolean;
   round: number;
-  nextRoundStartTime?: Date;
+  nextRoundStartTime?: number;
   gameStartTime: number;
   roundTimer?: number;
   pointsGoal: number;
+  winner?: string;
 };
 
 export type PlayerObject = {
@@ -26,7 +27,7 @@ export type PlayerObject = {
 };
 
 export type EliminationPlayerData = {
-  [keyof: string]: PlayerObject
+  [keyof: string]: PlayerObject;
 };
 
 export type GameData = {
