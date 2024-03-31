@@ -16,6 +16,7 @@ import {
   handleIncorrectGuess,
   handleCorrectGuess,
   calculatePlacement,
+  calculateQualified,
 } from "~/utils/elimination";
 import AnimateLetter from "../animated-letter";
 import { checkSpelling } from "~/utils/survival/surivival";
@@ -45,11 +46,14 @@ const Elimination: React.FC<EliminationProps> = ({
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [isIncorrectGuess, setIsIncorrectGuess] = useState<boolean>(false);
   const [guess, setGuess] = useState<string>("");
+  const [gameTimer, setGameTimer] = useState<number>(0);
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     if (
       lobbyData.gameStarted === false ||
-      playerData?.points >= lobbyData.pointsGoal
+      playerData?.points >= lobbyData.pointsGoal ||
+      lobbyData.winner ||
+      lobbyData.nextRoundStartTime
     )
       return;
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -104,34 +108,29 @@ const Elimination: React.FC<EliminationProps> = ({
   if (gameData) {
     return (
       <div className="flex w-screen flex-grow justify-center">
-        {lobbyData?.nextRoundStartTime &&
-          new Date(lobbyData.nextRoundStartTime).getTime() >
-            Math.floor(new Date().getTime()) && (
-            <Modal>
-              <NextRoundTimer
-                nextRoundStartTime={lobbyData.nextRoundStartTime}
-              />
-            </Modal>
-          )}
+        {lobbyData?.nextRoundStartTime && (
+          <Modal>
+            <NextRoundTimer nextRoundStartTime={lobbyData.nextRoundStartTime} />
+          </Modal>
+        )}
         <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
           {players &&
-            Object.keys(players)
-              .filter((id) => id !== userId)
-              .map((playerId: string, index: number) => {
-                if (index % 2 === 0) {
-                  return (
-                    <EliminationOpponent
-                      key={`index-${index}`}
-                      opponentCount={Object.keys(players).length}
-                      revealIndex={players[playerId]?.revealIndex}
-                      points={players[playerId]?.points ?? 0}
-                      pointsGoal={lobbyData.pointsGoal ?? 300}
-                      initials={players[playerId]?.initials}
-                      eliminated={players[playerId]?.eliminated}
-                    />
-                  );
-                }
-              })}
+            Object.keys(players).map((playerId: string, index: number) => {
+              if (playerId === userId) return;
+              if (index % 2 === 0) {
+                return (
+                  <EliminationOpponent
+                    key={`index-${index}`}
+                    opponentCount={Object.keys(players).length}
+                    revealIndex={players[playerId]?.revealIndex}
+                    points={players[playerId]?.points ?? 0}
+                    pointsGoal={lobbyData.pointsGoal ?? 300}
+                    initials={players[playerId]?.initials}
+                    eliminated={players[playerId]?.eliminated}
+                  />
+                );
+              }
+            })}
         </div>
 
         <div className="flex w-1/3 min-w-[370px] flex-col items-center justify-center">
@@ -178,16 +177,25 @@ const Elimination: React.FC<EliminationProps> = ({
 
                     <div className="flex items-center">
                       <div className="rounded-l-md border-2 border-zinc-800 bg-zinc-800 px-3 font-semibold text-white">
-                        <p>{calculatePlacement(gameData.players, userId)}</p>
-                        <p>place</p>
+                        <p>
+                          {players
+                            ? calculateQualified(
+                                players,
+                                lobbyData.pointsGoal,
+                                lobbyData.round,
+                              )
+                            : "ERROR"}
+                        </p>
+                        <p>Qualified</p>
                       </div>
                       <div className="flex h-full w-full flex-col justify-center rounded-r-md border-2 border-zinc-800 px-3">
                         <div>
-                          {lobbyData.roundTimer && (
-                            <RoundTimer
-                              expiryTimeStamp={lobbyData.roundTimer}
-                            />
-                          )}
+                          {lobbyData.roundTimer &&
+                            !lobbyData.nextRoundStartTime && (
+                              <RoundTimer
+                                expiryTimeStamp={lobbyData.roundTimer}
+                              />
+                            )}
 
                           <div className="flex justify-between text-center font-medium">
                             <p className="text-sm ">Word Value: </p>
@@ -238,23 +246,22 @@ const Elimination: React.FC<EliminationProps> = ({
         </div>
         <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
           {players &&
-            Object.keys(players)
-              .filter((id) => id !== userId)
-              .map((playerId: string, index: number) => {
-                if (index % 2 !== 0) {
-                  return (
-                    <EliminationOpponent
-                      key={index}
-                      opponentCount={Object.keys(players).length}
-                      revealIndex={players[playerId]?.revealIndex}
-                      points={players[playerId]?.points ?? 0}
-                      pointsGoal={lobbyData.pointsGoal ?? 300}
-                      initials={players[playerId]?.initials}
-                      eliminated={players[playerId]?.eliminated}
-                    />
-                  );
-                }
-              })}
+            Object.keys(players).map((playerId: string, index: number) => {
+              if (playerId === userId) return;
+              if (index % 2 !== 0) {
+                return (
+                  <EliminationOpponent
+                    key={index}
+                    opponentCount={Object.keys(players).length}
+                    revealIndex={players[playerId]?.revealIndex}
+                    points={players[playerId]?.points ?? 0}
+                    pointsGoal={lobbyData.pointsGoal ?? 300}
+                    initials={players[playerId]?.initials}
+                    eliminated={players[playerId]?.eliminated}
+                  />
+                );
+              }
+            })}
         </div>
       </div>
     );

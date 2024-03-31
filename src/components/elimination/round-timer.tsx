@@ -10,6 +10,7 @@ const RoundTimer: React.FC<RoundTimerProps> = (props: RoundTimerProps) => {
     autoStart: true,
   });
 
+  
   return (
     <div className="flex items-center justify-between text-center text-sm">
       <p className="font-medium">Time Left:</p>

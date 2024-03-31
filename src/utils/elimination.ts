@@ -46,6 +46,7 @@ export const joinEliminationLobby = async (
 export const handleCorrectGuess = async (
   path: string,
   playerObject: PlayerObject,
+  pointsGoal: number,
 ) => {
   const newWord = handleGetNewWord(5);
 
@@ -53,7 +54,10 @@ export const handleCorrectGuess = async (
     ...playerObject,
     word: newWord,
     wordValue: 100,
-    points: playerObject.wordValue + playerObject.points,
+    points:
+      playerObject.wordValue + playerObject.points >= pointsGoal
+        ? pointsGoal
+        : playerObject.wordValue + playerObject.points,
     matches: {
       full: [],
       partial: [],
@@ -123,4 +127,48 @@ export const calculatePlacement = (
   // filter out eliminated players
 
   return sortedPlayers.indexOf(playerId) + 1;
+};
+
+export const calculateSpots = (round: number, totalPlayers: number): number => {
+  // function to total players and bots if bots exist, if bots doesnt exist then return playerPoints.length
+  // function to calculate how many players and bots will be qualified for the next round
+  // , based off of the total number of players and bots and the round number
+  const calculateNumber = () => {
+    switch (round) {
+      case 1:
+        return totalPlayers / 1.4;
+      case 2:
+        return totalPlayers / 1.5;
+      case 3:
+        return totalPlayers / 1.8;
+      case 4:
+        return totalPlayers / 1.8;
+      case 5:
+        return totalPlayers / 2;
+      case 6:
+        return totalPlayers / 2;
+      default:
+        return totalPlayers / 2;
+    }
+  };
+
+  return Math.floor(calculateNumber());
+};
+
+export const calculateQualified = (
+  players: EliminationPlayerData,
+  pointsGoal: number,
+  round: number,
+) => {
+  const notEliminated = Object.keys(players).filter(
+    (playerId) => !players[playerId]?.eliminated,
+  );
+  const totalSpots = calculateSpots(round, notEliminated.length);
+
+  // calculate how many players are at or above the points goal
+  const totalQualifiedPlayers = Object.keys(players).filter(
+    (playerId) => players[playerId]!.points >= pointsGoal,
+  );
+
+  return `${totalQualifiedPlayers.length}/${totalSpots}`;
 };
