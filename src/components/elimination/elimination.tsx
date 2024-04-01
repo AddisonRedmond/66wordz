@@ -241,7 +241,7 @@ const Elimination: React.FC<EliminationProps> = ({
                       </div>
                     </div>
 
-                    {isMobile && <MobileOpponents opponents={players} />}
+                    {isMobile && <MobileOpponents userId={userId} opponents={players} pointsGoal={lobbyData.pointsGoal} />}
 
                     <div className="flex flex-col gap-2">
                       <PointsContainer
