@@ -9,6 +9,8 @@ export type EliminationLobbyData = {
   roundTimer?: number;
   pointsGoal: number;
   winner?: string;
+  totalSpots: number;
+  finalRound: boolean;
 };
 
 export type PlayerObject = {

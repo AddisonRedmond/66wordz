@@ -14,6 +14,8 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
     gameStartTime: new Date().getTime() + 30000,
     pointsGoal: 300,
     roundTimer: new Date().getTime() + 180000,
+    totalSpots: 0,
+    finalRound: false,
   };
   await set(ref(db, `ELIMINATION/${lobbyId}`), {
     lobbyData: lobbyData,
@@ -158,13 +160,8 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
 export const calculateQualified = (
   players: EliminationPlayerData,
   pointsGoal: number,
-  round: number,
+  totalSpots: number,
 ) => {
-  const notEliminated = Object.keys(players).filter(
-    (playerId) => !players[playerId]?.eliminated,
-  );
-  const totalSpots = calculateSpots(round, notEliminated.length);
-
   // calculate how many players are at or above the points goal
   const totalQualifiedPlayers = Object.keys(players).filter(
     (playerId) => players[playerId]!.points >= pointsGoal,

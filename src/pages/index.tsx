@@ -114,11 +114,11 @@ const Home = () => {
   return (
     <>
       <Navbar key="navbar" />
-      <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
+      <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
         <div className="flex flex-col gap-3">
           {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
-            <>
+            <div className="flex flex-col justify-center mb-5">
               <p className="text-xl font-semibold">Join Custom Lobby</p>
               <button
                 onClick={() => setIsJoinLobby(true)}
@@ -126,7 +126,7 @@ const Home = () => {
               >
                 Join Lobby
               </button>
-            </>
+            </div>
           )}
         </div>
         <AnimatePresence>

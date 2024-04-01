@@ -15,7 +15,6 @@ import LoadingGame from "../loading-game";
 import {
   handleIncorrectGuess,
   handleCorrectGuess,
-  calculatePlacement,
   calculateQualified,
 } from "~/utils/elimination";
 import AnimateLetter from "../animated-letter";
@@ -90,6 +89,7 @@ const Elimination: React.FC<EliminationProps> = ({
         handleCorrectGuess(
           `${gameType}/${lobbyId}/players/${userId}`,
           playerData,
+          lobbyData.pointsGoal,
         );
         setGuess("");
       } else {
@@ -169,7 +169,11 @@ const Elimination: React.FC<EliminationProps> = ({
               {!playerData.eliminated && !lobbyData.winner && (
                 <>
                   <div className="flex h-1/2 flex-col justify-evenly text-center">
-                    <p className="text-xl font-semibold">{`Round ${lobbyData.round}`}</p>
+                    <p className="text-xl font-semibold">
+                      {lobbyData.finalRound
+                        ? "Final Round"
+                        : `Round ${lobbyData.round}`}
+                    </p>
                     <WordContainer
                       word={playerData?.word}
                       revealIndex={playerData?.revealIndex}
@@ -177,16 +181,22 @@ const Elimination: React.FC<EliminationProps> = ({
 
                     <div className="flex items-center">
                       <div className="rounded-l-md border-2 border-zinc-800 bg-zinc-800 px-3 font-semibold text-white">
-                        <p>
-                          {players
-                            ? calculateQualified(
-                                players,
-                                lobbyData.pointsGoal,
-                                lobbyData.round,
-                              )
-                            : "ERROR"}
-                        </p>
-                        <p>Qualified</p>
+                        {lobbyData.finalRound ? (
+                          <p className="text-2xl">👑</p>
+                        ) : (
+                          <>
+                            <p>
+                              {players
+                                ? calculateQualified(
+                                    players,
+                                    lobbyData.pointsGoal,
+                                    lobbyData.totalSpots,
+                                  )
+                                : "ERROR"}
+                            </p>
+                            <p>Qualified</p>
+                          </>
+                        )}
                       </div>
                       <div className="flex h-full w-full flex-col justify-center rounded-r-md border-2 border-zinc-800 px-3">
                         <div>
@@ -237,12 +247,14 @@ const Elimination: React.FC<EliminationProps> = ({
             </>
           )}
 
-          <button
-            onClick={() => exitMatch()}
-            className="mt-4 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-          >
-            QUIT
-          </button>
+          {!lobbyData.winner && (
+            <button
+              onClick={() => exitMatch()}
+              className="mt-4 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+            >
+              QUIT
+            </button>
+          )}
         </div>
         <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
           {players &&
