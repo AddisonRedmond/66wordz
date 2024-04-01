@@ -23,6 +23,7 @@ import RoundTimer from "./round-timer";
 import Modal from "../modal";
 import NextRoundTimer from "./next-round-timer";
 import Confetti from "react-confetti";
+import useSound from "use-sound";
 
 type EliminationProps = {
   lobbyId: string;
@@ -45,7 +46,17 @@ const Elimination: React.FC<EliminationProps> = ({
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [isIncorrectGuess, setIsIncorrectGuess] = useState<boolean>(false);
   const [guess, setGuess] = useState<string>("");
-  const [gameTimer, setGameTimer] = useState<number>(0);
+
+  const [popSound] = useSound("/sounds/pop-2.mp3", {
+    volume: .5,
+    playbackRate: 1.5,
+  });
+
+
+  const [deleteSound] = useSound("/sounds/delete2.mp3", {
+    volume: .5,
+    playbackRate: 2,
+  });
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     if (
@@ -64,6 +75,7 @@ const Elimination: React.FC<EliminationProps> = ({
     // if it is, dont add more letters
     if (key === "BACKSPACE") {
       if (guess.length === 0) return;
+      deleteSound();
       setGuess((prev) => prev.slice(0, -1));
     }
 
@@ -71,6 +83,7 @@ const Elimination: React.FC<EliminationProps> = ({
     // key needs to be one char, A-Z
     // if its not, return
     if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 5) {
+      popSound();
       setGuess((prev) => prev + key);
     }
 
@@ -180,9 +193,9 @@ const Elimination: React.FC<EliminationProps> = ({
                     />
 
                     <div className="flex items-center">
-                      <div className="rounded-l-md border-2 border-zinc-800 bg-zinc-800 px-3 font-semibold text-white">
+                      <div className="flex h-full flex-col justify-center rounded-l-md border-2 border-zinc-800 bg-zinc-800 px-3 font-semibold text-white">
                         {lobbyData.finalRound ? (
-                          <p className="text-2xl">👑</p>
+                          <p className="text-2xl ">👑</p>
                         ) : (
                           <>
                             <p>

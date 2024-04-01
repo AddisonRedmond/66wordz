@@ -57,12 +57,12 @@ const Survival: React.FC<SurvivalProps> = ({
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
 
-  const [popSound] = useSound("/sounds/pop.m4a", {
+  const [popSound] = useSound("/sounds/pop-2.mp3", {
     volume: 1,
     playbackRate: 1.5,
   });
 
-  const [deleteSound] = useSound("/sounds/delete.m4a", {
+  const [deleteSound] = useSound("/sounds/delete2.mp3", {
     volume: 1,
     playbackRate: 1.5,
   });
