@@ -2,27 +2,16 @@ import { m } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
-import { api } from "~/utils/api";
-import getStripe from "~/utils/get-stripejs";
+
 import Link from "next/link";
 type DesktopNavbarProps = {
   isPremiumUser: boolean | undefined;
+  handleUpgrade: () => void;
 };
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
-  const upgrade = api.upgrade.createCheckout.useMutation();
-
-  const handleUpgrade = async () => {
-    const checkoutURL = await upgrade.mutateAsync();
-    const stripe = await getStripe();
-    console.log(checkoutURL);
-    if (stripe !== null && checkoutURL) {
-      await stripe.redirectToCheckout({ sessionId: checkoutURL });
-    }
-  };
-
   return (
     <m.div
       initial={{ opacity: 0 }}
@@ -38,7 +27,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
       <div className="flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         {!props.isPremiumUser && (
           <button
-            onClick={() => handleUpgrade()}
+            onClick={() => props.handleUpgrade()}
             className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500"
           >
             Upgrade

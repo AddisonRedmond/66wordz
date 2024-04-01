@@ -2,8 +2,9 @@ import { m } from "framer-motion";
 
 type TileProps = {
   letters: string;
-  backgroundColor?: string;
+  bg?: string;
   desktopOnly?: boolean;
+  textColor?: string;
 };
 
 const Tile: React.FC<TileProps> = (props: TileProps) => {
@@ -45,7 +46,6 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
     "8",
     "9",
   ];
-
   return (
     <m.div
       initial={{ scale: 0, opacity: 0 }}
@@ -57,9 +57,9 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
         return (
           <div
             key={index}
-            className={`flex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-semibold text-white ${
-              props.backgroundColor ? props.backgroundColor : "bg-[#9462C6]"
-            }`}
+            className={`flex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-bold  ${
+              props.bg ? props.bg : "bg-[#9462C6]"
+            } ${props.textColor ? props.textColor : "text-white"} `}
           >
             {alphabet.map((alphabetLetter: string, index: number) => {
               return (

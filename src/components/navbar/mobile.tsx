@@ -4,14 +4,17 @@ import burger from "../../../public/burger.svg";
 import profile from "../../../public/profile.png";
 import signout from "../../../public/signout.svg";
 import home from "../../../public/home.png";
+import upgrade from "../../../public/upgrade.png";
+
 import { signOut } from "next-auth/react";
 
 import Link from "next/link";
 type MobileNavbarProps = {
   menuIsOpen: boolean;
   setMenuIsOpen: (isOpen: boolean) => void;
+  handleUpgrade: () => void;
 };
-const MobielNavbar: React.FC<MobileNavbarProps> = (
+const MobileNavbar: React.FC<MobileNavbarProps> = (
   props: MobileNavbarProps,
 ) => {
   return (
@@ -19,7 +22,7 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute top-0 z-10 flex h-14 w-screen items-center justify-between bg-white"
+      className="top-0 z-10 flex h-14 w-screen flex-grow items-center justify-between bg-white"
     >
       <AnimatePresence>
         {props.menuIsOpen && (
@@ -60,6 +63,18 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
               </Link>
 
               <div
+                onClick={() => props.handleUpgrade()}
+                className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
+              >
+                <p>Upgrade</p>
+                <Image
+                  height={28}
+                  width={28}
+                  src={upgrade}
+                  alt="upgrade icon"
+                />
+              </div>
+              <div
                 onClick={() => signOut()}
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
               >
@@ -93,4 +108,4 @@ const MobielNavbar: React.FC<MobileNavbarProps> = (
   );
 };
 
-export default MobielNavbar;
+export default MobileNavbar;

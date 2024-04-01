@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { AuthContext, authRequired } from "~/utils/authRequired";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import { useState } from "react";
@@ -12,7 +12,7 @@ import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
-import { getRemaningGames } from "~/utils/game-limit";
+import { getRemaningGames, isPremiumUser } from "~/utils/game-limit";
 import EliminationImage from "../../public/elimination.png";
 import Elimination from "~/components/elimination/elimination";
 import Modal from "~/components/modal";
@@ -112,10 +112,10 @@ const Home = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col flex-grow">
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
-        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
+        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} isPremiumUser={premiumUser.data?.isPremiumUser} />
         <div className="flex flex-col gap-3">
           {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
             <div className="flex flex-col justify-center mb-5">
@@ -193,7 +193,7 @@ const Home = () => {
           )}
         </AnimatePresence>
       </div>
-    </>
+    </div>
   );
 };
 export default Home;
