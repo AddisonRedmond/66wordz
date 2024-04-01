@@ -1,6 +1,7 @@
 import { GameType } from "@prisma/client";
 import useEliminationData, {
   EliminationLobbyData,
+  EliminationPlayerData,
   PlayerObject,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
@@ -24,6 +25,8 @@ import Modal from "../modal";
 import NextRoundTimer from "./next-round-timer";
 import Confetti from "react-confetti";
 import useSound from "use-sound";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import MobileOpponents from "./mobile-opponents";
 
 type EliminationProps = {
   lobbyId: string;
@@ -42,19 +45,19 @@ const Elimination: React.FC<EliminationProps> = ({
   const gameData = useEliminationData(db, { userId, lobbyId, gameType });
   const playerData = gameData?.players[userId] as PlayerObject;
   const lobbyData = gameData?.lobbyData as EliminationLobbyData;
-  const players = gameData?.players;
+  const players: EliminationPlayerData | undefined = gameData?.players;
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [isIncorrectGuess, setIsIncorrectGuess] = useState<boolean>(false);
   const [guess, setGuess] = useState<string>("");
+  const isMobile = useIsMobile();
 
   const [popSound] = useSound("/sounds/pop-2.mp3", {
-    volume: .5,
+    volume: 0.5,
     playbackRate: 1.5,
   });
 
-
   const [deleteSound] = useSound("/sounds/delete2.mp3", {
-    volume: .5,
+    volume: 0.5,
     playbackRate: 2,
   });
 
@@ -126,26 +129,27 @@ const Elimination: React.FC<EliminationProps> = ({
             <NextRoundTimer nextRoundStartTime={lobbyData.nextRoundStartTime} />
           </Modal>
         )}
-        <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
-          {players &&
-            Object.keys(players).map((playerId: string, index: number) => {
-              if (playerId === userId) return;
-              if (index % 2 === 0) {
-                return (
-                  <EliminationOpponent
-                    key={`index-${index}`}
-                    opponentCount={Object.keys(players).length}
-                    revealIndex={players[playerId]?.revealIndex}
-                    points={players[playerId]?.points ?? 0}
-                    pointsGoal={lobbyData.pointsGoal ?? 300}
-                    initials={players[playerId]?.initials}
-                    eliminated={players[playerId]?.eliminated}
-                  />
-                );
-              }
-            })}
-        </div>
-
+        {!isMobile && (
+          <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
+            {players &&
+              Object.keys(players).map((playerId: string, index: number) => {
+                if (playerId === userId) return;
+                if (index % 2 === 0) {
+                  return (
+                    <EliminationOpponent
+                      key={`index-${index}`}
+                      opponentCount={Object.keys(players).length}
+                      revealIndex={players[playerId]?.revealIndex}
+                      points={players[playerId]?.points ?? 0}
+                      pointsGoal={lobbyData.pointsGoal ?? 300}
+                      initials={players[playerId]?.initials}
+                      eliminated={players[playerId]?.eliminated}
+                    />
+                  );
+                }
+              })}
+          </div>
+        )}
         <div className="flex w-1/3 min-w-[370px] flex-col items-center justify-center">
           {!lobbyData.gameStarted ? (
             <div className="mb-5">
@@ -181,7 +185,7 @@ const Elimination: React.FC<EliminationProps> = ({
 
               {!playerData.eliminated && !lobbyData.winner && (
                 <>
-                  <div className="flex h-1/2 flex-col justify-evenly text-center">
+                  <div className="flex h-1/2 flex-col justify-evenly gap-2 text-center">
                     <p className="text-xl font-semibold">
                       {lobbyData.finalRound
                         ? "Final Round"
@@ -211,6 +215,7 @@ const Elimination: React.FC<EliminationProps> = ({
                           </>
                         )}
                       </div>
+
                       <div className="flex h-full w-full flex-col justify-center rounded-r-md border-2 border-zinc-800 px-3">
                         <div>
                           {lobbyData.roundTimer &&
@@ -236,6 +241,8 @@ const Elimination: React.FC<EliminationProps> = ({
                       </div>
                     </div>
 
+                    {isMobile && <MobileOpponents opponents={players} />}
+
                     <div className="flex flex-col gap-2">
                       <PointsContainer
                         points={playerData?.points ?? 0}
@@ -250,11 +257,13 @@ const Elimination: React.FC<EliminationProps> = ({
                       />
                     </div>
                   </div>
-                  <Keyboard
-                    disabled={false}
-                    handleKeyBoardLogic={handleKeyBoardLogic}
-                    matches={playerData?.matches}
-                  />
+                  <div className="mt-20 grid w-full place-items-center">
+                    <Keyboard
+                      disabled={false}
+                      handleKeyBoardLogic={handleKeyBoardLogic}
+                      matches={playerData?.matches}
+                    />
+                  </div>
                 </>
               )}
             </>
@@ -269,25 +278,27 @@ const Elimination: React.FC<EliminationProps> = ({
             </button>
           )}
         </div>
-        <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
-          {players &&
-            Object.keys(players).map((playerId: string, index: number) => {
-              if (playerId === userId) return;
-              if (index % 2 !== 0) {
-                return (
-                  <EliminationOpponent
-                    key={index}
-                    opponentCount={Object.keys(players).length}
-                    revealIndex={players[playerId]?.revealIndex}
-                    points={players[playerId]?.points ?? 0}
-                    pointsGoal={lobbyData.pointsGoal ?? 300}
-                    initials={players[playerId]?.initials}
-                    eliminated={players[playerId]?.eliminated}
-                  />
-                );
-              }
-            })}
-        </div>
+        {!isMobile && (
+          <div className="flex w-1/3 flex-wrap items-center justify-center gap-3 gap-x-1 gap-y-2">
+            {players &&
+              Object.keys(players).map((playerId: string, index: number) => {
+                if (playerId === userId) return;
+                if (index % 2 !== 0) {
+                  return (
+                    <EliminationOpponent
+                      key={index}
+                      opponentCount={Object.keys(players).length}
+                      revealIndex={players[playerId]?.revealIndex}
+                      points={players[playerId]?.points ?? 0}
+                      pointsGoal={lobbyData.pointsGoal ?? 300}
+                      initials={players[playerId]?.initials}
+                      eliminated={players[playerId]?.eliminated}
+                    />
+                  );
+                }
+              })}
+          </div>
+        )}
       </div>
     );
   }

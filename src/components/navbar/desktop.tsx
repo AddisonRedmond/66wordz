@@ -6,7 +6,6 @@ import { api } from "~/utils/api";
 import getStripe from "~/utils/get-stripejs";
 import Link from "next/link";
 type DesktopNavbarProps = {
-  issueModalIsOpen: (isOpen: boolean) => void;
   isPremiumUser: boolean | undefined;
 };
 

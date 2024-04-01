@@ -135,7 +135,6 @@ const Navbar: React.FC = () => {
         <MobielNavbar menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
       ) : (
         <DesktopNavbar
-          issueModalIsOpen={setShowModal}
           isPremiumUser={isPremiumUser.data?.isPremiumUser}
         />
       )}

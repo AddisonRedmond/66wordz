@@ -16,11 +16,11 @@ const Modal: React.FC<Modal> = (
         className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gray-400 bg-opacity-50"
       >
         <m.dialog
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
+          initial={{ opacity: 0  }}
+          animate={{ opacity: 1  }}
+          exit={{ opacity: 0 }}
           open={true}
-          className="relative z-50 m-auto  rounded-md py-2"
+          className="relative z-50 m-auto  rounded-md py-2 max-h-[90vh] overflow-scroll"
         >
           {props.children}
         </m.dialog>

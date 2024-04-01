@@ -32,7 +32,7 @@ const GuessContainer: React.FC<WordContainerProps> = (
     props.setIsIncorrectGuess(false);
   }, [props.isIncorrectGuess]);
   return (
-    <div ref={scope} className="flex h-[7vh] w-full flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2">
+    <div ref={scope} className="flex w-full sm:h-16  h-12 flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300">
       <AnimatePresence>
         {props.guess
           .toUpperCase()
@@ -45,7 +45,7 @@ const GuessContainer: React.FC<WordContainerProps> = (
                 exit={{ scale: 0 }}
                 transition={{ duration: 0.1, ease: "linear" }}
                 key={index}
-                className={`grid aspect-square h-[5vh] place-content-center rounded-md bg-white text-[4vh] font-bold`}
+                className={`grid aspect-square size-8  sm:size-12  place-content-center rounded-md bg-white text-[4vh] font-bold`}
               >
                 <p>{letter}</p>
               </m.div>

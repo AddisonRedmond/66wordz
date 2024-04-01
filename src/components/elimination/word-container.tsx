@@ -9,7 +9,7 @@ const WordContainer: React.FC<WordContainerProps> = (
   props: WordContainerProps,
 ) => {
   return (
-    <div className="flex w-fit flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2 duration-150 ease-in-out">
+    <div className="flex w-full flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2 duration-150 ease-in-out">
       {props.word
         ?.toUpperCase()
         .split("")
@@ -17,7 +17,7 @@ const WordContainer: React.FC<WordContainerProps> = (
           return (
             <div
               key={index}
-              className={`grid aspect-square h-[5vh] place-content-center rounded-md border-2 border-zinc-400 duration-200 ease-in-out ${props?.revealIndex?.includes(index) ? "bg-emerald-400" : "bg-white"} text-[4vh] font-bold`}
+              className={`grid aspect-square size-12  place-content-center rounded-md border-2 border-zinc-400 duration-200 ease-in-out ${props?.revealIndex?.includes(index) ? "bg-emerald-400" : "bg-white"} text-[4vh] font-bold`}
             >
               <AnimatePresence>
                 {props?.revealIndex?.includes(index) && (
