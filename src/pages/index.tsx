@@ -7,7 +7,10 @@ import { useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCard from "~/components/game-card";
+import GameCardV2 from "~/components/game-card-v2";
 import SurvivalImage from "../../public/survival.svg";
+import crown from "../../public/crown.png";
+
 import Rules from "~/components/rules";
 import { survivalRules } from "~/utils/survival/surivival";
 import CreateLobby from "~/components/create-lobby";
@@ -167,7 +170,7 @@ const Home = () => {
 
               {isCreateLobby === false && isJoinLobby === false && (
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  <GameCard
+                  {/* <GameCard
                     gameType="SURVIVAL"
                     gameAlt="skull and crossbones image"
                     gameImage={SurvivalImage}
@@ -176,8 +179,8 @@ const Home = () => {
                     rules={survivalRules}
                     enableCreateLobby={enableCreateLobby}
                     isPremiumUser={premiumUser.data?.isPremiumUser}
-                  />
-                  <GameCard
+                  /> */}
+                  {/* <GameCard
                     gameType="ELIMINATION"
                     gameAlt="Elimination image"
                     gameImage={EliminationImage}
@@ -186,7 +189,8 @@ const Home = () => {
                     rules={survivalRules}
                     enableCreateLobby={enableCreateLobby}
                     isPremiumUser={premiumUser.data?.isPremiumUser}
-                  />
+                  /> */}
+                  <GameCardV2 gameType="ELIMINATION" image={crown} />
                 </div>
               )}
             </div>
