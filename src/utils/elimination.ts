@@ -23,7 +23,6 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
 
 export const createCustomEliminationLobby = async (
   lobbyId: string,
-  owner: string,
 ) => {
   const lobbyData: Omit<EliminationLobbyData, "gameStartTime"> = {
     gameStarted: false,

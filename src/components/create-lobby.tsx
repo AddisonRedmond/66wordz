@@ -16,7 +16,6 @@ type CreateLobbyProps = {
 const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
   const [lobbyName, setLobbyName] = useState<string>("");
   const [passkey, setPasskey] = useState<string>("");
-  const [enableBots, setEnableBots] = useState<boolean>(false);
 
   const validateStringLength = (
     setStateFunc: React.Dispatch<React.SetStateAction<string>>,

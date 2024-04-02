@@ -8,6 +8,8 @@ import Navbar from "~/components/navbar/navbar";
 import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
+  const premiumUser = api.getUser.isPremiumUser.useQuery();
+
   const router = useRouter();
   useSession({
     required: true,
@@ -40,7 +42,7 @@ const Profile: NextPage = () => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
         <Toaster />
-        <Header isLoading={false} desktopOnly={false} />
+        <Header isLoading={false} desktopOnly={false} isPremiumUser={premiumUser.data?.isPremiumUser} />
         <div className="font-medium">
           {user.data?.image && (
             <Image

@@ -1,8 +1,7 @@
 import { ref, remove, set } from "firebase/database";
 import words from "./words";
 import { db } from "./firebase/firebase";
-import { SurvivalPlayerDataObject } from "./survival/surivival";
-import { EliminationPlayerObject } from "~/custom-hooks/useEliminationData";
+
 
 export type CustomEliminationLobby = {
   gameStarted: boolean;
@@ -19,8 +18,7 @@ export type CustomSurvivalLobby = {
 };
 
 export const handleGetNewWord = (): string => {
-  let randomIndex;
-  randomIndex = Math.floor(Math.random() * words.length);
+  const randomIndex = Math.floor(Math.random() * words.length);
   return words[randomIndex]!;
 };
 
