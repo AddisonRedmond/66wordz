@@ -11,9 +11,10 @@ export type EliminationLobbyData = {
   winner?: string;
   totalSpots: number;
   finalRound: boolean;
+  owner?: string;
 };
 
-export type PlayerObject = {
+export type EliminationPlayerObject = {
   points: number;
   initials?: string;
   isBot: boolean;
@@ -29,7 +30,7 @@ export type PlayerObject = {
 };
 
 export type EliminationPlayerData = {
-  [keyof: string]: PlayerObject;
+  [keyof: string]: EliminationPlayerObject;
 };
 
 export type GameData = {

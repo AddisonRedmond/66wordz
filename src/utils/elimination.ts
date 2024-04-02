@@ -3,7 +3,7 @@ import { db } from "./firebase/firebase";
 import {
   EliminationLobbyData,
   EliminationPlayerData,
-  PlayerObject,
+  EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
@@ -13,7 +13,22 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
     round: 1,
     gameStartTime: new Date().getTime() + 30000,
     pointsGoal: 300,
-    roundTimer: new Date().getTime() + 180000,
+    totalSpots: 0,
+    finalRound: false,
+  };
+  await set(ref(db, `ELIMINATION/${lobbyId}`), {
+    lobbyData: lobbyData,
+  });
+};
+
+export const createCustomEliminationLobby = async (
+  lobbyId: string,
+  owner: string,
+) => {
+  const lobbyData: Omit<EliminationLobbyData, "gameStartTime"> = {
+    gameStarted: false,
+    round: 1,
+    pointsGoal: 300,
     totalSpots: 0,
     finalRound: false,
   };
@@ -25,14 +40,14 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
 export const joinEliminationLobby = async (
   playerId: string,
   lobbyId: string,
-  userName: string,
+  fullName: string | null,
 ) => {
   const player: EliminationPlayerData = {
     [playerId]: {
       points: 0,
       isBot: false,
-      initials: getInitials(userName),
-      word: handleGetNewWord(5),
+      initials: getInitials(fullName) ?? "N/A",
+      word: handleGetNewWord(),
       wordValue: 100,
       matches: { full: [], partial: [], none: [] },
       revealIndex: [],
@@ -47,10 +62,10 @@ export const joinEliminationLobby = async (
 
 export const handleCorrectGuess = async (
   path: string,
-  playerObject: PlayerObject,
+  playerObject: EliminationPlayerObject,
   pointsGoal: number,
 ) => {
-  const newWord = handleGetNewWord(5);
+  const newWord = handleGetNewWord();
 
   await update(ref(db, path), {
     ...playerObject,
@@ -90,7 +105,7 @@ const getRevealIndex = (
 
 export const handleIncorrectGuess = async (
   path: string,
-  playerObject: PlayerObject,
+  playerObject: EliminationPlayerObject,
   guess: string,
 ) => {
   // get reveal index from function
@@ -168,4 +183,19 @@ export const calculateQualified = (
   );
 
   return `${totalQualifiedPlayers.length}/${totalSpots}`;
+};
+
+export const createEliminationPlayer = (
+  fullName: string,
+): EliminationPlayerObject => {
+  return {
+    points: 0,
+    initials: getInitials(fullName),
+    isBot: false,
+    word: handleGetNewWord(),
+    wordValue: 100,
+    matches: { full: [], partial: [], none: [] },
+    revealIndex: [],
+    eliminated: false,
+  };
 };

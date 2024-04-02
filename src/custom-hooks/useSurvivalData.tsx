@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
-import { PlayerData } from "~/utils/survival/surivival";
+import { SurvivalPlayerData } from "~/utils/survival/surivival";
 
 // todo: add word expiration timer
 
@@ -13,7 +13,7 @@ export type GameData = {
     owner?: string;
     passkey?: string;
   };
-  players: PlayerData;
+  players: SurvivalPlayerData;
 };
 
 const useSurvialData = (

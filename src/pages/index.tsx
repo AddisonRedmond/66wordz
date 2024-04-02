@@ -6,19 +6,13 @@ import Header from "~/components/hearder";
 import { useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
-import GameCard from "~/components/game-card";
 import GameCardV2 from "~/components/game-card-v2";
-import SurvivalImage from "../../public/survival.svg";
 import crown from "../../public/crown.png";
-
-import Rules from "~/components/rules";
-import { survivalRules } from "~/utils/survival/surivival";
+import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
-import EliminationImage from "../../public/elimination.png";
 import Elimination from "~/components/elimination/elimination";
-import Modal from "~/components/modal";
 import Navbar from "~/components/navbar/navbar";
 import { useRouter } from "next/router";
 const Home = () => {
@@ -38,10 +32,7 @@ const Home = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const user = api.getUser.getUser.useQuery();
 
-  const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const [gameDescriptionOpen, setGameDescriptionOpen] =
-    useState<boolean>(false);
   const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
   const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
 
@@ -79,16 +70,6 @@ const Home = () => {
     setGameType(gameType);
   };
 
-  const handleGameDescription = (gameType: GameType) => {
-    setRules(survivalRules);
-    setGameType(gameType);
-    setGameDescriptionOpen(true);
-  };
-
-  const closeDescription = () => {
-    setGameDescriptionOpen(false);
-  };
-
   const handleStartGame = () => {
     if (lobby.data) {
       switch (lobby.data.gameType) {
@@ -115,13 +96,17 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col flex-grow">
+    <div className="flex flex-grow flex-col">
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
-        <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} isPremiumUser={premiumUser.data?.isPremiumUser} />
+        <Header
+          isLoading={lobby.isLoading}
+          desktopOnly={!!lobby.data?.id}
+          isPremiumUser={premiumUser.data?.isPremiumUser}
+        />
         <div className="flex flex-col gap-3">
           {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
-            <div className="flex flex-col justify-center mb-5">
+            <div className="mb-5 flex flex-col justify-center">
               <p className="text-xl font-semibold">Join Custom Lobby</p>
               <button
                 onClick={() => setIsJoinLobby(true)}
@@ -144,15 +129,7 @@ const Home = () => {
                     {getRemaningGames(user.data)} free games remaning
                   </p>
                 )}
-              {gameDescriptionOpen && (
-                <Modal>
-                  <Rules
-                    rules={rules}
-                    gameType={gameType}
-                    closeDescription={closeDescription}
-                  />
-                </Modal>
-              )}
+
               {isCreateLobby && (
                 <CreateLobby
                   setIsCreateLobby={setIsCreateLobby}
@@ -170,27 +147,21 @@ const Home = () => {
 
               {isCreateLobby === false && isJoinLobby === false && (
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  {/* <GameCard
-                    gameType="SURVIVAL"
-                    gameAlt="skull and crossbones image"
-                    gameImage={SurvivalImage}
-                    quickPlay={handleQuickPlay}
-                    handleDescription={handleGameDescription}
-                    rules={survivalRules}
-                    enableCreateLobby={enableCreateLobby}
-                    isPremiumUser={premiumUser.data?.isPremiumUser}
-                  /> */}
-                  {/* <GameCard
+
+                  <GameCardV2
                     gameType="ELIMINATION"
-                    gameAlt="Elimination image"
-                    gameImage={EliminationImage}
+                    image={crown}
+                    fullAccess={premiumUser.data?.isPremiumUser}
                     quickPlay={handleQuickPlay}
-                    handleDescription={handleGameDescription}
-                    rules={survivalRules}
                     enableCreateLobby={enableCreateLobby}
-                    isPremiumUser={premiumUser.data?.isPremiumUser}
-                  /> */}
-                  <GameCardV2 gameType="ELIMINATION" image={crown} />
+                  />
+                  <GameCardV2
+                    gameType="SURVIVAL"
+                    image={survival}
+                    fullAccess={premiumUser.data?.isPremiumUser}
+                    quickPlay={handleQuickPlay}
+                    enableCreateLobby={enableCreateLobby}
+                  />
                 </div>
               )}
             </div>

@@ -1,32 +1,24 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
-import { ref, set, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { db } from "~/utils/firebase/firebase";
-import { getInitials, handleGetNewWord } from "~/utils/game";
+import {
+  createCustomLobby,
+  createCustomSurvivalLobby,
+  getInitials,
+  createCustomEliminationLobby,
+} from "~/utils/game";
 import { env } from "~/env.mjs";
 import {
   hasBeen24Hours,
   hasMoreFreeGames,
   isPremiumUser,
 } from "~/utils/game-limit";
+import { joinSurivivalLobby } from "~/utils/survival/surivival";
+import { joinEliminationLobby } from "~/utils/elimination";
 
 const MAX_PLAYERS = 67;
-const ATTACK_VALUE = 90;
-const TYPE_VALUE = 70;
-
-type PlayerDataObject = {
-  health: number;
-  shield: number;
-  eliminated: boolean;
-  initials: string;
-  word: {
-    word: string;
-    type: string;
-    value: number;
-    attack: number;
-  };
-};
 
 export const createLobbyRouter = createTRPCRouter({
   createLobby: protectedProcedure
@@ -39,20 +31,25 @@ export const createLobbyRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // check if player has reached the max number of games for the day
+      // check if user is premium user
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
       });
+
+      if (!user) return null;
+
       const isPremiumUser = () => {
         if (user?.currentPeriodEnd === null) return false;
-        return user!.currentPeriodEnd > Date.now() / 1000;
+        return user.currentPeriodEnd > Date.now() / 1000;
       };
 
       if (!isPremiumUser()) {
         return "User is not a premium user";
       }
+      //
 
-      const { lobbyName, passKey, enableBots } = input;
+      const { lobbyName, passKey, enableBots, gameType } = input;
+      // create unique lobby id "short"
       const uid = new ShortUniqueId({ length: 6 });
       const lobbyId = uid.rnd();
 
@@ -66,18 +63,19 @@ export const createLobbyRouter = createTRPCRouter({
           where: { id: existingGame.lobbyId },
         });
       }
+      //
 
       // create lobby in database,
       const newLobby = await ctx.db.lobby.create({
         data: {
           id: lobbyId,
-          gameType: "SURVIVAL",
+          gameType: gameType,
           name: lobbyName,
           passkey: passKey,
           bot: enableBots,
         },
       });
-
+      //
       // add user to lobby in database
       await ctx.db.players.create({
         data: {
@@ -85,50 +83,49 @@ export const createLobbyRouter = createTRPCRouter({
           lobbyId: newLobby.id,
         },
       });
-
+      //
       // create lobby in firebase
-      const playerInitials = getInitials(ctx.session.user.name);
-      const playerData: PlayerDataObject = {
-        health: 100,
-        shield: 50,
-        eliminated: false,
-        initials: playerInitials,
-        word: {
-          word: handleGetNewWord(5),
-          type: "shield",
-          value: TYPE_VALUE,
-          attack: ATTACK_VALUE,
-        },
+      const registerLobby = (url: string) => {
+        try {
+          fetch(url, {
+            method: "POST",
+            body: JSON.stringify({
+              lobbyId: newLobby.id,
+              enableBots: true,
+            }),
+          });
+        } catch (e) {
+          console.log(e);
+        }
       };
+      switch (gameType) {
+        case "ELIMINATION":
+          const eliminationLobby = createCustomEliminationLobby(user.id);
+          const newLobbyCreated = await createCustomLobby(
+            `ELIMINATION/${lobbyId}`,
+            eliminationLobby,
+          );
 
-      await set(ref(db, `SURVIVAL/`), {
-        [lobbyId]: {
-          lobbyData: {
-            name: lobbyName,
-            passkey: passKey,
-            gameStarted: false,
-            initialStartTime: new Date().getTime(),
-            owner: ctx.session.user.id,
-          },
-          players: {
-            [ctx.session.user.id]: playerData,
-          },
-        },
-      });
+          if (newLobbyCreated) {
+            registerLobby(
+              `${env.BOT_SERVER}/register_custom_elimination_lobby`,
+            );
+            joinEliminationLobby(user.id, newLobby.id, user.name);
+          }
+          break;
+        case "SURVIVAL":
+          const survivalLobby = createCustomSurvivalLobby(user.id);
+          const newSurvivalLobby = await createCustomLobby(
+            `SURVIVAL/${lobbyId}`,
+            survivalLobby,
+          );
 
-      try {
-        fetch(`${env.BOT_SERVER}/register_custom_survival_lobby`, {
-          method: "POST",
-          body: JSON.stringify({
-            lobbyId: newLobby.id,
-            enableBots: enableBots,
-          }),
-        });
-      } catch (e) {
-        console.log(e);
+          if (newSurvivalLobby) {
+            registerLobby(`${env.BOT_SERVER}/register_custom_survival_lobby`);
+            joinSurivivalLobby(newLobby.id, user.id, user.name);
+          }
+          break;
       }
-
-      return newLobby;
 
       // tell game server to start game with or without bots
     }),
@@ -201,22 +198,14 @@ export const createLobbyRouter = createTRPCRouter({
       });
       // add user to firebase lobby
       const playerInitials = getInitials(ctx.session.user.name);
-      const playerData = {
-        health: 100,
-        shield: 50,
-        eliminated: false,
-        initials: playerInitials,
-        word: {
-          word: handleGetNewWord(5),
-          type: "shield",
-          value: TYPE_VALUE,
-          attack: ATTACK_VALUE,
-        },
-      };
-
-      await update(ref(db, `SURVIVAL/${lobby.id}/players/`), {
-        [ctx.session.user.id]: playerData,
-      });
+      switch (lobby.gameType) {
+        case "SURVIVAL":
+          joinSurivivalLobby(lobby.id, ctx.session.user.id, playerInitials);
+          break;
+        case "ELIMINATION":
+          joinEliminationLobby(ctx.session.user.id, lobby.id, playerInitials);
+          break;
+      }
     }),
 
   startGame: protectedProcedure.mutation(async ({ ctx }) => {

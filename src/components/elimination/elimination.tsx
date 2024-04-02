@@ -2,7 +2,7 @@ import { GameType } from "@prisma/client";
 import useEliminationData, {
   EliminationLobbyData,
   EliminationPlayerData,
-  PlayerObject,
+  EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
@@ -42,7 +42,7 @@ const Elimination: React.FC<EliminationProps> = ({
   exitMatch,
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { userId, lobbyId, gameType });
-  const playerData = gameData?.players[userId] as PlayerObject;
+  const playerData = gameData?.players[userId] as EliminationPlayerObject;
   const lobbyData = gameData?.lobbyData as EliminationLobbyData;
   const players: EliminationPlayerData | undefined = gameData?.players;
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
@@ -153,6 +153,7 @@ const Elimination: React.FC<EliminationProps> = ({
           {!lobbyData.gameStarted ? (
             <div className="mb-5">
               <LoadingGame
+                gameOwner={lobbyData?.owner}
                 expiryTimestamp={new Date(lobbyData.gameStartTime)}
                 lobbyId={lobbyId}
                 startGame={() => {

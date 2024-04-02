@@ -19,10 +19,10 @@ const Header: React.FC<HeaderProps> = ({
       <m.div className="relative mb-4 flex h-1/5 flex-col items-center gap-3">
         <Sparkle
           color={"#D4B40E"}
-          count={40}
+          count={5}
           minSize={5}
           maxSize={15}
-          overflowPx={30}
+          overflowPx={10}
           fadeOutSpeed={20}
           newSparkleOnFadeOut={true}
           flicker={false}
