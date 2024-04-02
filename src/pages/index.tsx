@@ -61,13 +61,22 @@ const Home = () => {
     gameType: GameType,
     passKey?: string,
   ) => {
-    await createLobby.mutateAsync({ lobbyName, passKey, enableBots, gameType });
-    lobby.refetch();
+    if (premiumUser.data?.isPremiumUser) {
+      await createLobby.mutateAsync({
+        lobbyName,
+        passKey,
+        enableBots,
+        gameType,
+      });
+      lobby.refetch();
+    }
   };
 
   const enableCreateLobby = (gameType: GameType) => {
-    setIsCreateLobby(true);
-    setGameType(gameType);
+    if (premiumUser.data?.isPremiumUser) {
+      setIsCreateLobby(true);
+      setGameType(gameType);
+    }
   };
 
   const handleStartGame = () => {
@@ -147,7 +156,6 @@ const Home = () => {
 
               {isCreateLobby === false && isJoinLobby === false && (
                 <div className="flex flex-wrap items-center justify-center gap-3">
-
                   <GameCardV2
                     gameType="ELIMINATION"
                     image={crown}
