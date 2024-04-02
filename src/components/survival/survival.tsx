@@ -20,7 +20,7 @@ import {
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
-import LoadingGame from "./loading-game";
+import LoadingGame from "../loading-game";
 import { AnimatePresence, useAnimate } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";
@@ -46,7 +46,6 @@ const Survival: React.FC<SurvivalProps> = ({
   const gameData = useSurvialData(db, { userId, lobbyId, gameType });
 
   const startGame = api.createGame.startGame.useMutation();
-  const incrementGamesPlayed = api.getUser.incrementFreeGameCount.useMutation();
 
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
@@ -58,12 +57,12 @@ const Survival: React.FC<SurvivalProps> = ({
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
 
-  const [popSound] = useSound("/sounds/pop.m4a", {
+  const [popSound] = useSound("/sounds/pop-2.mp3", {
     volume: 1,
     playbackRate: 1.5,
   });
 
-  const [deleteSound] = useSound("/sounds/delete.m4a", {
+  const [deleteSound] = useSound("/sounds/delete2.mp3", {
     volume: 1,
     playbackRate: 1.5,
   });
@@ -80,13 +79,6 @@ const Survival: React.FC<SurvivalProps> = ({
       animate(scope.current, control, { duration: 1.5 });
     }
   }, [correctGuess]);
-
-  useEffect(() => {
-    if (gameData?.lobbyData.gameStarted === true) {
-      // increment games played for user
-      incrementGamesPlayed.mutate();
-    }
-  }, [gameData?.lobbyData.gameStarted]);
 
   const targetOpponent = (playerId: string) => {
     if (

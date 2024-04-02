@@ -1,7 +1,7 @@
 import { useTimer } from "react-timer-hook";
-import Tile from "../tile";
+import Tile from "./tile";
 import Image from "next/image";
-import copy from "../../../public/copy.svg";
+import copy from "../../public/copy.svg";
 
 type LoadingGameProps = {
   expiryTimestamp: Date;
@@ -46,12 +46,12 @@ const LoadingCustomGame = (
           >
             Start Game
           </button>
-          <button
+          {/* <button
             className={`rounded-full border-2 border-zinc-800 bg-white p-2 text-black  duration-150 ease-in-out hover:bg-zinc-300`}
             onClick={() => props.exitMatch()}
           >
             Cancel
-          </button>
+          </button> */}
         </div>
       )}
     </div>
@@ -71,7 +71,7 @@ const LoadingQuickPlayGame = (props: LoadingGameProps) => {
       <div className="mt-2 flex justify-center gap-2">
         <div className="flex flex-col items-center">
           <Tile
-            backgroundColor="bg-zinc-800"
+            bg="bg-zinc-800"
             letters={`${totalSeconds < 10 ? "0" : ""}${totalSeconds}`}
           />
         </div>

@@ -3,12 +3,12 @@ import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
-import { PlayerData } from "~/utils/survival/surivival";
+import { SurvivalPlayerData } from "~/utils/survival/surivival";
 import bot from "../../../public/bot.svg";
 import Image from "next/image";
 import { AutoAttackOption } from "./survival";
 type MobileAttackProps = {
-  players: PlayerData;
+  players: SurvivalPlayerData;
   userId: string;
   setMobileMenuOpen: (isOpen: boolean) => void;
   setAutoAttack: (autoAttack: AutoAttackOption) => void;

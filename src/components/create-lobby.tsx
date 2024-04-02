@@ -1,3 +1,4 @@
+import { GameType } from "@prisma/client";
 import { m } from "framer-motion";
 import { useState } from "react";
 
@@ -6,14 +7,15 @@ type CreateLobbyProps = {
   handleCreateLobby: (
     lobbyName: string,
     enableBots: boolean,
+    gameType: GameType,
     passKey?: string | undefined,
   ) => void;
+  gameType: GameType;
 };
 
 const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
   const [lobbyName, setLobbyName] = useState<string>("");
   const [passkey, setPasskey] = useState<string>("");
-  const [enableBots, setEnableBots] = useState<boolean>(false);
 
   const validateStringLength = (
     setStateFunc: React.Dispatch<React.SetStateAction<string>>,
@@ -36,7 +38,13 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
       exit={{ scale: 0 }}
       className="flex flex-col gap-2"
     >
-      <h2 className="text-xl font-semibold">Create Survival Lobby</h2>
+      <h2 className="text-xl font-semibold">
+        Create{" "}
+        <span className="text-xl font-bold text-zinc-600">
+          {props.gameType}
+        </span>{" "}
+        Lobby
+      </h2>
       <div className="flex flex-col">
         <label htmlFor="lobby-name" className="font-semibold">
           Lobby Name
@@ -60,20 +68,11 @@ const CreateLobby: React.FC<CreateLobbyProps> = (props: CreateLobbyProps) => {
           className="h-10 rounded-full border-4 border-black text-center"
         />
       </div>
-      <div className="my-5 flex items-center justify-between">
-        <label htmlFor="lobby-name" className="font-semibold">
-          Enable Bots
-        </label>
-        <input
-          onChange={(event) => setEnableBots(event.target.checked)}
-          id="lobby-name"
-          type="checkbox"
-          className="aspect-square h-7 rounded-full border-4 border-black text-center accent-[#9462C6]"
-        />
-      </div>
       <button
         disabled={lobbyName.length < 1 || lobbyName.length > 20}
-        onClick={() => props.handleCreateLobby(lobbyName, enableBots, passkey)}
+        onClick={() =>
+          props.handleCreateLobby(lobbyName, true, props.gameType, passkey)
+        }
         className=" h-10 rounded-full bg-black text-xl font-medium text-white duration-150 ease-in-out hover:bg-zinc-500 disabled:cursor-not-allowed disabled:opacity-10 disabled:hover:bg-black"
       >
         Create

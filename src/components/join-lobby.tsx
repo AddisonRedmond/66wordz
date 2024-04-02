@@ -22,7 +22,7 @@ const JoinLobby: React.FC<JoinLobbyProps> = (props: JoinLobbyProps) => {
       exit={{ scale: 0 }}
       className="flex flex-col gap-2"
     >
-      <h2 className="text-xl font-semibold">Join Survival Lobby</h2>
+      <h2 className="text-xl font-semibold">Join Lobby</h2>
       <div className="flex flex-col">
         <label htmlFor="lobby-id" className="font-semibold">
           Lobby Id

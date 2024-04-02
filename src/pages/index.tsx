@@ -1,33 +1,38 @@
 import { useSession } from "next-auth/react";
 import { AuthContext, authRequired } from "~/utils/authRequired";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import { useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
-import GameCard from "~/components/game-card";
-import SurvivalImage from "../../public/survival.svg";
-import EliminationModal from "~/elimination/elimination-modal";
-import Rules from "~/components/rules";
-import { survivalRules } from "~/utils/survival/surivival";
+import GameCardV2 from "~/components/game-card-v2";
+import crown from "../../public/crown.png";
+import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
+import Elimination from "~/components/elimination/elimination";
+import Navbar from "~/components/navbar/navbar";
+import { useRouter } from "next/router";
 const Home = () => {
-  const { data: session } = useSession();
-  const quickPlay = api.public.joinPublicGame.useMutation();
+  const router = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push("/login");
+    },
+  });
+
+  const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
-  const lobbyCleanUp = api.public.lobbyCleanUp.useMutation();
+  const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const user = api.getUser.getUser.useQuery();
 
-  const [rules, setRules] = useState<{ [header: string]: string[] }>({});
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const [gameDescriptionOpen, setGameDescriptionOpen] =
-    useState<boolean>(false);
   const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
   const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
 
@@ -53,20 +58,16 @@ const Home = () => {
   const handleCreateLobby = async (
     lobbyName: string,
     enableBots: boolean,
+    gameType: GameType,
     passKey?: string,
   ) => {
-    await createLobby.mutateAsync({ lobbyName, passKey, enableBots });
+    await createLobby.mutateAsync({ lobbyName, passKey, enableBots, gameType });
     lobby.refetch();
   };
 
-  const handleGameDescription = (gameType: GameType) => {
-    setRules(survivalRules);
+  const enableCreateLobby = (gameType: GameType) => {
+    setIsCreateLobby(true);
     setGameType(gameType);
-    setGameDescriptionOpen(true);
-  };
-
-  const closeDescription = () => {
-    setGameDescriptionOpen(false);
   };
 
   const handleStartGame = () => {
@@ -81,64 +82,93 @@ const Home = () => {
               exitMatch={exitMatch}
             />
           );
+        case "ELIMINATION":
+          return (
+            <Elimination
+              lobbyId={lobby.data.id}
+              userId={session!.user.id}
+              gameType={lobby.data.gameType}
+              exitMatch={exitMatch}
+            />
+          );
       }
     }
   };
+
   return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex min-h-screen min-w-[375px] flex-col items-center justify-evenly"
-    >
-      <Header isLoading={lobby.isLoading} desktopOnly={!!lobby.data?.id} />
-      <AnimatePresence>
-        {lobby.data?.id ? (
-          handleStartGame()
-        ) : (
-          <div className="flex flex-col flex-wrap justify-center gap-2 items-center">
-            {user.isSuccess && user.data && !premiumUser.data?.isPremiumUser &&  (
-              <p className="text-lg font-semibold">{getRemaningGames(user.data)} free games remaning</p>
-            )}
-            {gameDescriptionOpen && (
-              <EliminationModal>
-                <Rules
-                  rules={rules}
+    <div className="flex flex-grow flex-col">
+      <Navbar key="navbar" />
+      <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
+        <Header
+          isLoading={lobby.isLoading}
+          desktopOnly={!!lobby.data?.id}
+          isPremiumUser={premiumUser.data?.isPremiumUser}
+        />
+        <div className="flex flex-col gap-3">
+          {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
+            <div className="mb-5 flex flex-col justify-center">
+              <p className="text-xl font-semibold">Join Custom Lobby</p>
+              <button
+                onClick={() => setIsJoinLobby(true)}
+                className="rounded-full bg-black p-3 text-2xl font-semibold text-white duration-150 ease-in-out hover:bg-zinc-600"
+              >
+                Join Lobby
+              </button>
+            </div>
+          )}
+        </div>
+        <AnimatePresence>
+          {lobby.data?.id ? (
+            handleStartGame()
+          ) : (
+            <div className="flex flex-col flex-wrap items-center justify-center gap-2">
+              {user.isSuccess &&
+                user.data &&
+                !premiumUser.data?.isPremiumUser && (
+                  <p className="text-lg font-semibold">
+                    {getRemaningGames(user.data)} free games remaning
+                  </p>
+                )}
+
+              {isCreateLobby && (
+                <CreateLobby
+                  setIsCreateLobby={setIsCreateLobby}
+                  handleCreateLobby={handleCreateLobby}
                   gameType={gameType}
-                  closeDescription={closeDescription}
                 />
-              </EliminationModal>
-            )}
-            {isCreateLobby && (
-              <CreateLobby
-                setIsCreateLobby={setIsCreateLobby}
-                handleCreateLobby={handleCreateLobby}
-              />
-            )}
-            {isJoinLobby && (
-              <JoinLobby
-                errorMessage={joinLobby.data}
-                setIsJoinLobby={setIsJoinLobby}
-                handleJoinLobby={handleJoinLobby}
-              />
-            )}
-            {isCreateLobby === false && isJoinLobby === false && (
-              <GameCard
-                gameType="SURVIVAL"
-                gameAlt="skull and crossbones image"
-                gameImage={SurvivalImage}
-                quickPlay={handleQuickPlay}
-                handleDescription={handleGameDescription}
-                rules={survivalRules}
-                setIsCreateLobby={setIsCreateLobby}
-                setIsJoinLobby={setIsJoinLobby}
-                isPremiumUser={premiumUser.data?.isPremiumUser}
-              />
-            )}
-          </div>
-        )}
-      </AnimatePresence>
-    </m.div>
+              )}
+              {isJoinLobby && (
+                <JoinLobby
+                  errorMessage={joinLobby.data}
+                  setIsJoinLobby={setIsJoinLobby}
+                  handleJoinLobby={handleJoinLobby}
+                />
+              )}
+
+              {isCreateLobby === false && isJoinLobby === false && (
+                <div className="flex flex-wrap items-center justify-center gap-3">
+
+                  <GameCardV2
+                    gameType="ELIMINATION"
+                    image={crown}
+                    fullAccess={premiumUser.data?.isPremiumUser}
+                    quickPlay={handleQuickPlay}
+                    enableCreateLobby={enableCreateLobby}
+                  />
+                  <GameCardV2
+                    gameType="SURVIVAL"
+                    image={survival}
+                    fullAccess={premiumUser.data?.isPremiumUser}
+                    quickPlay={handleQuickPlay}
+                    enableCreateLobby={enableCreateLobby}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 };
 export default Home;

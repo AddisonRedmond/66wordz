@@ -1,6 +1,6 @@
 import { db } from "../firebase/firebase";
 import { ref, set, update } from "firebase/database";
-import { handleGetNewWord } from "../game";
+import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
@@ -17,6 +17,18 @@ export type WordObject = {
     partial: string[];
     none: string[];
   };
+};
+
+// name: lobbyName,
+// passkey: passKey,
+// gameStarted: false,
+// initialStartTime: new Date().getTime(),
+// owner: ctx.session.user.id,
+type CustomLobbyData = {
+  name: string;
+  gameStarted: boolean;
+  owner?: string;
+  initialStartTime: number;
 };
 
 export type WordLength =
@@ -38,7 +50,15 @@ export const survivalRules: { [header: string]: string[] } = {
   ],
 };
 
-export type PlayerData = {
+export type SurvivalPlayerDataObject = {
+  health: number;
+  shield: number;
+  eliminated: boolean;
+  initials: string;
+  word: WordObject;
+};
+
+export type SurvivalPlayerData = {
   [id: string]: {
     health: number;
     shield: number;
@@ -57,7 +77,7 @@ export type wordTimer = {
 };
 
 export const getPlayerPosition = (
-  players: PlayerData,
+  players: SurvivalPlayerData,
   autoAttack: AutoAttackOption,
   playerId: string,
 ): string => {
@@ -67,7 +87,7 @@ export const getPlayerPosition = (
   );
 
   // Sort the active players
-  const sortedPlayers: PlayerData = Object.fromEntries(
+  const sortedPlayers: SurvivalPlayerData = Object.fromEntries(
     Object.entries(activePlayers).sort(
       (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
     ),
@@ -103,15 +123,6 @@ export function getRandomNumber(min: number, max: number): number {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
 }
-
-export const getInitials = (fullName?: string | null): string => {
-  if (!fullName) {
-    return "";
-  }
-  const names = fullName.split(" ");
-  const initials = names.map((name) => name.charAt(0).toUpperCase()).join("");
-  return initials;
-};
 
 const getRandomType = (number: number) => {
   if (number % 2 === 0) {
@@ -166,16 +177,16 @@ export const createNewSurivivalLobby = async (lobbyId: string) => {
 export const joinSurivivalLobby = async (
   lobbyId: string,
   userId: string,
-  fullName: string,
+  fullName: string | null,
 ) => {
-  const newPlayer: PlayerData = {
+  const newPlayer: SurvivalPlayerData = {
     [userId]: {
       health: 100,
       shield: 50,
       eliminated: false,
-      initials: getInitials(fullName),
+      initials: getInitials(fullName) || "N/A",
       word: {
-        word: handleGetNewWord(5),
+        word: handleGetNewWord(),
         type: getRandomType(1),
         value: TYPE_VALUE,
         attack: ATTACK_VALUE,
@@ -208,7 +219,7 @@ export const handleCorrectGuess = async (
   };
   const createUpdatedWordValues = () => {
     return {
-      word: handleGetNewWord(5),
+      word: handleGetNewWord(),
       type: determineType(currentStatus),
       value: TYPE_VALUE,
       attack: ATTACK_VALUE,
@@ -281,38 +292,6 @@ export const handleAttack = async (
   return false;
 };
 
-export const handleMatched = (
-  guess: string,
-  word: string,
-  previousMatches?: {
-    full?: string[];
-    partial?: string[];
-    none?: string[];
-  },
-): { full: string[]; partial: string[]; none: string[] } => {
-  const full = new Set<string>([...(previousMatches?.full ?? [])]);
-  const partial = new Set<string>([...(previousMatches?.partial ?? [])]);
-  const none = new Set<string>([...(previousMatches?.none ?? [])]);
-
-  guess.split("").forEach((letter: string, index: number) => {
-    if (word[index] === letter) {
-      full.add(letter);
-    } else if (word.includes(letter)) {
-      partial.add(letter);
-    } else {
-      none.add(letter);
-    }
-  });
-
-  const matches = {
-    full: Array.from(full),
-    partial: Array.from(partial),
-    none: Array.from(none),
-  };
-
-  return matches;
-};
-
 export const handleIncorrectGuess = (
   guess: string,
   lobbyId: string,
@@ -332,4 +311,37 @@ export const handleIncorrectGuess = (
     ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word`),
     updatedWordData,
   );
+};
+
+export const createFirebaseSurvivalLobby = async (
+  lobbyId: string,
+  lobbyData: CustomLobbyData,
+  playerId: string,
+  playerInitials?: string,
+) => {
+  const playerData: SurvivalPlayerDataObject = {
+    health: 100,
+    shield: 50,
+    eliminated: false,
+    initials: playerInitials || "N/A",
+    word: {
+      word: handleGetNewWord(),
+      type: "shield",
+      value: TYPE_VALUE,
+      attack: ATTACK_VALUE,
+    },
+  };
+  try {
+    await set(ref(db, `SURVIVAL/`), {
+      [lobbyId]: {
+        lobbyData: { ...lobbyData },
+        players: {
+          [playerId]: playerData,
+        },
+      },
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
 };

@@ -1,160 +1,200 @@
-import { PlayerPoints } from "~/custom-hooks/useGameLobbyData";
-import dictionary from "./dictionary";
+import { ref, set, update } from "firebase/database";
+import { db } from "./firebase/firebase";
+import {
+  EliminationLobbyData,
+  EliminationPlayerData,
+  EliminationPlayerObject,
+} from "~/custom-hooks/useEliminationData";
+import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
-const pointTable: { [key: number]: number } = {
-  0: 300,
-  1: 200,
-  2: 150,
-  3: 140,
-  4: 130,
-  5: 120,
-  6: 110,
-  7: 100,
+export const createNewEliminationLobby = async (lobbyId: string) => {
+  const lobbyData: EliminationLobbyData = {
+    gameStarted: false,
+    round: 1,
+    gameStartTime: new Date().getTime() + 30000,
+    pointsGoal: 300,
+    totalSpots: 0,
+    finalRound: false,
+  };
+  await set(ref(db, `ELIMINATION/${lobbyId}`), {
+    lobbyData: lobbyData,
+  });
 };
 
-export const calculatePoints = (guessCount: number, points: number) => {
-  const pointValue = pointTable[guessCount] ?? 0; // Use the nullish coalescing operator
-  if (guessCount > 7) {
-    return 100 + points;
-  } else {
-    return pointValue + points;
-  }
+export const createCustomEliminationLobby = async (
+  lobbyId: string,
+) => {
+  const lobbyData: Omit<EliminationLobbyData, "gameStartTime"> = {
+    gameStarted: false,
+    round: 1,
+    pointsGoal: 300,
+    totalSpots: 0,
+    finalRound: false,
+  };
+  await set(ref(db, `ELIMINATION/${lobbyId}`), {
+    lobbyData: lobbyData,
+  });
 };
 
-export const handleCreateMatchingIndex = (
-  guess: string,
+export const joinEliminationLobby = async (
+  playerId: string,
+  lobbyId: string,
+  fullName: string | null,
+) => {
+  const player: EliminationPlayerData = {
+    [playerId]: {
+      points: 0,
+      isBot: false,
+      initials: getInitials(fullName) ?? "N/A",
+      word: handleGetNewWord(),
+      wordValue: 100,
+      matches: { full: [], partial: [], none: [] },
+      revealIndex: [],
+      eliminated: false,
+    },
+  };
+
+  await update(ref(db, `ELIMINATION/${lobbyId}/players/`), {
+    ...player,
+  });
+};
+
+export const handleCorrectGuess = async (
+  path: string,
+  playerObject: EliminationPlayerObject,
+  pointsGoal: number,
+) => {
+  const newWord = handleGetNewWord();
+
+  await update(ref(db, path), {
+    ...playerObject,
+    word: newWord,
+    wordValue: 100,
+    points:
+      playerObject.wordValue + playerObject.points >= pointsGoal
+        ? pointsGoal
+        : playerObject.wordValue + playerObject.points,
+    matches: {
+      full: [],
+      partial: [],
+      none: [],
+    },
+    revealIndex: [],
+  });
+};
+
+const getRevealIndex = (
   word: string,
-  matchingIndex: number[],
+  guess: string,
+  currentRevealedIndex?: number[],
 ): number[] => {
-  const guessArray = guess.split("");
-  const wordArray = word.split("");
-  const newArr: number[] = [...matchingIndex];
-  guessArray.forEach((letter: string, index: number) => {
-    if (letter === wordArray[index]) {
-      newArr.push(index);
+  const revealIndex = new Set([...(currentRevealedIndex ?? [])]);
+
+  console.log(word, guess);
+
+  word.split("").forEach((letter, index) => {
+    if (letter === guess.split("")[index]) {
+      console.log(index);
+      revealIndex.add(index);
     }
   });
 
-  return newArr.filter(
-    (item: number, index: number) => newArr.indexOf(item) === index,
-  );
+  return Array.from(revealIndex);
 };
 
-export const spellCheck = (guess: string) => {
-  if (dictionary.includes(guess)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-export const handleEliminationMatched = (
+export const handleIncorrectGuess = async (
+  path: string,
+  playerObject: EliminationPlayerObject,
   guess: string,
-  word: string,
-  previousMatch: {
-    fullMatch: string[];
-    partialMatch: string[];
-    noMatch: string[];
-  },
-): { fullMatch: string[]; partialMatch: string[]; noMatch: string[] } => {
-  const fullMatch: string[] = [];
-  const partialMatch: string[] = [];
-  const noMatch: string[] = [];
-  if (guess) {
-    guess.split("").forEach((letter: string, index: number) => {
-      const letterArray = word.split("");
-      if (letterArray[index] === letter) {
-        fullMatch.push(letter);
-      } else if (letterArray.includes(letter)) {
-        partialMatch.push(letter);
-      } else {
-        noMatch.push(letter);
-      }
-    });
-  }
+) => {
+  // get reveal index from function
+  const revealIndex = getRevealIndex(
+    playerObject.word,
+    guess,
+    playerObject?.revealIndex,
+  );
 
-  return {
-    fullMatch: [...previousMatch.fullMatch, ...fullMatch],
-    partialMatch: [...previousMatch.partialMatch, ...partialMatch],
-    noMatch: [...previousMatch.noMatch, ...noMatch],
-  };
+  const newWordValue = Math.max(20, playerObject.wordValue - 5);
+
+  const matches = handleMatched(guess, playerObject.word, playerObject.matches);
+
+  await update(ref(db, path), {
+    ...playerObject,
+    revealIndex: revealIndex,
+    wordValue: newWordValue,
+    matches: {
+      ...matches,
+    },
+  });
 };
 
-export const calculateSpots = (playerCount: number, round?: number) => {
+export const calculatePlacement = (
+  players: EliminationPlayerData,
+  playerId: string,
+) => {
+  // return index of user id
+
+  const sortedPlayers = Object.keys(players)
+    .filter((playerId) => {
+      return !players[playerId]!.eliminated;
+    })
+    .sort((a, b) => players[b]!.points - players[a]!.points);
+
+  // filter out eliminated players
+
+  return sortedPlayers.indexOf(playerId) + 1;
+};
+
+export const calculateSpots = (round: number, totalPlayers: number): number => {
+  // function to total players and bots if bots exist, if bots doesnt exist then return playerPoints.length
+  // function to calculate how many players and bots will be qualified for the next round
+  // , based off of the total number of players and bots and the round number
   const calculateNumber = () => {
     switch (round) {
       case 1:
-        return playerCount / 1.4;
+        return totalPlayers / 1.4;
       case 2:
-        return playerCount / 1.5;
+        return totalPlayers / 1.5;
       case 3:
-        return playerCount / 1.8;
+        return totalPlayers / 1.8;
       case 4:
-        return playerCount / 1.8;
+        return totalPlayers / 1.8;
       case 5:
-        return playerCount / 2;
+        return totalPlayers / 2;
       case 6:
-        return playerCount / 2;
+        return totalPlayers / 2;
       default:
-        return playerCount / 2;
+        return totalPlayers / 2;
     }
   };
 
   return Math.floor(calculateNumber());
 };
 
-export const getTopPlayersAndBots = (
-  topCount: number,
-  playerPoints?: PlayerPoints,
-  botPoints?: PlayerPoints,
-): { topPlayers: string[] } => {
-  const sortAndExtractTop = (
-    pointsObject: PlayerPoints | null,
-    count: number,
-  ): string[] => {
-    if (!pointsObject) {
-      return [];
-    }
-    return Object.keys(pointsObject)
-      .sort((a, b) => pointsObject[b]!.points - pointsObject[a]!.points)
-      .slice(0, count);
+export const calculateQualified = (
+  players: EliminationPlayerData,
+  pointsGoal: number,
+  totalSpots: number,
+) => {
+  // calculate how many players are at or above the points goal
+  const totalQualifiedPlayers = Object.keys(players).filter(
+    (playerId) => players[playerId]!.points >= pointsGoal,
+  );
+
+  return `${totalQualifiedPlayers.length}/${totalSpots}`;
+};
+
+export const createEliminationPlayer = (
+  fullName: string,
+): EliminationPlayerObject => {
+  return {
+    points: 0,
+    initials: getInitials(fullName),
+    isBot: false,
+    word: handleGetNewWord(),
+    wordValue: 100,
+    matches: { full: [], partial: [], none: [] },
+    revealIndex: [],
+    eliminated: false,
   };
-
-  const allPlayers = { ...playerPoints, ...botPoints };
-  const topPlayers = sortAndExtractTop(allPlayers, topCount);
-
-  return { topPlayers: topPlayers };
-};
-
-export const calculateTotalPlayers = (
-  playerPoints?: PlayerPoints,
-  botPoints?: PlayerPoints | null,
-): number => {
-  if (!playerPoints) {
-    return 0;
-  } else if (botPoints) {
-    return Object.keys(botPoints).length + Object.keys(playerPoints).length;
-  }
-  return Object.keys(playerPoints).length;
-};
-
-export const placementSuffix = (placement: number) => {
-  switch (placement) {
-    case 1:
-      return "st";
-    case 2:
-      return "nd";
-    case 3:
-      return "rd";
-    default:
-      return "th";
-  }
-};
-
-export const handleRound = (round: number, playerCount: number) => {
-  if (round >= 4 || playerCount <= 6) {
-    return "Final Round";
-  }
-
-  return `Round ${round}`;
 };

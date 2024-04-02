@@ -1,6 +1,6 @@
-import { deleteLobby, db, startGame } from "~/utils/firebase/firebase";
+import { db } from "~/utils/firebase/firebase";
+import { deleteLobby } from "~/utils/game";
 import { ref, get, remove, update } from "firebase/database";
-
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { env } from "~/env.mjs";
@@ -14,11 +14,16 @@ import {
   hasBeen24Hours,
   hasMoreFreeGames,
 } from "~/utils/game-limit";
-export const publicGameRouter = createTRPCRouter({
-  joinPublicGame: protectedProcedure
+import {
+  createNewEliminationLobby,
+  joinEliminationLobby,
+} from "~/utils/elimination";
+export const quickPlayRouter = createTRPCRouter({
+  quickPlay: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // check if player has reached the max number of games for the day
+      const gameMode = input.gameMode as GameType;
 
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
@@ -40,6 +45,7 @@ export const publicGameRouter = createTRPCRouter({
       }
 
       // check if player is already part of a game
+
       const clientGameType = input.gameMode as GameType;
 
       const rejoin: {
@@ -52,22 +58,13 @@ export const publicGameRouter = createTRPCRouter({
       });
 
       if (rejoin) {
+        console.log("rejoin");
         return await ctx.db.lobby.findUnique({
           where: {
             id: rejoin.lobbyId,
           },
         });
       }
-
-      // const user = await ctx.db.user.findUnique({
-      //   where: { id: ctx.session.user.id },
-      // });
-
-      // if(user!.currentPeriodEnd === null || user!.currentPeriodEnd > Date.now() / 1000) {
-
-      // }
-
-      // check data base for a lobby that has < 67 players and hasn't started yet
 
       const findLobby = async () => {
         const lobby: { id: string; started: boolean }[] = await ctx.db
@@ -78,7 +75,7 @@ export const publicGameRouter = createTRPCRouter({
             SELECT COUNT(*) FROM "Players" p WHERE p."lobbyId" = l.id
           ) < 67
           AND l.started = false
-          AND l."gameType" = ${"SURVIVAL"}::"GameType"
+          AND l."gameType" = ${gameMode}::"GameType"
           LIMIT 1;
          `;
         return lobby[0];
@@ -98,10 +95,28 @@ export const publicGameRouter = createTRPCRouter({
           case "SURVIVAL":
             await createNewSurivivalLobby(newLobby.id);
             try {
-              fetch(`${env.BOT_SERVER}/register_survival_lobby`, {
-                method: "POST",
-                body: JSON.stringify({ lobbyId: newLobby.id }),
-              });
+              fetch(
+                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ lobbyId: newLobby.id }),
+                },
+              );
+            } catch (e) {
+              console.log(e);
+            }
+            break;
+
+          case "ELIMINATION":
+            await createNewEliminationLobby(newLobby.id);
+            try {
+              fetch(
+                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ lobbyId: newLobby.id }),
+                },
+              );
             } catch (e) {
               console.log(e);
             }
@@ -128,6 +143,13 @@ export const publicGameRouter = createTRPCRouter({
               userId,
               ctx.session.user.name ?? "N/A",
             );
+
+          case "ELIMINATION":
+            joinEliminationLobby(
+              userId,
+              player.lobbyId,
+              ctx.session.user.name ?? "N/A",
+            );
         }
 
         const playerCount = await ctx.db.players.count({
@@ -137,7 +159,7 @@ export const publicGameRouter = createTRPCRouter({
         });
 
         if (playerCount >= 67) {
-          startGame(player.lobbyId, clientGameType);
+          // startGame(player.lobbyId, clientGameType);
           await ctx.db.lobby.update({
             where: {
               id: player.lobbyId,
@@ -172,32 +194,6 @@ export const publicGameRouter = createTRPCRouter({
       // if there is NOT create a new row in the DB and add the user to template to the firebase lobby
     }),
 
-  endGame: protectedProcedure.mutation(async ({ ctx }) => {
-    const user = ctx.session.user.id;
-    const lobbyId = await ctx.db.players.delete({
-      where: { userId: user },
-    });
-    const playerCount = await ctx.db.players.count({
-      where: {
-        lobbyId: lobbyId.lobbyId,
-      },
-    });
-
-    return playerCount;
-  }),
-  manualStart: protectedProcedure
-    .input(z.string())
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.lobby.update({
-        where: {
-          id: input,
-        },
-        data: {
-          started: true,
-        },
-      });
-    }),
-
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
     const user = ctx.session.user.id;
     const { lobbyId } = await ctx.db.players.delete({
@@ -215,18 +211,18 @@ export const publicGameRouter = createTRPCRouter({
 
     if (playerCount === 0) {
       await ctx.db.lobby.delete({ where: { id: lobbyId } });
-      deleteLobby(lobby!.gameType, lobbyId);
+      deleteLobby(`${lobby?.gameType}/${lobbyId}`);
     } else if (lobby?.name && lobby.started === false) {
-      remove(ref(db, `SURVIVAL/${lobby.id}/players/${user}`));
+      remove(ref(db, `${lobby.gameType}/${lobby.id}/players/${user}`));
 
-      const lobbyData = await get(ref(db, `SURVIVAL/${lobby.id}`));
+      const lobbyData = await get(ref(db, `${lobby.gameType}/${lobby.id}`));
 
       if (lobbyData.val().lobbyData.owner === user) {
         const playerIds = Object.keys(lobbyData.val().players).filter(
           (id) => id !== user,
         );
 
-        await update(ref(db, `SURVIVAL/${lobby.id}/lobbyData/`), {
+        await update(ref(db, `${lobby.gameType}/${lobby.id}/lobbyData/`), {
           owner: playerIds[0],
         });
       }

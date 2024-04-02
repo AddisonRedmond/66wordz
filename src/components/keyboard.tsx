@@ -34,7 +34,7 @@ const KeyboardRow = ({
     <>
       {letters.split("").map((letter: string) => {
         return (
-          <m.p
+          <m.button
             onClick={() => handleKeyBoardLogic(letter)}
             animate={{ backgroundColor: handleColors(letter), color: (handleColors(letter) === "#545B77" ? "white": "black") }}
             className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
@@ -43,7 +43,7 @@ const KeyboardRow = ({
             key={letter}
           >
             {letter}
-          </m.p>
+          </m.button>
         );
       })}
       {specialKey}
@@ -72,9 +72,9 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           letters={middleRow}
           disabled={props.disabled}
           specialKey={
-            <span
+            <button
               onClick={() => props.handleKeyBoardLogic("Backspace")}
-              className={`hidden aspect-square w-8 items-center justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
+              className={`hidden aspect-square w-[10%] min-w-8 max-w-12 items-center justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
             >
               <Image
                 className={`${
@@ -83,7 +83,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
                 src={Delete}
                 alt="Delete svg"
               />
-            </span>
+            </button>
           }
         />
       </div>

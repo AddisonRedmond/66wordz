@@ -4,6 +4,7 @@ import Head from "next/head";
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { m } from "framer-motion";
+import Link from "next/link";
 
 export default function Login() {
   return (
@@ -18,7 +19,7 @@ export default function Login() {
           <Tile letters={"66"} />
           <Tile letters="WORDZ" />
         </div>
-        <div className="flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
+        <div className="relative flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <div className="flex items-center gap-10">
             <button
               onClick={() => signIn()}
@@ -26,6 +27,11 @@ export default function Login() {
             >
               SIGN IN
             </button>
+          </div>
+          <div className=" absolute bottom-2 flex w-full justify-around text-zinc-600">
+            <Link href="terms-of-service">Terms of Service</Link>
+            <Link href="privacy">Privacy Policy</Link>
+            <Link href="refund">Refund Policy</Link>
           </div>
         </div>
       </div>

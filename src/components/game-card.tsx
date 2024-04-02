@@ -1,10 +1,10 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { GameType } from "@prisma/client";
 import info from "../../public/info.svg";
 import { m } from "framer-motion";
 type GameCardProps = {
   gameType: GameType;
-  gameImage: string;
+  gameImage: StaticImageData;
   gameAlt: string;
   quickPlay: (gameMode: GameType) => void;
   handleDescription: (
@@ -12,18 +12,17 @@ type GameCardProps = {
     rules: { [header: string]: string[] },
   ) => void;
   rules: { [header: string]: string[] };
-  setIsCreateLobby: (isCreateLobby: boolean) => void;
-  setIsJoinLobby: (isJoinLobby: boolean) => void;
   isPremiumUser?: boolean;
+  enableCreateLobby: (gameType: GameType) => void;
 };
 
 const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
   return (
     <m.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      exit={{ scale: 0 }}
-      className="relative flex w-44 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="relative flex w-48 flex-col flex-wrap items-center  justify-center rounded-md bg-zinc-800 py-4 text-white"
     >
       <h2 className=" mt-2 text-xl font-semibold">{props.gameType}</h2>
       <div className=" grid h-24 content-center ">
@@ -47,23 +46,14 @@ const GameCard: React.FC<GameCardProps> = (props: GameCardProps) => {
         {props.isPremiumUser && (
           <button
             onClick={() => {
-              props.setIsCreateLobby(true);
+              props.enableCreateLobby(props.gameType);
             }}
             className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
           >
             Create
           </button>
         )}
-        <button
-          onClick={() => {
-            props.setIsJoinLobby(true);
-          }}
-          className="rounded-full border-2 border-[#DECEED] bg-zinc-800 px-4 py-1 font-semibold duration-150 ease-in-out hover:bg-white hover:text-black"
-        >
-          Join
-        </button>
       </div>
-
       <Image
         onClick={() => props.handleDescription(props.gameType, props.rules)}
         className="absolute right-1 top-1 cursor-pointer"
