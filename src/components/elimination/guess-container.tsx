@@ -18,9 +18,9 @@ const GuessContainer: React.FC<WordContainerProps> = (
     x: [-10, 10, -10, 10, 0],
   };
 
-  const incorrectGuess = {
-    backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
-  };
+  // const incorrectGuess = {
+  //   backgroundColor: ["#D6D3D1", "#FF8080", "#D6D3D1"],
+  // };
 
   useEffect(() => {
     animate(scope.current, control, { duration: 0.3 });

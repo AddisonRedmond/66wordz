@@ -21,7 +21,7 @@ const Refund = () => {
         <p>
           Thank you for upgrading to the Gold account on 66wordz. We strive to
           provide you with the best possible experience. If you are not entirely
-          satisfied with your Gold account purchase, we're here to help.
+          satisfied with your Gold account purchase, we&apos;re here to help.
         </p>
 
         <h3>Refunds</h3>

@@ -20,8 +20,8 @@ const TermsOfService = () => {
         <h2>Last Updated: 3/25/2024</h2>
         <h3>Welcome to 66wordz!</h3>
         <p>
-          These Terms of Service ("Terms") govern your access to and use of the
-          66wordz application ("App"), including any content, functionality, and
+          These Terms of Service  (&quot;Terms&quot;) govern your access to and use of the
+          66wordz application (&quot;App&quot;), including any content, functionality, and
           services offered through the App. By accessing or using the App, you
           agree to be bound by these Terms. If you do not agree to these Terms,
           please do not access or use the App.
@@ -50,7 +50,7 @@ const TermsOfService = () => {
         <h3>3. User Content</h3>
         <p className="m-0">
           3.1. You retain ownership of any content you submit, post, or display
-          on or through the App ("User Content").
+          on or through the App (&quot;User Content&quot;).
         </p>
         <p className="m-0">
           3.2. By submitting User Content, you grant 66wordz a worldwide,
@@ -80,7 +80,7 @@ const TermsOfService = () => {
         </p>
         <h3>7. Disclaimer of Warranties</h3>
         <p className="m-0">
-          THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT ANY WARRANTIES
+          THE APP IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT ANY WARRANTIES
           OF ANY KIND, EXPRESS OR IMPLIED. 66WORDZ DISCLAIMS ALL WARRANTIES,
           INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
           PARTICULAR PURPOSE, AND NON-INFRINGEMENT.

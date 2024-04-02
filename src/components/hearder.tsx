@@ -1,7 +1,7 @@
 import Loading from "./loading";
 import Tile from "./tile";
 import { m } from "framer-motion";
-
+import Sparkle from "react-sparkle";
 type HeaderProps = {
   isLoading: boolean;
   desktopOnly?: boolean;
@@ -16,7 +16,18 @@ const Header: React.FC<HeaderProps> = ({
   console.log;
   if (props.isPremiumUser) {
     return (
-      <m.div className="mb-4 flex h-1/5 flex-col items-center gap-3">
+      <m.div className="relative mb-4 flex h-1/5 flex-col items-center gap-3">
+        <Sparkle
+          color={"#D4B40E"}
+          count={40}
+          minSize={5}
+          maxSize={15}
+          overflowPx={30}
+          fadeOutSpeed={20}
+          newSparkleOnFadeOut={true}
+          flicker={false}
+          flickerSpeed={"slowest"}
+        />
         <Tile
           bg={"bg-[#F1D024]"}
           textColor="text-zinc-800"

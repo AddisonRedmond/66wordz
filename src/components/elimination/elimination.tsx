@@ -40,7 +40,6 @@ const Elimination: React.FC<EliminationProps> = ({
   userId,
   gameType,
   exitMatch,
-  ...props
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { userId, lobbyId, gameType });
   const playerData = gameData?.players[userId] as PlayerObject;
@@ -156,7 +155,9 @@ const Elimination: React.FC<EliminationProps> = ({
               <LoadingGame
                 expiryTimestamp={new Date(lobbyData.gameStartTime)}
                 lobbyId={lobbyId}
-                startGame={() => {}}
+                startGame={() => {
+                  console.log("Start game");
+                }}
                 exitMatch={exitMatch}
                 playerCount={players ? Object.keys(players).length : 0}
               />
@@ -166,7 +167,7 @@ const Elimination: React.FC<EliminationProps> = ({
               {playerData.eliminated && (
                 <div className="rounded-md border-2 border-black p-2 text-center">
                   <p className="text-xl font-bold">You have been eliminated!</p>
-                  <p>You'll get 'em next time!</p>
+                  <p>Better luck next time!</p>
                 </div>
               )}
 
@@ -241,7 +242,13 @@ const Elimination: React.FC<EliminationProps> = ({
                       </div>
                     </div>
 
-                    {isMobile && <MobileOpponents userId={userId} opponents={players} pointsGoal={lobbyData.pointsGoal} />}
+                    {isMobile && (
+                      <MobileOpponents
+                        userId={userId}
+                        opponents={players}
+                        pointsGoal={lobbyData.pointsGoal}
+                      />
+                    )}
 
                     <div className="flex flex-col gap-2">
                       <PointsContainer

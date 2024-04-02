@@ -74,7 +74,7 @@ const getRevealIndex = (
   guess: string,
   currentRevealedIndex?: number[],
 ): number[] => {
-  const revealIndex: Set<number> = new Set([...(currentRevealedIndex ?? [])]);
+  const revealIndex = new Set([...(currentRevealedIndex ?? [])]);
 
   console.log(word, guess);
 

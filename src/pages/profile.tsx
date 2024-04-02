@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession({
+  useSession({
     required: true,
     onUnauthenticated: () => {
       router.push("/login");

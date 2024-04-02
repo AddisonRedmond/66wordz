@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
         </Link>
         <button
           onClick={() => signIn()}
-          className=" rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
+          className="rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
         >
           SIGN IN
         </button>
@@ -21,8 +21,8 @@ const PrivacyPolicy = () => {
 
         <p>
           Your privacy is important to us. This Privacy Policy explains how
-          66wordz ("we" or "us") collects, uses, and discloses information when
-          you use our application, 66wordz (the "App").
+          66wordz (&quot;we&quot; or &quot;us&quot;) collects, uses, and discloses information when
+          you use our application, 66wordz (the &quot;App&quot;).
         </p>
 
         <h3>1. Information We Collect</h3>
@@ -34,20 +34,20 @@ const PrivacyPolicy = () => {
 
         <ul>
           <li>
-            1.1. Google: Information provided by Google's OAuth2 authentication,
+            1.1. Google: Information provided by Google&apos;s OAuth2 authentication,
             such as your name, email address, profile picture, and any other
             information you have made publicly available on your Google account.
           </li>
 
           <li>
-            1.2. Twitch: Information provided by Twitch's OAuth2 authentication,
+            1.2. Twitch: Information provided by Twitch&apos;s OAuth2 authentication,
             such as your Twitch username, display name, profile picture, and any
             other information you have made publicly available on your Twitch
             account.
           </li>
 
           <li>
-            1.3. Twitter: Information provided by Twitter's OAuth2
+            1.3. Twitter: Information provided by Twitter&apos;s OAuth2
             authentication, such as your Twitter handle, profile picture, and
             any other information you have made publicly available on your
             Twitter account.
@@ -90,7 +90,7 @@ const PrivacyPolicy = () => {
           security.
         </p>
 
-        <h3>6. Children's Privacy</h3>
+        <h3>6. Children&apos;s Privacy</h3>
         <p className="m-0">
           The App is not directed to individuals under the age of 13, and we do
           not knowingly collect personal information from children.
@@ -106,7 +106,7 @@ const PrivacyPolicy = () => {
         <p className="m-0">
           If you have any questions or concerns about this Privacy Policy,
           please contact us at{" "}
-          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>.
+          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>
           .
         </p>
 

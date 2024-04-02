@@ -6,7 +6,6 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { LazyMotion, domAnimation } from "framer-motion";
 import Head from "next/head";
-
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
