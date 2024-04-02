@@ -27,6 +27,7 @@ import Confetti from "react-confetti";
 import useSound from "use-sound";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
+import { api } from "~/utils/api";
 
 type EliminationProps = {
   lobbyId: string;
@@ -42,6 +43,8 @@ const Elimination: React.FC<EliminationProps> = ({
   exitMatch,
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { userId, lobbyId, gameType });
+  const startGame = api.createGame.startGame.useMutation();
+
   const playerData = gameData?.players[userId] as EliminationPlayerObject;
   const lobbyData = gameData?.lobbyData as EliminationLobbyData;
   const players: EliminationPlayerData | undefined = gameData?.players;
@@ -59,6 +62,10 @@ const Elimination: React.FC<EliminationProps> = ({
     volume: 0.5,
     playbackRate: 2,
   });
+
+  const ownerStart = () => {
+    startGame.mutate();
+  };
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     if (
@@ -156,9 +163,8 @@ const Elimination: React.FC<EliminationProps> = ({
                 gameOwner={lobbyData?.owner}
                 expiryTimestamp={new Date(lobbyData.gameStartTime)}
                 lobbyId={lobbyId}
-                startGame={() => {
-                  console.log("Start game");
-                }}
+                isGameOwner={gameData.lobbyData.owner === userId}
+                startGame={ownerStart}
                 exitMatch={exitMatch}
                 playerCount={players ? Object.keys(players).length : 0}
               />

@@ -22,7 +22,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="top-0 z-10 flex h-14 w-screen flex-grow items-center justify-between bg-white"
+      className="top-0 z-10 flex h-14 w-screen items-center justify-between bg-white"
     >
       <AnimatePresence>
         {props.menuIsOpen && (

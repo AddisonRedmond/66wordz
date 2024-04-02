@@ -16,7 +16,8 @@ const Header: React.FC<HeaderProps> = ({
   console.log;
   if (props.isPremiumUser) {
     return (
-      <m.div className="relative mb-4 flex h-1/5 flex-col items-center gap-3">
+      <>
+        {!desktopOnly && <m.div className="relative mb-4 flex h-1/5 flex-col justify-center items-center gap-3">
         <Sparkle
           color={"#D4B40E"}
           count={5}
@@ -44,7 +45,9 @@ const Header: React.FC<HeaderProps> = ({
         <div className="animate-bounce rounded-full bg-black px-2 text-xl font-semibold text-white">
           <p className="">GOLD</p>
         </div>
-      </m.div>
+      </m.div>}
+      </>
+    
     );
   }
   return (
@@ -59,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({
           <Loading />
         </m.div>
       ) : (
-        <m.div className="mb-4 flex h-1/5 flex-col items-center gap-3">
+        <m.div className="mb-4 flex h-1/5 flex-col justify-center items-center gap-3">
           <Tile letters={"66"} desktopOnly={desktopOnly} />
           <Tile letters="WORDZ" desktopOnly={desktopOnly} />
 

@@ -46,12 +46,12 @@ const LoadingCustomGame = (
           >
             Start Game
           </button>
-          <button
+          {/* <button
             className={`rounded-full border-2 border-zinc-800 bg-white p-2 text-black  duration-150 ease-in-out hover:bg-zinc-300`}
             onClick={() => props.exitMatch()}
           >
             Cancel
-          </button>
+          </button> */}
         </div>
       )}
     </div>

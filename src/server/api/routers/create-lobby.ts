@@ -210,23 +210,23 @@ export const createLobbyRouter = createTRPCRouter({
 
   startGame: protectedProcedure.mutation(async ({ ctx }) => {
     // change lobby.started to true
-    const lobby = await ctx.db.players.findUnique({
+    const players = await ctx.db.players.findUnique({
       where: { userId: ctx.session.user.id },
     });
 
     const playerCount = await ctx.db.players.count({
-      where: { lobbyId: lobby?.lobbyId },
+      where: { lobbyId: players?.lobbyId },
     });
 
-    if (!lobby || playerCount < 2) return;
+    if (!players || playerCount < 2) return;
 
-    await ctx.db.lobby.update({
-      where: { id: lobby.lobbyId },
+    const lobby = await ctx.db.lobby.update({
+      where: { id: players.lobbyId },
       data: { started: true },
     });
 
     // change firebase lobby gameStarted to true
-    await update(ref(db, `SURVIVAL/${lobby?.lobbyId}/lobbyData/`), {
+    await update(ref(db, `${lobby.gameType}/${lobby.id}/lobbyData/`), {
       gameStarted: true,
     });
   }),
