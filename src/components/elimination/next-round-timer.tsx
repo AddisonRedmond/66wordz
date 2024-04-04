@@ -12,7 +12,7 @@ const NextRoundTimer: React.FC<NextRoundTimerProps> = (
     autoStart: true,
   });
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-hidden">
       <p className="text-3xl font-semibold">Next Round Starts in</p>
       <p className="text-2xl">{seconds} seconds</p>
     </div>

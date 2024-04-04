@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({
   if (props.isPremiumUser) {
     return (
       <>
-        {!desktopOnly && <m.div className="relative mb-4 flex h-1/5 flex-col justify-center items-center gap-3">
+        {<m.div className="relative mb-4 flex h-1/5 flex-col justify-center items-center gap-3">
         <Sparkle
           color={"#D4B40E"}
           count={5}

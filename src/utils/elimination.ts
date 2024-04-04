@@ -4,6 +4,7 @@ import {
   EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
+  EliminationPlayerPoints,
 } from "~/custom-hooks/useEliminationData";
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
@@ -21,9 +22,7 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
   });
 };
 
-export const createCustomEliminationLobby = async (
-  lobbyId: string,
-) => {
+export const createCustomEliminationLobby = async (lobbyId: string) => {
   const lobbyData: Omit<EliminationLobbyData, "gameStartTime"> = {
     gameStarted: false,
     round: 1,
@@ -43,7 +42,6 @@ export const joinEliminationLobby = async (
 ) => {
   const player: EliminationPlayerData = {
     [playerId]: {
-      points: 0,
       isBot: false,
       initials: getInitials(fullName) ?? "N/A",
       word: handleGetNewWord(),
@@ -60,20 +58,19 @@ export const joinEliminationLobby = async (
 };
 
 export const handleCorrectGuess = async (
-  path: string,
+  playerPath: string,
   playerObject: EliminationPlayerObject,
   pointsGoal: number,
+  pointsPath: string,
+  existingPoints: number,
+  userId: string,
 ) => {
   const newWord = handleGetNewWord();
 
-  await update(ref(db, path), {
+  await update(ref(db, playerPath), {
     ...playerObject,
     word: newWord,
     wordValue: 100,
-    points:
-      playerObject.wordValue + playerObject.points >= pointsGoal
-        ? pointsGoal
-        : playerObject.wordValue + playerObject.points,
     matches: {
       full: [],
       partial: [],
@@ -81,6 +78,13 @@ export const handleCorrectGuess = async (
     },
     revealIndex: [],
   });
+
+  const updatedPoints =
+    playerObject.wordValue + existingPoints >= pointsGoal
+      ? pointsGoal
+      : playerObject.wordValue + existingPoints;
+
+  await update(ref(db, pointsPath), { points: updatedPoints });
 };
 
 const getRevealIndex = (
@@ -130,6 +134,7 @@ export const handleIncorrectGuess = async (
 
 export const calculatePlacement = (
   players: EliminationPlayerData,
+  playerPoints: EliminationPlayerPoints,
   playerId: string,
 ) => {
   // return index of user id
@@ -138,7 +143,10 @@ export const calculatePlacement = (
     .filter((playerId) => {
       return !players[playerId]!.eliminated;
     })
-    .sort((a, b) => players[b]!.points - players[a]!.points);
+    .sort(
+      (a, b) =>
+        (playerPoints?.[a]?.points ?? 0) - (playerPoints?.[b]?.points ?? 0),
+    );
 
   // filter out eliminated players
 
@@ -172,13 +180,14 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
 };
 
 export const calculateQualified = (
-  players: EliminationPlayerData,
   pointsGoal: number,
   totalSpots: number,
+  playerPoints?: EliminationPlayerPoints,
 ) => {
+  if (playerPoints === undefined) return `0/${totalSpots}`;
   // calculate how many players are at or above the points goal
-  const totalQualifiedPlayers = Object.keys(players).filter(
-    (playerId) => players[playerId]!.points >= pointsGoal,
+  const totalQualifiedPlayers = Object.keys(playerPoints).filter(
+    (playerId) => (playerPoints?.[playerId]?.points ?? 0) >= pointsGoal,
   );
 
   return `${totalQualifiedPlayers.length}/${totalSpots}`;
@@ -188,7 +197,6 @@ export const createEliminationPlayer = (
   fullName: string,
 ): EliminationPlayerObject => {
   return {
-    points: 0,
     initials: getInitials(fullName),
     isBot: false,
     word: handleGetNewWord(),

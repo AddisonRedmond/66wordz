@@ -3,6 +3,7 @@ import useEliminationData, {
   EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
+  EliminationPlayerPoints,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
@@ -28,6 +29,7 @@ import useSound from "use-sound";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
 import { api } from "~/utils/api";
+import { m } from "framer-motion";
 
 type EliminationProps = {
   lobbyId: string;
@@ -46,7 +48,12 @@ const Elimination: React.FC<EliminationProps> = ({
   const startGame = api.createGame.startGame.useMutation();
 
   const playerData = gameData?.players[userId] as EliminationPlayerObject;
+  const playerPoints =
+    gameData?.playerPoints?.[userId]?.points ?? (0 as number);
+
   const lobbyData = gameData?.lobbyData as EliminationLobbyData;
+  const pointsObject = gameData?.playerPoints;
+
   const players: EliminationPlayerData | undefined = gameData?.players;
   const [isSpellCheck, setIsSpellCheck] = useState<boolean>(false);
   const [isIncorrectGuess, setIsIncorrectGuess] = useState<boolean>(false);
@@ -70,13 +77,13 @@ const Elimination: React.FC<EliminationProps> = ({
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     if (
       lobbyData.gameStarted === false ||
-      playerData?.points >= lobbyData.pointsGoal ||
+      playerPoints >= lobbyData.pointsGoal ||
       lobbyData.winner ||
       lobbyData.nextRoundStartTime
     )
       return;
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
-    if (playerData.points >= lobbyData.pointsGoal) {
+    if (playerPoints >= lobbyData.pointsGoal) {
       return;
     }
     // if backspace check to make sure guess is not empty
@@ -112,6 +119,9 @@ const Elimination: React.FC<EliminationProps> = ({
           `${gameType}/${lobbyId}/players/${userId}`,
           playerData,
           lobbyData.pointsGoal,
+          `${gameType}/${lobbyId}/playerPoints/${userId}`,
+          playerPoints,
+          userId,
         );
         setGuess("");
       } else {
@@ -146,7 +156,7 @@ const Elimination: React.FC<EliminationProps> = ({
                       key={`index-${index}`}
                       opponentCount={Object.keys(players).length}
                       revealIndex={players[playerId]?.revealIndex}
-                      points={players[playerId]?.points ?? 0}
+                      points={pointsObject?.[playerId]?.points ?? 0}
                       pointsGoal={lobbyData.pointsGoal ?? 300}
                       initials={players[playerId]?.initials}
                       eliminated={players[playerId]?.eliminated}
@@ -211,13 +221,13 @@ const Elimination: React.FC<EliminationProps> = ({
                         ) : (
                           <>
                             <p>
-                              {players
+                              {pointsObject
                                 ? calculateQualified(
-                                    players,
                                     lobbyData.pointsGoal,
                                     lobbyData.totalSpots,
+                                    gameData?.playerPoints,
                                   )
-                                : "ERROR"}
+                                : ". . ."}
                             </p>
                             <p>Qualified</p>
                           </>
@@ -259,16 +269,26 @@ const Elimination: React.FC<EliminationProps> = ({
 
                     <div className="flex flex-col gap-2">
                       <PointsContainer
-                        points={playerData?.points ?? 0}
+                        points={playerPoints ?? 0}
                         pointsGoal={lobbyData.pointsGoal ?? 300}
                       />
-                      <GuessContainer
-                        isSpellCheck={isSpellCheck}
-                        setIsSpellCheck={setIsSpellCheck}
-                        isIncorrectGuess={isIncorrectGuess}
-                        setIsIncorrectGuess={setIsIncorrectGuess}
-                        guess={guess}
-                      />
+                      {playerPoints >= lobbyData.pointsGoal ? (
+                        <m.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-xl font-semibold"
+                        >
+                          Qualified
+                        </m.p>
+                      ) : (
+                        <GuessContainer
+                          isSpellCheck={isSpellCheck}
+                          setIsSpellCheck={setIsSpellCheck}
+                          isIncorrectGuess={isIncorrectGuess}
+                          setIsIncorrectGuess={setIsIncorrectGuess}
+                          guess={guess}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="mt-20 grid w-full place-items-center">
@@ -303,7 +323,7 @@ const Elimination: React.FC<EliminationProps> = ({
                       key={index}
                       opponentCount={Object.keys(players).length}
                       revealIndex={players[playerId]?.revealIndex}
-                      points={players[playerId]?.points ?? 0}
+                      points={pointsObject?.[playerId]?.points ?? 0}
                       pointsGoal={lobbyData.pointsGoal ?? 300}
                       initials={players[playerId]?.initials}
                       eliminated={players[playerId]?.eliminated}

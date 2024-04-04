@@ -14,8 +14,11 @@ export type EliminationLobbyData = {
   owner?: string;
 };
 
+export type EliminationPlayerPoints = {
+  [keyof: string]: {points: number};
+};
+
 export type EliminationPlayerObject = {
-  points: number;
   initials?: string;
   isBot: boolean;
   word: string;
@@ -36,6 +39,7 @@ export type EliminationPlayerData = {
 export type GameData = {
   lobbyData: EliminationLobbyData;
   players: EliminationPlayerData;
+  playerPoints?: EliminationPlayerPoints;
 };
 
 const useEliminationData = (

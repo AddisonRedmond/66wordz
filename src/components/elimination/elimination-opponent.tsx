@@ -15,7 +15,6 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = ({
   ...props
 }: EliminationOpponentProps) => {
   const opponentSizePercentage = 90 / Math.sqrt(opponentCount); // Using the square root for both width and height
-
   return (
     <AnimatePresence>
       <m.div
