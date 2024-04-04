@@ -3,7 +3,6 @@ import useEliminationData, {
   EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
-  EliminationPlayerPoints,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
@@ -121,7 +120,6 @@ const Elimination: React.FC<EliminationProps> = ({
           lobbyData.pointsGoal,
           `${gameType}/${lobbyId}/playerPoints/${userId}`,
           playerPoints,
-          userId,
         );
         setGuess("");
       } else {
@@ -264,6 +262,7 @@ const Elimination: React.FC<EliminationProps> = ({
                         userId={userId}
                         opponents={players}
                         pointsGoal={lobbyData.pointsGoal}
+                        playerPoints={pointsObject}
                       />
                     )}
 

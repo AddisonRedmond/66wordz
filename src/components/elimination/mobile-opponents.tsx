@@ -4,11 +4,15 @@ import {
 } from "react-circular-progressbar";
 import Modal from "../modal";
 import { useState } from "react";
-import { EliminationPlayerData } from "~/custom-hooks/useEliminationData";
+import {
+  EliminationPlayerData,
+  EliminationPlayerPoints,
+} from "~/custom-hooks/useEliminationData";
 type MobileOpponentsProps = {
   opponents?: EliminationPlayerData;
   userId: string;
   pointsGoal: number;
+  playerPoints?: EliminationPlayerPoints;
 };
 
 const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
@@ -46,7 +50,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
                       >
                         <CircularProgressbarWithChildren
                           value={calculatePrecentage(
-                            player.points,
+                            props?.playerPoints?.[playerId]?.points ?? 0,
                             props.pointsGoal,
                           )}
                           strokeWidth={12}
@@ -78,7 +82,10 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
               return (
                 <div key={playerId} className=" m-auto size-14">
                   <CircularProgressbarWithChildren
-                    value={calculatePrecentage(player.points, props.pointsGoal)}
+                    value={calculatePrecentage(
+                      props?.playerPoints?.[playerId]?.points ?? 0,
+                      props.pointsGoal,
+                    )}
                     strokeWidth={12}
                     styles={buildStyles({
                       pathColor: "#10b981",

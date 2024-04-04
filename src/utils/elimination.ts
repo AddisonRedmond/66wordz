@@ -63,7 +63,6 @@ export const handleCorrectGuess = async (
   pointsGoal: number,
   pointsPath: string,
   existingPoints: number,
-  userId: string,
 ) => {
   const newWord = handleGetNewWord();
 
