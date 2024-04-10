@@ -1,6 +1,5 @@
 import { signIn } from "next-auth/react";
 import Head from "next/head";
-import { useState } from "react";
 
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
@@ -8,7 +7,6 @@ import { m } from "framer-motion";
 import Link from "next/link";
 
 export default function Login() {
-  const [showContact, setShowContact] = useState(false);
   return (
     <m.div exit={{ opacity: 0 }}>
       <Head>
