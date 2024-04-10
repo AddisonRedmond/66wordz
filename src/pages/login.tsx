@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/react";
 import Head from "next/head";
+import { useState } from "react";
 
 import Tile from "~/components/tile";
 import { AuthContext, authRequired } from "~/utils/authRequired";
@@ -7,6 +8,7 @@ import { m } from "framer-motion";
 import Link from "next/link";
 
 export default function Login() {
+  const [showContact, setShowContact] = useState(false);
   return (
     <m.div exit={{ opacity: 0 }}>
       <Head>
@@ -28,10 +30,13 @@ export default function Login() {
               SIGN IN
             </button>
           </div>
-          <div className=" absolute bottom-2 flex w-full justify-around text-zinc-600">
+          <div className=" absolute bottom-2 flex w-full justify-around text-sm text-zinc-600">
             <Link href="terms-of-service">Terms of Service</Link>
             <Link href="privacy">Privacy Policy</Link>
             <Link href="refund">Refund Policy</Link>
+            <div>
+              <p>Email:hosanna_golfers_0o@icloud.com</p>
+            </div>
           </div>
         </div>
       </div>
