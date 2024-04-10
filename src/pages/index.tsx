@@ -15,6 +15,8 @@ import { getRemaningGames } from "~/utils/game-limit";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import { useRouter } from "next/router";
+import getStripe from "~/utils/get-stripejs";
+
 const Home = () => {
   const router = useRouter();
   const { data: session } = useSession({
@@ -31,6 +33,16 @@ const Home = () => {
   const createLobby = api.createGame.createLobby.useMutation();
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const user = api.getUser.getUser.useQuery();
+
+  const upgrade = api.upgrade.createCheckout.useMutation();
+
+  const handleUpgrade = async () => {
+    const checkoutURL = await upgrade.mutateAsync();
+    const stripe = await getStripe();
+    if (stripe !== null && checkoutURL) {
+      await stripe.redirectToCheckout({ sessionId: checkoutURL });
+    }
+  };
 
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
   const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
@@ -164,6 +176,7 @@ const Home = () => {
                     fullAccess={premiumUser.data?.isPremiumUser}
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
+                    handleUpgrade={handleUpgrade}
                   />
                   <GameCardV2
                     gameType="SURVIVAL"
@@ -171,6 +184,7 @@ const Home = () => {
                     fullAccess={premiumUser.data?.isPremiumUser}
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
+                    handleUpgrade={handleUpgrade}
                   />
                 </div>
               )}

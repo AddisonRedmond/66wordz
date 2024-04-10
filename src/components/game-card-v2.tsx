@@ -7,6 +7,7 @@ type GameCardV2Props = {
   fullAccess?: boolean;
   quickPlay: (gameMode: GameType) => void;
   enableCreateLobby: (gameType: GameType) => void;
+  handleUpgrade: () => void;
 };
 
 const GameCardV2: React.FC<GameCardV2Props> = (props) => {
@@ -33,12 +34,19 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
           >
             Play
           </button>
-          <button
-            onClick={()=> props.enableCreateLobby(props.gameType)}
-            className={`w-full duration-150 ease-in-out ${props.fullAccess ? "cursor-pointer opacity-100 hover:bg-zinc-200" : "cursor-not-allowed opacity-25"} rounded-md border-2 border-zinc-500 bg-white py-2 font-semibold text-black`}
-          >
-            Create
-          </button>
+          <div className="group relative overflow-hidden">
+            {!props.fullAccess && (
+              <button onClick={()=> props.handleUpgrade()} className="absolute z-10 grid h-full w-full -translate-y-12 place-content-center rounded-md border-2 bg-[#F1D024] font-semibold  duration-150 ease-in-out group-hover:translate-y-0 ">
+                Upgrade to gold
+              </button>
+            )}
+            <button
+              onClick={() => props.enableCreateLobby(props.gameType)}
+              className={`w-full duration-150 ease-in-out ${props.fullAccess ? " opacity-100 hover:bg-zinc-200" : "opacity-25"} rounded-md border-2 border-zinc-500 bg-white py-2 font-semibold text-black`}
+            >
+              Create
+            </button>
+          </div>
         </div>
       </div>
     </div>
