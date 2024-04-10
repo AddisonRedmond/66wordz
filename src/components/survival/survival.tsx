@@ -67,6 +67,14 @@ const Survival: React.FC<SurvivalProps> = ({
     playbackRate: 1.5,
   });
 
+  const [gameMusic, { stop }] = useSound("/sounds/game_music.mp3", {
+    volume: 0.25,
+    playbackRate: 1,
+    onEnd: () => {
+      gameMusic();
+    },
+  });
+
   // TODO: make a better correct guess animation
 
   const ownerStart = () => {
@@ -362,7 +370,9 @@ const Survival: React.FC<SurvivalProps> = ({
                   matches={playerData?.word.matches}
                 />
                 <button
-                  onClick={() => exitMatch()}
+                  onClick={() => {
+                    exitMatch(), stop();
+                  }}
                   className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
                 >
                   QUIT

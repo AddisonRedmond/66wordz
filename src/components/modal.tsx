@@ -20,7 +20,7 @@ const Modal: React.FC<Modal> = (
           animate={{ opacity: 1  }}
           exit={{ opacity: 0 }}
           open={true}
-          className="relative z-50 m-auto  rounded-md py-2 max-h-[90vh] overflow-scroll"
+          className="relative z-50 m-auto  rounded-md py-2 max-h-[90vh] overflow-auto"
         >
           {props.children}
         </m.dialog>

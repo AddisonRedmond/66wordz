@@ -15,7 +15,7 @@ export type EliminationLobbyData = {
 };
 
 export type EliminationPlayerPoints = {
-  [keyof: string]: {points: number};
+  [keyof: string]: { points: number };
 };
 
 export type EliminationPlayerObject = {
@@ -45,7 +45,6 @@ export type GameData = {
 const useEliminationData = (
   db: Database,
   props: {
-    userId: string;
     lobbyId: string;
     gameType: GameType;
   },

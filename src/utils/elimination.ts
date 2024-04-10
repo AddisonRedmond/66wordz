@@ -93,8 +93,6 @@ const getRevealIndex = (
 ): number[] => {
   const revealIndex = new Set([...(currentRevealedIndex ?? [])]);
 
-  console.log(word, guess);
-
   word.split("").forEach((letter, index) => {
     if (letter === guess.split("")[index]) {
       console.log(index);

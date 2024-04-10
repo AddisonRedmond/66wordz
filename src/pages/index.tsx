@@ -109,7 +109,9 @@ const Home = () => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
-          isLoading={lobby.isLoading}
+          isLoading={
+            lobby.isLoading || quickPlay.isLoading || joinLobby.isLoading
+          }
           desktopOnly={!!lobby.data?.id}
           isPremiumUser={premiumUser.data?.isPremiumUser}
         />
@@ -127,7 +129,7 @@ const Home = () => {
           )}
         </div>
         <AnimatePresence>
-          {lobby.data?.id ? (
+          {lobby.data?.id && session ? (
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">

@@ -43,7 +43,7 @@ const Elimination: React.FC<EliminationProps> = ({
   gameType,
   exitMatch,
 }: EliminationProps) => {
-  const gameData = useEliminationData(db, { userId, lobbyId, gameType });
+  const gameData = useEliminationData(db, { lobbyId, gameType });
   const startGame = api.createGame.startGame.useMutation();
 
   const playerData = gameData?.players[userId] as EliminationPlayerObject;
@@ -135,7 +135,7 @@ const Elimination: React.FC<EliminationProps> = ({
   };
 
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
-  if (gameData) {
+  if (gameData && playerData && userId) {
     return (
       <div className="flex w-screen flex-grow justify-center">
         {lobbyData?.nextRoundStartTime && (
@@ -231,7 +231,6 @@ const Elimination: React.FC<EliminationProps> = ({
                           </>
                         )}
                       </div>
-
                       <div className="flex h-full w-full flex-col justify-center rounded-r-md border-2 border-zinc-800 px-3">
                         <div>
                           {lobbyData.roundTimer &&
@@ -304,7 +303,9 @@ const Elimination: React.FC<EliminationProps> = ({
 
           {!lobbyData.winner && (
             <button
-              onClick={() => exitMatch()}
+              onClick={() => {
+                exitMatch();
+              }}
               className="mt-4 rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
             >
               QUIT
