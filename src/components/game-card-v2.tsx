@@ -36,7 +36,7 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
           </button>
           <div className="group relative overflow-hidden">
             {!props.fullAccess && (
-              <button onClick={()=> props.handleUpgrade()} className="absolute z-10 grid h-full w-full -translate-y-12 place-content-center rounded-md border-2 bg-[#F1D024] font-semibold  duration-150 ease-in-out group-hover:translate-y-0 ">
+              <button onClick={()=> props.handleUpgrade()} className={`absolute z-10 grid h-full w-full translate-y-0 sm:-translate-y-12 place-content-center rounded-md border-2 bg-[#F1D024] font-semibold  duration-150 ease-in-out group-hover:translate-y-0`}>
                 Upgrade to gold
               </button>
             )}
