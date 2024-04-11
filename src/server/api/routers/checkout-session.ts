@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
 import Stripe from "stripe";
-const YOUR_DOMAIN = "http://localhost:3000";
+const YOUR_DOMAIN = "https://www.66wordz.com";
 
 export const checkoutRouter = createTRPCRouter({
   createCheckout: protectedProcedure.mutation(async ({ ctx }) => {
