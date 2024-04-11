@@ -3,7 +3,7 @@ import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
@@ -16,6 +16,7 @@ import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import { useRouter } from "next/router";
 import getStripe from "~/utils/get-stripejs";
+import Modal from "~/components/modal";
 
 const Home = () => {
   const router = useRouter();
@@ -43,10 +44,10 @@ const Home = () => {
       await stripe.redirectToCheckout({ sessionId: checkoutURL });
     }
   };
-
   const [gameType, setGameType] = useState<GameType>("SURVIVAL");
   const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
   const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
+  const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = async (gameMode: GameType) => {
     await quickPlay.mutateAsync({ gameMode: gameMode });
@@ -61,6 +62,7 @@ const Home = () => {
 
   const exitMatch: () => void = async () => {
     await lobbyCleanUp.mutateAsync();
+    setQuitGame(false);
     lobby.remove();
     user.refetch();
     // delete user from lobby db
@@ -100,7 +102,9 @@ const Home = () => {
               lobbyId={lobby.data.id}
               userId={session!.user.id}
               gameType={lobby.data.gameType}
-              exitMatch={exitMatch}
+              exitMatch={() => {
+                setQuitGame(true);
+              }}
             />
           );
         case "ELIMINATION":
@@ -109,15 +113,56 @@ const Home = () => {
               lobbyId={lobby.data.id}
               userId={session!.user.id}
               gameType={lobby.data.gameType}
-              exitMatch={exitMatch}
+              exitMatch={() => {
+                setQuitGame(true);
+              }}
             />
           );
       }
     }
   };
+  useEffect(() => {
+    const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "Are you sure you want to leave the game?";
+    };
 
+    if (lobby.data?.id) {
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+    } else {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
+  }, [lobby]);
   return (
     <div className="flex flex-grow flex-col">
+      {quitGame && (
+        <Modal>
+          <div className="p-2">
+            <h1 className="my-2 text-xl font-semibold">Leave Game</h1>
+            <p className="my-2">Are you sure you want to leave?</p>
+            <div className="my-2 flex justify-around font-medium">
+              <button
+                className="rounded-md bg-black p-2 text-white"
+                onClick={() => exitMatch()}
+              >
+                Leave
+              </button>
+              <button
+                className="rounded-md bg-[#9462C6] p-2 text-white"
+                onClick={() => {
+                  setQuitGame(false);
+                }}
+              >
+                Stay
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
