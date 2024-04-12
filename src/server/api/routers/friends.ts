@@ -31,8 +31,12 @@ export const friendsRouter = createTRPCRouter({
       const isFriend = await ctx.db.friends.findUnique({
         where: { userId: currentUser.id, friendId: friend.id },
       });
-
-      if (isFriend) {
+      if (isFriend?.accepted === false) {
+        return {
+          success: false,
+          message: "Request pending",
+        };
+      } else if (isFriend?.accepted) {
         return {
           success: false,
           message: "User is already a friend",
@@ -43,7 +47,9 @@ export const friendsRouter = createTRPCRouter({
       await ctx.db.friends.create({
         data: {
           userId: currentUser.id,
+          userFullName: `${currentUser.name}`,
           friendId: friend.id,
+          friendFullName: friend.name,
         },
       });
 
@@ -52,4 +58,14 @@ export const friendsRouter = createTRPCRouter({
         message: "Request sent",
       };
     }),
+
+  allFriendRequests: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+
+    const requests = await ctx.db.friends.findMany({
+      where: { friendId: user.id, accepted: false },
+    });
+
+    return requests;
+  }),
 });

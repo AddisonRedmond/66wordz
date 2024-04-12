@@ -3,14 +3,20 @@ import { GetServerSideProps } from "next/types";
 import Header from "~/components/hearder";
 import Navbar from "~/components/navbar/navbar";
 import { api } from "~/utils/api";
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
+import FriendBadge from "~/components/friends/friend-badge";
 
 const Friends = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const inputRef = useRef<HTMLInputElement>(null);
   const addFriend = api.friends.addNewFriend.useMutation();
+  const requests = api.friends.allFriendRequests.useQuery();
+
+  const [requestType, setRequestType] = useState<"friend" | "pending">(
+    "friend",
+  );
 
   const handleAddFriend = async () => {
     const input = inputRef.current?.value;
@@ -46,8 +52,9 @@ const Friends = () => {
         <h1 className="text-2xl font-bold">Friends</h1>
 
         <div className="flex flex-col gap-2 font-medium">
-          <label>Add Friend</label>
+          <label htmlFor="add-friend">Add Friend</label>
           <input
+            id="add-friend"
             type="text"
             className="rounded-full border-2 border-zinc-400 p-2"
             placeholder="Email"
@@ -60,8 +67,41 @@ const Friends = () => {
             Add Friend
           </button>
         </div>
+        <div className="flex gap-3 py-4 font-semibold">
+          <button
+            className={
+              requestType === "friend" ? "underline underline-offset-8  decoration-2": ""
+            }
+            onClick={() => {
+              setRequestType("friend");
+            }}
+          >
+            Friends
+          </button>
+          <button
+            className={
+              requestType === "pending" ? "underline underline-offset-8 decoration-2": ""
+            }
+            onClick={() => {
+              setRequestType("pending");
+            }}
+          >
+            Pending
+          </button>
+        </div>
+        <div className="flex w-full flex-grow flex-wrap justify-center gap-3">
+          {requestType === "pending" &&
+            requests.data?.map((requestData) => {
+              return (
+                <FriendBadge
+                  key={requestData.id}
+                  name={requestData.userFullName}
+                />
+              );
+            })}
 
-        <div className="flex w-full flex-grow flex-col p-4"></div>
+          {requestType === "friend" && <div> </div>}
+        </div>
       </div>
     </>
   );

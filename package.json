@@ -45,7 +45,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^5.12.1",
     "@tailwindcss/typography": "^0.5.10",
     "@types/bad-words": "^3.0.3",
     "@types/cors": "^2.8.17",
@@ -62,7 +62,7 @@
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
-    "prisma": "^5.11.0",
+    "prisma": "^5.12.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2"
   },

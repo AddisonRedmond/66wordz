@@ -40,13 +40,21 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         <button className="rounded-md p-1 text-sm hover:bg-gray-500">
           <Link href="/profile">Profile</Link>
         </button>
-        <button className="rounded-md p-1 text-sm hover:bg-gray-500">
-          <Link href="/friends">Friends</Link>
+        <button className=" relative rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/friends">
+            Friends
+          </Link>
+          {/* <div className="absolute right-0 -top-1">
+            <span className="relative flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+            </span>
+          </div> */}
         </button>
 
         <button
           onClick={() => signOut()}
-          className="font-semibol rounded-md p-2 text-black duration-150 ease-in-out hover:bg-gray-500"
+          className="rounded-md p-2 font-semibold text-black duration-150 ease-in-out hover:bg-gray-500"
         >
           <Image src={signout} alt="signout icon" height={25} />
         </button>
