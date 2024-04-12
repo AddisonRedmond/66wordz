@@ -53,16 +53,6 @@ export const friendsRouter = createTRPCRouter({
         },
       });
 
-      await ctx.db.notification.create({
-        data: {
-          userId: friend.id,
-          content: {
-            type: "Friend Request",
-            body: `${currentUser.name} sent a friend request`,
-          },
-        },
-      });
-
       return {
         success: true,
         message: "Request sent",

@@ -60,8 +60,6 @@ model User {
     lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
 
-    Notifications Notification[]
-
     friends  Friends[]
     requests Requests[]
 
@@ -72,6 +70,8 @@ model User {
     customerId        String?
     cancelAtPeriodEnd Boolean?
     currentPeriodEnd  Int?
+
+    @@index([lobbyId])
 }
 
 model VerificationToken {
@@ -158,23 +158,4 @@ model Challenge {
     word              String
     challengerGuesses Json
     challengeeGuesses Json
-}
-
-enum NotificationType {
-    FRIENDREQUEST
-    CHALLENGE
-}
-
-model Notification {
-    id     String           @id @default(cuid())
-    user   User             @relation(fields: [userId], references: [id])
-    userId String
-    type   NotificationType
-    body   String
-
-    relatedId String
-
-    read Boolean @default(false)
-
-    @@index([userId])
 }

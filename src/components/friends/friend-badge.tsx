@@ -12,7 +12,7 @@ const FriendBadge: React.FC<FriendBadgeProps> = (props) => {
       </div>
 
       <button className="rounded-md border-2 border-zinc-300 p-2 font-medium text-black duration-150 ease-in-out hover:bg-zinc-300">
-        Challenge
+        Remove Friend
       </button>
     </div>
   );
