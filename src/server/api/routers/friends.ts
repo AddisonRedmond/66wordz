@@ -28,7 +28,7 @@ export const friendsRouter = createTRPCRouter({
 
       // check if friend is already a friend
 
-      const isFriend = await ctx.db.friends.findUnique({
+      const isFriend = await ctx.db.requests.findUnique({
         where: { userId: currentUser.id, friendId: friend.id },
       });
       if (isFriend?.accepted === false) {
@@ -44,7 +44,7 @@ export const friendsRouter = createTRPCRouter({
       }
 
       // add friend
-      await ctx.db.friends.create({
+      await ctx.db.requests.create({
         data: {
           userId: currentUser.id,
           userFullName: `${currentUser.name}`,
@@ -59,13 +59,80 @@ export const friendsRouter = createTRPCRouter({
       };
     }),
 
-  allFriendRequests: protectedProcedure.query(async ({ ctx }) => {
+  allRequests: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
-
-    const requests = await ctx.db.friends.findMany({
+    const requests = await ctx.db.requests.findMany({
       where: { friendId: user.id, accepted: false },
     });
-
     return requests;
   }),
+
+  allPending: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+
+    const allPendingRequests = await ctx.db.requests.findMany({
+      where: { userId: user.id, accepted: false },
+    });
+
+    return allPendingRequests;
+  }),
+
+  allFriends: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+
+    const allFriends = await ctx.db.friends.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return allFriends;
+  }),
+
+  handleFriendRequest: protectedProcedure
+    .input(z.object({ requestId: z.string(), accept: z.boolean() }))
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user;
+
+      const request = await ctx.db.requests.findUnique({
+        where: { id: input.requestId },
+      });
+
+      if (request?.friendId === userId.id) {
+        if (input.accept) {
+          await ctx.db.friends.createMany({
+            data: [
+              {
+                userId: userId.id,
+                friendFullName: request.userFullName,
+                friendId: request.userId,
+              },
+              {
+                userId: request.userId,
+                friendFullName: userId.name!,
+                friendId: userId.id,
+              },
+            ],
+          });
+
+          await ctx.db.requests.delete({ where: { id: request.id } });
+        } else if (input.accept === false) {
+          await ctx.db.requests.delete({ where: { id: request.id } });
+        }
+      }
+    }),
+
+  rejectFriendRequest: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const userId = ctx.session.user;
+
+      const request = await ctx.db.requests.findUnique({
+        where: { id: input },
+      });
+
+      if (request?.friendId === userId.id) {
+        await ctx.db.requests.delete({ where: { id: request.id } });
+      }
+    }),
 });

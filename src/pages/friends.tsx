@@ -6,37 +6,47 @@ import { api } from "~/utils/api";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
+import RequestBadge from "~/components/friends/request-badge";
+import PendingBadge from "~/components/friends/pending-badge";
 import FriendBadge from "~/components/friends/friend-badge";
 
 const Friends = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const inputRef = useRef<HTMLInputElement>(null);
   const addFriend = api.friends.addNewFriend.useMutation();
-  const requests = api.friends.allFriendRequests.useQuery();
+  const newRequests = api.friends.allRequests.useQuery();
+  const sent = api.friends.allPending.useQuery();
+  const friends = api.friends.allFriends.useQuery();
+  const acceptRequest = api.friends.handleFriendRequest.useMutation();
 
-  const [requestType, setRequestType] = useState<"friend" | "pending">(
-    "friend",
-  );
+  const [requestType, setRequestType] = useState<
+    "friend" | "pending" | "request"
+  >("friend");
 
   const handleAddFriend = async () => {
     const input = inputRef.current?.value;
-
     const emailSchema = z.string().email();
     if (!emailSchema.safeParse(input).success) {
       return alert("Please enter a valid email");
     }
-
-    console.log(input);
     if (inputRef.current) {
       const message = await addFriend.mutateAsync({
         email: inputRef.current.value,
       });
       if (message.success) {
         toast.success(message.message);
+        sent.refetch();
       } else {
         toast.error(message.message);
       }
     }
+  };
+
+  const handleAcceptRequest = async (requestId: string, accept: boolean) => {
+    await acceptRequest.mutateAsync({ requestId: requestId, accept: accept });
+    friends.refetch();
+    newRequests.refetch();
+    sent.refetch();
   };
 
   return (
@@ -70,7 +80,9 @@ const Friends = () => {
         <div className="flex gap-3 py-4 font-semibold">
           <button
             className={
-              requestType === "friend" ? "underline underline-offset-8  decoration-2": ""
+              requestType === "friend"
+                ? "underline decoration-2  underline-offset-8"
+                : ""
             }
             onClick={() => {
               setRequestType("friend");
@@ -80,27 +92,56 @@ const Friends = () => {
           </button>
           <button
             className={
-              requestType === "pending" ? "underline underline-offset-8 decoration-2": ""
+              requestType === "request"
+                ? "underline decoration-2 underline-offset-8"
+                : ""
+            }
+            onClick={() => {
+              setRequestType("request");
+            }}
+          >
+            New
+          </button>
+          <button
+            className={
+              requestType === "pending"
+                ? "underline decoration-2 underline-offset-8"
+                : ""
             }
             onClick={() => {
               setRequestType("pending");
             }}
           >
-            Pending
+            Sent
           </button>
         </div>
         <div className="flex w-full flex-grow flex-wrap justify-center gap-3">
           {requestType === "pending" &&
-            requests.data?.map((requestData) => {
+            sent.data?.map((pendingData) => {
               return (
-                <FriendBadge
-                  key={requestData.id}
-                  name={requestData.userFullName}
+                <PendingBadge
+                  key={pendingData.id}
+                  name={pendingData.friendFullName}
                 />
               );
             })}
-
-          {requestType === "friend" && <div> </div>}
+          {requestType === "request" &&
+            newRequests.data?.map((requestData) => {
+              return (
+                <RequestBadge
+                  key={requestData.id}
+                  name={requestData.userFullName}
+                  requestId={requestData.id}
+                  handleRequest={handleAcceptRequest}
+                />
+              );
+            })}
+          {requestType === "friend" &&
+            friends.data?.map((friend) => {
+              return (
+                <FriendBadge key={friend.id} fullName={friend.friendFullName} />
+              );
+            })}
         </div>
       </div>
     </>
