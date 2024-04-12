@@ -8,6 +8,7 @@ type GameCardV2Props = {
   quickPlay: (gameMode: GameType) => void;
   enableCreateLobby: (gameType: GameType) => void;
   handleUpgrade: () => void;
+  desc: string
 };
 
 const GameCardV2: React.FC<GameCardV2Props> = (props) => {
@@ -24,7 +25,7 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
           <div>
             <h3 className="mb-0">{props.gameType}</h3>
             <p className="hidden text-sm text-gray-500 sm:block">
-              Outplay your opponents in this round based game
+             {props.desc}
             </p>
           </div>
 

@@ -5,6 +5,7 @@ import { createLobbyRouter } from "./routers/create-lobby";
 import { checkoutRouter } from "./routers/checkout-session";
 import { getUserRouter } from "./routers/get-user";
 import { friendsRouter } from "./routers/friends";
+import { notificationsRouter } from "./routers/notification";
 /**
  * This is the primary router for your server.
  *
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   upgrade: checkoutRouter,
   getUser: getUserRouter,
   friends: friendsRouter,
+  notifications: notificationsRouter,
 });
 
 // export type definition of API

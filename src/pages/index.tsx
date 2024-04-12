@@ -17,6 +17,7 @@ import Navbar from "~/components/navbar/navbar";
 import { useRouter } from "next/router";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
+import ChallengeCard from "~/components/challenge-card";
 
 const Home = () => {
   const router = useRouter();
@@ -222,6 +223,7 @@ const Home = () => {
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
                     handleUpgrade={handleUpgrade}
+                    desc="Outplay your opponents in this round based game"
                   />
                   <GameCardV2
                     gameType="SURVIVAL"
@@ -230,7 +232,9 @@ const Home = () => {
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
                     handleUpgrade={handleUpgrade}
+                    desc="Offence is the best defence in this heated player vs player game"
                   />
+                  <ChallengeCard />
                 </div>
               )}
             </div>
