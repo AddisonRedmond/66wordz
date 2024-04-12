@@ -34,11 +34,14 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           </button>
         )}
 
-        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+        <button className="rounded-md p-1 text-sm hover:bg-gray-500">
           <Link href="/">Home</Link>
         </button>
-        <button className="cursor-pointer rounded-md p-1 text-sm hover:bg-gray-500">
+        <button className="rounded-md p-1 text-sm hover:bg-gray-500">
           <Link href="/profile">Profile</Link>
+        </button>
+        <button className="rounded-md p-1 text-sm hover:bg-gray-500">
+          <Link href="/friends">Friends</Link>
         </button>
 
         <button

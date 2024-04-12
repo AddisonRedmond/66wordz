@@ -47,7 +47,7 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
@@ -59,6 +59,8 @@ model User {
     issues        Issues[]
     lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
+
+    friends Friends[]
 
     freeGameTimeStamp Int?
     freeGameCount     Int  @default(0)
@@ -118,4 +120,17 @@ model Issues {
     summary     String
 
     @@index([createdById])
+}
+
+model Friends {
+    id     String @id @default(cuid())
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    friendId String @unique
+
+    accepted Boolean @default(false)
+
+    @@index([userId])
+    @@index([friendId])
 }

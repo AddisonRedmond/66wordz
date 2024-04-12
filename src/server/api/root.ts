@@ -4,6 +4,7 @@ import { reportIssueRouter } from "./routers/issue-report";
 import { createLobbyRouter } from "./routers/create-lobby";
 import { checkoutRouter } from "./routers/checkout-session";
 import { getUserRouter } from "./routers/get-user";
+import { friendsRouter } from "./routers/friends";
 /**
  * This is the primary router for your server.
  *
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   createGame: createLobbyRouter,
   upgrade: checkoutRouter,
   getUser: getUserRouter,
+  friends: friendsRouter,
 });
 
 // export type definition of API
