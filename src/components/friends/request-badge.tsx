@@ -6,7 +6,7 @@ type RequestBadge = {
 
 const RequestBadge: React.FC<RequestBadge> = (props) => {
   return (
-    <div className="flex h-fit w-72 flex-col gap-2 rounded-md border-2 p-4">
+    <div className="flex h-fit w-80 flex-col gap-2 rounded-md border-2 p-4">
       <h3 className="font-semibold">New Friend Request</h3>
       <p>
         <span className="... truncate font-medium text-black">

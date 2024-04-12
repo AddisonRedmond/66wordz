@@ -2,7 +2,7 @@ import { m } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
-
+import bell from "../../../public/bell.png";
 import Link from "next/link";
 type DesktopNavbarProps = {
   isPremiumUser: boolean | undefined;
@@ -41,15 +41,17 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           <Link href="/profile">Profile</Link>
         </button>
         <button className=" relative rounded-md p-1 text-sm hover:bg-gray-500">
-          <Link href="/friends">
-            Friends
-          </Link>
-          {/* <div className="absolute right-0 -top-1">
+          <Link href="/friends">Friends</Link>
+        </button>
+
+        <button className="relative">
+          <Image src={bell} height={25} alt="notification icon" />
+          <div className="absolute -top-2 -right-3">
             <span className="relative flex h-3 w-3">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
               <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
             </span>
-          </div> */}
+          </div>
         </button>
 
         <button

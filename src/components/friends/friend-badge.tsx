@@ -4,16 +4,16 @@ type FriendBadgeProps = {
 
 const FriendBadge: React.FC<FriendBadgeProps> = (props) => {
   return (
-    <div className="h-fit w-72 rounded-md border-2 p-2 flex flex-col gap-1">
-      <h3 className="... truncate text-xl font-medium">{props.fullName}</h3>
-      <div className=" flex justify-around">
-        <button className="font-medium rounded-md bg-black p-2 text-white">
-          Challenge
-        </button>
-        <button className="font-medium rounded-md bg-black p-2 text-white">
-          Remove
-        </button>
+    <div className=" relative flex h-fit w-80 flex-col gap-1 rounded-md border-2 border-zinc-500 p-2">
+      <p className="text-xl font-bold absolute right-5 top-0">...</p>
+      <div>
+        <p className="font-semibold">Name:</p>
+        <h3 className="... truncate text-xl font-medium">{props.fullName}</h3>
       </div>
+
+      <button className="rounded-md border-2 border-zinc-300 p-2 font-medium text-black duration-150 ease-in-out hover:bg-zinc-300">
+        Challenge
+      </button>
     </div>
   );
 };
