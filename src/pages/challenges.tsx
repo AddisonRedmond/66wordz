@@ -8,8 +8,13 @@ import AcceptBadge from "~/components/challenge/accept-badge";
 const Challenges: NextPage = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const friends = api.friends.allFriends.useQuery();
-  const [actionType, setIsActionType] = useState<"accept" | "start">("start");
-  // const friends = ["Addison Redmond", "Sydnie Redmond"];
+  const challenges = api.challenge.getChallenges.useQuery();
+  const requestChallenge = api.challenge.requestChallenge.useMutation();
+  const [actionType, setActionType] = useState<"accept" | "start">("start");
+
+  const sendChallenge = (challengeeId: string, recordId: string) => {
+    requestChallenge.mutate({ challengeeId: challengeeId, recordId: recordId });
+  };
 
   return (
     <div className="flex flex-grow flex-col">
@@ -24,7 +29,7 @@ const Challenges: NextPage = () => {
           <div className="flex justify-between">
             <button
               onClick={() => {
-                setIsActionType("start");
+                setActionType("start");
               }}
               className={
                 actionType === "start"
@@ -36,7 +41,7 @@ const Challenges: NextPage = () => {
             </button>
             <button
               onClick={() => {
-                setIsActionType("accept");
+                setActionType("accept");
               }}
               className={
                 actionType === "accept"
@@ -51,11 +56,25 @@ const Challenges: NextPage = () => {
         <div className="my-4">
           {actionType === "start" &&
             friends.data?.map((friend) => {
-              return <ChallengeBadge fullName={friend.friendFullName} />;
+              return (
+                <ChallengeBadge
+                  key={friend.id}
+                  fullName={friend.friendFullName}
+                  sendChallenge={sendChallenge}
+                  recordId={friend.id}
+                  friendId={friend.friendId}
+                />
+              );
             })}
           {actionType === "accept" &&
-            friends.data?.map((friend) => {
-              return <AcceptBadge />;
+            challenges.data?.map((challenge) => {
+              return (
+                <AcceptBadge
+                  key={challenge.id}
+                  challengerName={challenge.challengerFullName}
+                  challengerId={challenge.challenger}
+                />
+              );
             })}
         </div>
 

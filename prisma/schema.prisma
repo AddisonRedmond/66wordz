@@ -148,14 +148,15 @@ model Friends {
     friendFullName String
     friendId       String
 
+    @@unique([userId, friendId])
     @@index([userId])
 }
 
 model Challenge {
-    id                String @id @default(cuid())
-    challenger        String
-    challengee        String
-    word              String
-    challengerGuesses Json
-    challengeeGuesses Json
+    id                 String  @id @default(cuid())
+    challenger         String
+    challengerFullName String
+    challengee         String
+    challengeeFullName String
+    accepted           Boolean @default(false)
 }

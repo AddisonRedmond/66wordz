@@ -6,7 +6,7 @@ import bell from "../../../public/bell.png";
 import Link from "next/link";
 import { useState } from "react";
 import { api } from "~/utils/api";
-import NotificationBadge from "../notifications/notification-badge";
+// import NotificationBadge from "../notifications/notification-badge";
 type DesktopNavbarProps = {
   isPremiumUser: boolean | undefined;
   handleUpgrade: () => void;
@@ -15,8 +15,8 @@ type DesktopNavbarProps = {
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
-  const [notificationIsOpen, setNotificationIsOpen] = useState(false);
-  const notifications = api.notifications.getNotifications.useQuery();
+  // const [notificationIsOpen, setNotificationIsOpen] = useState(false);
+  // const notifications = api.notifications.getNotifications.useQuery();
 
   return (
     <div className="sticky top-0 flex h-14 w-screen items-center justify-between px-8">
