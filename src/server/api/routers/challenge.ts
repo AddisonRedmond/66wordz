@@ -43,24 +43,27 @@ export const challengeRouter = createTRPCRouter({
       if (existingChallenge) {
         return { success: false, message: "Challenge already exists!" };
       }
-
-      const challenge = await ctx.db.challenge.create({
-        data: {
-          challenger: user.id,
-          challengerFullName: user.name!,
-          challengee: input.challengeeId,
-          challengeeFullName: isFriend.friendFullName,
-        },
-      });
-
-      //   create challenge in firestore
-      await addDoc(collection(store, "challenges"), {
+      const docRef = await addDoc(collection(store, "challenges"), {
         challenger: user,
         challengee: input.challengeeId,
         word: handleGetNewWord(),
         challengerGuesses: [],
         challengeeGuesses: [],
       });
+
+
+      if (docRef.id) {
+        const challenge = await ctx.db.challenge.create({
+          data: {
+            challenger: user.id,
+            challengerFullName: user.name!,
+            challengee: input.challengeeId,
+            challengeeFullName: isFriend.friendFullName,
+          },
+        });
+      }
+
+      //   create challenge in firestore
 
       // otherwise create challenge
     }),
