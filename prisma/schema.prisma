@@ -147,6 +147,7 @@ model Friends {
 
     friendFullName String
     friendId       String
+    challengeId    String
 
     @@unique([userId, friendId])
     @@index([userId])

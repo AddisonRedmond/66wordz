@@ -43,25 +43,15 @@ export const challengeRouter = createTRPCRouter({
       if (existingChallenge) {
         return { success: false, message: "Challenge already exists!" };
       }
-      const docRef = await addDoc(collection(store, "challenges"), {
-        challenger: user.id,
-        challengee: input.challengeeId,
-        word: handleGetNewWord(),
-        challengerGuesses: [],
-        challengeeGuesses: [],
-      });
 
-      if (docRef.id) {
-        await ctx.db.challenge.create({
-          data: {
-            id: docRef.id,
-            challenger: user.id,
-            challengerFullName: user.name!,
-            challengee: input.challengeeId,
-            challengeeFullName: isFriend.friendFullName,
-          },
-        });
-      }
+      await ctx.db.challenge.create({
+        data: {
+          challenger: user.id,
+          challengerFullName: user.name!,
+          challengee: input.challengeeId,
+          challengeeFullName: isFriend.friendFullName,
+        },
+      });
 
       //   create challenge in firestore
 
@@ -77,4 +67,35 @@ export const challengeRouter = createTRPCRouter({
       },
     });
   }),
+
+  declineChallege: protectedProcedure
+    .input(z.object({ challengeId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.challenge.delete({ where: { id: input.challengeId } });
+    }),
+
+  startChallenge: protectedProcedure
+    .input(z.object({ challengeId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // create a firebase document with an id of the challenge id
+
+      //   look up the challenge
+      const challenge = await ctx.db.challenge.findUnique({
+        where: { id: input.challengeId },
+      });
+
+      if (!challenge) {
+        return { success: false, message: "couldn't find challenge" };
+      }
+
+      await addDoc(collection(store, "challenges"), {
+        challenger: challenge.challenger,
+        challengee: challenge.challengee,
+        word: handleGetNewWord(),
+        challengerGuesses: [],
+        challengeeGuesses: [],
+      });
+
+      return challenge;
+    }),
 });

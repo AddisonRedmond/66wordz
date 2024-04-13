@@ -10,6 +10,7 @@ const Challenges: NextPage = () => {
   const friends = api.friends.allFriends.useQuery();
   const challenges = api.challenge.getChallenges.useQuery();
   const requestChallenge = api.challenge.requestChallenge.useMutation();
+  const declineChallenge = api.challenge.declineChallege.useMutation();
   const [actionType, setActionType] = useState<"accept" | "start">("start");
 
   const sendChallenge = (challengeeId: string, recordId: string) => {
@@ -24,61 +25,39 @@ const Challenges: NextPage = () => {
           isLoading={false}
           isPremiumUser={premiumUser.data?.isPremiumUser}
         />
-        <div className="font-semibold">
-          <p className="text-2xl">Challenge</p>
-          <div className="flex justify-between">
-            <button
-              onClick={() => {
-                setActionType("start");
-              }}
-              className={
-                actionType === "start"
-                  ? "underline decoration-2 underline-offset-8"
-                  : ""
-              }
-            >
-              Start
-            </button>
-            <button
-              onClick={() => {
-                setActionType("accept");
-              }}
-              className={
-                actionType === "accept"
-                  ? "underline decoration-2 underline-offset-8"
-                  : ""
-              }
-            >
-              Accept
-            </button>
-          </div>
-        </div>
-        <div className="my-4">
-          {actionType === "start" &&
-            friends.data?.map((friend) => {
-              return (
-                <ChallengeBadge
-                  key={friend.id}
-                  fullName={friend.friendFullName}
-                  sendChallenge={sendChallenge}
-                  recordId={friend.id}
-                  friendId={friend.friendId}
-                />
-              );
-            })}
-          {actionType === "accept" &&
-            challenges.data?.map((challenge) => {
-              return (
-                <AcceptBadge
-                  key={challenge.id}
-                  challengerName={challenge.challengerFullName}
-                  challengerId={challenge.challenger}
-                />
-              );
-            })}
+        <div className="text-center">
+          <p className="text-2xl font-semibold">Challenges</p>
+          <p>challenge a friend to a game</p>
         </div>
 
-        <div className="flex w-full flex-grow flex-wrap justify-center gap-3"></div>
+        <div className="my-4 flex w-full items-center justify-center px-6">
+          <label
+            htmlFor="friend-list"
+            className="flex h-full flex-col justify-center rounded-l-full bg-zinc-700 px-3 text-sm font-semibold text-white"
+          >
+            Friend's
+          </label>
+          <input
+            id="friend-list"
+            className="w-1/2 min-w-72 rounded-r-full border-2 p-1"
+            placeholder="Enter a username"
+          ></input>
+          <datalist id="friend-list" className=""></datalist>
+        </div>
+        <button className="mb-3 rounded-md bg-black p-3 text-white">
+          Send Challenge
+        </button>
+
+        <div className="flex w-1/2 flex-grow rounded-md border-2">
+          <div className="flex h-16 w-full items-center justify-between border-b-2 px-4">
+            <div className="flex items-center">
+              <p className=" size-10 rounded-full bg-zinc-300 p-2">AR</p>
+              <p>Addison</p>
+            </div>
+
+            <div><button className="bg-black p-2 rounded-md text-white">Start</button></div>
+          </div>
+        </div>
       </div>
     </div>
   );
