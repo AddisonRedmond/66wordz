@@ -44,17 +44,17 @@ export const challengeRouter = createTRPCRouter({
         return { success: false, message: "Challenge already exists!" };
       }
       const docRef = await addDoc(collection(store, "challenges"), {
-        challenger: user,
+        challenger: user.id,
         challengee: input.challengeeId,
         word: handleGetNewWord(),
         challengerGuesses: [],
         challengeeGuesses: [],
       });
 
-
       if (docRef.id) {
-        const challenge = await ctx.db.challenge.create({
+        await ctx.db.challenge.create({
           data: {
+            id: docRef.id,
             challenger: user.id,
             challengerFullName: user.name!,
             challengee: input.challengeeId,
@@ -73,7 +73,7 @@ export const challengeRouter = createTRPCRouter({
 
     return await ctx.db.challenge.findMany({
       where: {
-        OR: [{ challenger: user }, { challengee: user }],
+        challengee: user,
       },
     });
   }),
