@@ -95,7 +95,6 @@ const getRevealIndex = (
 
   word.split("").forEach((letter, index) => {
     if (letter === guess.split("")[index]) {
-      console.log(index);
       revealIndex.add(index);
     }
   });

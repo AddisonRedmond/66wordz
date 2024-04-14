@@ -1,7 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
 import Stripe from "stripe";
-const YOUR_DOMAIN = "https://www.66wordz.com";
 
 export const checkoutRouter = createTRPCRouter({
   createCheckout: protectedProcedure.mutation(async ({ ctx }) => {
@@ -22,8 +21,8 @@ export const checkoutRouter = createTRPCRouter({
           quantity: 1,
         },
       ],
-      success_url: `${YOUR_DOMAIN}/`,
-      cancel_url: `${YOUR_DOMAIN}?canceled=true`,
+      success_url: `${env.NEXTAUTH_URL}/`,
+      cancel_url: `${env.NEXTAUTH_URL}?canceled=true`,
       automatic_tax: { enabled: true },
     });
 
@@ -92,7 +91,6 @@ export const checkoutRouter = createTRPCRouter({
       },
     );
 
-    console.log(subscription);
     return;
   }),
 });

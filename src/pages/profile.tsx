@@ -33,7 +33,6 @@ const Profile: NextPage = () => {
 
   const getFullDate = (dateMiliseconds: number) => {
     const date = new Date(dateMiliseconds * 1000);
-    console.log(date);
     return date.toDateString();
   };
 

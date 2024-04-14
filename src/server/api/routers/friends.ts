@@ -111,12 +111,14 @@ export const friendsRouter = createTRPCRouter({
                 userId: userId.id,
                 friendFullName: request.userFullName,
                 friendId: request.userId,
+                friendImage: request.userImage,
               },
               {
                 sharedId: newFriend.id,
                 userId: request.userId,
                 friendFullName: userId.name!,
                 friendId: userId.id,
+                friendImage: userId.image,
               },
             ],
           });

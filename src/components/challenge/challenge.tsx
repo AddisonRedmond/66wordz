@@ -1,6 +1,6 @@
 const Challenge = () => {
   return (
-    <div className="flex h-16 w-full items-center justify-between border-b-2 px-4">
+    <div className="flex h-20 w-full items-center justify-between border-b-2 px-4">
       <div className="flex gap-x-2">
         <div className="flex w-32 items-center gap-x-1">
           <div className="size-10 rounded-full bg-zinc-300 p-2">

@@ -13,7 +13,6 @@ const Header: React.FC<HeaderProps> = ({
   desktopOnly,
   ...props
 }: HeaderProps) => {
-  console.log;
   if (props.isPremiumUser) {
     return (
       <>

@@ -58,7 +58,6 @@ export const quickPlayRouter = createTRPCRouter({
       });
 
       if (rejoin) {
-        console.log("rejoin");
         return await ctx.db.lobby.findUnique({
           where: {
             id: rejoin.lobbyId,
@@ -103,7 +102,6 @@ export const quickPlayRouter = createTRPCRouter({
                 },
               );
             } catch (e) {
-              console.log(e);
             }
             break;
 
@@ -118,7 +116,6 @@ export const quickPlayRouter = createTRPCRouter({
                 },
               );
             } catch (e) {
-              console.log(e);
             }
         }
 
