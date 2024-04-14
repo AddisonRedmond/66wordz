@@ -48,8 +48,11 @@ export const friendsRouter = createTRPCRouter({
         data: {
           userId: currentUser.id,
           userFullName: `${currentUser.name}`,
+          userImage: currentUser?.image,
+
           friendId: friend.id,
           friendFullName: friend.name,
+          friendImage: friend?.image,
         },
       });
 
@@ -100,14 +103,17 @@ export const friendsRouter = createTRPCRouter({
 
       if (request?.friendId === userId.id) {
         if (input.accept) {
+          const newFriend = await ctx.db.friend.create({ data: {} });
           await ctx.db.friends.createMany({
             data: [
               {
+                sharedId: newFriend.id,
                 userId: userId.id,
                 friendFullName: request.userFullName,
                 friendId: request.userId,
               },
               {
+                sharedId: newFriend.id,
                 userId: request.userId,
                 friendFullName: userId.name!,
                 friendId: userId.id,
@@ -133,6 +139,20 @@ export const friendsRouter = createTRPCRouter({
 
       if (request?.friendId === userId.id) {
         await ctx.db.requests.delete({ where: { id: request.id } });
+      }
+    }),
+
+  removeFriend: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const user = ctx.session.user.id;
+
+      const friendRecord = await ctx.db.friends.findUnique({
+        where: { id: input },
+      });
+
+      if (friendRecord?.userId === user) {
+        await ctx.db.friend.delete({ where: { id: friendRecord.sharedId } });
       }
     }),
 });

@@ -18,6 +18,7 @@ const Friends = () => {
   const sent = api.friends.allPending.useQuery();
   const friends = api.friends.allFriends.useQuery();
   const acceptRequest = api.friends.handleFriendRequest.useMutation();
+  const removeFriend = api.friends.removeFriend.useMutation();
 
   const [requestType, setRequestType] = useState<
     "friend" | "pending" | "request"
@@ -40,6 +41,11 @@ const Friends = () => {
         toast.error(message.message);
       }
     }
+  };
+
+  const handleRemoveFriend = async (friendId: string) => {
+    await removeFriend.mutateAsync(friendId);
+    friends.refetch();
   };
 
   const handleAcceptRequest = async (requestId: string, accept: boolean) => {
@@ -139,7 +145,12 @@ const Friends = () => {
           {requestType === "friend" &&
             friends.data?.map((friend) => {
               return (
-                <FriendBadge key={friend.id} fullName={friend.friendFullName} />
+                <FriendBadge
+                  key={friend.id}
+                  fullName={friend.friendFullName}
+                  removeFriend={handleRemoveFriend}
+                  friendId={friend.id}
+                />
               );
             })}
         </div>
