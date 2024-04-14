@@ -39,23 +39,40 @@ const Challenges: NextPage = () => {
           </label>
           <input
             id="friend-list"
+            list="friendlist"
             className="w-1/2 min-w-72 rounded-r-full border-2 p-1"
             placeholder="Enter a username"
-          ></input>
-          <datalist id="friend-list" className=""></datalist>
+          />
+          <datalist id="friendlist">
+            {friends.data?.map((friend) => {
+              return (
+                <option
+                  key={friend.id}
+                  id={friend.friendId}
+                  value={friend.friendFullName}
+                >
+                  {friend.friendFullName}
+                </option>
+              );
+            })}
+          </datalist>
         </div>
         <button className="mb-3 rounded-md bg-black p-3 text-white">
           Send Challenge
         </button>
 
-        <div className="flex w-1/2 flex-grow rounded-md border-2">
+        <div className="flex w-1/2 min-w-80 flex-grow rounded-md border-2">
           <div className="flex h-16 w-full items-center justify-between border-b-2 px-4">
-            <div className="flex items-center">
+            <div className="flex items-center gap-x-1">
               <p className=" size-10 rounded-full bg-zinc-300 p-2">AR</p>
-              <p>Addison</p>
+              <p>Addison Redmond</p>
             </div>
 
-            <div><button className="bg-black p-2 rounded-md text-white">Start</button></div>
+            <div>
+              <button className="rounded-md bg-black p-2 text-white">
+                Start
+              </button>
+            </div>
           </div>
         </div>
       </div>

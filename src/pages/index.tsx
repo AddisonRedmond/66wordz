@@ -215,7 +215,7 @@ const Home = () => {
               )}
 
               {isCreateLobby === false && isJoinLobby === false && (
-                <div className="flex flex-wrap items-center justify-center gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-3 flex-grow">
                   <GameCardV2
                     gameType="ELIMINATION"
                     image={crown}

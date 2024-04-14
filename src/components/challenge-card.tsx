@@ -5,7 +5,7 @@ type ChallengeCardProps = {};
 
 const ChallengeCard: React.FC = (props) => {
   return (
-    <div className=" bg-card text-card-foreground prose h-full w-full max-w-xs rounded-lg border-2 border-zinc-200 shadow-sm">
+    <div className=" bg-card text-card-foreground prose w-full max-w-xs rounded-lg border-2 border-zinc-200 shadow-sm">
       <div className="flex flex-col items-center">
         <Image
           className="mb-0"
@@ -27,11 +27,11 @@ const ChallengeCard: React.FC = (props) => {
             </button>
           </Link>
 
-          {/* <button
+          <button
             className={`w-full rounded-md border-2  border-zinc-500 bg-white py-2 font-semibold text-black duration-150 ease-in-out hover:bg-zinc-200`}
           >
             Create
-          </button> */}
+          </button>
         </div>
       </div>
     </div>
