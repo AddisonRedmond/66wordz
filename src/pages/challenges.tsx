@@ -26,7 +26,9 @@ const Challenges: NextPage = () => {
   const declineChallenge = api.challenge.declineChallege.useMutation();
   const [revealList, setRevealList] = useState(false);
   const [actionType, setActionType] = useState<"accept" | "start">("start");
-  const [list, setList] = useState<{ friendId: string; name: string }[]>([]);
+  const [list, setList] = useState<{ friendRecordId: string; name: string }[]>(
+    [],
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -38,11 +40,11 @@ const Challenges: NextPage = () => {
 
   const handleFriendToList = (friendId: string, name: string) => {
     // Check if the friendId already exists in the list
-    const isDuplicate = list.some((item) => item.friendId === friendId);
+    const isDuplicate = list.some((item) => item.friendRecordId === friendId);
 
     // If it's not a duplicate, add it to the list
     if (!isDuplicate) {
-      setList([...list, { friendId: friendId, name: name }]);
+      setList([...list, { friendRecordId: friendId, name: name }]);
     }
   };
 
@@ -75,7 +77,9 @@ const Challenges: NextPage = () => {
   }, [onClickOutside]);
 
   const removePlayer = (id: string): void => {
-    setList((prevList) => prevList.filter((item) => item.friendId !== id));
+    setList((prevList) =>
+      prevList.filter((item) => item.friendRecordId !== id),
+    );
   };
 
   return (
@@ -113,10 +117,10 @@ const Challenges: NextPage = () => {
                           key={friend.id}
                           name={friend.friendFullName}
                           image={friend.friendImage}
-                          id={friend.friendId}
+                          id={friend.id}
                           handleFriendToList={handleFriendToList}
                           selected={list.some(
-                            (item) => item.friendId === friend.friendId,
+                            (item) => item.friendRecordId === friend.id,
                           )}
                         />
                       );

@@ -2,7 +2,7 @@ import { m } from "framer-motion";
 import Image from "next/image";
 import send from "../../../public/send.png";
 type NewChallengeProps = {
-  players: { friendId: string; name: string }[];
+  players: { friendRecordId: string; name: string }[];
   removePlayer: (friendId: string) => void;
 };
 
@@ -18,11 +18,11 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
         {props.players.map((player) => {
           return (
             <div
-              key={player.friendId}
+              key={player.friendRecordId}
               className="flex w-36 gap-2 rounded-md bg-zinc-700 px-2 py-2 text-white"
             >
               <p className="... truncate">{player.name}</p>
-              <button onClick={() => props.removePlayer(player.friendId)}>
+              <button onClick={() => props.removePlayer(player.friendRecordId)}>
                 ❌
               </button>
             </div>

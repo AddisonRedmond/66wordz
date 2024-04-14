@@ -60,6 +60,8 @@ model User {
     lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
 
+    challenge Challenge[]
+
     friends  Friends[]  @relation(name: "friends")
     requests Requests[]
 
@@ -169,10 +171,11 @@ model Friends {
 }
 
 model Challenge {
-    id                 String  @id @default(cuid())
-    challenger         String
-    challengerFullName String
-    challengee         String
-    challengeeFullName String
-    accepted           Boolean @default(false)
+    id           String   @id @default(cuid())
+    initiatedBy  User     @relation(fields: [initiateById], references: [id])
+    initiateById String
+    timeStamp    DateTime @default(now())
+    challengees  Json
+
+    @@index([initiateById])
 }

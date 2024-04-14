@@ -6,56 +6,16 @@ import { handleGetNewWord } from "~/utils/game";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
-    .input(z.array(z.object({ friendId: z.string(), name: z.string() })))
+    .input(z.array(z.object({ friendRecordId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      // check if challenge exists already
-
       const user = ctx.session.user;
 
-      const isFriend = await ctx.db.friends.findUnique({
-        where: { id: input.recordId },
-      });
+      // check to make sure user is going over maximum number of challenges
+      
 
-      if (!isFriend) {
-        return { success: false, message: "Looks like an error occurred" };
-      }
-      // check to ensure they are friends
+      // check to make sure user if friends with everyone in input array
 
-      const existingChallenge = await ctx.db.challenge.findFirst({
-        where: {
-          OR: [
-            {
-              AND: [
-                { challenger: user.id },
-                { challengee: input.challengeeId },
-              ],
-            },
-            {
-              AND: [
-                { challenger: input.challengeeId },
-                { challengee: user.id },
-              ],
-            },
-          ],
-        },
-      });
-
-      if (existingChallenge) {
-        return { success: false, message: "Challenge already exists!" };
-      }
-
-      await ctx.db.challenge.create({
-        data: {
-          challenger: user.id,
-          challengerFullName: user.name!,
-          challengee: input.challengeeId,
-          challengeeFullName: isFriend.friendFullName,
-        },
-      });
-
-      //   create challenge in firestore
-
-      // otherwise create challenge
+      // create a record of the challenge in the databases
     }),
 
   getChallenges: protectedProcedure.query(async ({ ctx, input }) => {
