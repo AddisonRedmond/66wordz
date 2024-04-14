@@ -30,8 +30,10 @@ const Challenges: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const sendChallenge = (challengeeId: string, recordId: string) => {
-    requestChallenge.mutate({ challengeeId: challengeeId, recordId: recordId });
+  const sendChallenge = () => {
+    if (list.length) {
+      requestChallenge.mutate(list);
+    }
   };
 
   const handleFriendToList = (friendId: string, name: string) => {
@@ -113,7 +115,9 @@ const Challenges: NextPage = () => {
                           image={friend.friendImage}
                           id={friend.friendId}
                           handleFriendToList={handleFriendToList}
-                          selected={list.some((item) => item.friendId === friend.friendId)}
+                          selected={list.some(
+                            (item) => item.friendId === friend.friendId,
+                          )}
                         />
                       );
                     })

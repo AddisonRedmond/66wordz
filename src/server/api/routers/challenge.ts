@@ -6,7 +6,7 @@ import { handleGetNewWord } from "~/utils/game";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
-    .input(z.object({ challengeeId: z.string(), recordId: z.string() }))
+    .input(z.array(z.object({ friendId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
       // check if challenge exists already
 
