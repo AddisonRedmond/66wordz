@@ -9,7 +9,7 @@ const WordContainer: React.FC<WordContainerProps> = (
   props: WordContainerProps,
 ) => {
   return (
-    <div className="flex w-full flex-row items-center justify-center gap-2 rounded-md border-2 border-zinc-200 bg-stone-300 p-2 duration-150 ease-in-out">
+    <div className="flex w-fit flex-row items-center justify-center gap-1 rounded-md border-2 border-zinc-200 bg-stone-300 p-2 duration-150 ease-in-out">
       {props.word
         ?.toUpperCase()
         .split("")
