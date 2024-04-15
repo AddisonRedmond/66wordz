@@ -26,24 +26,31 @@ const Challenges: NextPage = () => {
   const declineChallenge = api.challenge.declineChallege.useMutation();
   const [revealList, setRevealList] = useState(false);
   const [actionType, setActionType] = useState<"accept" | "start">("start");
+
+  const [inputValue, setInputValue] = useState("");
+
   const [list, setList] = useState<{ friendRecordId: string; name: string }[]>(
     [],
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const sendChallenge = () => {
+  const sendChallenge = async () => {
     if (list.length) {
-      requestChallenge.mutate(list);
+      await requestChallenge.mutateAsync(list);
     }
+    challenges.refetch();
+    setList([]);
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
   const handleFriendToList = (friendId: string, name: string) => {
     // Check if the friendId already exists in the list
     const isDuplicate = list.some((item) => item.friendRecordId === friendId);
-
     // If it's not a duplicate, add it to the list
-    if (!isDuplicate) {
+    if (!isDuplicate && list.length < 5) {
       setList([...list, { friendRecordId: friendId, name: name }]);
     }
   };
@@ -82,6 +89,12 @@ const Challenges: NextPage = () => {
     );
   };
 
+  const friendSearch =
+    friends.data?.filter((friend) => {
+      const regex = new RegExp(inputValue.toLowerCase() ?? "");
+      return regex.test(friend.friendFullName.toLowerCase());
+    }) ?? [];
+
   return (
     <div className="flex flex-grow flex-col">
       <Navbar />
@@ -103,6 +116,7 @@ const Challenges: NextPage = () => {
               list="friendlist"
               className="w-full min-w-72 rounded-md border-2 p-2"
               placeholder="Enter a username"
+              onChange={(e) => handleInputChange(e)}
               onClick={() => {
                 handleRevealList();
               }}
@@ -111,7 +125,7 @@ const Challenges: NextPage = () => {
               {revealList && (
                 <ChallengeDropdown dropdownRef={dropdownRef}>
                   {friends.data?.length ? (
-                    friends.data?.map((friend) => {
+                    friendSearch.map((friend) => {
                       return (
                         <ChallengeDropdownItem
                           key={friend.id}
@@ -137,11 +151,17 @@ const Challenges: NextPage = () => {
           <div className="h-full overflow-hidden rounded-md border-2">
             <AnimatePresence>
               {list.length && (
-                <NewChallenge sendChallenge={sendChallenge} players={list} removePlayer={removePlayer} />
+                <NewChallenge
+                  sendChallenge={sendChallenge}
+                  players={list}
+                  removePlayer={removePlayer}
+                />
               )}
             </AnimatePresence>
 
-            <Challenge />
+            {challenges.data?.map((challenge) => {
+              return <Challenge key={challenge.id} challenge={challenge} />;
+            })}
           </div>
         </div>
       </div>

@@ -171,11 +171,12 @@ model Friends {
 }
 
 model Challenge {
-    id           String   @id @default(cuid())
-    initiatedBy  User     @relation(fields: [initiateById], references: [id])
-    initiateById String
-    timeStamp    DateTime @default(now())
-    challengees  String[]
+    id               String   @id @default(cuid())
+    initiatedBy      User     @relation(fields: [initiateById], references: [id])
+    initiateById     String
+    timeStamp        DateTime @default(now())
+    challengeesIds   String[]
+    challengeesNames String[]
 
     @@index([initiateById])
 }

@@ -3,7 +3,6 @@ import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { handleGetNewWord } from "~/utils/game";
-import { Prisma } from "@prisma/client";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
@@ -23,34 +22,42 @@ export const challengeRouter = createTRPCRouter({
             in: ids,
           },
         },
-        select: { friendId: true },
+        select: { friendId: true, friendFullName: true },
       });
 
       const challengeeIds = challengees.map((challengee) => {
         return challengee.friendId;
       });
 
-      console.log(challengeeIds);
+      const challengeeNames = challengees.map((challengee) => {
+        return challengee.friendFullName;
+      });
 
       const matchingChallenges = await ctx.db.challenge.findMany({
         where: {
           // Filter based on challengees array
-          challengees: {
+          challengeesIds: {
             // Check if any of the challengeeIds are present in the array
             hasEvery: challengeeIds,
           },
         },
       });
 
-      if (matchingChallenges.length) {
-        console.log(matchingChallenges);
-        return;
+      for (const challenge of matchingChallenges) {
+        // + 1 because we add current user in the array afterwards
+        if (challenge.challengeesIds.length === challengeeIds.length + 1) {
+          return {
+            success: "false",
+            message: "Challenge with these friends already exists",
+          };
+        }
       }
 
       await ctx.db.challenge.create({
         data: {
           initiateById: user.id,
-          challengees: [...challengeeIds, user.id],
+          challengeesIds: [...challengeeIds, user.id],
+          challengeesNames: [...challengeeNames, user.name!],
         },
       });
 
@@ -63,7 +70,7 @@ export const challengeRouter = createTRPCRouter({
     // Use the searchObject in the query
     const result = await ctx.db.challenge.findMany({
       where: {
-        challengees: {
+        challengeesIds: {
           has: user,
         },
       },
