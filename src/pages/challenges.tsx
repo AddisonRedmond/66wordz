@@ -11,6 +11,7 @@ import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
 import Modal from "~/components/modal";
+import ChallengeBoard from "~/components/challenge/challenge-board";
 const Challenges: NextPage = () => {
   const router = useRouter();
   useSession({
@@ -102,13 +103,10 @@ const Challenges: NextPage = () => {
     <div className="flex flex-grow flex-col">
       <Navbar />
       <div className="flex flex-grow flex-col items-center justify-evenly pb-3">
-        {startChallenge.data && (
-          <Modal>
-            <div>
-              <p>{startChallenge.data.id}</p>
-            </div>
-          </Modal>
-        )}
+        <AnimatePresence>
+          {startChallenge.data && <ChallengeBoard />}
+        </AnimatePresence>
+
         <Header
           isLoading={false}
           isPremiumUser={premiumUser.data?.isPremiumUser}
