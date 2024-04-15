@@ -106,7 +106,7 @@ export const challengeRouter = createTRPCRouter({
       });
 
       if (!challenge) {
-        return { success: false, message: "couldn't find challenge" };
+        return;
       }
 
       // check if firebase document already exists
@@ -124,6 +124,7 @@ export const challengeRouter = createTRPCRouter({
       }
       // if document already exists,
       // add user and their game data
+      // TODO://check if player already started game
       else {
         await updateDoc(challengeRef, {
           [userId]: {
@@ -131,7 +132,6 @@ export const challengeRouter = createTRPCRouter({
           },
         });
       }
-
       return challenge;
     }),
 });

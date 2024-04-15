@@ -10,9 +10,10 @@ import { AnimatePresence } from "framer-motion";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
+import Modal from "~/components/modal";
 const Challenges: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession({
+  useSession({
     required: true,
     onUnauthenticated: () => {
       router.push("/login");
@@ -25,8 +26,6 @@ const Challenges: NextPage = () => {
   const requestChallenge = api.challenge.requestChallenge.useMutation();
   const startChallenge = api.challenge.startChallenge.useMutation();
   const [revealList, setRevealList] = useState(false);
-  const [actionType, setActionType] = useState<"accept" | "start">("start");
-
   const [inputValue, setInputValue] = useState("");
 
   const [list, setList] = useState<{ friendRecordId: string; name: string }[]>(
@@ -103,13 +102,20 @@ const Challenges: NextPage = () => {
     <div className="flex flex-grow flex-col">
       <Navbar />
       <div className="flex flex-grow flex-col items-center justify-evenly pb-3">
+        {startChallenge.data && (
+          <Modal>
+            <div>
+              <p>{startChallenge.data.id}</p>
+            </div>
+          </Modal>
+        )}
         <Header
           isLoading={false}
           isPremiumUser={premiumUser.data?.isPremiumUser}
         />
         <div className="text-center">
           <p className="text-2xl font-semibold">Challenges</p>
-          <p>challenge a friend to a game</p>
+          <p>challenge friends to a game</p>
         </div>
 
         <div className="flex w-1/2 min-w-80 flex-grow flex-col gap-2">
@@ -164,7 +170,13 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             {challenges.data?.map((challenge) => {
-              return <Challenge handleStartChallenge={handleStartChallenge} key={challenge.id} challenge={challenge} />;
+              return (
+                <Challenge
+                  handleStartChallenge={handleStartChallenge}
+                  key={challenge.id}
+                  challenge={challenge}
+                />
+              );
             })}
           </div>
         </div>

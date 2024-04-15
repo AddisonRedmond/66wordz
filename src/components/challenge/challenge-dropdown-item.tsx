@@ -35,7 +35,7 @@ const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
           onClick={() => {
             props.handleFriendToList(props.id, props.name);
           }}
-          className="rounded-md border-2 bg-[#9462C6] p-2 font-semibold text-white"
+          className="rounded-md border-2 bg-[#9462C6] ease-in-out duration-150 hover:bg-[#a985cd] p-2 font-semibold text-white"
         >
           Add
         </button>

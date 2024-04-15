@@ -20,7 +20,7 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
           return (
             <div
               key={player.friendRecordId}
-              className="flex w-36 gap-2 rounded-md bg-zinc-700 px-2 py-2 text-white"
+              className="sm:flex w-1/5 gap-2 rounded-md bg-zinc-700 px-2 py-2 text-white hidden"
             >
               <p className="... truncate">{player.name}</p>
               <button onClick={() => props.removePlayer(player.friendRecordId)}>

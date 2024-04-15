@@ -16,7 +16,7 @@ const ChallengeDropdown: React.FC<ChallengeDropdownProps> = ({
       initial={{ height: 0 }}
       animate={{ height: "auto" }}
       exit={{ height: 0 }}
-      className="absolute top-12 w-[95%] overflow-hidden rounded-md border-2 bg-zinc-200"
+      className="absolute top-12 w-[95%] overflow-auto rounded-md border-2 bg-zinc-200"
     >
       {children}
     </m.div>
