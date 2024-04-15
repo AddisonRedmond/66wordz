@@ -12,7 +12,7 @@ type ChallengeDropdownItemProps = {
 const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
   return (
     <div
-      className={`flex h-20 w-full items-center justify-between border-b-2 px-4 ease-in-out duration-150 ${props.selected ? "bg-zinc-200" : ""}`}
+      className={`flex h-20 w-full items-center justify-between border-b-2 border-white px-4 duration-150 ease-in-out ${props.selected ? "bg-zinc-200" : ""}`}
     >
       <div className="flex items-center gap-x-2">
         {props.image ? (
@@ -30,14 +30,16 @@ const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
         )}
         <p>{props.name}</p>
       </div>
-     {!props.selected && <button
-        onClick={() => {
-          props.handleFriendToList(props.id, props.name);
-        }}
-        className="rounded-md border-2 bg-[#9462C6] p-2 font-semibold text-white"
-      >
-        Add
-      </button>}
+      {!props.selected && (
+        <button
+          onClick={() => {
+            props.handleFriendToList(props.id, props.name);
+          }}
+          className="rounded-md border-2 bg-[#9462C6] p-2 font-semibold text-white"
+        >
+          Add
+        </button>
+      )}
     </div>
   );
 };

@@ -1,7 +1,15 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { handleGetNewWord } from "~/utils/game";
 
 export const challengeRouter = createTRPCRouter({
@@ -91,7 +99,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.object({ challengeId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // create a firebase document with an id of the challenge id
-
+      const userId = ctx.session.user.id;
       //   look up the challenge
       const challenge = await ctx.db.challenge.findUnique({
         where: { id: input.challengeId },
@@ -101,13 +109,28 @@ export const challengeRouter = createTRPCRouter({
         return { success: false, message: "couldn't find challenge" };
       }
 
-      // await addDoc(collection(store, "challenges"), {
-      //   challenger: challenge.challenger,
-      //   challengee: challenge.challengee,
-      //   word: handleGetNewWord(),
-      //   challengerGuesses: [],
-      //   challengeeGuesses: [],
-      // });
+      // check if firebase document already exists
+      const challengeRef = doc(store, "challenges", input.challengeId);
+      const firebaseChallenge = await getDoc(challengeRef);
+
+      if (!firebaseChallenge.exists()) {
+        // create a new document and add the user and their game data
+        await setDoc(doc(store, "challenges", challenge.id), {
+          word: handleGetNewWord(),
+          [userId]: {
+            timeStamp: serverTimestamp(),
+          },
+        });
+      }
+      // if document already exists,
+      // add user and their game data
+      else {
+        await updateDoc(challengeRef, {
+          [userId]: {
+            timeStamp: serverTimestamp(),
+          },
+        });
+      }
 
       return challenge;
     }),

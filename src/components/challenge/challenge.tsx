@@ -4,6 +4,7 @@ import { getInitials } from "~/utils/game";
 
 type ChallengeProps = {
   challenge: Challenge;
+  handleStartChallenge: (challengeId: string) => void;
 };
 
 const Challenge: React.FC<ChallengeProps> = (props) => {
@@ -31,7 +32,10 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
       </div>
 
       <div>
-        <button className="rounded-md border-2 bg-black p-2 font-semibold text-white">
+        <button
+          onClick={() => props.handleStartChallenge(props.challenge.id)}
+          className="rounded-md border-2 bg-black p-2 font-semibold text-white"
+        >
           Play
         </button>
       </div>

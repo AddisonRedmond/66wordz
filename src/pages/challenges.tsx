@@ -23,7 +23,7 @@ const Challenges: NextPage = () => {
   const friends = api.friends.allFriends.useQuery();
   const challenges = api.challenge.getChallenges.useQuery();
   const requestChallenge = api.challenge.requestChallenge.useMutation();
-  const declineChallenge = api.challenge.declineChallege.useMutation();
+  const startChallenge = api.challenge.startChallenge.useMutation();
   const [revealList, setRevealList] = useState(false);
   const [actionType, setActionType] = useState<"accept" | "start">("start");
 
@@ -41,6 +41,10 @@ const Challenges: NextPage = () => {
     }
     challenges.refetch();
     setList([]);
+  };
+
+  const handleStartChallenge = (challengeId: string) => {
+    startChallenge.mutate({ challengeId: challengeId });
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,7 +164,7 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             {challenges.data?.map((challenge) => {
-              return <Challenge key={challenge.id} challenge={challenge} />;
+              return <Challenge handleStartChallenge={handleStartChallenge} key={challenge.id} challenge={challenge} />;
             })}
           </div>
         </div>
