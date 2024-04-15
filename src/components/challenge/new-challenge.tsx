@@ -4,6 +4,7 @@ import send from "../../../public/send.png";
 type NewChallengeProps = {
   players: { friendRecordId: string; name: string }[];
   removePlayer: (friendId: string) => void;
+  sendChallenge: () => void;
 };
 
 const NewChallenge: React.FC<NewChallengeProps> = (props) => {
@@ -30,7 +31,10 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
         })}
       </div>
 
-      <button className="rounded-full bg-zinc-600 p-3 duration-150 ease-in-out hover:bg-zinc-400">
+      <button
+        onClick={() => props.sendChallenge()}
+        className="rounded-full bg-zinc-600 p-3 duration-150 ease-in-out hover:bg-zinc-400"
+      >
         <Image alt="Send challenge" src={send} height={25} width={25} />
       </button>
     </m.div>

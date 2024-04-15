@@ -137,7 +137,7 @@ const Challenges: NextPage = () => {
           <div className="h-full overflow-hidden rounded-md border-2">
             <AnimatePresence>
               {list.length && (
-                <NewChallenge players={list} removePlayer={removePlayer} />
+                <NewChallenge sendChallenge={sendChallenge} players={list} removePlayer={removePlayer} />
               )}
             </AnimatePresence>
 
