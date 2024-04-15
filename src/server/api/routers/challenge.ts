@@ -3,6 +3,7 @@ import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { handleGetNewWord } from "~/utils/game";
+import { Prisma } from "@prisma/client";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
@@ -29,6 +30,23 @@ export const challengeRouter = createTRPCRouter({
         return challengee.friendId;
       });
 
+      console.log(challengeeIds);
+
+      const matchingChallenges = await ctx.db.challenge.findMany({
+        where: {
+          // Filter based on challengees array
+          challengees: {
+            // Check if any of the challengeeIds are present in the array
+            hasEvery: challengeeIds,
+          },
+        },
+      });
+
+      if (matchingChallenges.length) {
+        console.log(matchingChallenges);
+        return;
+      }
+
       await ctx.db.challenge.create({
         data: {
           initiateById: user.id,
@@ -41,20 +59,17 @@ export const challengeRouter = createTRPCRouter({
 
   getChallenges: protectedProcedure.query(async ({ ctx, input }) => {
     const user = ctx.session.user.id;
-    const searchJsonValue = async (searchValue: string) => {
-      // Construct the search object as a JSON object
+    // Construct the search object as a JSON object
+    // Use the searchObject in the query
+    const result = await ctx.db.challenge.findMany({
+      where: {
+        challengees: {
+          has: user,
+        },
+      },
+    });
 
-      // Use the searchObject in the query
-      const result = await ctx.db.$queryRaw`
-        SELECT *
-        FROM "Challenge"
-        WHERE challengees @> ${JSON.stringify([user])}
-      `;
-
-      return result;
-    };
-
-    return searchJsonValue(user);
+    return result;
 
     // find any challenges that contain user id
   }),

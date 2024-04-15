@@ -175,7 +175,7 @@ model Challenge {
     initiatedBy  User     @relation(fields: [initiateById], references: [id])
     initiateById String
     timeStamp    DateTime @default(now())
-    challengees  Json
+    challengees  String[]
 
     @@index([initiateById])
 }
