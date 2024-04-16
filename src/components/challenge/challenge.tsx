@@ -1,9 +1,9 @@
-import { Challenge } from "@prisma/client";
+import type { Challenge as C } from "@prisma/client";
 import { m } from "framer-motion";
 import { getInitials } from "~/utils/game";
 
 type ChallengeProps = {
-  challenge: Challenge;
+  challenge: C;
   handleStartChallenge: (challengeId: string) => void;
 };
 

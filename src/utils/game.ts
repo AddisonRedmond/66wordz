@@ -2,6 +2,11 @@ import { ref, remove, set } from "firebase/database";
 import words from "./words";
 import { db } from "./firebase/firebase";
 
+export type Matches = {
+  full?: string[];
+  partial?: string[];
+  none?: string[];
+};
 
 export type CustomEliminationLobby = {
   gameStarted: boolean;
@@ -111,4 +116,4 @@ export const createCustomSurvivalLobby = (owner: string) => {
 
 export const deleteLobby = async (path: string) => {
   await remove(ref(db, path));
-}
+};

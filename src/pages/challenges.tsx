@@ -10,11 +10,10 @@ import { AnimatePresence } from "framer-motion";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
-import Modal from "~/components/modal";
 import ChallengeBoard from "~/components/challenge/challenge-board";
 const Challenges: NextPage = () => {
   const router = useRouter();
-  useSession({
+  const { data } = useSession({
     required: true,
     onUnauthenticated: () => {
       router.push("/login");
@@ -43,8 +42,8 @@ const Challenges: NextPage = () => {
     setList([]);
   };
 
-  const handleStartChallenge = (challengeId: string) => {
-    startChallenge.mutate({ challengeId: challengeId });
+  const handleStartChallenge = async (challengeId: string) => {
+    await startChallenge.mutateAsync({ challengeId: challengeId });
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +103,12 @@ const Challenges: NextPage = () => {
       <Navbar />
       <div className="flex flex-grow flex-col items-center justify-evenly pb-3">
         <AnimatePresence>
-          {startChallenge.data && <ChallengeBoard />}
+          {startChallenge.data && data?.user.id && (
+            <ChallengeBoard
+              challengeId={startChallenge.data.id}
+              userId={data?.user.id}
+            />
+          )}
         </AnimatePresence>
 
         <Header
@@ -158,7 +162,7 @@ const Challenges: NextPage = () => {
           </div>
           <div className="h-full overflow-hidden rounded-md border-2">
             <AnimatePresence>
-              {list.length && (
+              {!!list.length && (
                 <NewChallenge
                   sendChallenge={sendChallenge}
                   players={list}

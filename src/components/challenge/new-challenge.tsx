@@ -15,8 +15,9 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
       exit={{ height: 0 }}
       className="flex h-20 w-full items-center justify-between overflow-hidden border-b-2 px-4"
     >
-      <div className="flex gap-x-6">
+      <div className="flex gap-x-6 w-full">
         {props.players.map((player) => {
+          console.log(player)
           return (
             <div
               key={player.friendRecordId}

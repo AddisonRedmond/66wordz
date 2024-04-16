@@ -2,8 +2,6 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
 import {
-  collection,
-  addDoc,
   getDoc,
   doc,
   updateDoc,
@@ -122,16 +120,19 @@ export const challengeRouter = createTRPCRouter({
           },
         });
       }
-      // if document already exists,
-      // add user and their game data
-      // TODO://check if player already started game
-      else {
-        await updateDoc(challengeRef, {
-          [userId]: {
-            timeStamp: serverTimestamp(),
-          },
-        });
+
+      const firebaseDoc = firebaseChallenge.data();
+
+      if (firebaseDoc?.[userId]) {
+        return challenge;
       }
+
+      await updateDoc(challengeRef, {
+        [userId]: {
+          timeStamp: serverTimestamp(),
+        },
+      });
+
       return challenge;
     }),
 });
