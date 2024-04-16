@@ -107,6 +107,11 @@ export const challengeRouter = createTRPCRouter({
         return;
       }
 
+      await ctx.db.challenge.update({
+        where: { id: challenge.id },
+        data: { started: { push: userId } },
+      });
+
       // check if firebase document already exists
       const challengeRef = doc(store, "challenges", input.challengeId);
       const firebaseChallenge = await getDoc(challengeRef);
@@ -139,13 +144,58 @@ export const challengeRouter = createTRPCRouter({
   giveUp: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
+      const user = ctx.session.user;
 
       // get the challenge id
       const challengeId = await ctx.db.challenge.findUnique({
         where: { id: input },
-        select: { id: true },
+        select: {
+          id: true,
+          challengeesIds: true,
+          challengeesNames: true,
+          started: true,
+        },
       });
+
+      if (!challengeId) {
+        return;
+      }
+
+      // if user didnt start, just remove them from the field
+      if (!challengeId.started.includes(user.id)) {
+        const removedUserId = challengeId?.challengeesIds.filter(
+          (id) => id !== user.id,
+        );
+        const removedUserName = challengeId?.challengeesNames.filter(
+          (id) => id !== user.name,
+        );
+
+        // check if there is only one person left in the challenge, if yes, then delete the challenge
+
+        if (removedUserId.length === 1) {
+          await ctx.db.challenge.delete({ where: { id: challengeId.id } });
+        } else {
+          await ctx.db.challenge.update({
+            where: { id: challengeId?.id },
+            data: {
+              challengeesIds: removedUserId,
+              challengeesNames: removedUserName,
+            },
+          });
+        }
+      } else if (challengeId.started.includes(user.id)) {
+        const challengeRef = doc(store, "challenges", challengeId.id);
+        const firebaseChallenge = await getDoc(challengeRef);
+
+        if (firebaseChallenge.exists()) {
+          await updateDoc(challengeRef, {
+            [`${user.id}.completed`]: false, // Append guess to the array
+            [`${user.id}.success`]: false,
+          });
+        }
+      }
+      // if user did start but gave up, add them to the gave up field
+
       // update the user in firebase to
       // completed false,
       // success false

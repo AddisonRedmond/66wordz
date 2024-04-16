@@ -17,7 +17,7 @@ const WordRow = (props: {
     const splitWord = props.word?.split("") ?? [];
     if (splitGuess[index] === splitWord[index]) {
       return "#00DFA2";
-    } else if (splitGuess[index] && splitWord?.includes(splitGuess[index])) {
+    } else if (splitGuess[index] && splitWord?.includes(splitGuess[index]!)) {
       return "#F6FA70";
     } else {
       return "#545B77";

@@ -44,15 +44,20 @@ const Challenges: NextPage = () => {
   };
 
   const handleStartChallenge = async (challengeId: string) => {
-    await startChallenge.mutateAsync({ challengeId: challengeId });
+    if (startChallenge.data?.id) {
+      return;
+    }
+    startChallenge.mutate({ challengeId: challengeId });
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleGiveUp = (lobbyId: string) => {
-    giveUp.mutate(lobbyId);
+  const handleGiveUpOrQuit = async (lobbyId: string) => {
+    await giveUp.mutateAsync(lobbyId);
+    startChallenge.reset();
+    challenges.refetch();
   };
   const handleFriendToList = (friendId: string, name: string) => {
     // Check if the friendId already exists in the list
@@ -112,7 +117,7 @@ const Challenges: NextPage = () => {
             <ChallengeBoard
               challengeId={startChallenge.data.id}
               userId={data?.user.id}
-              handleGiveUp={handleGiveUp}
+              handleGiveUp={handleGiveUpOrQuit}
             />
           )}
         </AnimatePresence>
@@ -177,15 +182,19 @@ const Challenges: NextPage = () => {
               )}
             </AnimatePresence>
 
-            {challenges.data?.map((challenge) => {
-              return (
-                <Challenge
-                  handleStartChallenge={handleStartChallenge}
-                  key={challenge.id}
-                  challenge={challenge}
-                />
-              );
-            })}
+            <AnimatePresence>
+              {challenges.data?.map((challenge) => {
+                return (
+                  <Challenge
+                    handleStartChallenge={handleStartChallenge}
+                    key={challenge.id}
+                    challenge={challenge}
+                    userId={data?.user.id}
+                    handleGiveUpOrQuit={handleGiveUpOrQuit}
+                  />
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
       </div>

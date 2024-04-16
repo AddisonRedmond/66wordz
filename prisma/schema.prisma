@@ -162,7 +162,7 @@ model Friends {
     friendId String
 
     friendImage    String?
-    friendFullName String
+    friendFullName String 
 
     @@unique([userId, friendId])
     @@index([userId])
@@ -177,6 +177,7 @@ model Challenge {
     timeStamp        DateTime @default(now())
     challengeesIds   String[]
     challengeesNames String[]
+    started          String[]
 
     @@index([initiateById])
 }
