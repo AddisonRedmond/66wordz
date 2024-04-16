@@ -135,4 +135,19 @@ export const challengeRouter = createTRPCRouter({
 
       return challenge;
     }),
+
+  giveUp: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // get the challenge id
+      const challengeId = await ctx.db.challenge.findUnique({
+        where: { id: input },
+        select: { id: true },
+      });
+      // update the user in firebase to
+      // completed false,
+      // success false
+    }),
 });

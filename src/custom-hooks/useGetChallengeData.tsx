@@ -10,6 +10,8 @@ type PlayerData = {
   guesses?: string[];
   revealIndex?: number[];
   matches?: { full: string[]; partial: string[]; none: string[] };
+  completed: boolean;
+  success: boolean;
 };
 
 type ChallengeData = {

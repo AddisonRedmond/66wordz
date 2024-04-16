@@ -6,12 +6,13 @@ import { useState } from "react";
 import useGetChallengeData from "~/custom-hooks/useGetChallengeData";
 import { checkSpelling } from "~/utils/survival/surivival";
 import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/challenge";
-import { collection, doc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
 
 type ChallengeBoardProps = {
   challengeId: string;
   userId: string;
+  handleGiveUp: (lobbyId: string) => void;
 };
 
 const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
@@ -21,8 +22,6 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const challengeRef = doc(store, "challenges", props.challengeId);
 
   const { data, error } = useGetChallengeData(challengeRef);
-
-  console.log(data?.[props.userId]);
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -83,6 +82,14 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
           handleKeyBoardLogic={handleKeyBoardLogic}
           matches={data?.[props.userId ?? ""]?.matches}
         />
+        <button
+          onClick={() => {
+            props.handleGiveUp(props.challengeId);
+          }}
+          className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
+        >
+          Give Up
+        </button>
       </div>
     </m.div>
   );

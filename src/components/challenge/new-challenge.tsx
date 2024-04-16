@@ -17,7 +17,6 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
     >
       <div className="flex gap-x-6 w-full">
         {props.players.map((player) => {
-          console.log(player)
           return (
             <div
               key={player.friendRecordId}

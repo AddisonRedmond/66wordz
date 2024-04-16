@@ -94,9 +94,7 @@ export const createLobbyRouter = createTRPCRouter({
               enableBots: true,
             }),
           });
-        } catch (e) {
-          console.log(e);
-        }
+        } catch (e) {}
       };
       switch (gameType) {
         case "ELIMINATION":

@@ -25,6 +25,7 @@ const Challenges: NextPage = () => {
   const challenges = api.challenge.getChallenges.useQuery();
   const requestChallenge = api.challenge.requestChallenge.useMutation();
   const startChallenge = api.challenge.startChallenge.useMutation();
+  const giveUp = api.challenge.giveUp.useMutation();
   const [revealList, setRevealList] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -48,6 +49,10 @@ const Challenges: NextPage = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+  };
+
+  const handleGiveUp = (lobbyId: string) => {
+    giveUp.mutate(lobbyId);
   };
   const handleFriendToList = (friendId: string, name: string) => {
     // Check if the friendId already exists in the list
@@ -107,6 +112,7 @@ const Challenges: NextPage = () => {
             <ChallengeBoard
               challengeId={startChallenge.data.id}
               userId={data?.user.id}
+              handleGiveUp={handleGiveUp}
             />
           )}
         </AnimatePresence>
