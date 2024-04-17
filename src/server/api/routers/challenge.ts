@@ -1,20 +1,21 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
-import ShortUniqueId from "short-unique-id";
 
 import {
   getDoc,
   doc,
   updateDoc,
   serverTimestamp,
-  setDoc,
   collection,
+  addDoc,
+  deleteDoc,
   query,
   where,
-  addDoc,
+  getDocs,
 } from "firebase/firestore";
 import { handleGetNewWord } from "~/utils/game";
+import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
@@ -22,12 +23,17 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
-      const uid = new ShortUniqueId({ length: 10 });
-      const lobbyId = uid.rnd();
+      // check and see if any of the documents.ids already have all of the same ids
 
       const ids = input.map((id) => {
         return id.friendRecordId;
       });
+
+      const challengeRef = collection(store, "challenges");
+
+      const q = query(challengeRef, where("ids", "array-contains", user.id));
+
+      
 
       const challengees = await ctx.db.friends.findMany({
         where: {
@@ -49,11 +55,14 @@ export const challengeRouter = createTRPCRouter({
       ids.push(user.id);
       // make sure they're acutally friends
       await addDoc(collection(store, "challenges"), {
-        id: lobbyId,
         timeStamp: timeStamp.toString(),
-        players: input,
+        players: [
+          ...challengees,
+          { friendFullName: user.name, friendId: user.id },
+        ],
         ids: challengeeIds,
         creator: user.id,
+        word: handleGetNewWord()
       });
     }),
 
@@ -70,107 +79,80 @@ export const challengeRouter = createTRPCRouter({
       // create a firebase document with an id of the challenge id
       const userId = ctx.session.user.id;
       //   look up the challenge
-      const challenge = await ctx.db.challenge.findUnique({
-        where: { id: input.challengeId },
-      });
 
-      if (!challenge) {
-        return;
-      }
-      if (!challenge.started.includes(userId)) {
-        await ctx.db.challenge.update({
-          where: { id: challenge.id },
-          data: { started: { push: userId } },
-        });
-      }
-
-      // check if firebase document already exists
-      const challengeRef = doc(store, "challenges");
+      const challengeRef = doc(store, "challenges", input.challengeId);
       const firebaseChallenge = await getDoc(challengeRef);
 
-      if (!firebaseChallenge.exists()) {
-        // create a new document and add the user and their game data
-        await setDoc(doc(store, "challenges", challenge.id), {
-          word: handleGetNewWord(),
+      const firebaseChallengeData = firebaseChallenge.data() as ChallengeData;
+      // check to make sure document exists and that user is part of the document
+
+      // if both exist add a start time time stamp to user
+
+      // return the document id
+
+      if (
+        firebaseChallenge.exists() &&
+        firebaseChallengeData.ids.includes(userId)
+      ) {
+        await updateDoc(challengeRef, {
           [userId]: {
             timeStamp: serverTimestamp(),
           },
         });
+        return challengeRef.id;
       }
-
-      const firebaseDoc = firebaseChallenge.data();
-
-      if (firebaseDoc?.[userId]) {
-        return challenge;
-      }
-
-      await updateDoc(challengeRef, {
-        [userId]: {
-          timeStamp: serverTimestamp(),
-        },
-      });
-
-      return challenge;
     }),
 
   giveUp: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      const user = ctx.session.user;
 
       // get the challenge id
-      const challengeId = await ctx.db.challenge.findUnique({
-        where: { id: input },
-        select: {
-          id: true,
-          challengeesIds: true,
-          challengeesNames: true,
-          started: true,
-        },
-      });
+      const userId = ctx.session.user.id;
+      //   look up the challenge
 
-      if (!challengeId) {
-        return;
-      }
+      const challengeRef = doc(store, "challenges", input);
+      const firebaseChallenge = await getDoc(challengeRef);
 
-      // if user didnt start, just remove them from the field
-      if (!challengeId.started.includes(user.id)) {
-        const removedUserId = challengeId?.challengeesIds.filter(
-          (id) => id !== user.id,
-        );
-        const removedUserName = challengeId?.challengeesNames.filter(
-          (id) => id !== user.name,
-        );
+      const firebaseChallengeData = firebaseChallenge.data() as ChallengeData;
+      // check to make sure document exists and that user is part of the document
 
-        // check if there is only one person left in the challenge, if yes, then delete the challenge
+      // if both exist add a start time time stamp to user
 
-        if (removedUserId.length === 1) {
-          // TODO: dont delete it, change the status to done and details to all players either quit for declined
-          await ctx.db.challenge.delete({ where: { id: challengeId.id } });
-        } else {
-          await ctx.db.challenge.update({
-            where: { id: challengeId?.id },
-            data: {
-              challengeesIds: removedUserId,
-              challengeesNames: removedUserName,
-            },
-          });
-        }
-      } else if (challengeId.started.includes(user.id)) {
-        const challengeRef = doc(store, "challenges", challengeId.id);
-        const firebaseChallenge = await getDoc(challengeRef);
+      // return the document id
 
-        if (firebaseChallenge.exists()) {
+      if (
+        firebaseChallenge.exists() &&
+        firebaseChallengeData.ids.includes(userId)
+      ) {
+        // check if user is in the doc
+        if (firebaseChallengeData?.[userId]) {
           await updateDoc(challengeRef, {
-            [`${user.id}.completed`]: false, // Append guess to the array
-            [`${user.id}.success`]: false,
+            [`${userId}.completed`]: false,
+            [`${userId}.success`]: false,
           });
-        }
-      }
-      // if user did start but gave up, add them to the gave up field
+        } else {
+          // const updatedPlayerIds =
+          const updatedIds = firebaseChallengeData.ids.filter(
+            (id) => id !== userId,
+          );
 
-      // update the user in firebase to
-      // completed false,
-      // success false
+          const updatedPlayers = firebaseChallengeData.players.filter(
+            (player) => player.friendId !== userId,
+          );
+
+          if (updatedIds.length <= 1) {
+            await deleteDoc(challengeRef);
+          } else {
+            await updateDoc(challengeRef, {
+              ids: updatedIds,
+              players: updatedPlayers,
+            });
+          }
+        }
+        // if they do, set completed and succsess to false
+
+        // if they dont have a ts then delete them out of the doc
+      }
     }),
 });

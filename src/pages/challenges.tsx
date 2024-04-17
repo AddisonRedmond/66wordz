@@ -11,16 +11,7 @@ import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
 import ChallengeBoard from "~/components/challenge/challenge-board";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { store } from "~/utils/firebase/firebase";
-import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
+
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
   const router = useRouter();
@@ -48,9 +39,6 @@ const Challenges: NextPage = () => {
 
   const { challenges } = useGetChallenges(data?.user.id);
 
-  console.log(challenges)
-  console.log(data?.user.id)
-
   const sendChallenge = async () => {
     if (list.length) {
       await requestChallenge.mutateAsync(list);
@@ -59,7 +47,7 @@ const Challenges: NextPage = () => {
     setList([]);
   };
   const handleStartChallenge = async (challengeId: string) => {
-    if (startChallenge.data?.id) {
+    if (startChallenge.data) {
       return;
     }
     startChallenge.mutate({ challengeId: challengeId });
@@ -70,7 +58,6 @@ const Challenges: NextPage = () => {
   const handleGiveUpOrQuit = async (lobbyId: string) => {
     await giveUp.mutateAsync(lobbyId);
     startChallenge.reset();
-    // challenges.refetch();
   };
   const handleFriendToList = (friendId: string, name: string) => {
     const isDuplicate = list.some((item) => item.friendRecordId === friendId);
@@ -128,7 +115,7 @@ const Challenges: NextPage = () => {
         <AnimatePresence>
           {startChallenge.data && data?.user.id && (
             <ChallengeBoard
-              challengeId={startChallenge.data.id}
+              challengeId={startChallenge.data}
               userId={data?.user.id}
               handleGiveUp={handleGiveUpOrQuit}
               handleCloseChallenge={handleCloseChallenge}

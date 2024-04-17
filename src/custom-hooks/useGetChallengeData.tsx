@@ -16,9 +16,11 @@ type PlayerData = {
 
 export type ChallengeData = {
   word: string;
+  ids: string[];
   id: string;
+  creator: string;
   timeStamp: Date;
-  players: { friendRecordId: string; name: string }[];
+  players: { friendId: string; friendFullName: string }[];
 } & { [userId: string]: PlayerData };
 
 const useGetChallengeData = (

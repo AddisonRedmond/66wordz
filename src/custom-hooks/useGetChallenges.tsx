@@ -18,7 +18,7 @@ const useGetChallenges = (userId: string | undefined) => {
       (querySnapshot) => {
         const updatedChallenges: ChallengeData[] = [];
         querySnapshot.forEach((doc) => {
-          const challengeData = doc.data() as ChallengeData;
+          const challengeData = {...doc.data(), id: doc.id} as ChallengeData;
           updatedChallenges.push(challengeData);
         });
         setChallenges(updatedChallenges);

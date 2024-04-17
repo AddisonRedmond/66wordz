@@ -23,6 +23,7 @@ const WordRow = (props: {
       return "#545B77";
     }
   };
+
   return (
     <div className="my-1 flex h-1/5 w-full flex-row items-center justify-center gap-1 rounded-md duration-150 ease-in-out">
       {Array.from({ length: 5 }).map((_, index) => {
@@ -58,7 +59,6 @@ const GuessGrid: React.FC<GuessGridProps> = (props) => {
 
     return props.guesses[rowNumber];
   };
-
   const showColor = (index: number) => {
     const guessesLength = props.guesses.length;
     return guessesLength > index;
