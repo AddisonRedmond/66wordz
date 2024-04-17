@@ -75,16 +75,17 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
           </p>
         </div>
 
-        {props.userId !== undefined && props.challenge?.[props.userId]?.completed ? (
+        {props.userId !== undefined &&
+        props.challenge?.[props.userId]?.completed ? (
+          <button className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600">
+            View
+          </button>
+        ) : (
           <button
             onClick={() => props.handleStartChallenge(props.challenge.id)}
             className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600"
           >
             Play
-          </button>
-        ) : (
-          <button className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600">
-            View
           </button>
         )}
         <button

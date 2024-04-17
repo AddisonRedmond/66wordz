@@ -33,7 +33,7 @@ const WordRow = (props: {
               backgroundColor: props.showColor ? getColor(index) : "#FFFFFF",
             }}
             key={index}
-            className={`grid aspect-square w-1/5 place-content-center rounded-md border-2 border-zinc-400 text-3xl font-bold  duration-200 ease-in-out`}
+            className={`grid aspect-square w-12 sm:w-1/5 place-content-center rounded-md border-2 border-zinc-400 text-3xl font-bold  duration-200 ease-in-out`}
           >
             <p className="h-fit">
               {props.guess ? props.guess.toUpperCase().split("")[index] : ""}
@@ -64,7 +64,7 @@ const GuessGrid: React.FC<GuessGridProps> = (props) => {
     return guessesLength > index;
   };
   return (
-    <div className="min-h-80 w-full min-w-72 max-w-96 rounded-md bg-stone-300 px-3 py-2">
+    <div className=" min-h-72 sm:w-full w-fit max-w-96 rounded-md bg-stone-300 px-3 py-2">
       {Array.from({ length: 5 }).map((_, index) => {
         return (
           <WordRow
