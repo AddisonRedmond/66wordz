@@ -7,6 +7,10 @@ import {
   updateDoc,
   serverTimestamp,
   setDoc,
+  collection,
+  query,
+  where,
+  addDoc,
 } from "firebase/firestore";
 import { handleGetNewWord } from "~/utils/game";
 
@@ -16,76 +20,21 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
-      // check to make sure user is going over maximum number of challenges
-      const ids = input.map((id) => {
-        return id.friendRecordId;
+      // make sure they're acutally friends
+      await addDoc(collection(store, "challenges"), {
+        players: input,
+        ids: input.map((id) => {
+          return id.friendRecordId;
+        }),
+        creator: user.id,
       });
-
-      // check to make sure user if friends with everyone in input array
-      const challengees = await ctx.db.friends.findMany({
-        where: {
-          id: {
-            in: ids,
-          },
-        },
-        select: { friendId: true, friendFullName: true },
-      });
-
-      const challengeeIds = challengees.map((challengee) => {
-        return challengee.friendId;
-      });
-
-      const challengeeNames = challengees.map((challengee) => {
-        return challengee.friendFullName;
-      });
-
-      const matchingChallenges = await ctx.db.challenge.findMany({
-        where: {
-          // Filter based on challengees array
-          challengeesIds: {
-            // Check if any of the challengeeIds are present in the array
-            hasEvery: challengeeIds,
-          },
-        },
-      });
-
-      for (const challenge of matchingChallenges) {
-        // + 1 because we add current user in the array afterwards
-        if (challenge.challengeesIds.length === challengeeIds.length + 1) {
-          return {
-            success: "false",
-            message: "Challenge with these friends already exists",
-          };
-        }
-      }
-
-      await ctx.db.challenge.create({
-        data: {
-          initiateById: user.id,
-          challengeesIds: [...challengeeIds, user.id],
-          challengeesNames: [...challengeeNames, user.name!],
-          timeStamp: new Date(new Date().getTime() + +86400000),
-        },
-      });
-
-      // create a record of the challenge in the databases
     }),
 
   getChallenges: protectedProcedure.query(async ({ ctx, input }) => {
-    const user = ctx.session.user.id;
-    // Construct the search object as a JSON object
-    // Use the searchObject in the query
-    const result = await ctx.db.challenge.findMany({
-      where: {
-        challengeesIds: {
-          has: user,
-        },
-      },
-    });
+    const userId = ctx.session.user.id;
 
-    return result;
-
-    // find any challenges that contain user id
+    const docRef = doc(store, "userChallenges", userId);
+    const docSnap = await getDoc(docRef);
   }),
 
   startChallenge: protectedProcedure
@@ -109,7 +58,7 @@ export const challengeRouter = createTRPCRouter({
       }
 
       // check if firebase document already exists
-      const challengeRef = doc(store, "challenges", input.challengeId);
+      const challengeRef = doc(store, "challenges");
       const firebaseChallenge = await getDoc(challengeRef);
 
       if (!firebaseChallenge.exists()) {
@@ -183,8 +132,6 @@ export const challengeRouter = createTRPCRouter({
       } else if (challengeId.started.includes(user.id)) {
         const challengeRef = doc(store, "challenges", challengeId.id);
         const firebaseChallenge = await getDoc(challengeRef);
-
-        
 
         if (firebaseChallenge.exists()) {
           await updateDoc(challengeRef, {

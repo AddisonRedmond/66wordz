@@ -11,6 +11,15 @@ import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
 import ChallengeBoard from "~/components/challenge/challenge-board";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { store } from "~/utils/firebase/firebase";
 const Challenges: NextPage = () => {
   const router = useRouter();
   const { data } = useSession({
@@ -22,7 +31,7 @@ const Challenges: NextPage = () => {
 
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const friends = api.friends.allFriends.useQuery();
-  const challenges = api.challenge.getChallenges.useQuery();
+
   const requestChallenge = api.challenge.requestChallenge.useMutation();
   const startChallenge = api.challenge.startChallenge.useMutation();
   const giveUp = api.challenge.giveUp.useMutation();
@@ -35,11 +44,23 @@ const Challenges: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const challenges = async () => {
+    const docRef = collection(store, "challenges");
+
+    const q = query(
+      docRef,
+      where("id", "array-contains", "clv2ewgq3000e10e1buucn0ar"),
+    );
+
+    console.log((await getDocs(q)).docs[0]?.data());
+  };
+
+  challenges();
   const sendChallenge = async () => {
     if (list.length) {
       await requestChallenge.mutateAsync(list);
     }
-    challenges.refetch();
+
     setList([]);
   };
   const handleStartChallenge = async (challengeId: string) => {
@@ -54,7 +75,7 @@ const Challenges: NextPage = () => {
   const handleGiveUpOrQuit = async (lobbyId: string) => {
     await giveUp.mutateAsync(lobbyId);
     startChallenge.reset();
-    challenges.refetch();
+    // challenges.refetch();
   };
   const handleFriendToList = (friendId: string, name: string) => {
     const isDuplicate = list.some((item) => item.friendRecordId === friendId);
@@ -181,7 +202,7 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-              {challenges.data?.map((challenge) => {
+              {/* {challenges.data?.map((challenge) => {
                 return (
                   <Challenge
                     handleStartChallenge={handleStartChallenge}
@@ -191,7 +212,7 @@ const Challenges: NextPage = () => {
                     handleGiveUpOrQuit={handleGiveUpOrQuit}
                   />
                 );
-              })}
+              })} */}
             </AnimatePresence>
           </div>
         </div>
