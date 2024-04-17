@@ -117,3 +117,24 @@ export const createCustomSurvivalLobby = (owner: string) => {
 export const deleteLobby = async (path: string) => {
   await remove(ref(db, path));
 };
+
+export function arraysContainSameElements(arr1: string[], arr2: string[]) {
+  // Check if arrays have the same length
+  if (arr1.length !== arr2.length) {
+      return false;
+  }
+
+  // Sort both arrays
+  const sortedArr1 = arr1.slice().sort();
+  const sortedArr2 = arr2.slice().sort();
+
+  // Compare sorted arrays element by element
+  for (let i = 0; i < sortedArr1.length; i++) {
+      if (sortedArr1[i] !== sortedArr2[i]) {
+          return false;
+      }
+  }
+
+  // If all elements match, arrays contain the same elements
+  return true;
+}
