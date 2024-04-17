@@ -1,7 +1,7 @@
 import type { Challenge as C } from "@prisma/client";
 import { m } from "framer-motion";
 import { getInitials } from "~/utils/game";
-
+import { useTimer } from "react-timer-hook";
 type ChallengeProps = {
   challenge: C;
   handleStartChallenge: (challengeId: string) => void;
@@ -10,6 +10,10 @@ type ChallengeProps = {
 };
 
 const Challenge: React.FC<ChallengeProps> = (props) => {
+  const { seconds, minutes, hours } = useTimer({
+    expiryTimestamp: props.challenge.timeStamp,
+    autoStart: true,
+  });
   function fractionToPercentage(
     numerator: number,
     denominator: number,
@@ -31,6 +35,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
 
     return "Delete";
   };
+  // todo: for mobile view remove play and decline replace with ... change time remaning to circular progress bar
   return (
     <m.div
       initial={{ height: 0 }}
@@ -38,7 +43,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
       exit={{ height: 0 }}
       className="flex w-full items-center justify-between overflow-hidden border-b-2 px-4"
     >
-      <div className="flex w-[80%] gap-x-2">
+      <div className="flex w-[50%] gap-x-2">
         {props.challenge.challengeesNames.map((name, index) => {
           return (
             <div
@@ -52,13 +57,20 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
               <div className="flex size-10 items-center justify-center rounded-full bg-zinc-300 p-2">
                 <p className="font-semibold">{getInitials(name)}</p>
               </div>
-              <p className="... hidden truncate sm:block">{name}</p>
+              <p className="... hidden truncate lg:block">{name}</p>
             </div>
           );
         })}
       </div>
 
-      <div className="flex items-center gap-x-2">
+      <div className="flex w-fit items-center gap-x-2 ">
+        <div className="text-center text-sm">
+          <p className="font-semibold">Time Remaing </p>
+          <p className="w-fit font-medium">
+            {hours}:{minutes}:{seconds}
+          </p>
+        </div>
+
         <button
           onClick={() => props.handleStartChallenge(props.challenge.id)}
           className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600"

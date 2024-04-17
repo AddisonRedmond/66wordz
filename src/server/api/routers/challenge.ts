@@ -64,6 +64,7 @@ export const challengeRouter = createTRPCRouter({
           initiateById: user.id,
           challengeesIds: [...challengeeIds, user.id],
           challengeesNames: [...challengeeNames, user.name!],
+          timeStamp: new Date(new Date().getTime() + +86400000),
         },
       });
 
@@ -86,12 +87,6 @@ export const challengeRouter = createTRPCRouter({
 
     // find any challenges that contain user id
   }),
-
-  declineChallege: protectedProcedure
-    .input(z.object({ challengeId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.db.challenge.delete({ where: { id: input.challengeId } });
-    }),
 
   startChallenge: protectedProcedure
     .input(z.object({ challengeId: z.string() }))

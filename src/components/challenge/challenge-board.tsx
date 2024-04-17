@@ -5,7 +5,7 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useGetChallengeData from "~/custom-hooks/useGetChallengeData";
 import { checkSpelling } from "~/utils/survival/surivival";
-import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/challenge";
+import { handleGuess } from "~/utils/challenge";
 import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
 
@@ -26,6 +26,12 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
 
+    if (
+      (data?.[props.userId]?.guesses?.length ?? 0) >= 5 ||
+      data?.[props.userId]?.completed
+    ) {
+      return;
+    }
     if (key === "BACKSPACE") {
       if (guess.length === 0) return;
       setGuess((prev) => prev.slice(0, -1));
@@ -40,18 +46,17 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
       if (checkSpelling(guess) === false) {
         return;
       }
-      if (guess === data?.word) {
-        handleCorrectGuess(challengeRef);
-      } else {
-        handleIncorrectGuess(
-          props.userId,
-          challengeRef,
-          guess,
-          data?.[props.userId ?? ""]?.matches,
-          data?.word,
-        );
-        setGuess("");
-      }
+
+      handleGuess(
+        props.userId,
+        challengeRef,
+        guess,
+        data?.[props.userId ?? ""]?.matches,
+        data?.word,
+        data?.[props.userId]?.guesses,
+      );
+      setGuess("");
+
       // handle correct
       // check if correct guess => handle correct guess
       // check if incorrect guess => handle incorrect guess
@@ -82,14 +87,16 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
           handleKeyBoardLogic={handleKeyBoardLogic}
           matches={data?.[props.userId ?? ""]?.matches}
         />
-        <button
-          onClick={() => {
-            props.handleGiveUp(props.challengeId);
-          }}
-          className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
-        >
-          Give Up
-        </button>
+        {!data?.[props.userId]?.completed && (
+          <button
+            onClick={() => {
+              props.handleGiveUp(props.challengeId);
+            }}
+            className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
+          >
+            Give Up
+          </button>
+        )}
       </div>
     </m.div>
   );
