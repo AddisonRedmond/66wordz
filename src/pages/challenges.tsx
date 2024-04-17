@@ -20,6 +20,8 @@ import {
   where,
 } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
+import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
+import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
   const router = useRouter();
   const { data } = useSession({
@@ -44,18 +46,11 @@ const Challenges: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const challenges = async () => {
-    const docRef = collection(store, "challenges");
+  const { challenges } = useGetChallenges(data?.user.id);
 
-    const q = query(
-      docRef,
-      where("id", "array-contains", "clv2ewgq3000e10e1buucn0ar"),
-    );
+  console.log(challenges)
+  console.log(data?.user.id)
 
-    console.log((await getDocs(q)).docs[0]?.data());
-  };
-
-  challenges();
   const sendChallenge = async () => {
     if (list.length) {
       await requestChallenge.mutateAsync(list);
@@ -202,7 +197,7 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-              {/* {challenges.data?.map((challenge) => {
+              {(challenges ?? []).map((challenge) => {
                 return (
                   <Challenge
                     handleStartChallenge={handleStartChallenge}
@@ -212,7 +207,7 @@ const Challenges: NextPage = () => {
                     handleGiveUpOrQuit={handleGiveUpOrQuit}
                   />
                 );
-              })} */}
+              })}
             </AnimatePresence>
           </div>
         </div>

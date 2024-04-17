@@ -1,9 +1,9 @@
-import type { Challenge as C } from "@prisma/client";
 import { m } from "framer-motion";
 import { getInitials } from "~/utils/game";
 import { useTimer } from "react-timer-hook";
+import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 type ChallengeProps = {
-  challenge: C;
+  challenge: ChallengeData;
   handleStartChallenge: (challengeId: string) => void;
   userId?: string;
   handleGiveUpOrQuit: (challengeId: string) => void;
@@ -11,7 +11,7 @@ type ChallengeProps = {
 
 const Challenge: React.FC<ChallengeProps> = (props) => {
   const { seconds, minutes, hours } = useTimer({
-    expiryTimestamp: props.challenge.timeStamp,
+    expiryTimestamp: new Date(props.challenge.timeStamp),
     autoStart: true,
   });
   function fractionToPercentage(
@@ -26,10 +26,10 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
 
   const quitOrDecline = () => {
     if (props.userId) {
-      if (props.challenge.started.includes(props.userId)) {
-        return "Quit";
-      } else if (!props.challenge.started.includes(props.userId)) {
-        return "Decline";
+      if (props.challenge[props.userId]?.timeStamp) {
+        return "QUIT";
+      } else {
+        return "DECLINE";
       }
     }
 
@@ -44,20 +44,20 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
       className="flex w-full items-center justify-between overflow-hidden border-b-2 px-4"
     >
       <div className="flex w-[50%] gap-x-2">
-        {props.challenge.challengeesNames.map((name, index) => {
+        {props.challenge.players.map((player, index) => {
           return (
             <div
-              key={props.challenge.challengeesIds[index]}
+              key={player.friendRecordId}
               className={`flex items-center gap-x-1`}
               style={{
-                maxWidth: `${fractionToPercentage(1, props.challenge.challengeesNames.length)}%`,
+                maxWidth: `${fractionToPercentage(1, props.challenge.players.length)}%`,
               }}
-              title={name}
+              title={player.name}
             >
               <div className="flex size-10 items-center justify-center rounded-full bg-zinc-300 p-2">
-                <p className="font-semibold">{getInitials(name)}</p>
+                <p className="font-semibold">{getInitials(player.name)}</p>
               </div>
-              <p className="... hidden truncate lg:block">{name}</p>
+              <p className="... hidden truncate lg:block">{player.name}</p>
             </div>
           );
         })}

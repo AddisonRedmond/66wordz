@@ -1,6 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
+import ShortUniqueId from "short-unique-id";
+
 import {
   getDoc,
   doc,
@@ -20,12 +22,37 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
+      const uid = new ShortUniqueId({ length: 10 });
+      const lobbyId = uid.rnd();
+
+      const ids = input.map((id) => {
+        return id.friendRecordId;
+      });
+
+      const challengees = await ctx.db.friends.findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+        select: { friendId: true, friendFullName: true },
+      });
+
+      const challengeeIds = challengees.map((challengee) => {
+        return challengee.friendId;
+      });
+
+      challengeeIds.push(user.id);
+
+      const timeStamp = new Date(new Date().getTime() + 86400000);
+
+      ids.push(user.id);
       // make sure they're acutally friends
       await addDoc(collection(store, "challenges"), {
+        id: lobbyId,
+        timeStamp: timeStamp.toString(),
         players: input,
-        ids: input.map((id) => {
-          return id.friendRecordId;
-        }),
+        ids: challengeeIds,
         creator: user.id,
       });
     }),

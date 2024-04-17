@@ -14,8 +14,11 @@ type PlayerData = {
   success: boolean;
 };
 
-type ChallengeData = {
+export type ChallengeData = {
   word: string;
+  id: string;
+  timeStamp: Date;
+  players: { friendRecordId: string; name: string }[];
 } & { [userId: string]: PlayerData };
 
 const useGetChallengeData = (
