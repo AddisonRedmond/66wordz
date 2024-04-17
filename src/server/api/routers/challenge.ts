@@ -169,6 +169,7 @@ export const challengeRouter = createTRPCRouter({
         // check if there is only one person left in the challenge, if yes, then delete the challenge
 
         if (removedUserId.length === 1) {
+          // TODO: dont delete it, change the status to done and details to all players either quit for declined
           await ctx.db.challenge.delete({ where: { id: challengeId.id } });
         } else {
           await ctx.db.challenge.update({
@@ -182,6 +183,8 @@ export const challengeRouter = createTRPCRouter({
       } else if (challengeId.started.includes(user.id)) {
         const challengeRef = doc(store, "challenges", challengeId.id);
         const firebaseChallenge = await getDoc(challengeRef);
+
+        
 
         if (firebaseChallenge.exists()) {
           await updateDoc(challengeRef, {
