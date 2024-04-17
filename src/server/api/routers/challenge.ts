@@ -101,11 +101,12 @@ export const challengeRouter = createTRPCRouter({
       if (!challenge) {
         return;
       }
-
-      await ctx.db.challenge.update({
-        where: { id: challenge.id },
-        data: { started: { push: userId } },
-      });
+      if (!challenge.started.includes(userId)) {
+        await ctx.db.challenge.update({
+          where: { id: challenge.id },
+          data: { started: { push: userId } },
+        });
+      }
 
       // check if firebase document already exists
       const challengeRef = doc(store, "challenges", input.challengeId);

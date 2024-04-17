@@ -42,41 +42,50 @@ const Challenges: NextPage = () => {
     challenges.refetch();
     setList([]);
   };
-
   const handleStartChallenge = async (challengeId: string) => {
     if (startChallenge.data?.id) {
       return;
     }
     startChallenge.mutate({ challengeId: challengeId });
   };
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
-
   const handleGiveUpOrQuit = async (lobbyId: string) => {
     await giveUp.mutateAsync(lobbyId);
     startChallenge.reset();
     challenges.refetch();
   };
   const handleFriendToList = (friendId: string, name: string) => {
-    // Check if the friendId already exists in the list
     const isDuplicate = list.some((item) => item.friendRecordId === friendId);
-    // If it's not a duplicate, add it to the list
     if (!isDuplicate && list.length < 5) {
       setList([...list, { friendRecordId: friendId, name: name }]);
     }
   };
-
   const handleRevealList = () => {
     if (revealList) {
       return;
     }
     setRevealList(true);
   };
-
   const onClickOutside = () => {
     setRevealList(false);
+  };
+
+  const removePlayer = (id: string): void => {
+    setList((prevList) =>
+      prevList.filter((item) => item.friendRecordId !== id),
+    );
+  };
+
+  const friendSearch =
+    friends.data?.filter((friend) => {
+      const regex = new RegExp(inputValue.toLowerCase() ?? "");
+      return regex.test(friend.friendFullName.toLowerCase());
+    }) ?? [];
+
+  const handleCloseChallenge = () => {
+    startChallenge.reset();
   };
 
   useEffect(() => {
@@ -96,18 +105,6 @@ const Challenges: NextPage = () => {
     };
   }, [onClickOutside]);
 
-  const removePlayer = (id: string): void => {
-    setList((prevList) =>
-      prevList.filter((item) => item.friendRecordId !== id),
-    );
-  };
-
-  const friendSearch =
-    friends.data?.filter((friend) => {
-      const regex = new RegExp(inputValue.toLowerCase() ?? "");
-      return regex.test(friend.friendFullName.toLowerCase());
-    }) ?? [];
-
   return (
     <div className="flex flex-grow flex-col">
       <Navbar />
@@ -118,6 +115,7 @@ const Challenges: NextPage = () => {
               challengeId={startChallenge.data.id}
               userId={data?.user.id}
               handleGiveUp={handleGiveUpOrQuit}
+              handleCloseChallenge={handleCloseChallenge}
             />
           )}
         </AnimatePresence>
