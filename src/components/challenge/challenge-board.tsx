@@ -8,7 +8,6 @@ import { checkSpelling } from "~/utils/survival/surivival";
 import { handleGuess } from "~/utils/challenge";
 import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
-import ConfettiExplosion from "react-confetti-explosion";
 import Results from "./results";
 
 type ChallengeBoardProps = {
@@ -64,9 +63,9 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
     }
   };
 
-  useEffect(() => {}, [data]);
-
   useOnKeyUp(handleKeyBoardLogic, [guess]);
+
+  console.log(data?.[props.userId ?? ""]?.completed !== null)
 
   return (
     <m.div
@@ -79,24 +78,17 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
       <div className="relative flex max-h-[90vh] min-h-[660px] min-w-[360px] flex-col items-center justify-center gap-5 overflow-hidden rounded-md bg-white p-5 md:w-1/2">
         <div
           style={{
-            transform: data?.[props.userId ?? ""]?.completed
+            transform: data?.[props.userId ?? ""]?.completed !==null
               ? "translateX(0%)"
               : "translateX(100%)",
           }}
           className="absolute h-full w-full bg-white duration-150 ease-in-out"
         >
-          <Results challengeData={data} />
-        </div>
-        <div className="-translate--1/2 absolute left-1/2 top-1/2 -translate-x-1/2">
-          {data?.[props.userId]?.success && (
-            <ConfettiExplosion
-              particleCount={100}
-              force={0.6}
-              duration={2500}
-              zIndex={60}
-            />
+          {(data?.[props.userId ?? ""]?.completed !== null) && (
+            <Results challengeData={data} />
           )}
         </div>
+
         <div className="flex w-full justify-end">
           <button
             onClick={() => props.handleCloseChallenge()}

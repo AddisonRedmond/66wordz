@@ -35,6 +35,36 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
 
     return "Delete";
   };
+
+  const playOrView = (userId?: string) => {
+    if (userId !== undefined && props.challenge?.[userId] !== null) {
+      return "Play";
+    } else if (userId === undefined) {
+      return "View";
+    } else if (props.challenge?.[userId]?.completed !== null) {
+      return "View";
+    }
+    return "View";
+  };
+
+  const getStatus = (playerId: string) => {
+    if (
+      props.challenge[playerId]?.timeStamp &&
+      !props.challenge[playerId]?.completed
+    ) {
+      return "#facc15";
+    } else if (props.challenge[playerId]?.completed) {
+      return "#34d399";
+    } else if (!props.challenge[playerId]?.timeStamp) {
+      return "#a1a1aa";
+    } else if (
+      !props.challenge[playerId]?.completed &&
+      !props.challenge[playerId]?.success
+    ) {
+      return "#f87171";
+    }
+    return "#171717";
+  };
   // todo: for mobile view remove play and decline replace with ... change time remaning to circular progress bar
   return (
     <m.div
@@ -54,7 +84,10 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
               }}
               title={player.friendFullName}
             >
-              <div className="flex size-10 items-center justify-center rounded-full bg-zinc-300 p-2">
+              <div
+                style={{ backgroundColor: getStatus(player.friendId) }}
+                className={`flex size-10 items-center justify-center rounded-full bg-zinc-300 p-2 ${getStatus(player.friendId)}`}
+              >
                 <p className="font-semibold">
                   {getInitials(player.friendFullName)}
                 </p>
@@ -79,20 +112,20 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
           onClick={() => props.handleStartChallenge(props.challenge.id)}
           className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600"
         >
-          {props.userId !== undefined &&
-          props.challenge?.[props.userId]?.completed
-            ? "View"
-            : "Play"}
+          {playOrView(props.userId)}
         </button>
 
-       {props.userId !== undefined && !props.challenge?.[props.userId]?.completed && <button
-          onClick={() => {
-            props.handleGiveUpOrQuit(props.challenge.id);
-          }}
-          className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
-        >
-          {quitOrDecline()}
-        </button>}
+        {props.userId !== undefined &&
+          props.challenge?.[props.userId]?.completed !== null && (
+            <button
+              onClick={() => {
+                props.handleGiveUpOrQuit(props.challenge.id);
+              }}
+              className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
+            >
+              {quitOrDecline()}
+            </button>
+          )}
       </div>
     </m.div>
   );

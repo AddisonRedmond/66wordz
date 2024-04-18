@@ -21,6 +21,7 @@ export type ChallengeData = {
   id: string;
   creator: string;
   timeStamp: Date;
+  winner?: string;
   players: { friendId: string; friendFullName: string }[];
 } & { [userId: string]: PlayerData };
 

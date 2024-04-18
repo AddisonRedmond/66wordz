@@ -23,6 +23,8 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
+      // make sure the user either has premium or has free games
+
       // check and see if any of the documents.ids already have all of the same ids
 
       const ids = input.map((id) => {
@@ -37,6 +39,8 @@ export const challengeRouter = createTRPCRouter({
         },
         select: { friendId: true, friendFullName: true },
       });
+
+      // check to make sure all friend ids havean't exceeded number of games or
 
       const challengeeIds = challengees.map((challengee) => {
         return challengee.friendId;
@@ -74,13 +78,6 @@ export const challengeRouter = createTRPCRouter({
       });
     }),
 
-  getChallenges: protectedProcedure.query(async ({ ctx, input }) => {
-    const userId = ctx.session.user.id;
-
-    const docRef = doc(store, "userChallenges", userId);
-    const docSnap = await getDoc(docRef);
-  }),
-
   startChallenge: protectedProcedure
     .input(z.object({ challengeId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -97,6 +94,8 @@ export const challengeRouter = createTRPCRouter({
       // if both exist add a start time time stamp to user
 
       // return the document id
+
+      // make sure the 24 hour timer hasn't expired
 
       if (
         firebaseChallenge.exists() &&

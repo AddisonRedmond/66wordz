@@ -68,6 +68,9 @@ model User {
     freeGameTimeStamp Int?
     freeGameCount     Int  @default(0)
 
+    freeChallengeTimeStamp DateTime?
+    freeChallengeCount     Int
+
     subscriptionId    String?
     customerId        String?
     cancelAtPeriodEnd Boolean?
@@ -162,7 +165,7 @@ model Friends {
     friendId String
 
     friendImage    String?
-    friendFullName String 
+    friendFullName String
 
     @@unique([userId, friendId])
     @@index([userId])
