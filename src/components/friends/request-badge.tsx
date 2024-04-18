@@ -11,7 +11,7 @@ const RequestBadge: React.FC<RequestBadge> = (props) => {
       <p>
         <span className="... truncate font-medium text-black">
           {props.name}
-        </span>{" "}
+        </span>
         sent you a friend request
       </p>
 

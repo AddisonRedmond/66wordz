@@ -7,7 +7,6 @@ type FriendBadgeProps = {
 const FriendBadge: React.FC<FriendBadgeProps> = (props) => {
   return (
     <div className=" relative flex h-fit w-80 flex-col gap-1 rounded-md border-2 border-zinc-500 p-2">
-      <p className="absolute right-5 top-0 text-xl font-bold">...</p>
       <div>
         <p className="font-semibold">Name:</p>
         <h3 className="... truncate text-xl font-medium">{props.fullName}</h3>
