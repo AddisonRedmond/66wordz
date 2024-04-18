@@ -168,7 +168,7 @@ export const challengeRouter = createTRPCRouter({
 
   calculateWinner: protectedProcedure
     .input(z.string())
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       // get firebase doc
 
       const challengeRef = doc(store, "challenges", input);
@@ -184,8 +184,8 @@ export const challengeRouter = createTRPCRouter({
       }
 
       // check all of the guesses
-      let shortestGuess: number = 10;
-      let userId: string = "";
+      let shortestGuess = 10;
+      let userId = "";
       firebaseChallenge.ids.forEach((id) => {
         if (firebaseChallenge[id]?.completed) {
           const userGuessLength = Array.isArray(firebaseChallenge[id])
