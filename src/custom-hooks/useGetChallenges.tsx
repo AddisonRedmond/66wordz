@@ -24,8 +24,8 @@ const useGetChallenges = (userId: string | undefined) => {
         setChallenges(updatedChallenges);
         setError(null);
       },
-      (error) => {
-        setError(`Error fetching document: ${error.toString()}`);
+      () => {
+        setError(`Error fetching document`);
       }
     );
 

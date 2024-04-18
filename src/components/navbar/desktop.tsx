@@ -1,11 +1,7 @@
-import { AnimatePresence, m } from "framer-motion";
 import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
-import bell from "../../../public/bell.png";
 import Link from "next/link";
-import { useState } from "react";
-import { api } from "~/utils/api";
 // import NotificationBadge from "../notifications/notification-badge";
 type DesktopNavbarProps = {
   isPremiumUser: boolean | undefined;

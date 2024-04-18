@@ -323,7 +323,7 @@ export const createFirebaseSurvivalLobby = async (
     health: 100,
     shield: 50,
     eliminated: false,
-    initials: playerInitials || "N/A",
+    initials: playerInitials ?? "N/A",
     word: {
       word: handleGetNewWord(),
       type: "shield",

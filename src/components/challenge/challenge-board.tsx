@@ -2,7 +2,7 @@ import { m } from "framer-motion";
 import GuessGrid from "./guess-grid";
 import Keyboard from "../keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useGetChallengeData from "~/custom-hooks/useGetChallengeData";
 import { checkSpelling } from "~/utils/survival/surivival";
 import { handleGuess } from "~/utils/challenge";

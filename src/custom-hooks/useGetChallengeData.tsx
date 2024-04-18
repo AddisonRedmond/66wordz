@@ -43,8 +43,8 @@ const useGetChallengeData = (
           setError("Document does not exist");
         }
       },
-      (error) => {
-        setError(`Error fetching document: ${error.toString()}`);
+      () => {
+        setError(`Error fetching document`);
       },
     );
 

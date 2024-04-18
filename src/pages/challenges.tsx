@@ -46,7 +46,7 @@ const Challenges: NextPage = () => {
 
     setList([]);
   };
-  const handleStartChallenge = async (challengeId: string) => {
+  const handleStartChallenge = (challengeId: string) => {
     if (startChallenge.data) {
       return;
     }

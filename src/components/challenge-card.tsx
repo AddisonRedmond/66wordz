@@ -1,9 +1,8 @@
 import Image from "next/image";
 import challenge from "../../public/challenge.png";
 import Link from "next/link";
-type ChallengeCardProps = {};
 
-const ChallengeCard: React.FC = (props) => {
+const ChallengeCard: React.FC = () => {
   return (
     <div className=" bg-card text-card-foreground prose w-full max-w-xs rounded-lg border-2 border-zinc-200 shadow-sm">
       <div className="flex flex-col items-center">
