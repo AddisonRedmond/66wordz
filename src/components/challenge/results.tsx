@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
-
+import True from "../../../public/true.png";
+import False from "../../../public/false.png";
 type ResultsProps = {
   challengeData: ChallengeData | null;
 };
@@ -30,10 +32,10 @@ const Results: React.FC<ResultsProps> = (props) => {
       <table className="w-full  border-collapse text-left">
         <thead className="bg-emerald-600 text-white">
           <tr>
-            <th className="rounded-tl-lg p-4">Player</th>
-            <th className="p-4">Success</th>
-            <th className="p-4">Guesses</th>
-            <th className="rounded-tr-lg p-4">Total Time</th>
+            <th className="rounded-tl-lg p-3">Player</th>
+            <th className="p-3">Success</th>
+            <th className="p-3">Guesses</th>
+            <th className="rounded-tr-lg p-3">Total Time</th>
           </tr>
         </thead>
         <tbody>
@@ -51,7 +53,7 @@ const Results: React.FC<ResultsProps> = (props) => {
                   key={player.friendId}
                 >
                   <td className="text-wrap p-3">{player.friendFullName}</td>
-                  <td className="p-3">{`${props.challengeData?.[player.friendId]?.success}`}</td>
+                  <td className="p-3"><Image src={props.challengeData?.[player.friendId]?.success ? True : False} alt={"Success or failure img"} height={25} /></td>
                   <td className=" whitespace-normal text-wrap p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
                       ? `${props.challengeData?.[player.friendId]?.guesses}`
