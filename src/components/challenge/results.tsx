@@ -2,6 +2,8 @@ import Image from "next/image";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 import True from "../../../public/true.png";
 import False from "../../../public/false.png";
+import { m, useAnimation } from "framer-motion";
+import { useEffect } from "react";
 type ResultsProps = {
   challengeData: ChallengeData | null;
 };
@@ -20,13 +22,35 @@ const Results: React.FC<ResultsProps> = (props) => {
     return { hours, minutes, seconds };
   }
 
+  const controls = useAnimation();
+  const rainbowAnimation = {
+    "--rainbow-color": [
+      "#ff0000", // red
+      "#ff9900", // orange
+      "#ffff00", // yellow
+      "#33cc33", // green
+      "#3399ff", // blue
+      "#663399", // indigo
+      "#9900cc", // violet
+    ],
+    transition: { duration: 2, repeat: Infinity },
+  };
+
+  useEffect(() => {
+    if (props.challengeData?.winner) {
+      controls.start(rainbowAnimation);
+    }
+  }, [props.challengeData]);
+
   return (
     <div className="relative h-full p-4">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
 
       <div className="w-full text-center text-2xl">
         <p className="text-4xl">👑</p>
-        <p>TBD</p>
+        <m.p animate={controls} style={{ color: "var(--rainbow-color)" }}>
+          {props.challengeData?.winner?.name ?? "TBD"}
+        </m.p>
       </div>
 
       <table className="w-full  border-collapse text-left">

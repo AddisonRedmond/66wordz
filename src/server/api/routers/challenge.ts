@@ -129,6 +129,8 @@ export const challengeRouter = createTRPCRouter({
 
       // return the document id
 
+      // run check for winner logic
+
       if (
         firebaseChallenge.exists() &&
         firebaseChallengeData.ids.includes(userId)
@@ -166,8 +168,61 @@ export const challengeRouter = createTRPCRouter({
 
   calculateWinner: protectedProcedure
     .input(z.string())
-    .mutation(({ ctx, input }) => {
-      // check if all the users who were invited to the game, have completed it
+    .mutation(async ({ ctx, input }) => {
+      // get firebase doc
+
+      const challengeRef = doc(store, "challenges", input);
+      const firebaseChallenge = (
+        await getDoc(challengeRef)
+      ).data() as ChallengeData;
+
+      for (const id of firebaseChallenge.ids) {
+        if (!firebaseChallenge?.[id]) {
+          // not everyone is done, stop execution
+          return;
+        }
+      }
+
+      // check all of the guesses
+      let shortestGuess: number = 10;
+      let userId: string = "";
+      firebaseChallenge.ids.forEach((id) => {
+        if (firebaseChallenge[id]?.completed) {
+          const userGuessLength = Array.isArray(firebaseChallenge[id])
+            ? firebaseChallenge[id]!.guesses!.length
+            : 0;
+          if (userGuessLength === shortestGuess) {
+            // check the duration and add their id and shortest guess to the vars
+            const userIdDuration = new Date(
+              new Date(firebaseChallenge[userId]!.endTimeStamp).getTime() -
+                new Date(firebaseChallenge[userId]!.timeStamp).getTime(),
+            ).getTime();
+            const currentIdDuration = new Date(
+              new Date(firebaseChallenge[id]!.endTimeStamp).getTime() -
+                new Date(firebaseChallenge[id]!.timeStamp).getTime(),
+            ).getTime();
+
+            if (userIdDuration > currentIdDuration) {
+              shortestGuess = userGuessLength;
+              userId = id;
+            }
+          } else if (userGuessLength < shortestGuess) {
+            shortestGuess = userGuessLength;
+            userId = id;
+          }
+        }
+      });
+
+      await updateDoc(challengeRef, {
+        [`winner`]: {
+          id: userId,
+          name: firebaseChallenge.players.filter(
+            (player) => player.friendId === userId,
+          )[0]?.friendFullName,
+        },
+      });
+      return userId;
+
       // if they have,
       // find the person who completed it in the fewest guesses,
       // if theres a tie, pick the person who guessed in the least amount of time
