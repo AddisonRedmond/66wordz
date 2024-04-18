@@ -6,7 +6,8 @@ import {
 } from "firebase/firestore";
 
 type PlayerData = {
-  timeStamp: Date;
+  timeStamp: string;
+  endTimeStamp: string;
   guesses?: string[];
   revealIndex?: number[];
   matches?: { full: string[]; partial: string[]; none: string[] };

@@ -44,7 +44,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
       className="flex w-full items-center justify-between overflow-hidden border-b-2 px-4"
     >
       <div className="flex w-[50%] gap-x-2">
-        {props.challenge.players.map((player, index) => {
+        {props.challenge.players.map((player) => {
           return (
             <div
               key={player.friendId}
@@ -75,27 +75,24 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
           </p>
         </div>
 
-        {props.userId !== undefined &&
-        props.challenge?.[props.userId]?.completed ? (
-          <button className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600">
-            View
-          </button>
-        ) : (
-          <button
-            onClick={() => props.handleStartChallenge(props.challenge.id)}
-            className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600"
-          >
-            Play
-          </button>
-        )}
         <button
+          onClick={() => props.handleStartChallenge(props.challenge.id)}
+          className="rounded-lg border-2 bg-black p-2 font-semibold text-white duration-150  ease-in-out hover:bg-zinc-600"
+        >
+          {props.userId !== undefined &&
+          props.challenge?.[props.userId]?.completed
+            ? "View"
+            : "Play"}
+        </button>
+
+       {props.userId !== undefined && !props.challenge?.[props.userId]?.completed && <button
           onClick={() => {
             props.handleGiveUpOrQuit(props.challenge.id);
           }}
           className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
         >
           {quitOrDecline()}
-        </button>
+        </button>}
       </div>
     </m.div>
   );

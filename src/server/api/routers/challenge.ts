@@ -102,6 +102,9 @@ export const challengeRouter = createTRPCRouter({
         firebaseChallenge.exists() &&
         firebaseChallengeData.ids.includes(userId)
       ) {
+        if (firebaseChallengeData[userId]?.timeStamp) {
+          return challengeRef.id;
+        }
         await updateDoc(challengeRef, {
           [userId]: {
             timeStamp: serverTimestamp(),

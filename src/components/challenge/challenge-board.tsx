@@ -8,6 +8,8 @@ import { checkSpelling } from "~/utils/survival/surivival";
 import { handleGuess } from "~/utils/challenge";
 import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
+import ConfettiExplosion from "react-confetti-explosion";
+import Results from "./results";
 
 type ChallengeBoardProps = {
   challengeId: string;
@@ -62,11 +64,10 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
     }
   };
 
-  useEffect(() =>{
-    
-  },[data])
+  useEffect(() => {}, [data]);
 
   useOnKeyUp(handleKeyBoardLogic, [guess]);
+
   return (
     <m.div
       initial={{ opacity: 0 }}
@@ -75,16 +76,37 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
       transition={{ duration: 0.15 }}
       className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gray-400 bg-opacity-50"
     >
-      <div className="flex max-h-[90vh] min-h-[660px] min-w-[360px] flex-col items-center justify-center gap-5 rounded-md bg-white p-5 md:w-1/2">
+      <div className="relative flex max-h-[90vh] min-h-[660px] min-w-[360px] flex-col items-center justify-center gap-5 overflow-hidden rounded-md bg-white p-5 md:w-1/2">
+        <div
+          style={{
+            transform: data?.[props.userId ?? ""]?.completed
+              ? "translateX(0%)"
+              : "translateX(100%)",
+          }}
+          className="absolute h-full w-full bg-white duration-150 ease-in-out"
+        >
+          <Results challengeData={data} />
+        </div>
+        <div className="-translate--1/2 absolute left-1/2 top-1/2 -translate-x-1/2">
+          {data?.[props.userId]?.success && (
+            <ConfettiExplosion
+              particleCount={100}
+              force={0.6}
+              duration={2500}
+              zIndex={60}
+            />
+          )}
+        </div>
         <div className="flex w-full justify-end">
           <button
             onClick={() => props.handleCloseChallenge()}
-            className="rounded-full p-1 duration-150 ease-in-out hover:bg-zinc-200"
+            className="z-10 rounded-full p-1 duration-150 ease-in-out hover:bg-zinc-200"
           >
             ✖️
           </button>
         </div>
         <h2 className="text-2xl font-semibold">Challenge</h2>
+
         <GuessGrid
           guesses={data?.[props.userId ?? ""]?.guesses ?? []}
           guess={guess}

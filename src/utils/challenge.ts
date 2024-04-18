@@ -40,7 +40,7 @@ export const handleGuess = async (
     });
   } else if (guess === word) {
     await updateDoc(documentReference, {
-      [`${userId}.endTimeStamp`]: new Date(), // Append guess to the array
+      [`${userId}.endTimeStamp`]: new Date().toString(), // Append guess to the array
       [`${userId}.completed`]: true,
       [`${userId}.success`]: true,
       [`${userId}.guesses`]: arrayUnion(guess), // Append guess to the array
