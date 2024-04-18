@@ -37,9 +37,9 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
   };
 
   const playOrView = (userId: string) => {
-    if (props.challenge[userId] === null) {
+    if (props.challenge[userId]?.completed === undefined) {
       return "Play";
-    } else if (props.challenge[userId]?.completed !== null) {
+    } else if (props.challenge[userId]?.completed !== undefined) {
       return "View";
     }
   };
@@ -113,15 +113,15 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
         </button>
 
         {props.challenge?.[props.userId]?.completed === undefined && (
-            <button
-              onClick={() => {
-                props.handleGiveUpOrQuit(props.challenge.id);
-              }}
-              className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
-            >
-              {quitOrDecline()}
-            </button>
-          )}
+          <button
+            onClick={() => {
+              props.handleGiveUpOrQuit(props.challenge.id);
+            }}
+            className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
+          >
+            {quitOrDecline()}
+          </button>
+        )}
       </div>
     </m.div>
   );

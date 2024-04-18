@@ -182,7 +182,7 @@ const Challenges: NextPage = () => {
             <div className="flex items-center rounded-full bg-emerald-400 p-1 text-xs">
               <p>done</p>
             </div>
-            <div className="flex items-center rounded-full bg-red-400 p-1 text-center text-xs text-white">
+            <div className="flex items-center rounded-full bg-red-400 p-1 text-center text-xs">
               <p>gave up</p>
             </div>
             <div className="flex items-center rounded-full bg-neutral-900 p-1 text-xs text-white">

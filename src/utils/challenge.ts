@@ -31,20 +31,26 @@ export const handleGuess = async (
 ) => {
   const newMatches = handleMatched(guess, word ?? "", previousMatches);
 
-  if (guesses && guesses.length >= 5) {
-    await updateDoc(documentReference, {
-      [`${userId}.guesses`]: arrayUnion(guess), // Append guess to the array
-      [`${userId}.matches`]: { ...newMatches },
-      [`${userId}.completed`]: true,
-      [`${userId}.success`]: false,
-    });
-  } else if (guess === word) {
+  const guessesLength = Array.isArray(guesses) ? guesses.length : 0;
+
+  if (guess === word && guessesLength < 5) {
     await updateDoc(documentReference, {
       [`${userId}.endTimeStamp`]: new Date().toString(), // Append guess to the array
       [`${userId}.completed`]: true,
       [`${userId}.success`]: true,
       [`${userId}.guesses`]: arrayUnion(guess), // Append guess to the array
       [`${userId}.matches`]: { ...newMatches },
+    });
+  }
+
+  if (guesses && guesses.length + 1 >= 5) {
+    console.log("GUESS GREATER THAN 5");
+    await updateDoc(documentReference, {
+      [`${userId}.guesses`]: arrayUnion(guess), // Append guess to the array
+      [`${userId}.matches`]: { ...newMatches },
+      [`${userId}.completed`]: true,
+      [`${userId}.success`]: false,
+      [`${userId}.endTimeStamp`]: new Date().toString(), // Append guess to the array
     });
   } else {
     // Update the document with the new data

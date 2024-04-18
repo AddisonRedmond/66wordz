@@ -65,8 +65,6 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
 
   useOnKeyUp(handleKeyBoardLogic, [guess]);
 
-  console.log(data?.[props.userId ?? ""]?.completed !== null);
-
   return (
     <m.div
       initial={{ opacity: 0 }}
