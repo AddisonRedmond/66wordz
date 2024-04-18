@@ -34,13 +34,17 @@ const Results: React.FC<ResultsProps> = (props) => {
 
         {props.challengeData?.players.map((player) => {
           if (props.challengeData?.[player.friendId]?.completed) {
+            const { hours, minutes, seconds } = calculateDuration(
+              `${props.challengeData?.[player.friendId]?.timeStamp}`,
+              `${props.challengeData?.[player.friendId]?.endTimeStamp}`,
+            );
             return (
               <tr>
                 <td>{player.friendFullName}</td>
                 <td>{`${props.challengeData?.[player.friendId]?.completed}`}</td>
                 <td>{`${props.challengeData?.[player.friendId]?.success}`}</td>
-                <td>{`${props.challengeData?.[player.friendId]?.guesses}`}</td>
-                {/* <td>{`hrs:${hours}, mins:${minutes}, sec:${seconds}`}</td> */}
+                <td className=" text-wrap">{`${props.challengeData?.[player.friendId]?.guesses}`}</td>
+                <td>{`hrs:${hours}, mins:${minutes}, sec:${seconds}`}</td>
               </tr>
             );
           }

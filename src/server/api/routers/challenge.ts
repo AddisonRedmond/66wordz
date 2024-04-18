@@ -107,7 +107,7 @@ export const challengeRouter = createTRPCRouter({
         }
         await updateDoc(challengeRef, {
           [userId]: {
-            timeStamp: serverTimestamp(),
+            timeStamp: new Date().toString(),
           },
         });
         return challengeRef.id;
