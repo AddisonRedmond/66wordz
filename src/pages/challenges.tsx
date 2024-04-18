@@ -204,7 +204,7 @@ const Challenges: NextPage = () => {
 
             <AnimatePresence>
               {data?.user.id &&
-                (challenges ?? []).map((challenge, index) => {
+                (challenges ?? []).map((challenge) => {
                   return (
                     <Challenge
                       handleStartChallenge={handleStartChallenge}
