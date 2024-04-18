@@ -9,6 +9,7 @@ import { handleGuess } from "~/utils/challenge";
 import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
 import Results from "./results";
+import { api } from "~/utils/api";
 
 type ChallengeBoardProps = {
   challengeId: string;
@@ -22,6 +23,12 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
 
   const challengeRef = doc(store, "challenges", props.challengeId);
   const { data } = useGetChallengeData(challengeRef);
+
+  const gameFinshed = api.challenge.calculateWinner.useMutation();
+
+  const handleGameFinished = (challengeId: string) => {
+    gameFinshed.mutate(challengeId);
+  };
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -48,6 +55,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
       }
 
       handleGuess(
+        ()=> handleGameFinished(props.challengeId),
         props.userId,
         challengeRef,
         guess,
@@ -55,6 +63,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
         data?.word,
         data?.[props.userId]?.guesses,
       );
+
       setGuess("");
 
       // handle correct

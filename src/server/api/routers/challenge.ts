@@ -163,4 +163,13 @@ export const challengeRouter = createTRPCRouter({
         // if they dont have a ts then delete them out of the doc
       }
     }),
+
+  calculateWinner: protectedProcedure
+    .input(z.string())
+    .mutation(({ ctx, input }) => {
+      // check if all the users who were invited to the game, have completed it
+      // if they have,
+      // find the person who completed it in the fewest guesses,
+      // if theres a tie, pick the person who guessed in the least amount of time
+    }),
 });

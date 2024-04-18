@@ -35,7 +35,10 @@ const Results: React.FC<ResultsProps> = (props) => {
             <th className="rounded-tl-lg p-3">Player</th>
             <th className="p-3">Success</th>
             <th className="p-3">Guesses</th>
-            <th className="rounded-tr-lg p-3">Total Time</th>
+            <th className="rounded-tr-lg p-3">
+              <p>Total Time</p>
+              <p className="font-medium">hr/min/sec</p>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -53,16 +56,30 @@ const Results: React.FC<ResultsProps> = (props) => {
                   key={player.friendId}
                 >
                   <td className="text-wrap p-3">{player.friendFullName}</td>
-                  <td className="p-3"><Image src={props.challengeData?.[player.friendId]?.success ? True : False} alt={"Success or failure img"} height={25} /></td>
+                  <td className="p-3">
+                    <Image
+                      src={
+                        props.challengeData?.[player.friendId]?.success
+                          ? True
+                          : False
+                      }
+                      alt={"Success or failure img"}
+                      height={25}
+                    />
+                  </td>
                   <td className=" whitespace-normal text-wrap p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
                       ? `${props.challengeData?.[player.friendId]?.guesses}`
                       : "Gave Up"}
                   </td>
                   <td className="text-wrap p-3">
-                    {props.challengeData?.[player.friendId]?.endTimeStamp
-                      ? `hrs:${hours}, mins:${minutes}, sec:${seconds}`
-                      : "Gave Up"}
+                    <div className="flex flex-col">
+                      <p>
+                        {props.challengeData?.[player.friendId]?.endTimeStamp
+                          ? `${hours}:${minutes}:${seconds}`
+                          : "Gave Up"}
+                      </p>
+                    </div>
                   </td>
                 </tr>
               );
