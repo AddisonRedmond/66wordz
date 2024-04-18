@@ -203,17 +203,18 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-              {(challenges ?? []).map((challenge) => {
-                return (
-                  <Challenge
-                    handleStartChallenge={handleStartChallenge}
-                    key={challenge.id}
-                    challenge={challenge}
-                    userId={data?.user.id}
-                    handleGiveUpOrQuit={handleGiveUpOrQuit}
-                  />
-                );
-              })}
+              {data?.user.id &&
+                (challenges ?? []).map((challenge) => {
+                  return (
+                    <Challenge
+                      handleStartChallenge={handleStartChallenge}
+                      key={challenge.id}
+                      challenge={challenge}
+                      userId={data?.user.id}
+                      handleGiveUpOrQuit={handleGiveUpOrQuit}
+                    />
+                  );
+                })}
             </AnimatePresence>
           </div>
         </div>

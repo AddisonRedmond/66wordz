@@ -5,7 +5,7 @@ import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 type ChallengeProps = {
   challenge: ChallengeData;
   handleStartChallenge: (challengeId: string) => void;
-  userId?: string;
+  userId: string;
   handleGiveUpOrQuit: (challengeId: string) => void;
 };
 
@@ -36,21 +36,18 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
     return "Delete";
   };
 
-  const playOrView = (userId?: string) => {
-    if (userId !== undefined && props.challenge?.[userId] !== null) {
+  const playOrView = (userId: string) => {
+    if (props.challenge[userId] === null) {
       return "Play";
-    } else if (userId === undefined) {
-      return "View";
-    } else if (props.challenge?.[userId]?.completed !== null) {
+    } else if (props.challenge[userId]?.completed !== null) {
       return "View";
     }
-    return "View";
   };
 
   const getStatus = (playerId: string) => {
     if (
       props.challenge[playerId]?.timeStamp &&
-      !props.challenge[playerId]?.completed
+      props.challenge[playerId]?.completed === undefined
     ) {
       return "#facc15";
     } else if (props.challenge[playerId]?.completed) {
@@ -115,8 +112,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
           {playOrView(props.userId)}
         </button>
 
-        {props.userId !== undefined &&
-          props.challenge?.[props.userId]?.completed !== null && (
+        {props.challenge?.[props.userId]?.completed === undefined && (
             <button
               onClick={() => {
                 props.handleGiveUpOrQuit(props.challenge.id);
