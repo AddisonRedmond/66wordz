@@ -99,10 +99,14 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
 
       <div className="flex w-fit items-center gap-x-2 ">
         <div className="text-center text-sm">
-          <p className="font-semibold">Time Remaing </p>
-          <p className="w-fit font-medium">
-            {hours}:{minutes}:{seconds}
-          </p>
+          {!props.challenge.winner && (
+            <>
+              <p className="font-semibold">Time Remaing </p>
+              <p className="w-fit font-medium">
+                {hours}:{minutes}:{seconds}
+              </p>
+            </>
+          )}
         </div>
 
         <button
