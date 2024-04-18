@@ -23,6 +23,7 @@ export type ChallengeData = {
   timeStamp: Date;
   winner?: { name: string; id: string };
   players: { friendId: string; friendFullName: string }[];
+  gameOver: boolean;
 } & { [userId: string]: PlayerData };
 
 const useGetChallengeData = (

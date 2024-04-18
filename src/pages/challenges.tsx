@@ -204,11 +204,11 @@ const Challenges: NextPage = () => {
 
             <AnimatePresence>
               {data?.user.id &&
-                (challenges ?? []).map((challenge) => {
+                (challenges ?? []).map((challenge, index) => {
                   return (
                     <Challenge
                       handleStartChallenge={handleStartChallenge}
-                      key={challenge.id}
+                      key={`${challenge.id}`}
                       challenge={challenge}
                       userId={data?.user.id}
                       handleGiveUpOrQuit={handleGiveUpOrQuit}

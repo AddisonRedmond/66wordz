@@ -12,6 +12,7 @@ import {
   query,
   where,
   getDocs,
+  and,
 } from "firebase/firestore";
 import { arraysContainSameElements, handleGetNewWord } from "~/utils/game";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
@@ -48,7 +49,13 @@ export const challengeRouter = createTRPCRouter({
       challengeeIds.push(user.id);
 
       const challengeRef = collection(store, "challenges");
-      const q = query(challengeRef, where("ids", "array-contains", user.id));
+      const q = query(
+        challengeRef,
+        and(
+          where("ids", "array-contains", user.id),
+          where("gameOver", "==", false),
+        ),
+      );
 
       for (const doc of (await getDocs(q)).docs) {
         const challenge = doc.data() as ChallengeData;
@@ -56,10 +63,6 @@ export const challengeRouter = createTRPCRouter({
           return "Challenge already exists";
         }
       }
-
-      (await getDocs(q)).docs.forEach((doc) => {
-        console.log(doc.data());
-      });
 
       const timeStamp = new Date(new Date().getTime() + 86400000);
 
@@ -74,6 +77,7 @@ export const challengeRouter = createTRPCRouter({
         ids: challengeeIds,
         creator: user.id,
         word: handleGetNewWord(),
+        gameOver: false,
       });
     }),
 
