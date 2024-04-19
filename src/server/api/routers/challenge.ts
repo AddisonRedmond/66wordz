@@ -215,6 +215,7 @@ export const challengeRouter = createTRPCRouter({
             (player) => player.friendId === userId,
           )[0]?.friendFullName,
         },
+        ["gameOver"]: true,
       });
 
       return userId;
