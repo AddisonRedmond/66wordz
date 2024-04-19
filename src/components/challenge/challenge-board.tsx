@@ -20,6 +20,7 @@ type ChallengeBoardProps = {
 
 const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const [guess, setGuess] = useState<string>("");
+  const [spellCheck, setSpellCheck] = useState(false);
 
   const challengeRef = doc(store, "challenges", props.challengeId);
   const { data } = useGetChallengeData(challengeRef);
@@ -52,6 +53,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
     if (key === "ENTER" && guess.length === 5) {
       // check spelling
       if (checkSpelling(guess) === false) {
+        setSpellCheck(true)
         return;
       }
 
@@ -112,6 +114,8 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
           guesses={data?.[props.userId ?? ""]?.guesses ?? []}
           guess={guess}
           word={data?.word}
+          setSpellCheck={setSpellCheck}
+          spellCheck={spellCheck}
         />
         {/* keyboard */}
         <Keyboard

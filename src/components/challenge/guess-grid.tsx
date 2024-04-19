@@ -1,14 +1,25 @@
+import { Dispatch, SetStateAction } from "react";
+import { m, useAnimate } from "framer-motion";
+import { useEffect } from "react";
+
 type GuessGridProps = {
   guesses: string[];
   guess: string;
   word?: string;
+  spellCheck: boolean;
+  setSpellCheck: Dispatch<SetStateAction<boolean>>
 };
 
 const WordRow = (props: {
   guess?: string;
   word?: string;
   showColor: boolean;
+  spellCheck: boolean;
+  setSpellCheck: Dispatch<SetStateAction<boolean>>
+
 }) => {
+  const [scope, animate] = useAnimate();
+
   const getColor = (index: number) => {
     if (!props.guess || !props.word) {
       return "#FFFFFF";
@@ -24,8 +35,20 @@ const WordRow = (props: {
     }
   };
 
+  const control = {
+    x: [-10, 10, -10, 10, 0],
+  };
+
+
+  useEffect(() => {
+    animate(scope.current, control, { duration: 0.3 });
+    props.setSpellCheck(false);
+  }, [props.spellCheck]);
+
+
   return (
-    <div className="my-1 flex h-1/5 w-full flex-row items-center justify-center gap-1 rounded-md duration-150 ease-in-out">
+    <div ref={scope}
+    className="my-1 flex h-1/5 w-full flex-row items-center justify-center gap-1 rounded-md">
       {Array.from({ length: 5 }).map((_, index) => {
         return (
           <div
@@ -68,6 +91,8 @@ const GuessGrid: React.FC<GuessGridProps> = (props) => {
       {Array.from({ length: 5 }).map((_, index) => {
         return (
           <WordRow
+            spellCheck={props.spellCheck}
+            setSpellCheck={props.setSpellCheck}
             key={index}
             guess={determineWord(index)}
             word={props.word}

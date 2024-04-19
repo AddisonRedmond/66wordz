@@ -21,12 +21,12 @@ const NewChallenge: React.FC<NewChallengeProps> = (props) => {
           return (
             <div
               key={player.friendRecordId}
-              className="-z-10 relative flex size-10 items-center justify-center gap-2 rounded-full bg-zinc-700 px-2 py-2 text-white sm:w-1/5 sm:rounded-md"
+              className="relative h-fit flex-col sm:flex-row sm:flex size-10 items-center justify-center gap-2 rounded-md bg-zinc-700 px-2 py-2 text-white sm:w-1/5 sm:rounded-md"
             >
               <p className="... hidden truncate sm:block">{player.name}</p>
               <p className="sm:hidden">{getInitials(player.name)}</p>
               <button
-                className="absolute -bottom-6 sm:bottom-0 sm:relative"
+                className=""
                 onClick={() => props.removePlayer(player.friendRecordId)}
               >
                 ❌
