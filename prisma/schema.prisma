@@ -46,8 +46,8 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
+    name          String
+    email         String    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
@@ -60,13 +60,24 @@ model User {
     lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
 
+    challenge Challenge[]
+
+    friends  Friends[]  @relation(name: "friends")
+    requests Requests[]
+
     freeGameTimeStamp Int?
     freeGameCount     Int  @default(0)
+
+    freeChallengeTimeStamp DateTime?
+    freeChallengeCount     Int @default(0)
 
     subscriptionId    String?
     customerId        String?
     cancelAtPeriodEnd Boolean?
     currentPeriodEnd  Int?
+    Friends           Friends[]
+
+    @@index([lobbyId])
 }
 
 model VerificationToken {
@@ -118,4 +129,58 @@ model Issues {
     summary     String
 
     @@index([createdById])
+}
+
+model Requests {
+    id           String  @id @default(cuid())
+    user         User    @relation(fields: [userId], references: [id])
+    userId       String
+    userFullName String
+    userImage    String?
+
+    friendId       String  @unique
+    friendFullName String
+    friendImage    String?
+
+    accepted Boolean @default(false)
+
+    @@index([userId])
+    @@index([friendId])
+}
+
+model Friend {
+    id      String    @id @default(cuid())
+    friends Friends[]
+}
+
+model Friends {
+    shared   Friend @relation(fields: [sharedId], references: [id], onDelete: Cascade)
+    sharedId String
+
+    id     String @id @default(cuid())
+    user   User   @relation(fields: [userId], references: [id], name: "friends", onDelete: Cascade)
+    userId String
+
+    friend   User   @relation(fields: [friendId], references: [id], onDelete: Cascade)
+    friendId String
+
+    friendImage    String?
+    friendFullName String
+
+    @@unique([userId, friendId])
+    @@index([userId])
+    @@index([friendId])
+    @@index([sharedId])
+}
+
+model Challenge {
+    id               String   @id @default(cuid())
+    initiatedBy      User     @relation(fields: [initiateById], references: [id])
+    initiateById     String
+    timeStamp        DateTime @default(now())
+    challengeesIds   String[]
+    challengeesNames String[]
+    started          String[]
+
+    @@index([initiateById])
 }

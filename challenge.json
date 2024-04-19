@@ -1,0 +1,10 @@
+{
+    "word": "BLAST",
+    "user1Id": {
+        "guesses": ["CLEAR", "GROSS", "FRONT"]
+
+    },
+    "user2Id": {
+        "guesses": ["CLOTH", "BONES", "PLANE"]
+    }
+}

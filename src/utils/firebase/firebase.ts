@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 import { env } from "~/env.mjs";
 
 const firebaseConfig = {
@@ -13,6 +14,9 @@ const firebaseConfig = {
   measurementId: env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
-initializeApp(firebaseConfig);
-export const db = getDatabase();
+const app = initializeApp(firebaseConfig);
 
+
+export const db = getDatabase(app);
+
+export const store = getFirestore(app);

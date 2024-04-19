@@ -1,7 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
 import Stripe from "stripe";
-const YOUR_DOMAIN = "https://www.66wordz.com";
 
 export const checkoutRouter = createTRPCRouter({
   createCheckout: protectedProcedure.mutation(async ({ ctx }) => {
@@ -22,8 +21,8 @@ export const checkoutRouter = createTRPCRouter({
           quantity: 1,
         },
       ],
-      success_url: `${YOUR_DOMAIN}/`,
-      cancel_url: `${YOUR_DOMAIN}?canceled=true`,
+      success_url: `${env.NEXTAUTH_URL}/`,
+      cancel_url: `${env.NEXTAUTH_URL}?canceled=true`,
       automatic_tax: { enabled: true },
     });
 
@@ -68,31 +67,29 @@ export const checkoutRouter = createTRPCRouter({
     return { successfullyCancelled: subscription.cancel_at_period_end };
   }),
 
-  reactiveateSubscription: protectedProcedure.mutation(async ({ ctx }) => {
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      typescript: true,
-      apiVersion: "2023-10-16",
-    });
+  // reactiveateSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+  //   const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+  //     typescript: true,
+  //     apiVersion: "2023-10-16",
+  //   });
 
-    const subscriptionId = await ctx.db.user.findUnique({
-      where: { id: ctx.session.user.id },
-    });
+  //   const subscriptionId = await ctx.db.user.findUnique({
+  //     where: { id: ctx.session.user.id },
+  //   });
 
-    if (!subscriptionId?.subscriptionId) {
-      throw new Error("No subscription found");
-    }
+  //   if (!subscriptionId?.subscriptionId) {
+  //     throw new Error("No subscription found");
+  //   }
 
-    const subscription = await stripe.subscriptions.update(
-      subscriptionId?.subscriptionId,
-      {
-        metadata: {
-          userId: ctx.session.user.id,
-        },
-        cancel_at_period_end: false,
-      },
-    );
+  //   const subscription = await stripe.subscriptions.update(
+  //     subscriptionId?.subscriptionId,
+  //     {
+  //       metadata: {
+  //         userId: ctx.session.user.id,
+  //       },
+  //       cancel_at_period_end: false,
+  //     },
+  //   );
 
-    console.log(subscription);
-    return;
-  }),
+  // }),
 });

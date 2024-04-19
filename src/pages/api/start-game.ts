@@ -38,7 +38,6 @@ export default async function handler(
   const data = JSON.parse(req.body);
   const lobbyId = data.lobbyId;
 
-  console.log("lobbyId!!!", lobbyId);
   //   cors isnt working btw/ origin can be any, need to fix
   const players = await db.players.findMany({ where: { lobbyId: lobbyId } });
   const playerIds = players.map((player) => player.userId);

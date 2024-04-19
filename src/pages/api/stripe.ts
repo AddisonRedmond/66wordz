@@ -38,7 +38,6 @@ const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(400).json(err);
       return;
     }
-
     switch (event.type) {
       case "checkout.session.completed":
         const paymentIntent = event.data.object;
@@ -58,7 +57,6 @@ const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
         break;
 
       case "customer.subscription.updated":
-        console.log("🔔  Subscription updated!");
         const subscription = event.data.object;
         await db.user.update({
           where: { id: subscription.metadata.userId },
@@ -69,7 +67,6 @@ const webhook = async (req: NextApiRequest, res: NextApiResponse) => {
         });
         break;
       default:
-        console.log(`🔔  Unhandled event type: ${event.type}`);
     }
 
     res.status(200).json({ received: true });
