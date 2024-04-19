@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { m, useAnimate } from "framer-motion";
+import { useAnimate } from "framer-motion";
 import { useEffect } from "react";
 
 type GuessGridProps = {
