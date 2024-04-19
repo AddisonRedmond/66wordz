@@ -30,7 +30,7 @@ export function createFirebaseAdminApp(params: FirebaseAdminAppParams) {
   });
 }
 
-export async function initAdmin() {
+export function initAdmin() {
   const params = {
     projectId: env.NEXT_PUBLIC_PROJECT_ID,
     clientEmail: env.FIREBASE_CLIENT_EMAIL,
