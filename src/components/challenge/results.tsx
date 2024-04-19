@@ -44,7 +44,7 @@ const Results: React.FC<ResultsProps> = (props) => {
   }, [props.challengeData]);
 
   return (
-    <div className="relative h-full overflow-x-auto p-4">
+    <div className="relative h-full overflow-x-auto p-4 z-10">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
 
       <div className="w-full text-center text-2xl">

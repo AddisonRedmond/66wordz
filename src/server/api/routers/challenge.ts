@@ -38,26 +38,30 @@ export const challengeRouter = createTRPCRouter({
 
       challengeeIds.push(user.id);
 
-      const challengeRef = db.collection("challenges");
 
-      challengeRef
-        .where("ids", "array-contains", user.id)
-        .where("gameOver", "==", false);
+      const challengeRef = db.collection("challenges")
+      .where("ids", "array-contains-any", challengeeIds)
+      .where("gameOver", "==", false);
 
       const docs = (await challengeRef.get()).docs;
 
+      
+      
       for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;
-        if (arraysContainSameElements(challenge.ids, challengeeIds)) {
+        console.log(challenge.gameOver)
+        if( arraysContainSameElements(challenge.ids, challengeeIds)){
           return "Challenge already exists";
+
         }
+        
       }
 
       const timeStamp = new Date(new Date().getTime() + 86400000);
 
       ids.push(user.id);
 
-      await challengeRef.add({
+      await db.collection("challenges").add({
         timeStamp: timeStamp.toString(),
         players: [
           ...challengees,
@@ -183,9 +187,9 @@ export const challengeRouter = createTRPCRouter({
       let userId = "";
       firebaseChallenge.ids.forEach((id) => {
         if (firebaseChallenge[id]?.completed) {
-          const userGuessLength = Array.isArray(firebaseChallenge[id])
-            ? firebaseChallenge[id]!.guesses!.length
-            : 0;
+          const userGuessLength = firebaseChallenge[id]!.guesses!.length
+             
+          
           if (userGuessLength === shortestGuess) {
             // check the duration and add their id and shortest guess to the vars
             const userIdDuration = new Date(
