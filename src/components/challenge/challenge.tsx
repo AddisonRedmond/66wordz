@@ -89,7 +89,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
                   {getInitials(player.friendFullName)}
                 </p>
               </div>
-              <p className="... hidden truncate lg:block">
+              <p className="... hidden truncate sm:block">
                 {player.friendFullName}
               </p>
             </div>
@@ -97,8 +97,8 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
         })}
       </div>
 
-      <div className="flex w-fit items-center gap-x-2 ">
-        <div className="text-center text-sm">
+      <div className="flex w-fit items-center gap-x-2 relative">
+        <div className="text-center text-sm hidden sm:block">
           {!props.challenge.winner && (
             <>
               <p className="font-semibold">Time Remaing </p>
@@ -121,12 +121,14 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
             onClick={() => {
               props.handleGiveUpOrQuit(props.challenge.id);
             }}
-            className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
+            className="hidden sm:block rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
           >
             {quitOrDecline()}
           </button>
         )}
+        <div className=" rotate-90 size-10 p-2 rounded-full hover:bg-zinc-300 text-lg font-bold flex justify-center items-center"><p>...</p></div>
       </div>
+      
     </m.div>
   );
 };

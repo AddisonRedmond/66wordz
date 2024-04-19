@@ -132,7 +132,7 @@ const Challenges: NextPage = () => {
           <p>challenge friends to a game</p>
         </div>
 
-        <div className="flex w-1/2 min-w-80 flex-grow flex-col gap-2">
+        <div className="flex w-11/12 ease-in-out duration-150 xl:w-1/2 min-w-80 flex-grow flex-col gap-2">
           <div className=" relative my-4 flex h-fit w-full items-center justify-center gap-x-2">
             <input
               ref={inputRef}

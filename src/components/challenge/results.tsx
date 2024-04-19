@@ -4,6 +4,7 @@ import True from "../../../public/true.png";
 import False from "../../../public/false.png";
 import { m, useAnimation } from "framer-motion";
 import { useEffect } from "react";
+
 type ResultsProps = {
   challengeData: ChallengeData | null;
 };
@@ -43,7 +44,7 @@ const Results: React.FC<ResultsProps> = (props) => {
   }, [props.challengeData]);
 
   return (
-    <div className="relative h-full p-4">
+    <div className="relative h-full overflow-x-auto p-4">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
 
       <div className="w-full text-center text-2xl">
@@ -79,7 +80,9 @@ const Results: React.FC<ResultsProps> = (props) => {
                   className="p-4 font-semibold odd:bg-gray-200"
                   key={player.friendId}
                 >
-                  <td className="text-wrap p-3">{player.friendFullName}</td>
+                  <td className="whitespace-normal text-wrap p-3">
+                    {player.friendFullName}
+                  </td>
                   <td className="p-3">
                     <Image
                       src={
@@ -91,7 +94,7 @@ const Results: React.FC<ResultsProps> = (props) => {
                       height={25}
                     />
                   </td>
-                  <td className=" whitespace-normal text-wrap p-3 text-sm">
+                  <td className=" max-w-24 break-words p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
                       ? `${props.challengeData?.[player.friendId]?.guesses}`
                       : "Gave Up"}
@@ -116,3 +119,4 @@ const Results: React.FC<ResultsProps> = (props) => {
 };
 
 export default Results;
+    
