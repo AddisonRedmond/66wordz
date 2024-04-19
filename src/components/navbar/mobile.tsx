@@ -5,6 +5,7 @@ import profile from "../../../public/profile.png";
 import signout from "../../../public/signout.svg";
 import home from "../../../public/home.png";
 import upgrade from "../../../public/upgrade.png";
+import friends from "../../../public/friends.png";
 
 import { signOut } from "next-auth/react";
 
@@ -49,7 +50,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Home</p>
-                  <Image height={28} width={28} src={home} alt="bug icon" />
+                  <Image height={28} width={28} src={home} alt="home icon" />
                 </div>
               </Link>
               <Link href="/profile">
@@ -58,10 +59,28 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Profile</p>
-                  <Image height={28} width={28} src={profile} alt="bug icon" />
+                  <Image
+                    height={28}
+                    width={28}
+                    src={profile}
+                    alt="profile icon"
+                  />
                 </div>
               </Link>
-
+              <Link href="/friends">
+                <div
+                  onClick={() => props.setMenuIsOpen(false)}
+                  className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
+                >
+                  <p>Friends</p>
+                  <Image
+                    
+                    width={40}
+                    src={friends}
+                    alt="friends icon"
+                  />
+                </div>
+              </Link>
               <div
                 onClick={() => props.handleUpgrade()}
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
