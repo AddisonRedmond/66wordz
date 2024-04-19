@@ -1,22 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import { store } from "~/utils/firebase/firebase";
 // import { initializeApp } from 'firebase-admin/app';
 import { initAdmin } from "~/utils/firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
 
-import {
-  getDoc,
-  doc,
-  updateDoc,
-  collection,
-  addDoc,
-  deleteDoc,
-  query,
-  where,
-  getDocs,
-  and,
-} from "firebase/firestore";
 import { arraysContainSameElements, handleGetNewWord } from "~/utils/game";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 
