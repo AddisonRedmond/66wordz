@@ -27,7 +27,7 @@ const ChallengeCard: React.FC = () => {
           </Link>
 
           <button
-            className={`w-full rounded-md border-2  border-zinc-500 bg-white py-2 font-semibold text-black duration-150 ease-in-out hover:bg-zinc-200`}
+            className={` disabled w-full cursor-default rounded-md border-2 border-zinc-500 bg-white py-2 font-semibold text-black opacity-0 duration-150 ease-in-out hover:bg-zinc-200`}
           >
             Create
           </button>
