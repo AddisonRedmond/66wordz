@@ -12,7 +12,7 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
-      const db = (await initAdmin()).firestore();
+      const db = initAdmin().firestore();
       // make sure the user either has premium or has free games
 
       // check and see if any of the documents.ids already have all of the same ids
@@ -76,7 +76,7 @@ export const challengeRouter = createTRPCRouter({
       // create a firebase document with an id of the challenge id
       const userId = ctx.session.user.id;
       //   look up the challenge
-      const db = (await initAdmin()).firestore();
+      const db = initAdmin().firestore();
 
       const challengeRef = db.doc(`challenges/${input.challengeId}`);
 
@@ -112,7 +112,7 @@ export const challengeRouter = createTRPCRouter({
       // get the challenge id
       const userId = ctx.session.user.id;
       //   look up the challenge
-      const db = (await initAdmin()).firestore();
+      const db = initAdmin().firestore();
 
       const challengeRef = db.doc(`challenges/${input}`);
 
@@ -163,7 +163,7 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       // get firebase doc
 
-      const db = (await initAdmin()).firestore();
+      const db = initAdmin().firestore();
 
       const challengeRef = db.doc(`challenges/${input}`);
 
