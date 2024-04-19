@@ -126,7 +126,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
             {quitOrDecline()}
           </button>
         )}
-        <div className=" rotate-90 size-10 p-2 rounded-full hover:bg-zinc-300 text-lg font-bold flex justify-center items-center"><p>...</p></div>
+        <div className="sm:hidden rotate-90 size-10 p-2 rounded-full hover:bg-zinc-300 text-lg font-bold flex justify-center items-center"><p>...</p></div>
       </div>
       
     </m.div>

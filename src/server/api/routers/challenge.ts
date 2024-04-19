@@ -1,6 +1,9 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { store } from "~/utils/firebase/firebase";
+// import { initializeApp } from 'firebase-admin/app';
+import { initAdmin } from "~/utils/firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
 import {
   getDoc,
@@ -23,6 +26,7 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const user = ctx.session.user;
 
+      const db = (await initAdmin()).firestore();
       // make sure the user either has premium or has free games
 
       // check and see if any of the documents.ids already have all of the same ids
@@ -48,16 +52,15 @@ export const challengeRouter = createTRPCRouter({
 
       challengeeIds.push(user.id);
 
-      const challengeRef = collection(store, "challenges");
-      const q = query(
-        challengeRef,
-        and(
-          where("ids", "array-contains", user.id),
-          where("gameOver", "==", false),
-        ),
-      );
+      const challengeRef = db.collection("challenges");
 
-      for (const doc of (await getDocs(q)).docs) {
+      challengeRef
+        .where("ids", "array-contains", user.id)
+        .where("gameOver", "==", false);
+
+      const docs = (await challengeRef.get()).docs;
+
+      for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;
         if (arraysContainSameElements(challenge.ids, challengeeIds)) {
           return "Challenge already exists";
@@ -67,8 +70,8 @@ export const challengeRouter = createTRPCRouter({
       const timeStamp = new Date(new Date().getTime() + 86400000);
 
       ids.push(user.id);
-      // make sure they're acutally friends
-      await addDoc(collection(store, "challenges"), {
+
+      await challengeRef.add({
         timeStamp: timeStamp.toString(),
         players: [
           ...challengees,
@@ -87,11 +90,13 @@ export const challengeRouter = createTRPCRouter({
       // create a firebase document with an id of the challenge id
       const userId = ctx.session.user.id;
       //   look up the challenge
+      const db = (await initAdmin()).firestore();
 
-      const challengeRef = doc(store, "challenges", input.challengeId);
-      const firebaseChallenge = await getDoc(challengeRef);
+      const challengeRef = db.doc(`challenges/${input.challengeId}`);
 
-      const firebaseChallengeData = firebaseChallenge.data() as ChallengeData;
+      const firebaseChallengeData = (
+        await challengeRef.get()
+      ).data() as ChallengeData;
       // check to make sure document exists and that user is part of the document
 
       // if both exist add a start time time stamp to user
@@ -100,18 +105,17 @@ export const challengeRouter = createTRPCRouter({
 
       // make sure the 24 hour timer hasn't expired
 
-      if (
-        firebaseChallenge.exists() &&
-        firebaseChallengeData.ids.includes(userId)
-      ) {
+      if (firebaseChallengeData.ids.includes(userId)) {
         if (firebaseChallengeData[userId]?.timeStamp) {
           return challengeRef.id;
         }
-        await updateDoc(challengeRef, {
+
+        await challengeRef.update({
           [userId]: {
             timeStamp: new Date().toString(),
           },
         });
+
         return challengeRef.id;
       }
     }),
@@ -122,11 +126,13 @@ export const challengeRouter = createTRPCRouter({
       // get the challenge id
       const userId = ctx.session.user.id;
       //   look up the challenge
+      const db = (await initAdmin()).firestore();
 
-      const challengeRef = doc(store, "challenges", input);
-      const firebaseChallenge = await getDoc(challengeRef);
+      const challengeRef = db.doc(`challenges/${input}`);
 
-      const firebaseChallengeData = firebaseChallenge.data() as ChallengeData;
+      const firebaseChallengeData = (
+        await challengeRef.get()
+      ).data() as ChallengeData;
       // check to make sure document exists and that user is part of the document
 
       // if both exist add a start time time stamp to user
@@ -134,14 +140,10 @@ export const challengeRouter = createTRPCRouter({
       // return the document id
 
       // run check for winner logic
-
-      if (
-        firebaseChallenge.exists() &&
-        firebaseChallengeData.ids.includes(userId)
-      ) {
+      if (firebaseChallengeData.ids.includes(userId)) {
         // check if user is in the doc
         if (firebaseChallengeData?.[userId]) {
-          await updateDoc(challengeRef, {
+          await challengeRef.update({
             [`${userId}.completed`]: false,
             [`${userId}.success`]: false,
           });
@@ -156,9 +158,9 @@ export const challengeRouter = createTRPCRouter({
           );
 
           if (updatedIds.length <= 1) {
-            await deleteDoc(challengeRef);
+            await challengeRef.delete();
           } else {
-            await updateDoc(challengeRef, {
+            await challengeRef.update({
               ids: updatedIds,
               players: updatedPlayers,
             });
@@ -175,9 +177,12 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       // get firebase doc
 
-      const challengeRef = doc(store, "challenges", input);
+      const db = (await initAdmin()).firestore();
+
+      const challengeRef = db.doc(`challenges/${input}`);
+
       const firebaseChallenge = (
-        await getDoc(challengeRef)
+        await challengeRef.get()
       ).data() as ChallengeData;
 
       for (const id of firebaseChallenge.ids) {
@@ -217,7 +222,7 @@ export const challengeRouter = createTRPCRouter({
         }
       });
 
-      await updateDoc(challengeRef, {
+      await challengeRef.update({
         [`winner`]: {
           id: userId,
           name: firebaseChallenge.players.filter(
@@ -225,6 +230,7 @@ export const challengeRouter = createTRPCRouter({
           )[0]?.friendFullName,
         },
       });
+
       return userId;
 
       // if they have,

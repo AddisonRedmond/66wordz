@@ -25,6 +25,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const { data } = useGetChallengeData(challengeRef);
 
   const gameFinshed = api.challenge.calculateWinner.useMutation();
+  
 
   const handleGameFinished = (challengeId: string) => {
     gameFinshed.mutate(challengeId);
