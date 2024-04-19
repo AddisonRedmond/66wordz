@@ -94,9 +94,9 @@ const Results: React.FC<ResultsProps> = (props) => {
                       height={25}
                     />
                   </td>
-                  <td className=" max-w-24 break-words p-3 text-sm">
+                  <td className=" max-w-24 break-words text-pretty p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
-                      ? `${props.challengeData?.[player.friendId]?.guesses}`
+                      ? `${props.challengeData?.[player.friendId]?.guesses?.toString().replace(/,/g, ' ')}`
                       : "Gave Up"}
                   </td>
                   <td className="text-wrap p-3">
