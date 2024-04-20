@@ -121,7 +121,7 @@ const Friends = () => {
             Sent
           </button>
         </div>
-        <div className="flex w-full flex-grow flex-wrap justify-center gap-3">
+        <div className="flex w-full flex-grow flex-wrap justify-center gap-3 py-2">
           {requestType === "pending" &&
             sent.data?.map((pendingData) => {
               return (
