@@ -21,7 +21,7 @@ const KeyboardRow = ({
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
   const handleColors = (letter: string) => {
-    if (!matches) return;
+    if (!matches) return ;
     if (matches?.full && matches.full.includes(letter)) {
       return "#00DFA2";
     } else if (matches?.partial && matches.partial.includes(letter)) {
@@ -29,6 +29,8 @@ const KeyboardRow = ({
     } else if (matches?.none && matches.none.includes(letter)) {
       return "#545B77";
     }
+
+    return "#e5e5e5"
   };
   return (
     <>
@@ -40,9 +42,9 @@ const KeyboardRow = ({
               backgroundColor: handleColors(letter),
               color: handleColors(letter) === "#545B77" ? "#FFFFFF" : "#000000",
             }}
-            className={`flex aspect-square w-[10%] min-w-8 max-w-12 ${
+            className={` flex sm:aspect-square sm:h-auto h-10 w-[10%] min-w-8 max-w-12 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
-            } items-center justify-center rounded-md border-2 border-neutral-500 bg-neutral-200 font-bold sm:border-none`}
+            } items-center justify-center rounded-md font-bold sm:border-none`}
             key={letter}
           >
             {letter}

@@ -85,7 +85,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
       transition={{ duration: 0.15 }}
       className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gray-400 bg-opacity-50"
     >
-      <div className="relative flex max-h-[90vh] min-h-[660px] min-w-[360px] flex-col items-center justify-center gap-5 overflow-hidden rounded-md bg-white p-5 md:w-1/2">
+      <div className="relative flex max-h-[90vh] min-h-[660px] min-w-[360px] flex-col items-center justify-center gap-4 overflow-hidden rounded-md bg-white p-5 md:w-1/2">
         <div
           style={{
             transform:
@@ -100,7 +100,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
           )}
         </div>
 
-        <div className="flex w-full justify-end">
+        <div className="absolute top-1 right-1">
           <button
             onClick={() => props.handleCloseChallenge()}
             className="z-10 rounded-full p-1 duration-150 ease-in-out hover:bg-zinc-200"

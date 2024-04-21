@@ -29,11 +29,17 @@ export default function Login() {
             </button>
           </div>
           <div className=" absolute bottom-2 flex w-full justify-around text-sm text-zinc-600">
-            <Link href="terms-of-service">Terms of Service</Link>
-            <Link href="privacy">Privacy Policy</Link>
-            <Link href="refund">Refund Policy</Link>
-            <div>
-              <p>Email:hosanna_golfers_0o@icloud.com</p>
+            <Link className="... w-1/5 truncate" href="terms-of-service">
+              Terms of Service
+            </Link>
+            <Link className="... w-1/5 truncate" href="privacy">
+              Privacy Policy
+            </Link>
+            <Link className="... w-1/5 truncate" href="refund">
+              Refund Policy
+            </Link>
+            <div className=" w-1/5">
+              <p className="truncate ...">Contact:hosanna_golfers_0o@icloud.com</p>
             </div>
           </div>
         </div>

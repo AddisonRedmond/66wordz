@@ -1,6 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-// import { initializeApp } from 'firebase-admin/app';
 import { initAdmin } from "~/utils/firebase-admin";
 
 import { arraysContainSameElements, handleGetNewWord } from "~/utils/game";
