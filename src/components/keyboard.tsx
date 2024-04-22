@@ -42,7 +42,7 @@ const KeyboardRow = ({
               backgroundColor: handleColors(letter),
               color: handleColors(letter) === "#545B77" ? "#FFFFFF" : "#000000",
             }}
-            className={` flex sm:aspect-square sm:h-auto h-10 w-[10%] min-w-8 max-w-12 ${
+            className={` flex sm:aspect-square sm:h-auto h-12 w-[10%] min-w-8 max-w-12 ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md font-bold sm:border-none`}
             key={letter}
