@@ -21,7 +21,7 @@ const KeyboardRow = ({
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
   const handleColors = (letter: string) => {
-    if (!matches) return ;
+    if (!matches) return "#e5e5e5";
     if (matches?.full && matches.full.includes(letter)) {
       return "#00DFA2";
     } else if (matches?.partial && matches.partial.includes(letter)) {
@@ -110,7 +110,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           }
         />
       </div>
-      <div className="sm:invisibile visible flex w-full justify-around text-center text-lg font-semibold">
+      <div className="sm:invisibile mt-3 visible flex w-full justify-around text-center text-lg font-semibold">
         <button
           onClick={() => props.handleKeyBoardLogic("Enter")}
           className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"

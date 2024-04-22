@@ -2,6 +2,7 @@ import { m } from "framer-motion";
 import { getInitials } from "~/utils/game";
 import { useTimer } from "react-timer-hook";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
+import { useState } from "react";
 type ChallengeProps = {
   challenge: ChallengeData;
   handleStartChallenge: (challengeId: string) => void;
@@ -10,6 +11,7 @@ type ChallengeProps = {
 };
 
 const Challenge: React.FC<ChallengeProps> = (props) => {
+  const [infoIsOpen, setInfoIsOpen] = useState(false);
   const { seconds, minutes, hours } = useTimer({
     expiryTimestamp: new Date(props.challenge.timeStamp),
     autoStart: true,
@@ -68,7 +70,7 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
       initial={{ height: 0 }}
       animate={{ height: "80px" }}
       exit={{ height: 0 }}
-      className="flex w-full items-center justify-between overflow-hidden border-b-2 px-4"
+      className="relative flex w-full items-center justify-between overflow-hidden border-b-2 px-4"
     >
       <div className="flex w-[50%] gap-x-2">
         {props.challenge.players.map((player) => {
@@ -97,8 +99,8 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
         })}
       </div>
 
-      <div className="flex w-fit items-center gap-x-2 relative">
-        <div className="text-center text-sm hidden sm:block">
+      <div className="relative flex w-fit items-center gap-x-2">
+        <div className="hidden text-center text-sm sm:block">
           {!props.challenge.winner && (
             <>
               <p className="font-semibold">Time Remaing </p>
@@ -121,14 +123,46 @@ const Challenge: React.FC<ChallengeProps> = (props) => {
             onClick={() => {
               props.handleGiveUpOrQuit(props.challenge.id);
             }}
-            className="hidden sm:block rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600"
+            className="hidden rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600 sm:block"
           >
             {quitOrDecline()}
           </button>
         )}
-        <div className="sm:hidden rotate-90 size-10 p-2 rounded-full hover:bg-zinc-300 text-lg font-bold flex justify-center items-center"><p>...</p></div>
+        <button
+          className="flex size-10 rotate-90 items-center justify-center rounded-full p-2 text-lg font-bold sm:hidden"
+          onClick={() => setInfoIsOpen(true)}
+        >
+          ...
+        </button>
       </div>
-      
+      <div
+        style={{
+          transform: infoIsOpen ? "translateX(0%)" : "translateX(100%)",
+        }}
+        className={`absolute right-0 flex h-full w-fit  items-center justify-center  gap-x-4 rounded-l-md bg-zinc-200 px-2 duration-150 ease-in-out sm:hidden`}
+      >
+        <div className="text-center text-sm">
+          {!props.challenge.winner && (
+            <>
+              <p className="font-semibold">Time Remaing </p>
+              <p className="w-fit font-medium">
+                {hours}:{minutes}:{seconds}
+              </p>
+            </>
+          )}
+        </div>
+        {props.challenge?.[props.userId]?.completed === undefined && (
+          <button
+            onClick={() => {
+              props.handleGiveUpOrQuit(props.challenge.id);
+            }}
+            className="rounded-md bg-red-700 p-2 font-medium text-white duration-150 ease-in-out hover:bg-red-600 "
+          >
+            {quitOrDecline()}
+          </button>
+        )}
+        <button onClick={() => setInfoIsOpen(false)}>✖️</button>
+      </div>
     </m.div>
   );
 };

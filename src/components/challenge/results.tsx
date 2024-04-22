@@ -44,17 +44,32 @@ const Results: React.FC<ResultsProps> = (props) => {
   }, [props.challengeData]);
 
   return (
-    <div className="relative h-full overflow-x-auto p-4 z-10">
+    <div className="relative z-10 h-full overflow-x-auto p-4">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
 
-      <div className="w-full text-center text-2xl">
+      <div className="mb-3 w-full text-center text-2xl">
         <p className="text-4xl">👑</p>
         <m.p animate={controls} style={{ color: "var(--rainbow-color)" }}>
           {props.challengeData?.winner?.name ?? "TBD"}
         </m.p>
+
+        <div className="flex justify-center gap-x-1 font-semibold">
+          {props.challengeData?.word
+            .split("")
+            .map((letter: string, index: number) => {
+              return (
+                <p
+                  className=" flex size-10 items-center justify-center rounded-md bg-neutral-200"
+                  key={index}
+                >
+                  {letter}
+                </p>
+              );
+            })}
+        </div>
       </div>
 
-      <table className="w-full  border-collapse text-left">
+      <table className="w-full border-collapse text-left">
         <thead className="bg-emerald-600 text-white">
           <tr>
             <th className="rounded-tl-lg p-3">Player</th>
@@ -94,9 +109,9 @@ const Results: React.FC<ResultsProps> = (props) => {
                       height={25}
                     />
                   </td>
-                  <td className=" max-w-24 break-words text-pretty p-3 text-sm">
+                  <td className=" max-w-24 text-pretty break-words p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
-                      ? `${props.challengeData?.[player.friendId]?.guesses?.toString().replace(/,/g, ' ')}`
+                      ? `${props.challengeData?.[player.friendId]?.guesses?.toString().replace(/,/g, " ")}`
                       : "Gave Up"}
                   </td>
                   <td className="text-wrap p-3">
@@ -119,4 +134,3 @@ const Results: React.FC<ResultsProps> = (props) => {
 };
 
 export default Results;
-    

@@ -26,7 +26,6 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const { data } = useGetChallengeData(challengeRef);
 
   const gameFinshed = api.challenge.calculateWinner.useMutation();
-  
 
   const handleGameFinished = (challengeId: string) => {
     gameFinshed.mutate(challengeId);
@@ -53,12 +52,12 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
     if (key === "ENTER" && guess.length === 5) {
       // check spelling
       if (checkSpelling(guess) === false) {
-        setSpellCheck(true)
+        setSpellCheck(true);
         return;
       }
 
       handleGuess(
-        ()=> handleGameFinished(props.challengeId),
+        () => handleGameFinished(props.challengeId),
         props.userId,
         challengeRef,
         guess,
@@ -100,7 +99,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
           )}
         </div>
 
-        <div className="absolute top-1 right-1">
+        <div className="absolute right-1 top-1">
           <button
             onClick={() => props.handleCloseChallenge()}
             className="z-10 rounded-full p-1 duration-150 ease-in-out hover:bg-zinc-200"
@@ -110,28 +109,31 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
         </div>
         <h2 className="text-2xl font-semibold">Challenge</h2>
 
-        <GuessGrid
-          guesses={data?.[props.userId ?? ""]?.guesses ?? []}
-          guess={guess}
-          word={data?.word}
-          setSpellCheck={setSpellCheck}
-          spellCheck={spellCheck}
-        />
-        {/* keyboard */}
-        <Keyboard
-          disabled={false}
-          handleKeyBoardLogic={handleKeyBoardLogic}
-          matches={data?.[props.userId ?? ""]?.matches}
-        />
-        {!data?.[props.userId]?.completed && (
-          <button
-            onClick={() => {
-              props.handleGiveUp(props.challengeId);
-            }}
-            className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
-          >
-            Give Up
-          </button>
+        {data?.[props.userId]?.completed === undefined && (
+          <>
+            <GuessGrid
+              guesses={data?.[props.userId ?? ""]?.guesses ?? []}
+              guess={guess}
+              word={data?.word}
+              setSpellCheck={setSpellCheck}
+              spellCheck={spellCheck}
+            />
+            <Keyboard
+              disabled={false}
+              handleKeyBoardLogic={handleKeyBoardLogic}
+              matches={data?.[props.userId ?? ""]?.matches}
+            />
+            {!data?.[props.userId]?.completed && (
+              <button
+                onClick={() => {
+                  props.handleGiveUp(props.challengeId);
+                }}
+                className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
+              >
+                Give Up
+              </button>
+            )}
+          </>
         )}
       </div>
     </m.div>

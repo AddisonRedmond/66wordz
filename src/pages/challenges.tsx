@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import NewChallenge from "~/components/challenge/new-challenge";
 import ChallengeBoard from "~/components/challenge/challenge-board";
 
+// implement firebase auth instead of nextauth
+
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
   const router = useRouter();

@@ -215,7 +215,9 @@ const Home = () => {
               )}
 
               {isCreateLobby === false && isJoinLobby === false && (
-                <div className="flex flex-wrap items-center justify-center gap-3 flex-grow">
+                <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
+                  <ChallengeCard />
+
                   <GameCardV2
                     gameType="ELIMINATION"
                     image={crown}
@@ -234,7 +236,6 @@ const Home = () => {
                     handleUpgrade={handleUpgrade}
                     desc="Offence is the best defence in this heated player vs player game"
                   />
-                  <ChallengeCard />
                 </div>
               )}
             </div>
