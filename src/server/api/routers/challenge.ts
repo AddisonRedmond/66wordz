@@ -9,9 +9,18 @@ export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
     .input(z.array(z.object({ friendRecordId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const user = ctx.session.user;
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+      });
+
+      if (!user) return null;
 
       const db = initAdmin().firestore();
+
+      const isPremiumUser = () => {
+        if (user?.currentPeriodEnd === null) return false;
+        return user?.currentPeriodEnd > Date.now() / 1000;
+      };
       // make sure the user either has premium or has free games
       // make sure the user doesn't already have too many pending games
 
@@ -44,6 +53,23 @@ export const challengeRouter = createTRPCRouter({
         .where("gameOver", "==", false);
 
       const docs = (await challengeRef.get()).docs;
+
+      if (isPremiumUser()) {
+        // user can have up to 8 open games
+        if (docs.length >= 8 || challengeeIds.length >= 5) {
+          return "Too many open games or too many people added to challenge";
+        }
+        // user can start as many games as they want
+        // user can ad upto 4 additional people
+      } else {
+        // user can have up to two open games
+        // look up the other users to make sure they can be added
+        if (docs.length >= 2 || challengeeIds.length >= 3) {
+          return "Too many open games or too many people added to challenge";
+        }
+        // user can only start two games with in 24 hours
+        // user can only add up to two additional peopel
+      }
 
       for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;

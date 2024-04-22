@@ -175,19 +175,19 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
           </div>
           <div className="flex h-fit gap-3">
-            <div className="flex items-center rounded-full bg-yellow-400 p-1 text-xs">
+            <div className="flex items-center border-b-4 border-yellow-400 p-1 text-xs">
               <p>started</p>
             </div>
-            <div className="flex items-center rounded-full bg-gray-400 p-1 text-xs">
+            <div className="flex items-center border-b-4 border-gray-400 p-1 text-xs">
               <p>pending</p>
             </div>
-            <div className="flex items-center rounded-full bg-emerald-400 p-1 text-xs">
+            <div className="flex items-center border-b-4 border-emerald-400 p-1 text-xs">
               <p>done</p>
             </div>
-            <div className="flex items-center rounded-full bg-red-400 p-1 text-center text-xs">
+            <div className="flex items-center border-b-4 border-red-400 p-1 text-center text-xs">
               <p>gave up</p>
             </div>
-            <div className="flex items-center rounded-full bg-neutral-900 p-1 text-xs text-white">
+            <div className="flex items-center border-b-4 border-neutral-900 p-1 text-xs">
               <p>unknown</p>
             </div>
 
