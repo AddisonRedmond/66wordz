@@ -20,10 +20,11 @@ export type ChallengeData = {
   ids: string[];
   id: string;
   creator: string;
-  timeStamp: Date;
+  timeStamp: number;
   winner?: { name: string; id: string };
   players: { friendId: string; friendFullName: string }[];
   gameOver: boolean;
+  viewed?: string[];
 } & { [userId: string]: PlayerData };
 
 const useGetChallengeData = (

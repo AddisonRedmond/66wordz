@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { and, collection, onSnapshot, query, where } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
 import { ChallengeData } from "./useGetChallengeData";
 
@@ -11,14 +11,22 @@ const useGetChallenges = (userId: string | undefined) => {
   useEffect(() => {
     if (!userId) return; // Ensure userId is not undefined
 
-    const q = query(docRef, where("ids", "array-contains", userId));
+    const threeDaysAgo = new Date().getTime() - 72 * 60 * 60 * 1000;
+
+    const q = query(
+      docRef,
+      and(
+        where("ids", "array-contains", userId),
+        where("timeStamp", ">=", threeDaysAgo),
+      ),
+    );
 
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
         const updatedChallenges: ChallengeData[] = [];
         querySnapshot.forEach((doc) => {
-          const challengeData = {...doc.data(), id: doc.id} as ChallengeData;
+          const challengeData = { ...doc.data(), id: doc.id } as ChallengeData;
           updatedChallenges.push(challengeData);
         });
         setChallenges(updatedChallenges);
@@ -26,7 +34,7 @@ const useGetChallenges = (userId: string | undefined) => {
       },
       () => {
         setError(`Error fetching document`);
-      }
+      },
     );
 
     // Handle document removals
@@ -37,9 +45,9 @@ const useGetChallenges = (userId: string | undefined) => {
           setChallenges((prevChallenges) =>
             prevChallenges
               ? prevChallenges.filter(
-                  (challenge) => challenge.id !== change.doc.id
+                  (challenge) => challenge.id !== change.doc.id,
                 )
-              : []
+              : [],
           );
         }
       });

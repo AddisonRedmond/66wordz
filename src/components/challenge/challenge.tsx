@@ -13,7 +13,7 @@ type ChallengeProps = {
 const Challenge: React.FC<ChallengeProps> = (props) => {
   const [infoIsOpen, setInfoIsOpen] = useState(false);
   const { seconds, minutes, hours } = useTimer({
-    expiryTimestamp: new Date(props.challenge.timeStamp),
+    expiryTimestamp: new Date(props.challenge.timeStamp + 86400000),
     autoStart: true,
   });
   function fractionToPercentage(

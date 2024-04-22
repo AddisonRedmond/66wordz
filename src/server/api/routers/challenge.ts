@@ -13,6 +13,7 @@ export const challengeRouter = createTRPCRouter({
 
       const db = initAdmin().firestore();
       // make sure the user either has premium or has free games
+      // make sure the user doesn't already have too many pending games
 
       // check and see if any of the documents.ids already have all of the same ids
 
@@ -37,31 +38,25 @@ export const challengeRouter = createTRPCRouter({
 
       challengeeIds.push(user.id);
 
-
-      const challengeRef = db.collection("challenges")
-      .where("ids", "array-contains-any", challengeeIds)
-      .where("gameOver", "==", false);
+      const challengeRef = db
+        .collection("challenges")
+        .where("ids", "array-contains-any", challengeeIds)
+        .where("gameOver", "==", false);
 
       const docs = (await challengeRef.get()).docs;
 
-      
-      
       for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;
-        console.log(challenge.gameOver)
-        if( arraysContainSameElements(challenge.ids, challengeeIds)){
+        console.log(challenge.gameOver);
+        if (arraysContainSameElements(challenge.ids, challengeeIds)) {
           return "Challenge already exists";
-
         }
-        
       }
-
-      const timeStamp = new Date(new Date().getTime() + 86400000);
 
       ids.push(user.id);
 
       await db.collection("challenges").add({
-        timeStamp: timeStamp.toString(),
+        timeStamp: new Date().getTime(),
         players: [
           ...challengees,
           { friendFullName: user.name, friendId: user.id },
@@ -95,6 +90,16 @@ export const challengeRouter = createTRPCRouter({
       // make sure the 24 hour timer hasn't expired
 
       if (firebaseChallengeData.ids.includes(userId)) {
+        if (firebaseChallengeData.gameOver) {
+          // add the user id to the viewed arr
+          if (firebaseChallengeData.ids.length <= 1) {
+            await challengeRef.delete();
+          } else {
+            await challengeRef.update({
+              ids: firebaseChallengeData.ids.filter((id) => id != userId),
+            });
+          }
+        }
         if (firebaseChallengeData[userId]?.timeStamp) {
           return challengeRef.id;
         }
@@ -186,9 +191,8 @@ export const challengeRouter = createTRPCRouter({
       let userId = "";
       firebaseChallenge.ids.forEach((id) => {
         if (firebaseChallenge[id]?.completed) {
-          const userGuessLength = firebaseChallenge[id]!.guesses!.length
-             
-          
+          const userGuessLength = firebaseChallenge[id]!.guesses!.length;
+
           if (userGuessLength === shortestGuess) {
             // check the duration and add their id and shortest guess to the vars
             const userIdDuration = new Date(
