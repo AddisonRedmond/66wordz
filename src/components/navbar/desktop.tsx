@@ -11,7 +11,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
   props: DesktopNavbarProps,
 ) => {
   return (
-    <div className="sticky top-0 flex h-14 w-screen items-center justify-between px-8">
+    <div className="hidden sticky top-0 sm:flex h-14 w-screen items-center justify-between px-8">
       <div className="cursor-pointer text-4xl font-semibold">
         <Link href="/">
           <p>66</p>

@@ -21,6 +21,7 @@ const useGetChallenges = (userId: string | undefined) => {
       ),
     );
 
+    
     const unsubscribe = onSnapshot(
       q,
       (querySnapshot) => {
