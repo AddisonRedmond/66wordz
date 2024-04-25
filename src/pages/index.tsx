@@ -1,4 +1,3 @@
-import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
@@ -16,9 +15,14 @@ import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
+import {useUser} from "@clerk/nextjs"
 
 const Home = () => {
  
+  const { isSignedIn, user, isLoaded } = useUser();
+
+  console.log(user?.id)
+
 
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
@@ -26,7 +30,7 @@ const Home = () => {
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
   const premiumUser = api.getUser.isPremiumUser.useQuery();
-  const user = api.getUser.getUser.useQuery();
+  const userData = api.getUser.getUser.useQuery();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
 
@@ -57,7 +61,7 @@ const Home = () => {
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
     lobby.remove();
-    user.refetch();
+    userData.refetch();
     // delete user from lobby db
     // delete user from firebase db
   };
@@ -183,11 +187,11 @@ const Home = () => {
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-              {user.isSuccess &&
-                user.data &&
+              {userData.isSuccess &&
+                userData.data &&
                 !premiumUser.data?.isPremiumUser && (
                   <p className="text-lg font-semibold">
-                    {getRemaningGames(user.data)} free games remaning
+                    {getRemaningGames(userData.data)} free games remaning
                   </p>
                 )}
 
@@ -239,6 +243,3 @@ const Home = () => {
 };
 export default Home;
 
-export async function getServerSideProps(context: AuthContext) {
-  return await authRequired(context, false);
-}

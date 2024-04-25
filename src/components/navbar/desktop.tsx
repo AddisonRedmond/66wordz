@@ -1,10 +1,12 @@
-import { signOut } from "next-auth/react";
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
 import Link from "next/link";
+
 type DesktopNavbarProps = {
   isPremiumUser: boolean | undefined;
   handleUpgrade: () => void;
+  handleSignOut: ()=> void;
+
 };
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (
@@ -46,7 +48,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
         </Link>
 
         <button
-          onClick={() => signOut()}
+          onClick={() => props.handleSignOut()}
           className="rounded-md p-2 font-semibold text-black duration-150 ease-in-out hover:bg-gray-500"
         >
           <Image src={signout} alt="signout icon" height={25} />

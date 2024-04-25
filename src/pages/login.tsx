@@ -1,4 +1,3 @@
-import { signIn } from "next-auth/react";
 import Head from "next/head";
 
 import Tile from "~/components/tile";
@@ -6,7 +5,12 @@ import { AuthContext, authRequired } from "~/utils/authRequired";
 import { m } from "framer-motion";
 import Link from "next/link";
 
+import { useSignIn } from "@clerk/clerk-react";
+
+
 export default function Login() {
+  const { isLoaded, signIn } = useSignIn();
+
   return (
     <m.div exit={{ opacity: 0 }}>
       <Head>
@@ -22,7 +26,7 @@ export default function Login() {
         <div className="relative flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <div className="flex items-center gap-10">
             <button
-              onClick={() => signIn()}
+              onClick={() => {}}
               className=" rounded-md border-2 border-[#9462C6] bg-black px-4 text-[4vh] text-white duration-150 ease-in-out hover:bg-zinc-700"
             >
               SIGN IN

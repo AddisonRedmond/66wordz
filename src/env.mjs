@@ -28,6 +28,7 @@ export const env = createEnv({
     FIREBASE_PRIVATE_KEY: z.string(),
     FIREBASE_CLIENT_EMAIL: z.string(),
     CLERK_SECRET_KEY: z.string(),
+    CLERK_SIGNING_SECRET: z.string()
   },
 
   /**
@@ -63,6 +64,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     BOT_SERVER: process.env.BOT_SERVER,
+
+    CLERK_SIGNING_SECRET: process.env.CLERK_SIGNING_SECRET,
 
     FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
     FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
