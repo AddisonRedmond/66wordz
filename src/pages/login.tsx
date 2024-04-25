@@ -1,15 +1,11 @@
 import Head from "next/head";
 
 import Tile from "~/components/tile";
-import { AuthContext, authRequired } from "~/utils/authRequired";
 import { m } from "framer-motion";
 import Link from "next/link";
 
-import { useSignIn } from "@clerk/clerk-react";
-
 
 export default function Login() {
-  const { isLoaded, signIn } = useSignIn();
 
   return (
     <m.div exit={{ opacity: 0 }}>
@@ -50,8 +46,4 @@ export default function Login() {
       </div>
     </m.div>
   );
-}
-
-export async function getServerSideProps(context: AuthContext) {
-  return await authRequired(context, true);
 }
