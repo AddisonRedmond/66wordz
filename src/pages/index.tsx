@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import { AuthContext, authRequired } from "~/utils/authRequired";
 import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
@@ -14,19 +13,12 @@ import JoinLobby from "~/components/join-lobby";
 import { getRemaningGames } from "~/utils/game-limit";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
-import { useRouter } from "next/router";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 
 const Home = () => {
-  const router = useRouter();
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated: () => {
-      router.push("/login");
-    },
-  });
+ 
 
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
@@ -101,7 +93,7 @@ const Home = () => {
           return (
             <Survival
               lobbyId={lobby.data.id}
-              userId={session!.user.id}
+              userId={"session!.user.id"} 
               gameType={lobby.data.gameType}
               exitMatch={() => {
                 setQuitGame(true);
@@ -112,7 +104,7 @@ const Home = () => {
           return (
             <Elimination
               lobbyId={lobby.data.id}
-              userId={session!.user.id}
+              userId={"session!.user.id"}
               gameType={lobby.data.gameType}
               exitMatch={() => {
                 setQuitGame(true);
@@ -187,7 +179,7 @@ const Home = () => {
           )}
         </div>
         <AnimatePresence>
-          {lobby.data?.id && session ? (
+          {lobby.data?.id ? (
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">

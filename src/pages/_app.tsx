@@ -1,6 +1,6 @@
 import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
+import { ClerkProvider } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
@@ -11,18 +11,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
+    <ClerkProvider>
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
         <link rel="icon" href="/favicon.png" />
       </Head>
-        <LazyMotion features={domAnimation}>
-          <div className="flex h-screen flex-col">
-            <Component {...pageProps} />
-          </div>
-        </LazyMotion>
-    </SessionProvider>
+      <LazyMotion features={domAnimation}>
+        <div className="flex h-screen flex-col">
+          <Component {...pageProps} />
+        </div>
+      </LazyMotion>
+    </ClerkProvider>
   );
 };
 
