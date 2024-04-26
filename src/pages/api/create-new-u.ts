@@ -13,7 +13,6 @@ export const config = {
 }
 
 const webhook = async (req:NextApiRequest, res: NextApiResponse) => {
-    console.log("API HIT")
     if(req.method !== "POST"){
         return res.status(405);
     }
@@ -37,7 +36,6 @@ const webhook = async (req:NextApiRequest, res: NextApiResponse) => {
             "svix-timestamp": svix_timestamp,
             "svix-signature": svix_signature,
         }) as WebhookEvent;
-        console.log("WH verified")
      } catch(e) {
         console.log(e)
         return res.status(400).json({Error: e})
@@ -46,7 +44,6 @@ const webhook = async (req:NextApiRequest, res: NextApiResponse) => {
      const user = event.data;
      const eventType = event.type;
 
-     console.log("CREATING USER");
      switch(eventType){
         case "user.created": {
             const count = await db.user.count({
@@ -59,7 +56,7 @@ const webhook = async (req:NextApiRequest, res: NextApiResponse) => {
             if(!count) {
                 await db.user.create({data: {
                     id: user.id,
-                    name: `${event.data.first_name} ${event.data.last_name || ""}`, 
+                    name: `${event.data.first_name} ${event.data.last_name ?? ""}`, 
                     // TODO: ensure email address is included
                     email: event.data.email_addresses[0]!.email_address,
                     image: event.data.image_url,
