@@ -10,7 +10,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.array(z.object({ friendRecordId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+        where: { id: ctx.session.userId },
       });
 
       if (!user) return null;
@@ -98,7 +98,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.object({ challengeId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // create a firebase document with an id of the challenge id
-      const userId = ctx.session.user.id;
+      const userId = ctx.session.userId;
       //   look up the challenge
       const db = initAdmin().firestore();
 
@@ -144,7 +144,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       // get the challenge id
-      const userId = ctx.session.user.id;
+      const userId = ctx.session.userId;
       //   look up the challenge
       const db = initAdmin().firestore();
 

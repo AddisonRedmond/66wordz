@@ -21,9 +21,6 @@ const Home = () => {
  
   const { isSignedIn, user, isLoaded } = useUser();
 
-  console.log(user?.id)
-
-
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();

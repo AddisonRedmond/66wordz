@@ -15,7 +15,7 @@ export const checkoutRouter = createTRPCRouter({
       payment_method_types: ["card", "us_bank_account"],
       mode: "subscription",
       metadata: {
-        userId: ctx.session.user.id,
+        userId: ctx.session.userId,
       },
       line_items: [
         {
@@ -32,7 +32,7 @@ export const checkoutRouter = createTRPCRouter({
   }),
   cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session.user.id },
+      where: { id: ctx.session.userId },
     });
     if (user?.cancelAtPeriodEnd === null || user?.cancelAtPeriodEnd === true) {
       return;
@@ -44,7 +44,7 @@ export const checkoutRouter = createTRPCRouter({
     });
 
     const subscriptionId = await ctx.db.user.findUnique({
-      where: { id: ctx.session.user.id },
+      where: { id: ctx.session.userId },
     });
 
     if (!subscriptionId?.subscriptionId) {
@@ -55,14 +55,14 @@ export const checkoutRouter = createTRPCRouter({
       subscriptionId?.subscriptionId,
       {
         metadata: {
-          userId: ctx.session.user.id,
+          userId: ctx.session.userId,
         },
         cancel_at_period_end: true,
       },
     );
 
     await ctx.db.user.update({
-      where: { id: ctx.session.user.id },
+      where: { id: ctx.session.userId },
       data: { cancelAtPeriodEnd: true },
     });
 

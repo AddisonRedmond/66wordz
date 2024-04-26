@@ -6,7 +6,11 @@ export const friendsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // check if input exists
 
-      const currentUser = ctx.session.user;
+      const currentUser = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+
+      if(!currentUser){
+        return "Not authed"
+      }
 
       if (input.email === currentUser.email) {
         return {
@@ -63,7 +67,12 @@ export const friendsRouter = createTRPCRouter({
     }),
 
   allRequests: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.session.user;
+
+    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+
+    if(!user){
+      return "Not authed"
+    }    
     const requests = await ctx.db.requests.findMany({
       where: { friendId: user.id, accepted: false },
     });
@@ -71,7 +80,11 @@ export const friendsRouter = createTRPCRouter({
   }),
 
   allPending: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.session.user;
+    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+
+    if(!user){
+      return "Not authed"
+    }   
 
     const allPendingRequests = await ctx.db.requests.findMany({
       where: { userId: user.id, accepted: false },
@@ -81,7 +94,11 @@ export const friendsRouter = createTRPCRouter({
   }),
 
   allFriends: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.session.user;
+    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+
+    if(!user){
+      return "Not authed"
+    }   
 
     const allFriends = await ctx.db.friends.findMany({
       where: {
@@ -95,20 +112,24 @@ export const friendsRouter = createTRPCRouter({
   handleFriendRequest: protectedProcedure
     .input(z.object({ requestId: z.string(), accept: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user;
+      const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+
+    if(!user){
+      return "Not authed"
+    }   
 
       const request = await ctx.db.requests.findUnique({
         where: { id: input.requestId },
       });
 
-      if (request?.friendId === userId.id) {
+      if (request?.friendId === user.id) {
         if (input.accept) {
           const newFriend = await ctx.db.friend.create({ data: {} });
           await ctx.db.friends.createMany({
             data: [
               {
                 sharedId: newFriend.id,
-                userId: userId.id,
+                userId: user.id,
                 friendFullName: request.userFullName,
                 friendId: request.userId,
                 friendImage: request.userImage,
@@ -116,9 +137,9 @@ export const friendsRouter = createTRPCRouter({
               {
                 sharedId: newFriend.id,
                 userId: request.userId,
-                friendFullName: userId.name!,
-                friendId: userId.id,
-                friendImage: userId.image,
+                friendFullName: user.name!,
+                friendId: user.id,
+                friendImage: user.image,
               },
             ],
           });
@@ -133,13 +154,16 @@ export const friendsRouter = createTRPCRouter({
   rejectFriendRequest: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
-      const userId = ctx.session.user;
+      const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
+    if(!user){
+      return "Not authed"
+    }   
       const request = await ctx.db.requests.findUnique({
         where: { id: input },
       });
 
-      if (request?.friendId === userId.id) {
+      if (request?.friendId === user.id) {
         await ctx.db.requests.delete({ where: { id: request.id } });
       }
     }),
@@ -147,13 +171,12 @@ export const friendsRouter = createTRPCRouter({
   removeFriend: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
-      const user = ctx.session.user.id;
 
       const friendRecord = await ctx.db.friends.findUnique({
         where: { id: input },
       });
 
-      if (friendRecord?.userId === user) {
+      if (friendRecord?.userId === ctx.auth.userId) {
         await ctx.db.friend.delete({ where: { id: friendRecord.sharedId } });
       }
     }),
