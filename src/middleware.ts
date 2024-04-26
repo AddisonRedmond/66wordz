@@ -5,9 +5,9 @@ import {
 
 const isProtectedRoute = createRouteMatcher([
   '/',
-  '/challenges/',
-  '/friends',
-  '/profile',
+  '/challenges(.*)',
+  '/friends(.*)',
+  '/profile(.*)',
   
 ]);
 

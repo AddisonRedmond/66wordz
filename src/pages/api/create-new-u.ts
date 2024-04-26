@@ -59,7 +59,7 @@ const webhook = async (req:NextApiRequest, res: NextApiResponse) => {
             if(!count) {
                 await db.user.create({data: {
                     id: user.id,
-                    name: `${event.data.first_name} ${event.data.last_name}`, 
+                    name: `${event.data.first_name} ${event.data.last_name || ""}`, 
                     // TODO: ensure email address is included
                     email: event.data.email_addresses[0]!.email_address,
                     image: event.data.image_url,

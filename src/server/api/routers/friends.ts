@@ -9,7 +9,7 @@ export const friendsRouter = createTRPCRouter({
       const currentUser = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
       if(!currentUser){
-        return "Not authed"
+        return {success: false, message: "Not authed"}
       }
 
       if (input.email === currentUser.email) {
@@ -71,8 +71,8 @@ export const friendsRouter = createTRPCRouter({
     const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
     if(!user){
-      return "Not authed"
-    }    
+      return 
+    }
     const requests = await ctx.db.requests.findMany({
       where: { friendId: user.id, accepted: false },
     });
@@ -83,8 +83,8 @@ export const friendsRouter = createTRPCRouter({
     const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
     if(!user){
-      return "Not authed"
-    }   
+      return
+    }
 
     const allPendingRequests = await ctx.db.requests.findMany({
       where: { userId: user.id, accepted: false },
@@ -96,10 +96,11 @@ export const friendsRouter = createTRPCRouter({
   allFriends: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
-    if(!user){
-      return "Not authed"
-    }   
+  
 
+    if(!user){
+      return 
+    }
     const allFriends = await ctx.db.friends.findMany({
       where: {
         userId: user.id,
@@ -114,9 +115,10 @@ export const friendsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
-    if(!user){
-      return "Not authed"
-    }   
+
+      if(!user){
+        return 
+      }
 
       const request = await ctx.db.requests.findUnique({
         where: { id: input.requestId },
@@ -156,9 +158,10 @@ export const friendsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
 
-    if(!user){
-      return "Not authed"
-    }   
+
+      if(!user){
+        return 
+      }
       const request = await ctx.db.requests.findUnique({
         where: { id: input },
       });

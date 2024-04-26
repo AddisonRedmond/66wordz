@@ -1,5 +1,3 @@
-import { getSession } from "next-auth/react";
-import { GetServerSideProps } from "next/types";
 import Header from "~/components/hearder";
 import Navbar from "~/components/navbar/navbar";
 import { api } from "~/utils/api";
@@ -9,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import RequestBadge from "~/components/friends/request-badge";
 import PendingBadge from "~/components/friends/pending-badge";
 import FriendBadge from "~/components/friends/friend-badge";
+import { useUser } from "@clerk/nextjs";
 
 const Friends = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
@@ -19,6 +18,9 @@ const Friends = () => {
   const friends = api.friends.allFriends.useQuery();
   const acceptRequest = api.friends.handleFriendRequest.useMutation();
   const removeFriend = api.friends.removeFriend.useMutation();
+  const { isSignedIn, user, isLoaded } = useUser();
+
+  console.log(user?.id)
 
   const [requestType, setRequestType] = useState<
     "friend" | "pending" | "request"
@@ -34,7 +36,7 @@ const Friends = () => {
       const message = await addFriend.mutateAsync({
         email: inputRef.current.value,
       });
-      if (message.success) {
+      if (message?.success) {
         toast.success(message.message);
         sent.refetch();
       } else {
@@ -161,18 +163,3 @@ const Friends = () => {
 
 export default Friends;
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};
