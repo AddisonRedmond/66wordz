@@ -31,6 +31,12 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
     gameFinshed.mutate(challengeId);
   };
 
+  const handleGiveUp = (challengeId: string) => {
+    props.handleGiveUp(props.challengeId);
+    handleGameFinished(challengeId);
+
+  }
+
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
 
@@ -126,7 +132,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
             {!data?.[props.userId]?.completed && (
               <button
                 onClick={() => {
-                  props.handleGiveUp(props.challengeId);
+                  handleGiveUp(props.challengeId);
                 }}
                 className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
               >

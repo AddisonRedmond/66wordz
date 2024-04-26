@@ -167,6 +167,8 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.completed`]: false,
             [`${userId}.success`]: false,
           });
+
+          firebaseChallengeData
         } else {
           // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
