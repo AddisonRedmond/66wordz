@@ -16,6 +16,8 @@ import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import {useUser} from "@clerk/nextjs"
+import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
+import { GetServerSideProps } from "next";
 
 const Home = () => {
  
@@ -240,3 +242,18 @@ const Home = () => {
 };
 export default Home;
 
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
+  if (!userId) {
+    // send user to login
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: { ...buildClerkProps(ctx.req) } };
+};
