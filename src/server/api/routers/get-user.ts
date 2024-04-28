@@ -8,7 +8,7 @@ export const getUserRouter = createTRPCRouter({
       where: { id: userId },
     });
 
-    if (userData.currentPeriodEnd === null) return { isPremiumUser: false };
+    if (userData?.currentPeriodEnd === null) return { isPremiumUser: false };
 
     return {
       isPremiumUser: userData.currentPeriodEnd > Date.now() / 1000,
