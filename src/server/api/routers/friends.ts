@@ -7,6 +7,7 @@ export const friendsRouter = createTRPCRouter({
       // check if input exists
 
       const currentUser = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+      console.log(currentUser)
 
       if(!currentUser){
         return {success: false, message: "Not authed"}
@@ -95,8 +96,6 @@ export const friendsRouter = createTRPCRouter({
 
   allFriends: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
-
-  
 
     if(!user){
       return 
