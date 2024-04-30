@@ -8,14 +8,12 @@
  */
 import { getAuth } from "@clerk/nextjs/server";
 
-
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
-
 
 /**
  * 1. CONTEXT
@@ -53,10 +51,9 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-
   // Get the session from the server using the getServerSession wrapper function
 
-  return {db: db, auth: getAuth(opts.req)};
+  return { db: db, auth: getAuth(opts.req) };
 };
 
 /**
