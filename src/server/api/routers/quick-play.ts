@@ -26,14 +26,14 @@ export const quickPlayRouter = createTRPCRouter({
       const gameMode = input.gameMode as GameType;
 
       const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+        where: { id: ctx.session.userId },
       });
       // check if user is premium user, if they are, proceed
       if (isPremiumUser(user!) === false) {
         if (hasBeen24Hours(user!)) {
           // reset the timestamp to today at 12:00am and reset the free game count to 1
           await ctx.db.user.update({
-            where: { id: ctx.session.user.id },
+            where: { id: ctx.session.userId },
             data: {
               freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
               freeGameCount: 0,
@@ -53,7 +53,7 @@ export const quickPlayRouter = createTRPCRouter({
         lobbyId: string;
       } | null = await ctx.db.players.findUnique({
         where: {
-          userId: ctx.session.user.id,
+          userId: ctx.session.userId,
         },
       });
 
@@ -101,8 +101,7 @@ export const quickPlayRouter = createTRPCRouter({
                   body: JSON.stringify({ lobbyId: newLobby.id }),
                 },
               );
-            } catch (e) {
-            }
+            } catch (e) {}
             break;
 
           case "ELIMINATION":
@@ -115,8 +114,7 @@ export const quickPlayRouter = createTRPCRouter({
                   body: JSON.stringify({ lobbyId: newLobby.id }),
                 },
               );
-            } catch (e) {
-            }
+            } catch (e) {}
         }
 
         return newLobby;
@@ -124,11 +122,16 @@ export const quickPlayRouter = createTRPCRouter({
 
       const joinLobby = async (lobbyId: string) => {
         // lobby is actually coming from player, should be named player lobby
-        const userId = ctx.session.user.id;
+        const user = await ctx.db.user.findUnique({
+          where: { id: ctx.session.userId },
+        });
+        if(!user){
+          return
+        }
         const player: { userId: string; lobbyId: string } =
           await ctx.db.players.create({
             data: {
-              userId: userId,
+              userId: user?.id,
               lobbyId: lobbyId,
             },
           });
@@ -137,15 +140,15 @@ export const quickPlayRouter = createTRPCRouter({
           case "SURVIVAL":
             joinSurivivalLobby(
               player.lobbyId,
-              userId,
-              ctx.session.user.name ?? "N/A",
+              user.id,
+              user.name ?? "N/A",
             );
 
           case "ELIMINATION":
             joinEliminationLobby(
-              userId,
+              user.id,
               player.lobbyId,
-              ctx.session.user.name ?? "N/A",
+              user.name ?? "N/A",
             );
         }
 
@@ -192,7 +195,7 @@ export const quickPlayRouter = createTRPCRouter({
     }),
 
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
-    const user = ctx.session.user.id;
+    const user = ctx.session.userId;
     const { lobbyId } = await ctx.db.players.delete({
       where: { userId: user },
     });
@@ -226,5 +229,4 @@ export const quickPlayRouter = createTRPCRouter({
       return;
     }
   }),
-  
 });

@@ -133,7 +133,9 @@ const Elimination: React.FC<EliminationProps> = ({
       }
     }
   };
-
+  console.log(gameData);
+  console.log(playerData);
+  console.log(userId);
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
   if (gameData && playerData && userId) {
     return (
