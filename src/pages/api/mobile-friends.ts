@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAuth } from "@clerk/nextjs/server";
+import { db } from "~/server/db";
 
 export default async function GET(req: NextApiRequest, res: NextApiResponse) {
   // If there is no signed in user, this will return a 404 error
@@ -11,13 +12,10 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
 
   console.log(userId);
+
   // Add your Route Handler logic here
 
-  res.status(200).json("Hello from Next.js!");
+  res
+    .status(200)
+    .json(await db.friends.findMany({ where: { userId: userId } }));
 }
-
-// export default function handler(req: NextApiRequest, res: NextApiResponse) {
-//   auth().protect();
-
-//   res.status(200).json({ message: "Hello from Next.js!" });
-// }

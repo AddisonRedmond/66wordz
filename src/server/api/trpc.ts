@@ -23,10 +23,6 @@ import { db } from "~/server/db";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-// interface AuthContext {
-//   auth: SignedInAuthObject | SignedOutAuthObject
-// }
-
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
  * it from here.
@@ -37,12 +33,6 @@ import { db } from "~/server/db";
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-// const createInnerTRPCContext = ({ auth }) => {
-//   return {
-//     db,
-//     auth
-//   };
-// };
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
