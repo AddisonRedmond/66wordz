@@ -4,25 +4,9 @@ import Tile from "~/components/tile";
 import { m } from "framer-motion";
 import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
-import { firebaseAuth } from "~/utils/firebase/firebase";
 import { GetServerSideProps } from "next";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
-import { useAuth } from "@clerk/nextjs";
-import { signInWithCustomToken } from "firebase/auth";
 export default function Login() {
-  const { getToken } = useAuth();
-  const signInWithClerk = async () => {
-    console.log("Sign in with clerk");
-    const token = await getToken({ template: "integration_firebase" });
-    console.log(token);
-    // const userCredentials = await signInWithCustomToken(
-    //   firebaseAuth,
-    //   token || "",
-    // );
-    // The userCredentials.user object can call the methods of
-    // the Firebase platform as an authenticated user.
-    // console.log("User:", userCredentials.user);
-  };
   return (
     <m.div exit={{ opacity: 0 }}>
       <Head>
@@ -37,14 +21,11 @@ export default function Login() {
         </div>
         <div className="relative flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <div className="flex items-center gap-10">
-            {/* <SignInButton> */}
-            <button
-              onClick={() => signInWithClerk()}
-              className=" rounded-md border-2 border-[#9462C6] bg-black px-4 text-[4vh] text-white duration-150 ease-in-out hover:bg-zinc-700"
-            >
-              SIGN IN
-            </button>
-            {/* </SignInButton> */}
+            <SignInButton>
+              <button className=" rounded-md border-2 border-[#9462C6] bg-black px-4 text-[4vh] text-white duration-150 ease-in-out hover:bg-zinc-700">
+                SIGN IN
+              </button>
+            </SignInButton>
           </div>
           <div className=" absolute bottom-2 flex w-full justify-around text-sm text-zinc-600">
             <Link className="... w-1/5 truncate" href="terms-of-service">
