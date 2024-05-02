@@ -33,7 +33,7 @@ export default function Login() {
             </Link>
             <Link className="... w-1/5 truncate" href="privacy">
               Privacy Policy
-            </Link>
+            </Link> 
             <Link className="... w-1/5 truncate" href="refund">
               Refund Policy
             </Link>
