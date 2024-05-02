@@ -36,6 +36,7 @@ export default async function handler(
 ) {
   await runMiddleware(req, res, cors);
 
+  console.log("HEADERS " + JSON.stringify(req.headers))
   if(req.body !== "POST") {
     return res.status(405);
   }

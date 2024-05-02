@@ -20,7 +20,7 @@ import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 
 const Home = () => {
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { isSignedIn, user, isLoaded,  } = useUser();
 
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
