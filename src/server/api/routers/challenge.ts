@@ -168,7 +168,7 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.success`]: false,
           });
 
-          firebaseChallengeData
+          firebaseChallengeData;
         } else {
           // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
@@ -258,5 +258,29 @@ export const challengeRouter = createTRPCRouter({
       // if they have,
       // find the person who completed it in the fewest guesses,
       // if theres a tie, pick the person who guessed in the least amount of time
+    }),
+  gameFinished: protectedProcedure
+
+    .input(
+      z.object({
+        challengeId: z.string(),
+        userId: z.string(),
+        completed: z.boolean(),
+        success: z.boolean(),
+        guesses: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = initAdmin().firestore();
+
+      const challengeRef = db.doc(`challenges/${input.challengeId}`);
+      const userId = ctx.session.userId;
+      await challengeRef.update({
+        [`${userId}.guesses`]: input.guesses,
+        [`${userId}.completed`]: input.completed,
+        [`${userId}.success`]: input.success,
+        [`${userId}.endTimeStamp`]: new Date().toString(),
+      });
+      // update the users challenge document
     }),
 });
