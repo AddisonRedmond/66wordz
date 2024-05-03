@@ -1,22 +1,14 @@
-import { GetServerSideProps, NextPage } from "next/types";
+import { NextPage } from "next/types";
 import Header from "~/components/hearder";
 import { api } from "~/utils/api";
 import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
-import { getSession, useSession } from "next-auth/react";
 import Navbar from "~/components/navbar/navbar";
-import { useRouter } from "next/router";
 
 const Profile: NextPage = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
 
-  const router = useRouter();
-  useSession({
-    required: true,
-    onUnauthenticated: () => {
-      router.push("/login");
-    },
-  });
+
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
 
@@ -41,7 +33,11 @@ const Profile: NextPage = () => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
         <Toaster />
-        <Header isLoading={false} desktopOnly={false} isPremiumUser={premiumUser.data?.isPremiumUser} />
+        <Header
+          isLoading={false}
+          desktopOnly={false}
+          isPremiumUser={premiumUser.data?.isPremiumUser}
+        />
         <div className="font-medium">
           {user.data?.image && (
             <Image
@@ -84,19 +80,3 @@ const Profile: NextPage = () => {
 };
 
 export default Profile;
-
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};

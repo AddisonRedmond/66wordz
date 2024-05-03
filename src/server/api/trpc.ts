@@ -8,14 +8,12 @@
  */
 import { getAuth } from "@clerk/nextjs/server";
 
-
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
-
 
 /**
  * 1. CONTEXT
@@ -24,10 +22,6 @@ import { db } from "~/server/db";
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
-
-// interface AuthContext {
-//   auth: SignedInAuthObject | SignedOutAuthObject
-// }
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -39,12 +33,6 @@ import { db } from "~/server/db";
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-// const createInnerTRPCContext = ({ auth }) => {
-//   return {
-//     db,
-//     auth
-//   };
-// };
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
@@ -53,10 +41,9 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-
   // Get the session from the server using the getServerSession wrapper function
 
-  return {db: db, auth: getAuth(opts.req)};
+  return { db: db, auth: getAuth(opts.req) };
 };
 
 /**

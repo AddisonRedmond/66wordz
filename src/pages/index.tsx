@@ -15,13 +15,12 @@ import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
-import {useUser} from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 
 const Home = () => {
- 
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { isSignedIn, user, isLoaded,  } = useUser();
 
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
@@ -90,13 +89,13 @@ const Home = () => {
   };
 
   const handleStartGame = () => {
-    if (lobby.data) {
+    if (lobby.data && user) {
       switch (lobby.data.gameType) {
         case "SURVIVAL":
           return (
             <Survival
               lobbyId={lobby.data.id}
-              userId={"session!.user.id"} 
+              userId={user.id}
               gameType={lobby.data.gameType}
               exitMatch={() => {
                 setQuitGame(true);
@@ -107,7 +106,7 @@ const Home = () => {
           return (
             <Elimination
               lobbyId={lobby.data.id}
-              userId={"session!.user.id"}
+              userId={user.id}
               gameType={lobby.data.gameType}
               exitMatch={() => {
                 setQuitGame(true);
@@ -241,7 +240,6 @@ const Home = () => {
   );
 };
 export default Home;
-
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);

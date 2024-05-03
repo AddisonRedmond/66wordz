@@ -2,7 +2,7 @@ import { useTimer } from "react-timer-hook";
 import Tile from "./tile";
 import Image from "next/image";
 import copy from "../../public/copy.svg";
-
+import toast, { Toaster } from "react-hot-toast";
 type LoadingGameProps = {
   expiryTimestamp: Date;
   gameOwner?: string;
@@ -16,13 +16,19 @@ type LoadingGameProps = {
 const LoadingCustomGame = (
   props: Omit<LoadingGameProps, "expiryTimestamp">,
 ) => {
+  const notify = () => toast.success("Copied!", { id: "clipboard" });
+
   return (
     <div className="text-center font-semibold">
+      <Toaster />
+
       <div className="flex items-center justify-center gap-3">
         <p className="text-lg font-semibold">Lobby ID: {props.lobbyId}</p>
         <Image
+          className="cursor-pointer"
           onClick={() => {
             navigator.clipboard.writeText(props.lobbyId);
+            notify();
           }}
           width={20}
           src={copy}
