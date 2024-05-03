@@ -6,21 +6,6 @@ import {
 } from "firebase/firestore";
 import { handleMatched, Matches } from "./game";
 
-export const handleCorrectGuess = async (
-  userId: string,
-  documentReference: DocumentReference<DocumentData, DocumentData>,
-) => {
-  // add finish date and time
-  await updateDoc(documentReference, {
-    [`${userId}.endTimeStamp`]: new Date(), // Append guess to the array
-    [`${userId}.completed`]: true,
-    [`${userId}.success`]: true,
-  });
-
-  // add completed field: true
-  // add success field: true
-};
-
 export const handleGuess = async (
   handleGameFinished: () => void,
   userId: string,
