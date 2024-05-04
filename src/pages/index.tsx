@@ -16,13 +16,12 @@ import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import { useUser } from "@clerk/nextjs";
-import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
+import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 
 const Home = () => {
-  const { isSignedIn, user, isLoaded,  } = useUser();
+  const { user } = useUser();
 
-  console.log(user)
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
@@ -244,8 +243,10 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
+
+  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
   if (!userId) {
-    // send user to login
+    // send user to index
     return {
       redirect: {
         destination: "/login",
@@ -254,5 +255,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  return { props: { ...buildClerkProps(ctx.req) } };
+  return { props: { ...buildClerkProps(ctx.req, { user }) } };
 };

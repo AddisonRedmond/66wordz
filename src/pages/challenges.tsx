@@ -15,10 +15,8 @@ import ChallengeBoard from "~/components/challenge/challenge-board";
 
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
+  const { user } = useUser();
 
-  const { isSignedIn, user, isLoaded } = useUser();
-
-  
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const friends = api.friends.allFriends.useQuery();
 
@@ -221,4 +219,3 @@ const Challenges: NextPage = () => {
 };
 
 export default Challenges;
-

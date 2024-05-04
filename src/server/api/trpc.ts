@@ -40,7 +40,7 @@ import { db } from "~/server/db";
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
   // Get the session from the server using the getServerSession wrapper function
 
   return { db: db, auth: getAuth(opts.req) };

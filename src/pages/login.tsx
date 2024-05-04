@@ -5,7 +5,7 @@ import { m } from "framer-motion";
 import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
 import { GetServerSideProps } from "next";
-import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
+import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
 export default function Login() {
   return (
     <m.div exit={{ opacity: 0 }}>
@@ -33,7 +33,7 @@ export default function Login() {
             </Link>
             <Link className="... w-1/5 truncate" href="privacy">
               Privacy Policy
-            </Link> 
+            </Link>
             <Link className="... w-1/5 truncate" href="refund">
               Refund Policy
             </Link>
@@ -51,6 +51,8 @@ export default function Login() {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
+
+  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
   if (userId) {
     // send user to index
     return {
@@ -61,5 +63,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  return { props: { ...buildClerkProps(ctx.req) } };
+  return { props: { ...buildClerkProps(ctx.req, { user }) } };
 };
