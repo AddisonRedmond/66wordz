@@ -16,8 +16,8 @@ import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import { useUser } from "@clerk/nextjs";
-import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
-import { GetServerSideProps } from "next";
+// import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
+// import { GetServerSideProps } from "next";
 
 const Home = () => {
   const { user } = useUser();
@@ -241,19 +241,19 @@ const Home = () => {
 };
 export default Home;
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { userId } = getAuth(ctx.req);
+// export const getServerSideProps: GetServerSideProps = async (ctx) => {
+//   const { userId } = getAuth(ctx.req);
 
-  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
-  if (!userId) {
-    // send user to index
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
+//   const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+//   if (!userId) {
+//     // send user to index
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  return { props: { ...buildClerkProps(ctx.req, { user }) } };
-};
+//   return { props: { ...buildClerkProps(ctx.req, { user }) } };
+// };
