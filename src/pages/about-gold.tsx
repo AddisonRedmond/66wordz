@@ -1,5 +1,5 @@
-import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { SignInButton } from "@clerk/nextjs";
 
 const AboutGold = () => {
   return (
@@ -8,12 +8,11 @@ const AboutGold = () => {
         <Link href="/login" className="cursor-pointer text-4xl font-semibold">
           66
         </Link>
-        <button
-          onClick={() => signIn()}
-          className="rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
-        >
-          SIGN IN
-        </button>
+        <SignInButton>
+          <button className="rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700">
+            SIGN IN
+          </button>
+        </SignInButton>
       </div>
       <main className="prose mx-auto flex max-w-[1000px] flex-grow flex-col">
         <h1>66wordz Gold</h1>

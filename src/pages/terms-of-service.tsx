@@ -1,4 +1,4 @@
-import { signIn } from "next-auth/react";
+import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const TermsOfService = () => {
@@ -8,23 +8,22 @@ const TermsOfService = () => {
         <Link href="/login" className="cursor-pointer text-4xl font-semibold">
           66
         </Link>
-        <button
-          onClick={() => signIn()}
-          className=" rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
-        >
-          SIGN IN
-        </button>
+        <SignInButton>
+          <button className=" rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700">
+            SIGN IN
+          </button>
+        </SignInButton>
       </div>
       <main className="prose mx-auto flex max-w-[1000px] flex-grow flex-col">
         <h1>66wordz - Terms of Service</h1>
         <h2>Last Updated: 3/25/2024</h2>
         <h3>Welcome to 66wordz!</h3>
         <p>
-          These Terms of Service  (&quot;Terms&quot;) govern your access to and use of the
-          66wordz application (&quot;App&quot;), including any content, functionality, and
-          services offered through the App. By accessing or using the App, you
-          agree to be bound by these Terms. If you do not agree to these Terms,
-          please do not access or use the App.
+          These Terms of Service (&quot;Terms&quot;) govern your access to and
+          use of the 66wordz application (&quot;App&quot;), including any
+          content, functionality, and services offered through the App. By
+          accessing or using the App, you agree to be bound by these Terms. If
+          you do not agree to these Terms, please do not access or use the App.
         </p>
         <h3>1. Acceptance of Terms</h3>
         <p>
@@ -80,10 +79,11 @@ const TermsOfService = () => {
         </p>
         <h3>7. Disclaimer of Warranties</h3>
         <p className="m-0">
-          THE APP IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT ANY WARRANTIES
-          OF ANY KIND, EXPRESS OR IMPLIED. 66WORDZ DISCLAIMS ALL WARRANTIES,
-          INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-          PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+          THE APP IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot;
+          WITHOUT ANY WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. 66WORDZ
+          DISCLAIMS ALL WARRANTIES, INCLUDING THE IMPLIED WARRANTIES OF
+          MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+          NON-INFRINGEMENT.
         </p>
         <h3>8. Limitation of Liability</h3>
         <p className="m-0">

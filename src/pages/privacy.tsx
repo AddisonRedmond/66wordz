@@ -1,4 +1,4 @@
-import { signIn } from "next-auth/react";
+import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const PrivacyPolicy = () => {
@@ -8,12 +8,11 @@ const PrivacyPolicy = () => {
         <Link href="/login" className="cursor-pointer text-4xl font-semibold">
           66
         </Link>
-        <button
-          onClick={() => signIn()}
-          className="rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700"
-        >
-          SIGN IN
-        </button>
+        <SignInButton>
+          <button className="rounded-md bg-black p-2 text-2xl text-white duration-150 ease-in-out hover:bg-zinc-700">
+            SIGN IN
+          </button>
+        </SignInButton>
       </div>
       <main className="prose mx-auto flex max-w-[1000px] flex-grow flex-col">
         <h1>66wordz - Privacy Policy</h1>
@@ -21,8 +20,9 @@ const PrivacyPolicy = () => {
 
         <p>
           Your privacy is important to us. This Privacy Policy explains how
-          66wordz (&quot;we&quot; or &quot;us&quot;) collects, uses, and discloses information when
-          you use our application, 66wordz (the &quot;App&quot;).
+          66wordz (&quot;we&quot; or &quot;us&quot;) collects, uses, and
+          discloses information when you use our application, 66wordz (the
+          &quot;App&quot;).
         </p>
 
         <h3>1. Information We Collect</h3>
@@ -34,16 +34,17 @@ const PrivacyPolicy = () => {
 
         <ul>
           <li>
-            1.1. Google: Information provided by Google&apos;s OAuth2 authentication,
-            such as your name, email address, profile picture, and any other
-            information you have made publicly available on your Google account.
+            1.1. Google: Information provided by Google&apos;s OAuth2
+            authentication, such as your name, email address, profile picture,
+            and any other information you have made publicly available on your
+            Google account.
           </li>
 
           <li>
-            1.2. Twitch: Information provided by Twitch&apos;s OAuth2 authentication,
-            such as your Twitch username, display name, profile picture, and any
-            other information you have made publicly available on your Twitch
-            account.
+            1.2. Twitch: Information provided by Twitch&apos;s OAuth2
+            authentication, such as your Twitch username, display name, profile
+            picture, and any other information you have made publicly available
+            on your Twitch account.
           </li>
 
           <li>
@@ -106,8 +107,7 @@ const PrivacyPolicy = () => {
         <p className="m-0">
           If you have any questions or concerns about this Privacy Policy,
           please contact us at{" "}
-          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>
-          .
+          <span className="font-semibold">hosanna_golfers_0o@icloud.com</span>.
         </p>
 
         <p>

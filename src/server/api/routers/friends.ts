@@ -6,11 +6,13 @@ export const friendsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // check if input exists
 
-      const currentUser = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
-      console.log(currentUser)
+      const currentUser = await ctx.db.user.findUnique({
+        where: { id: ctx.session.userId },
+      });
+      console.log(currentUser);
 
-      if(!currentUser){
-        return {success: false, message: "Not authed"}
+      if (!currentUser) {
+        return { success: false, message: "Not authed" };
       }
 
       if (input.email === currentUser.email) {
@@ -68,11 +70,12 @@ export const friendsRouter = createTRPCRouter({
     }),
 
   allRequests: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.userId },
+    });
 
-    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
-
-    if(!user){
-      return 
+    if (!user) {
+      return;
     }
     const requests = await ctx.db.requests.findMany({
       where: { friendId: user.id, accepted: false },
@@ -81,10 +84,12 @@ export const friendsRouter = createTRPCRouter({
   }),
 
   allPending: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.userId },
+    });
 
-    if(!user){
-      return
+    if (!user) {
+      return;
     }
 
     const allPendingRequests = await ctx.db.requests.findMany({
@@ -95,10 +100,12 @@ export const friendsRouter = createTRPCRouter({
   }),
 
   allFriends: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+    const user = await ctx.db.user.findUnique({
+      where: { id: ctx.session.userId },
+    });
 
-    if(!user){
-      return 
+    if (!user) {
+      return;
     }
     const allFriends = await ctx.db.friends.findMany({
       where: {
@@ -112,11 +119,12 @@ export const friendsRouter = createTRPCRouter({
   handleFriendRequest: protectedProcedure
     .input(z.object({ requestId: z.string(), accept: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
-      const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.userId },
+      });
 
-
-      if(!user){
-        return 
+      if (!user) {
+        return;
       }
 
       const request = await ctx.db.requests.findUnique({
@@ -138,7 +146,7 @@ export const friendsRouter = createTRPCRouter({
               {
                 sharedId: newFriend.id,
                 userId: request.userId,
-                friendFullName: user.name!,
+                friendFullName: user.name,
                 friendId: user.id,
                 friendImage: user.image,
               },
@@ -155,11 +163,12 @@ export const friendsRouter = createTRPCRouter({
   rejectFriendRequest: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
-      const user = await ctx.db.user.findUnique({where: {id: ctx.session.userId}})
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.userId },
+      });
 
-
-      if(!user){
-        return 
+      if (!user) {
+        return;
       }
       const request = await ctx.db.requests.findUnique({
         where: { id: input },
@@ -173,7 +182,6 @@ export const friendsRouter = createTRPCRouter({
   removeFriend: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
-
       const friendRecord = await ctx.db.friends.findUnique({
         where: { id: input },
       });

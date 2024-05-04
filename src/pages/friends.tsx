@@ -7,7 +7,6 @@ import toast, { Toaster } from "react-hot-toast";
 import RequestBadge from "~/components/friends/request-badge";
 import PendingBadge from "~/components/friends/pending-badge";
 import FriendBadge from "~/components/friends/friend-badge";
-import { useUser } from "@clerk/nextjs";
 
 const Friends = () => {
   const premiumUser = api.getUser.isPremiumUser.useQuery();
@@ -18,9 +17,6 @@ const Friends = () => {
   const friends = api.friends.allFriends.useQuery();
   const acceptRequest = api.friends.handleFriendRequest.useMutation();
   const removeFriend = api.friends.removeFriend.useMutation();
-  const { isSignedIn, user, isLoaded } = useUser();
-
-  console.log(user?.id)
 
   const [requestType, setRequestType] = useState<
     "friend" | "pending" | "request"
@@ -162,4 +158,3 @@ const Friends = () => {
 };
 
 export default Friends;
-
