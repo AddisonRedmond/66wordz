@@ -35,6 +35,11 @@ export default async function handler(
   res: NextApiResponse<ResponseData>,
 ) {
   await runMiddleware(req, res, cors);
+
+  console.log("HEADERS " + JSON.stringify(req.headers))
+  if(req.body !== "POST") {
+    return res.status(405);
+  }
   const data = JSON.parse(req.body);
   const lobbyId = data.lobbyId;
 

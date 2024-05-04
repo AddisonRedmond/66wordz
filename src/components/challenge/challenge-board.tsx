@@ -25,10 +25,29 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   const challengeRef = doc(store, "challenges", props.challengeId);
   const { data } = useGetChallengeData(challengeRef);
 
-  const gameFinshed = api.challenge.calculateWinner.useMutation();
+  const calculateWinner = api.challenge.calculateWinner.useMutation();
+  const gameFinished = api.challenge.gameFinished.useMutation();
 
-  const handleGameFinished = (challengeId: string) => {
-    gameFinshed.mutate(challengeId);
+  const handleCalculateWinner = (challengeId: string) => {
+    calculateWinner.mutate(challengeId);
+  };
+
+  const handleGiveUp = (challengeId: string) => {
+    props.handleGiveUp(props.challengeId);
+    handleCalculateWinner(challengeId);
+  };
+
+  const handleGameFinished = async (success: boolean, guess: string) => {
+    const guesses = [...(data![props.userId]?.guesses ?? []), guess];
+    const input = {
+      userId: props.userId,
+      challengeId: props.challengeId,
+      success: success,
+      completed: true,
+      guesses: guesses,
+    };
+    await gameFinished.mutateAsync(input);
+    handleCalculateWinner(props.challengeId);
   };
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
@@ -56,15 +75,23 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
         return;
       }
 
-      handleGuess(
-        () => handleGameFinished(props.challengeId),
-        props.userId,
-        challengeRef,
-        guess,
-        data?.[props.userId ?? ""]?.matches,
-        data?.word,
-        data?.[props.userId]?.guesses,
-      );
+      const guessesArray = data?.[props.userId]?.guesses ?? [];
+      if (guess === data?.word && guessesArray.length < 5) {
+        // mutate gameover success
+        handleGameFinished(true, guess);
+      } else if (guessesArray.length + 1 >= 5) {
+        // mutate gameover failure
+        handleGameFinished(false, guess);
+      } else {
+        handleGuess(
+          props.userId,
+          challengeRef,
+          guess,
+          data?.[props.userId ?? ""]?.matches,
+          data?.word,
+          data?.[props.userId]?.guesses,
+        );
+      }
 
       setGuess("");
 
@@ -126,7 +153,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
             {!data?.[props.userId]?.completed && (
               <button
                 onClick={() => {
-                  props.handleGiveUp(props.challengeId);
+                  handleGiveUp(props.challengeId);
                 }}
                 className="rounded-md bg-black p-2 font-medium text-white duration-150 ease-in-out hover:bg-zinc-600"
               >

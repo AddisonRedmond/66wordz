@@ -33,7 +33,7 @@ export const createLobbyRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // check if user is premium user
       const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+        where: { id: ctx.session.userId },
       });
 
       if (!user) return null;
@@ -55,7 +55,7 @@ export const createLobbyRouter = createTRPCRouter({
 
       // check to see if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({
-        where: { userId: ctx.session.user.id },
+        where: { userId: ctx.session.userId },
       });
 
       if (existingGame) {
@@ -79,7 +79,7 @@ export const createLobbyRouter = createTRPCRouter({
       // add user to lobby in database
       await ctx.db.players.create({
         data: {
-          userId: ctx.session.user.id,
+          userId: ctx.session.userId,
           lobbyId: newLobby.id,
         },
       });
@@ -132,14 +132,14 @@ export const createLobbyRouter = createTRPCRouter({
     .input(z.object({ lobbyId: z.string(), passKey: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+        where: { id: ctx.session.userId },
       });
       // check if user is premium user, if they are, proceed
       if (isPremiumUser(user!) === false) {
         if (hasBeen24Hours(user!)) {
           // reset the timestamp to today at 12:00am and reset the free game count to 1
           await ctx.db.user.update({
-            where: { id: ctx.session.user.id },
+            where: { id: ctx.session.userId },
             data: {
               freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
               freeGameCount: 0,
@@ -152,7 +152,7 @@ export const createLobbyRouter = createTRPCRouter({
 
       // check if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({
-        where: { userId: ctx.session.user.id },
+        where: { userId: ctx.session.userId },
       });
 
       if (existingGame) {
@@ -190,18 +190,19 @@ export const createLobbyRouter = createTRPCRouter({
       // add user to lobby in database
       await ctx.db.players.create({
         data: {
-          userId: ctx.session.user.id,
+          userId: ctx.session.userId,
           lobbyId: lobby.id,
         },
       });
       // add user to firebase lobby
-      const playerInitials = getInitials(ctx.session.user.name);
+      const name = await ctx.db.user.findUnique({where:{id: ctx.session.userId}, select: {name: true}});
+      const playerInitials = getInitials(name?.name);
       switch (lobby.gameType) {
         case "SURVIVAL":
-          joinSurivivalLobby(lobby.id, ctx.session.user.id, playerInitials);
+          joinSurivivalLobby(lobby.id, ctx.session.userId, playerInitials);
           break;
         case "ELIMINATION":
-          joinEliminationLobby(ctx.session.user.id, lobby.id, playerInitials);
+          joinEliminationLobby(ctx.session.userId, lobby.id, playerInitials);
           break;
       }
     }),
@@ -209,7 +210,7 @@ export const createLobbyRouter = createTRPCRouter({
   startGame: protectedProcedure.mutation(async ({ ctx }) => {
     // change lobby.started to true
     const players = await ctx.db.players.findUnique({
-      where: { userId: ctx.session.user.id },
+      where: { userId: ctx.session.userId },
     });
 
     const playerCount = await ctx.db.players.count({
@@ -231,7 +232,7 @@ export const createLobbyRouter = createTRPCRouter({
 
   getLobby: protectedProcedure.query(async ({ ctx }) => {
     const existingGame = await ctx.db.players.findUnique({
-      where: { userId: ctx.session.user.id },
+      where: { userId: ctx.session.userId },
     });
 
     if (existingGame) {

@@ -7,13 +7,13 @@ import home from "../../../public/home.png";
 import upgrade from "../../../public/upgrade.png";
 import friends from "../../../public/friends.png";
 
-import { signOut } from "next-auth/react";
 
 import Link from "next/link";
 type MobileNavbarProps = {
   menuIsOpen: boolean;
   setMenuIsOpen: (isOpen: boolean) => void;
   handleUpgrade: () => void;
+  handleSignOut: ()=> void;
 };
 const MobileNavbar: React.FC<MobileNavbarProps> = (
   props: MobileNavbarProps,
@@ -94,7 +94,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                 />
               </div>
               <div
-                onClick={() => signOut()}
+                onClick={() => props.handleSignOut()}
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
               >
                 <p>Log out</p>

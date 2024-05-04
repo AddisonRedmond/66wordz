@@ -133,7 +133,7 @@ const Elimination: React.FC<EliminationProps> = ({
       }
     }
   };
-
+  
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
   if (gameData && playerData && userId) {
     return (

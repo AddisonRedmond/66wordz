@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from "next";
+import { NextPage } from "next";
 import Header from "~/components/hearder";
 import Navbar from "~/components/navbar/navbar";
 import { api } from "~/utils/api";
@@ -7,8 +7,7 @@ import Challenge from "~/components/challenge/challenge";
 import ChallengeDropdown from "~/components/challenge/challenge-dropdown";
 import ChallengeDropdownItem from "~/components/challenge/challenge-dropdown-item";
 import { AnimatePresence } from "framer-motion";
-import { getSession, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useUser } from "@clerk/nextjs";
 import NewChallenge from "~/components/challenge/new-challenge";
 import ChallengeBoard from "~/components/challenge/challenge-board";
 
@@ -16,14 +15,10 @@ import ChallengeBoard from "~/components/challenge/challenge-board";
 
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
-  const router = useRouter();
-  const { data } = useSession({
-    required: true,
-    onUnauthenticated: () => {
-      router.push("/login");
-    },
-  });
 
+  const { isSignedIn, user, isLoaded } = useUser();
+
+  
   const premiumUser = api.getUser.isPremiumUser.useQuery();
   const friends = api.friends.allFriends.useQuery();
 
@@ -39,7 +34,7 @@ const Challenges: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { challenges } = useGetChallenges(data?.user.id);
+  const { challenges } = useGetChallenges(user?.id);
 
   const sendChallenge = async () => {
     if (list.length) {
@@ -115,10 +110,10 @@ const Challenges: NextPage = () => {
       <Navbar />
       <div className="flex flex-grow flex-col items-center justify-evenly pb-3">
         <AnimatePresence>
-          {startChallenge.data && data?.user.id && (
+          {startChallenge.data && user?.id && (
             <ChallengeBoard
               challengeId={startChallenge.data}
-              userId={data?.user.id}
+              userId={user?.id}
               handleGiveUp={handleGiveUpOrQuit}
               handleCloseChallenge={handleCloseChallenge}
             />
@@ -205,14 +200,14 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-              {data?.user.id &&
+              {user?.id &&
                 (challenges ?? []).map((challenge) => {
                   return (
                     <Challenge
                       handleStartChallenge={handleStartChallenge}
                       key={`${challenge.id}`}
                       challenge={challenge}
-                      userId={data?.user.id}
+                      userId={user?.id}
                       handleGiveUpOrQuit={handleGiveUpOrQuit}
                     />
                   );
@@ -227,18 +222,3 @@ const Challenges: NextPage = () => {
 
 export default Challenges;
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};

@@ -10,7 +10,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.array(z.object({ friendRecordId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+        where: { id: ctx.session.userId },
       });
 
       if (!user) return null;
@@ -98,7 +98,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.object({ challengeId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // create a firebase document with an id of the challenge id
-      const userId = ctx.session.user.id;
+      const userId = ctx.session.userId;
       //   look up the challenge
       const db = initAdmin().firestore();
 
@@ -144,7 +144,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       // get the challenge id
-      const userId = ctx.session.user.id;
+      const userId = ctx.session.userId;
       //   look up the challenge
       const db = initAdmin().firestore();
 
@@ -167,6 +167,8 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.completed`]: false,
             [`${userId}.success`]: false,
           });
+
+          firebaseChallengeData;
         } else {
           // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
@@ -256,5 +258,29 @@ export const challengeRouter = createTRPCRouter({
       // if they have,
       // find the person who completed it in the fewest guesses,
       // if theres a tie, pick the person who guessed in the least amount of time
+    }),
+  gameFinished: protectedProcedure
+
+    .input(
+      z.object({
+        challengeId: z.string(),
+        userId: z.string(),
+        completed: z.boolean(),
+        success: z.boolean(),
+        guesses: z.array(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = initAdmin().firestore();
+
+      const challengeRef = db.doc(`challenges/${input.challengeId}`);
+      const userId = ctx.session.userId;
+      await challengeRef.update({
+        [`${userId}.guesses`]: input.guesses,
+        [`${userId}.completed`]: input.completed,
+        [`${userId}.success`]: input.success,
+        [`${userId}.endTimeStamp`]: new Date().toString(),
+      });
+      // update the users challenge document
     }),
 });
