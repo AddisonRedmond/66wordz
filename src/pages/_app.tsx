@@ -10,7 +10,7 @@ const MyApp: AppType = ({
   pageProps 
 }: AppProps) => {
   return (
-    <ClerkProvider {...pageProps}>
+    <ClerkProvider  {...pageProps} >
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
