@@ -21,7 +21,7 @@ import { GetServerSideProps } from "next";
 
 const Home = () => {
   const { user } = useUser();
-
+  console.log(user?.id);
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
