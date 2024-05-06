@@ -17,6 +17,7 @@ import {
 } from "~/utils/game-limit";
 import { joinSurivivalLobby } from "~/utils/survival/surivival";
 import { joinEliminationLobby } from "~/utils/elimination";
+import { initAdmin } from "~/utils/firebase-admin";
 
 const MAX_PLAYERS = 67;
 
@@ -84,7 +85,12 @@ export const createLobbyRouter = createTRPCRouter({
         },
       });
       //
-      // create lobby in firebase
+      // remove register and add it to start api.
+      // create lobby in firebase from here
+      // start game will send to register url
+      const db = initAdmin().database();
+      const lobbyRef = db.ref(`/${gameType}`).child(lobbyId);
+
       const registerLobby = (url: string) => {
         try {
           fetch(url, {
@@ -96,20 +102,12 @@ export const createLobbyRouter = createTRPCRouter({
           });
         } catch (e) {}
       };
+
       switch (gameType) {
         case "ELIMINATION":
           const eliminationLobby = createCustomEliminationLobby(user.id);
-          const newLobbyCreated = await createCustomLobby(
-            `ELIMINATION/${lobbyId}`,
-            eliminationLobby,
-          );
-
-          if (newLobbyCreated) {
-            registerLobby(
-              `${env.BOT_SERVER}/register_custom_elimination_lobby`,
-            );
-            joinEliminationLobby(user.id, newLobby.id, user.name);
-          }
+          const newPlayer = joinEliminationLobby(user.id, user.name);
+          lobbyRef.set({ lobbyData: eliminationLobby, players: { newPlayer } });
           break;
         case "SURVIVAL":
           const survivalLobby = createCustomSurvivalLobby(user.id);
@@ -195,14 +193,22 @@ export const createLobbyRouter = createTRPCRouter({
         },
       });
       // add user to firebase lobby
-      const name = await ctx.db.user.findUnique({where:{id: ctx.session.userId}, select: {name: true}});
+      const name = await ctx.db.user.findUnique({
+        where: { id: ctx.session.userId },
+        select: { name: true },
+      });
+
+      const db = initAdmin().database();
+      const lobbyRef = db.ref(`/${lobby.gameType}`).child(lobby.id);
+
       const playerInitials = getInitials(name?.name);
       switch (lobby.gameType) {
         case "SURVIVAL":
           joinSurivivalLobby(lobby.id, ctx.session.userId, playerInitials);
           break;
         case "ELIMINATION":
-          joinEliminationLobby(ctx.session.userId, lobby.id, playerInitials);
+          const player = joinEliminationLobby(ctx.session.userId, user?.name);
+          lobbyRef.child("/players").update(player)
           break;
       }
     }),

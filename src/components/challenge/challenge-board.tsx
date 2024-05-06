@@ -51,6 +51,7 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
   };
 
   const handleKeyBoardLogic = (e: KeyboardEvent | string) => {
+    if (!navigator.onLine) return;
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
 
     if (

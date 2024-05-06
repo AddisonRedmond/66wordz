@@ -148,6 +148,7 @@ const Friends = () => {
                   fullName={friend.friendFullName}
                   removeFriend={handleRemoveFriend}
                   friendId={friend.id}
+                  friendImage={friend.friendImage}
                 />
               );
             })}

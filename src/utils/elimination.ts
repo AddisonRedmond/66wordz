@@ -37,8 +37,7 @@ export const createCustomEliminationLobby = async (lobbyId: string) => {
 
 export const joinEliminationLobby = async (
   playerId: string,
-  lobbyId: string,
-  fullName: string | null,
+  fullName?: string,
 ) => {
   const player: EliminationPlayerData = {
     [playerId]: {
@@ -52,9 +51,7 @@ export const joinEliminationLobby = async (
     },
   };
 
-  await update(ref(db, `ELIMINATION/${lobbyId}/players/`), {
-    ...player,
-  });
+  return player;
 };
 
 export const handleCorrectGuess = async (
