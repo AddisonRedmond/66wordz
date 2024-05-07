@@ -7,16 +7,8 @@ import { LazyMotion, domAnimation } from "framer-motion";
 import Head from "next/head";
 import { env } from "../env.mjs";
 const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
-
   return (
-<<<<<<< Updated upstream
-    <ClerkProvider  {...pageProps} >
-=======
-    <ClerkProvider
-      {...pageProps}
-      
-    >
->>>>>>> Stashed changes
+    <ClerkProvider {...pageProps}>
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
