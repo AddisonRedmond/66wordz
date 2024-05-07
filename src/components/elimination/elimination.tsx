@@ -46,7 +46,7 @@ const Elimination: React.FC<EliminationProps> = ({
   const gameData = useEliminationData(db, { lobbyId, gameType });
   const startGame = api.createGame.startGame.useMutation();
 
-  const playerData = gameData?.players[userId] as EliminationPlayerObject;
+  const playerData = gameData?.players?.[userId] as EliminationPlayerObject;
   const playerPoints =
     gameData?.playerPoints?.[userId]?.points ?? (0 as number);
 
@@ -70,6 +70,9 @@ const Elimination: React.FC<EliminationProps> = ({
   });
 
   const ownerStart = () => {
+    if (startGame.isLoading) {
+      return;
+    }
     startGame.mutate();
   };
 
@@ -133,7 +136,7 @@ const Elimination: React.FC<EliminationProps> = ({
       }
     }
   };
-  
+
   useOnKeyUp(handleKeyBoardLogic, [guess, gameData]);
   if (gameData && playerData && userId) {
     return (
@@ -175,6 +178,7 @@ const Elimination: React.FC<EliminationProps> = ({
                 startGame={ownerStart}
                 exitMatch={exitMatch}
                 playerCount={players ? Object.keys(players).length : 0}
+                startingServer={startGame.data?.success}
               />
             </div>
           ) : (

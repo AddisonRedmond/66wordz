@@ -35,10 +35,7 @@ export const createCustomEliminationLobby = async (lobbyId: string) => {
   });
 };
 
-export const joinEliminationLobby = async (
-  playerId: string,
-  fullName?: string,
-) => {
+export const joinEliminationLobby = (playerId: string, fullName?: string) => {
   const player: EliminationPlayerData = {
     [playerId]: {
       isBot: false,

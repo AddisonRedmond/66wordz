@@ -164,18 +164,17 @@ const calcualteUpdatedStatus = (
   return updatedStatus;
 };
 
-export const createNewSurivivalLobby = async (lobbyId: string) => {
-  await set(ref(db, `SURVIVAL/${lobbyId}`), {
+export const createNewSurivivalLobby = () => {
+  return {
     lobbyData: {
       gameStarted: false,
       gameStartTime: new Date().getTime() + 30000,
       damangeValue: 0,
     },
-  });
+  };
 };
 
-export const joinSurivivalLobby = async (
-  lobbyId: string,
+export const joinSurivivalLobby = (
   userId: string,
   fullName: string | null,
 ) => {
@@ -194,7 +193,7 @@ export const joinSurivivalLobby = async (
     },
   };
 
-  await update(ref(db, `SURVIVAL/${lobbyId}/players`), newPlayer);
+  return newPlayer;
 };
 
 export const handleCorrectGuess = async (

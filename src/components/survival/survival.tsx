@@ -78,6 +78,9 @@ const Survival: React.FC<SurvivalProps> = ({
   // TODO: make a better correct guess animation
 
   const ownerStart = () => {
+    if (startGame.isLoading) {
+      return;
+    }
     startGame.mutate();
   };
 

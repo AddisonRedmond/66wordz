@@ -11,6 +11,7 @@ type LoadingGameProps = {
   playerCount: number;
   exitMatch: () => void;
   lobbyId: string;
+  startingServer?: boolean;
 };
 
 const LoadingCustomGame = (
@@ -42,7 +43,7 @@ const LoadingCustomGame = (
         {props.playerCount - 1 === 1 ? "player " : "players "}
         in lobby
       </p>
-      {props.isGameOwner && (
+      {props.isGameOwner && !props.startingServer && (
         <div className="flex flex-col">
           <button
             onClick={() => {

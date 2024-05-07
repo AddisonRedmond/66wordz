@@ -1,13 +1,13 @@
 import { User } from "@prisma/client";
 
 export const isPremiumUser = (user: User) => {
-  if (user.currentPeriodEnd === null) return false;
+  if (!user?.currentPeriodEnd) return false;
   return user.currentPeriodEnd > Date.now() / 1000;
 };
 
 export const hasBeen24Hours = (user: User) => {
   // check if time stamp is null
-  if (user.freeGameTimeStamp === null) {
+  if (!user?.freeGameTimeStamp) {
     return true;
   }
 
