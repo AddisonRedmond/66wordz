@@ -9,13 +9,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
 ) {
-  if (req.body !== "POST") {
-    return res.status(405);
+  if (req.method !== "POST") {
+    return res.status(405).end();
   }
   const data = JSON.parse(req.body);
   const lobbyId = data.lobbyId;
 
-  //   cors isnt working btw/ origin can be any, need to fix
   const players = await db.players.findMany({ where: { lobbyId: lobbyId } });
   const playerIds = players.map((player) => player.userId);
 
