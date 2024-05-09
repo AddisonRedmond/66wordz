@@ -1,7 +1,7 @@
-import { ref, set, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { db } from "./firebase/firebase";
 import {
-  EliminationLobbyData,
+  // EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
   EliminationPlayerPoints,
@@ -21,18 +21,6 @@ export const createNewEliminationLobby = () => {
   };
 };
 
-export const createCustomEliminationLobby = async (lobbyId: string) => {
-  const lobbyData: Omit<EliminationLobbyData, "gameStartTime"> = {
-    gameStarted: false,
-    round: 1,
-    pointsGoal: 300,
-    totalSpots: 0,
-    finalRound: false,
-  };
-  await set(ref(db, `ELIMINATION/${lobbyId}`), {
-    lobbyData: lobbyData,
-  });
-};
 
 export const joinEliminationLobby = (
   playerId: string,

@@ -1,6 +1,3 @@
-import { db } from "~/utils/firebase/firebase";
-import { deleteLobby } from "~/utils/game";
-import { ref, get, remove, update } from "firebase/database";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { env } from "~/env.mjs";
@@ -112,7 +109,9 @@ export const quickPlayRouter = createTRPCRouter({
 
           case "ELIMINATION":
             const eliminationLobbyData = createNewEliminationLobby();
-            db.ref(`/${gameMode}`).child(newLobby.id).set(eliminationLobbyData);
+            db.ref(`/${gameMode}`)
+              .child(newLobby.id)
+              .set({ lobbyData: eliminationLobbyData.lobbyData });
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -211,20 +210,24 @@ export const quickPlayRouter = createTRPCRouter({
       },
     });
 
-    if (playerCount === 0) {
-      await ctx.db.lobby.delete({ where: { id: lobbyId } });
-      deleteLobby(`${lobby?.gameType}/${lobbyId}`);
-    } else if (lobby?.name && lobby.started === false) {
-      remove(ref(db, `${lobby.gameType}/${lobby.id}/players/${user}`));
+    const db = initAdmin().database();
 
-      const lobbyData = await get(ref(db, `${lobby.gameType}/${lobby.id}`));
+    if (playerCount <= 0) {
+      await ctx.db.lobby.delete({ where: { id: lobbyId } });
+      db.ref(`${lobby?.gameType}/${lobbyId}`).remove();
+    } else if (lobby?.name && lobby.started === false) {
+      db.ref(`${lobby.gameType}/${lobby.id}/players/${user}`).remove();
+
+      const lobbyData = await db
+        .ref(`${lobby.gameType}/${lobby.id}`)
+        .once("value");
 
       if (lobbyData.val().lobbyData.owner === user) {
         const playerIds = Object.keys(lobbyData.val().players).filter(
           (id) => id !== user,
         );
 
-        await update(ref(db, `${lobby.gameType}/${lobby.id}/lobbyData/`), {
+        await db.ref(`${lobby.gameType}/${lobby.id}/lobbyData/`).update({
           owner: playerIds[0],
         });
       }

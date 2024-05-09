@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
-import crown from "../../public/crown.png";
+// import crown from "../../public/crown.png";
 import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
@@ -211,15 +211,6 @@ const Home = () => {
                 <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
                   <ChallengeCard />
 
-                  <GameCardV2
-                    gameType="ELIMINATION"
-                    image={crown}
-                    fullAccess={premiumUser.data?.isPremiumUser}
-                    quickPlay={handleQuickPlay}
-                    enableCreateLobby={enableCreateLobby}
-                    handleUpgrade={handleUpgrade}
-                    desc="Outplay your opponents in this round based game"
-                  />
                   <GameCardV2
                     gameType="SURVIVAL"
                     image={survival}
