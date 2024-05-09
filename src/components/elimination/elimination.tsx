@@ -81,9 +81,11 @@ const Elimination: React.FC<EliminationProps> = ({
       lobbyData.gameStarted === false ||
       playerPoints >= lobbyData.pointsGoal ||
       lobbyData.winner ||
-      lobbyData.nextRoundStartTime
-    )
+      lobbyData.nextRoundStartTime ||
+      playerData.eliminated
+    ) {
       return;
+    }
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
     if (playerPoints >= lobbyData.pointsGoal) {
       return;
@@ -305,7 +307,7 @@ const Elimination: React.FC<EliminationProps> = ({
             </>
           )}
 
-          {!lobbyData.winner && (
+          {(!lobbyData.winner || playerData.eliminated) && (
             <button
               onClick={() => {
                 exitMatch();
