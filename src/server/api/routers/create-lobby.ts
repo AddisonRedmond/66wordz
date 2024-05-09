@@ -241,6 +241,8 @@ export const createLobbyRouter = createTRPCRouter({
   }),
 
   getLobby: protectedProcedure.query(async ({ ctx }) => {
+    const db = initAdmin().database();
+
     const existingGame = await ctx.db.players.findUnique({
       where: { userId: ctx.session.userId },
     });
@@ -249,7 +251,16 @@ export const createLobbyRouter = createTRPCRouter({
       const lobby = await ctx.db.lobby.findUnique({
         where: { id: existingGame?.lobbyId },
       });
-      return lobby;
+
+      const firebaseLobbyReady = (
+        await db
+          .ref(`${lobby?.gameType}/${lobby?.id}`)
+          .child("lobbyData")
+          .once("value")
+      ).exists();
+      if (firebaseLobbyReady) {
+        return lobby;
+      }
     }
 
     return null;

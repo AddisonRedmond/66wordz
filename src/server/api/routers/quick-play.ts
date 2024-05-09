@@ -95,7 +95,7 @@ export const quickPlayRouter = createTRPCRouter({
           case "SURVIVAL":
             // TODO: add logic to function to make sure a lobby is created successfully, before registering it
             const lobbyData = createNewSurivivalLobby();
-            db.ref(`/${gameMode}`).child(newLobby.id).set(lobbyData);
+            await db.ref(`/${gameMode}`).child(newLobby.id).set(lobbyData);
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -109,7 +109,8 @@ export const quickPlayRouter = createTRPCRouter({
 
           case "ELIMINATION":
             const eliminationLobbyData = createNewEliminationLobby();
-            db.ref(`/${gameMode}`)
+            await db
+              .ref(`/${gameMode}`)
               .child(newLobby.id)
               .set({ lobbyData: eliminationLobbyData.lobbyData });
             try {

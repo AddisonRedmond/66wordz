@@ -228,7 +228,7 @@ const Survival: React.FC<SurvivalProps> = ({
 
         {/* div for game info */}
 
-        {gameData?.lobbyData.gameStarted && (
+        {gameData?.lobbyData?.gameStarted && (
           <WordContainer
             word={playerData?.word.word}
             type={playerData?.word.type}
