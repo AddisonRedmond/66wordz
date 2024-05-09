@@ -9,15 +9,16 @@ import {
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
 export const createNewEliminationLobby = () => {
-  const lobbyData: EliminationLobbyData = {
-    gameStarted: false,
-    round: 1,
-    gameStartTime: new Date().getTime() + 30000,
-    pointsGoal: 300,
-    totalSpots: 0,
-    finalRound: false,
+  return {
+    lobbyData: {
+      gameStarted: false,
+      round: 1,
+      gameStartTime: new Date().getTime() + 30000,
+      pointsGoal: 300,
+      totalSpots: 0,
+      finalRound: false,
+    },
   };
-  return lobbyData;
 };
 
 export const createCustomEliminationLobby = async (lobbyId: string) => {

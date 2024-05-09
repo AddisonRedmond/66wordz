@@ -146,8 +146,6 @@ export const quickPlayRouter = createTRPCRouter({
         switch (clientGameType) {
           case "SURVIVAL":
             const newSurvivalPlayer = joinSurivivalLobby(user.id, user?.name);
-            console.log(gameMode);
-            console.log(newSurvivalPlayer);
             db.ref(`/${gameMode}/${lobbyId}/players`).update(newSurvivalPlayer);
             break;
           case "ELIMINATION":
