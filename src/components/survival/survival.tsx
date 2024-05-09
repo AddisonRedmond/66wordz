@@ -67,17 +67,20 @@ const Survival: React.FC<SurvivalProps> = ({
     playbackRate: 1.5,
   });
 
-  const [gameMusic, { stop }] = useSound("/sounds/game_music.mp3", {
-    volume: 0.25,
-    playbackRate: 1,
-    onEnd: () => {
-      gameMusic();
-    },
-  });
+  // const [gameMusic, { stop }] = useSound("/sounds/game_music.mp3", {
+  //   volume: 0.25,
+  //   playbackRate: 1,
+  //   onEnd: () => {
+  //     gameMusic();
+  //   },
+  // });
 
   // TODO: make a better correct guess animation
 
   const ownerStart = () => {
+    if (startGame.isLoading) {
+      return;
+    }
     startGame.mutate();
   };
 
@@ -89,6 +92,9 @@ const Survival: React.FC<SurvivalProps> = ({
   }, [correctGuess]);
 
   const targetOpponent = (playerId: string) => {
+    if (playerData?.eliminated) {
+      return;
+    }
     if (
       !gameData?.players[playerId]?.eliminated ||
       playerId === "random" ||
@@ -102,7 +108,7 @@ const Survival: React.FC<SurvivalProps> = ({
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
 
-    if (playerData?.eliminated) return;
+    if (playerData?.eliminated || !gameData?.lobbyData.gameStarted) return;
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => {
@@ -117,7 +123,7 @@ const Survival: React.FC<SurvivalProps> = ({
         if (word === guess) {
           // handle correct guess
           const playerToAttack = getPlayerPosition(
-            gameData!.players,
+            gameData.players,
             autoAttack,
             userId,
           );
@@ -126,7 +132,7 @@ const Survival: React.FC<SurvivalProps> = ({
             lobbyId,
             playerToAttack,
             playerData?.word.attack ?? 0,
-            gameData!.players[playerToAttack]!,
+            gameData.players[playerToAttack]!,
           );
 
           handleCorrectGuess(
@@ -189,7 +195,7 @@ const Survival: React.FC<SurvivalProps> = ({
   }
 
   if (gameData) {
-    if (gameData.lobbyData.winner === userId) {
+    if (gameData.lobbyData?.winner === userId) {
       return (
         <div className="grid w-full place-content-center">
           <Confetti width={window.innerWidth} />

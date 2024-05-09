@@ -18,6 +18,8 @@ import {
   createNewEliminationLobby,
   joinEliminationLobby,
 } from "~/utils/elimination";
+import { initAdmin } from "~/utils/firebase-admin";
+
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
@@ -80,6 +82,8 @@ export const quickPlayRouter = createTRPCRouter({
         return lobby[0];
       };
 
+      const db = initAdmin().database();
+
       const createNewLobby = async () => {
         // create the new lobby in the database
         const clientGameType = input.gameMode as GameType;
@@ -92,7 +96,9 @@ export const quickPlayRouter = createTRPCRouter({
 
         switch (clientGameType) {
           case "SURVIVAL":
-            await createNewSurivivalLobby(newLobby.id);
+            // TODO: add logic to function to make sure a lobby is created successfully, before registering it
+            const lobbyData = createNewSurivivalLobby();
+            db.ref(`/${gameMode}`).child(newLobby.id).set(lobbyData);
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -105,7 +111,8 @@ export const quickPlayRouter = createTRPCRouter({
             break;
 
           case "ELIMINATION":
-            await createNewEliminationLobby(newLobby.id);
+            const eliminationLobbyData = createNewEliminationLobby();
+            db.ref(`/${gameMode}`).child(newLobby.id).set(eliminationLobbyData);
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -125,8 +132,8 @@ export const quickPlayRouter = createTRPCRouter({
         const user = await ctx.db.user.findUnique({
           where: { id: ctx.session.userId },
         });
-        if(!user){
-          return
+        if (!user) {
+          return;
         }
         const player: { userId: string; lobbyId: string } =
           await ctx.db.players.create({
@@ -138,18 +145,15 @@ export const quickPlayRouter = createTRPCRouter({
 
         switch (clientGameType) {
           case "SURVIVAL":
-            joinSurivivalLobby(
-              player.lobbyId,
-              user.id,
-              user.name ?? "N/A",
-            );
-
+            const newSurvivalPlayer = joinSurivivalLobby(user.id, user?.name);
+            console.log(gameMode);
+            console.log(newSurvivalPlayer);
+            db.ref(`/${gameMode}/${lobbyId}/players`).update(newSurvivalPlayer);
+            break;
           case "ELIMINATION":
-            joinEliminationLobby(
-              user.id,
-              player.lobbyId,
-              user.name ?? "N/A",
-            );
+            const newPlayer = joinEliminationLobby(user.id, user?.name);
+            db.ref(`/${gameMode}/${lobbyId}/players`).update(newPlayer);
+            break;
         }
 
         const playerCount = await ctx.db.players.count({

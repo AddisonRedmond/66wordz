@@ -5,6 +5,7 @@ interface FirebaseAdminAppParams {
   projectId: string;
   clientEmail: string;
   privateKey: string;
+  databaseURL: string;
 }
 
 function formatPrivateKey(key: string) {
@@ -27,6 +28,7 @@ export function createFirebaseAdminApp(params: FirebaseAdminAppParams) {
   return admin.initializeApp({
     credential: cert,
     projectId: params.projectId,
+    databaseURL: params.databaseURL,
   });
 }
 
@@ -35,6 +37,7 @@ export function initAdmin() {
     projectId: env.NEXT_PUBLIC_PROJECT_ID,
     clientEmail: env.FIREBASE_CLIENT_EMAIL,
     privateKey: env.FIREBASE_PRIVATE_KEY,
+    databaseURL: env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
   };
 
   return createFirebaseAdminApp(params);

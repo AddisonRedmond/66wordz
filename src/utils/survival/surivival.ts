@@ -31,25 +31,6 @@ type CustomLobbyData = {
   initialStartTime: number;
 };
 
-export type WordLength =
-  | "FOUR_LETTER_WORD"
-  | "FIVE_LETTER_WORD"
-  | "SIX_LETTER_WORD";
-
-export const survivalRules: { [header: string]: string[] } = {
-  "Health and Shield": [
-    "Start typing 5 letter word to guess",
-    "Matches, partial matches, and no matches will be indicated on the keyboard",
-    "When you guess the word correctly, you will gain the values for that word",
-    "If your health reaches 0, you are eliminated",
-    "Each incorrect guess will reduce the values of the word",
-  ],
-  Attack: [
-    "Select who you want to damage when you guess a word correctly",
-    "You can choose, first, last, random, or a specific player to attack",
-  ],
-};
-
 export type SurvivalPlayerDataObject = {
   health: number;
   shield: number;
@@ -164,21 +145,21 @@ const calcualteUpdatedStatus = (
   return updatedStatus;
 };
 
-export const createNewSurivivalLobby = async (lobbyId: string) => {
-  await set(ref(db, `SURVIVAL/${lobbyId}`), {
+export const createNewSurivivalLobby = () => {
+  return {
     lobbyData: {
       gameStarted: false,
       gameStartTime: new Date().getTime() + 30000,
       damangeValue: 0,
     },
-  });
+  };
 };
 
-export const joinSurivivalLobby = async (
-  lobbyId: string,
+export const joinSurivivalLobby = (
   userId: string,
-  fullName: string | null,
+  fullName?: string | null,
 ) => {
+  console.log("Creating survival player");
   const newPlayer: SurvivalPlayerData = {
     [userId]: {
       health: 100,
@@ -194,7 +175,7 @@ export const joinSurivivalLobby = async (
     },
   };
 
-  await update(ref(db, `SURVIVAL/${lobbyId}/players`), newPlayer);
+  return newPlayer;
 };
 
 export const handleCorrectGuess = async (

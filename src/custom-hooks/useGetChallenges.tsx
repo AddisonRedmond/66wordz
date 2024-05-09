@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { and, collection, onSnapshot, query, where } from "firebase/firestore";
+import { and, collection, limit, onSnapshot, query, where } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";
 import { ChallengeData } from "./useGetChallengeData";
 
@@ -19,6 +19,7 @@ const useGetChallenges = (userId: string | undefined) => {
         where("ids", "array-contains", userId),
         where("timeStamp", ">=", threeDaysAgo),
       ),
+      limit(8)
     );
 
     

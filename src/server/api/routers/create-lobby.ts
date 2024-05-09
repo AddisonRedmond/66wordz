@@ -1,10 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
-import { ref, update } from "firebase/database";
-import { db } from "~/utils/firebase/firebase";
+
 import {
-  createCustomLobby,
   createCustomSurvivalLobby,
   getInitials,
   createCustomEliminationLobby,
@@ -91,35 +89,19 @@ export const createLobbyRouter = createTRPCRouter({
       const db = initAdmin().database();
       const lobbyRef = db.ref(`/${gameType}`).child(lobbyId);
 
-      const registerLobby = (url: string) => {
-        try {
-          fetch(url, {
-            method: "POST",
-            body: JSON.stringify({
-              lobbyId: newLobby.id,
-              enableBots: true,
-            }),
-          });
-        } catch (e) {}
-      };
-
       switch (gameType) {
         case "ELIMINATION":
           const eliminationLobby = createCustomEliminationLobby(user.id);
           const newPlayer = joinEliminationLobby(user.id, user.name);
-          lobbyRef.set({ lobbyData: eliminationLobby, players: { newPlayer } });
+          lobbyRef.set({ lobbyData: eliminationLobby, players: newPlayer });
           break;
         case "SURVIVAL":
           const survivalLobby = createCustomSurvivalLobby(user.id);
-          const newSurvivalLobby = await createCustomLobby(
-            `SURVIVAL/${lobbyId}`,
-            survivalLobby,
-          );
-
-          if (newSurvivalLobby) {
-            registerLobby(`${env.BOT_SERVER}/register_custom_survival_lobby`);
-            joinSurivivalLobby(newLobby.id, user.id, user.name);
-          }
+          const newSurvivalPlayer = joinSurivivalLobby(user.id, user.name);
+          lobbyRef.set({
+            lobbyData: survivalLobby,
+            players: newSurvivalPlayer,
+          });
           break;
       }
 
@@ -129,6 +111,7 @@ export const createLobbyRouter = createTRPCRouter({
   joinLobby: protectedProcedure
     .input(z.object({ lobbyId: z.string(), passKey: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
+      console.log(ctx.session.userId);
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.userId },
       });
@@ -204,11 +187,15 @@ export const createLobbyRouter = createTRPCRouter({
       const playerInitials = getInitials(name?.name);
       switch (lobby.gameType) {
         case "SURVIVAL":
-          joinSurivivalLobby(lobby.id, ctx.session.userId, playerInitials);
+          const survivalPlayer = joinSurivivalLobby(
+            ctx.session.userId,
+            playerInitials,
+          );
+          lobbyRef.child("/players").update(survivalPlayer);
           break;
         case "ELIMINATION":
           const player = joinEliminationLobby(ctx.session.userId, user?.name);
-          lobbyRef.child("/players").update(player)
+          lobbyRef.child("/players").update(player);
           break;
       }
     }),
@@ -225,15 +212,32 @@ export const createLobbyRouter = createTRPCRouter({
 
     if (!players || playerCount < 2) return;
 
+    const lobbyStarted = await ctx.db.lobby.findUnique({
+      where: { id: players.lobbyId },
+      select: { started: true },
+    });
+
+    if (lobbyStarted?.started) {
+      return;
+    }
+
     const lobby = await ctx.db.lobby.update({
       where: { id: players.lobbyId },
       data: { started: true },
     });
 
     // change firebase lobby gameStarted to true
-    await update(ref(db, `${lobby.gameType}/${lobby.id}/lobbyData/`), {
-      gameStarted: true,
-    });
+    fetch(
+      `${env.BOT_SERVER}/register_custom_${lobby.gameType.toLowerCase()}_lobby`,
+      {
+        method: "POST",
+        body: JSON.stringify({ lobbyId: lobby.id }),
+      },
+    );
+
+    return { success: true };
+
+    // register the lobby with firebase func
   }),
 
   getLobby: protectedProcedure.query(async ({ ctx }) => {

@@ -5,7 +5,6 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { LazyMotion, domAnimation } from "framer-motion";
 import Head from "next/head";
-import { env } from "../env.mjs";
 const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   return (
     <ClerkProvider {...pageProps}>
