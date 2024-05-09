@@ -98,7 +98,7 @@ export const quickPlayRouter = createTRPCRouter({
           case "SURVIVAL":
             // TODO: add logic to function to make sure a lobby is created successfully, before registering it
             const lobbyData = createNewSurivivalLobby();
-            db.ref(`/${gameMode}`).set({ lobbyData });
+            db.ref(`/${gameMode}`).child(newLobby.id).set(lobbyData);
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -111,7 +111,8 @@ export const quickPlayRouter = createTRPCRouter({
             break;
 
           case "ELIMINATION":
-            await createNewEliminationLobby(newLobby.id);
+            const eliminationLobbyData = createNewEliminationLobby();
+            db.ref(`/${gameMode}`).child(newLobby.id).set(eliminationLobbyData);
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -144,11 +145,15 @@ export const quickPlayRouter = createTRPCRouter({
 
         switch (clientGameType) {
           case "SURVIVAL":
-            joinSurivivalLobby(user.id, user.name ?? "N/A");
-
+            const newSurvivalPlayer = joinSurivivalLobby(user.id, user?.name);
+            console.log(gameMode);
+            console.log(newSurvivalPlayer);
+            db.ref(`/${gameMode}/${lobbyId}/players`).update(newSurvivalPlayer);
+            break;
           case "ELIMINATION":
-            const newPlayer = joinEliminationLobby(user.id, user.name);
+            const newPlayer = joinEliminationLobby(user.id, user?.name);
             db.ref(`/${gameMode}/${lobbyId}/players`).update(newPlayer);
+            break;
         }
 
         const playerCount = await ctx.db.players.count({

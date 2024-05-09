@@ -8,7 +8,7 @@ import {
 } from "~/custom-hooks/useEliminationData";
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
-export const createNewEliminationLobby = async (lobbyId: string) => {
+export const createNewEliminationLobby = () => {
   const lobbyData: EliminationLobbyData = {
     gameStarted: false,
     round: 1,
@@ -17,9 +17,7 @@ export const createNewEliminationLobby = async (lobbyId: string) => {
     totalSpots: 0,
     finalRound: false,
   };
-  await set(ref(db, `ELIMINATION/${lobbyId}`), {
-    lobbyData: lobbyData,
-  });
+  return lobbyData;
 };
 
 export const createCustomEliminationLobby = async (lobbyId: string) => {
@@ -35,7 +33,10 @@ export const createCustomEliminationLobby = async (lobbyId: string) => {
   });
 };
 
-export const joinEliminationLobby = (playerId: string, fullName?: string) => {
+export const joinEliminationLobby = (
+  playerId: string,
+  fullName?: string | null,
+) => {
   const player: EliminationPlayerData = {
     [playerId]: {
       isBot: false,
