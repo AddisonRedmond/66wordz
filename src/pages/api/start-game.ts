@@ -1,43 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { db } from "~/server/db";
-import Cors from "cors";
-import { env } from "~/env.mjs";
+
 type ResponseData = {
   lobbyId: string;
 };
 
-const cors = Cors({
-  origin: env.BOT_SERVER,
-  methods: ["POST", "HEAD"],
-});
-
-function runMiddleware(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  fn: (
-    req: NextApiRequest,
-    res: NextApiResponse,
-    cb: any,
-  ) => Promise<void> | void,
-) {
-  return new Promise<void>((resolve, reject) => {
-    fn(req, res, (result: any) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-
-      return resolve(result);
-    });
-  });
-}
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
 ) {
-  await runMiddleware(req, res, cors);
-
-  console.log("HEADERS " + JSON.stringify(req.headers))
-  if(req.body !== "POST") {
+  if (req.body !== "POST") {
     return res.status(405);
   }
   const data = JSON.parse(req.body);
@@ -55,7 +27,6 @@ export default async function handler(
     },
     data: { freeGameCount: { increment: 1 } },
   });
-
 
   await db.lobby.update({ where: { id: lobbyId }, data: { started: true } });
   res.status(200).end();
