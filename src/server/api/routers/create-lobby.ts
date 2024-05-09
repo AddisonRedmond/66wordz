@@ -1,10 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import ShortUniqueId from "short-unique-id";
-import { ref, update } from "firebase/database";
-import { db } from "~/utils/firebase/firebase";
+
 import {
-  createCustomLobby,
   createCustomSurvivalLobby,
   getInitials,
   createCustomEliminationLobby,
