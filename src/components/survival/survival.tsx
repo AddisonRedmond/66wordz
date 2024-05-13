@@ -67,14 +67,6 @@ const Survival: React.FC<SurvivalProps> = ({
     playbackRate: 1.5,
   });
 
-  // const [gameMusic, { stop }] = useSound("/sounds/game_music.mp3", {
-  //   volume: 0.25,
-  //   playbackRate: 1,
-  //   onEnd: () => {
-  //     gameMusic();
-  //   },
-  // });
-
   // TODO: make a better correct guess animation
 
   const ownerStart = () => {
@@ -127,7 +119,6 @@ const Survival: React.FC<SurvivalProps> = ({
             autoAttack,
             userId,
           );
-
           const eliminated = await handleAttack(
             lobbyId,
             playerToAttack,

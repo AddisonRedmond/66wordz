@@ -111,7 +111,6 @@ export const createLobbyRouter = createTRPCRouter({
   joinLobby: protectedProcedure
     .input(z.object({ lobbyId: z.string(), passKey: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(ctx.session.userId);
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.userId },
       });

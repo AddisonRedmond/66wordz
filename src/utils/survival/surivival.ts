@@ -4,8 +4,8 @@ import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
-const ATTACK_VALUE = 90;
-const TYPE_VALUE = 70;
+const ATTACK_VALUE = 50;
+const TYPE_VALUE = 50;
 
 export type WordObject = {
   word: string;
@@ -17,18 +17,6 @@ export type WordObject = {
     partial: string[];
     none: string[];
   };
-};
-
-// name: lobbyName,
-// passkey: passKey,
-// gameStarted: false,
-// initialStartTime: new Date().getTime(),
-// owner: ctx.session.user.id,
-type CustomLobbyData = {
-  name: string;
-  gameStarted: boolean;
-  owner?: string;
-  initialStartTime: number;
 };
 
 export type SurvivalPlayerDataObject = {
@@ -46,14 +34,6 @@ export type SurvivalPlayerData = {
     eliminated: boolean;
     initials?: string;
     word: WordObject;
-  };
-};
-
-export type wordTimer = {
-  [id: string]: {
-    SIX_LETTER_WORD_TIMER: NodeJS.Timeout;
-    FIVE_LETTER_WORD_TIMER: NodeJS.Timeout;
-    FOUR_LETTER_WORD_TIMER: NodeJS.Timeout;
   };
 };
 
@@ -105,16 +85,6 @@ export function getRandomNumber(min: number, max: number): number {
   return randomNumber;
 }
 
-const getRandomType = (number: number) => {
-  if (number % 2 === 0) {
-    return "health";
-  } else if (number % 2 !== 0) {
-    return "shield";
-  }
-
-  return "shield";
-};
-
 const calcualteUpdatedStatus = (
   attackValue: number,
   shield: number,
@@ -159,7 +129,6 @@ export const joinSurivivalLobby = (
   userId: string,
   fullName?: string | null,
 ) => {
-  console.log("Creating survival player");
   const newPlayer: SurvivalPlayerData = {
     [userId]: {
       health: 100,
@@ -168,7 +137,7 @@ export const joinSurivivalLobby = (
       initials: getInitials(fullName) || "N/A",
       word: {
         word: handleGetNewWord(),
-        type: getRandomType(1),
+        type: "shield",
         value: TYPE_VALUE,
         attack: ATTACK_VALUE,
       },
@@ -199,12 +168,31 @@ export const handleCorrectGuess = async (
     }
   };
   const createUpdatedWordValues = () => {
-    return {
-      word: handleGetNewWord(),
-      type: determineType(currentStatus),
-      value: TYPE_VALUE,
-      attack: ATTACK_VALUE,
-    };
+    const wordType = determineType(currentStatus);
+    const newWord = handleGetNewWord();
+
+    if (currentStatus?.health == 100 && currentStatus?.shield == 100) {
+      return {
+        word: newWord,
+        type: "shield",
+        value: 0,
+        attack: 100,
+      };
+    } else if (wordType === "health") {
+      return {
+        word: handleGetNewWord(),
+        type: "health",
+        value: 20,
+        attack: 60,
+      };
+    } else {
+      return {
+        word: handleGetNewWord(),
+        type: "shield",
+        value: 60,
+        attack: 20,
+      };
+    }
   };
   // check to make sure attack + current attack is not greater than 100
   const maxValueCheck = (value1?: number, value2?: number) => {
@@ -230,25 +218,10 @@ export const handleCorrectGuess = async (
       ...createUpdatedWordValues(),
     });
   }
-
-  // update word with new values
 };
 
 export const checkSpelling = (word: string) => {
   return dictionary.includes(word.toLocaleUpperCase());
-};
-
-export const wordLength = (word: string) => {
-  switch (word.length) {
-    case 4:
-      return "FOUR_LETTER_WORD";
-    case 5:
-      return "FIVE_LETTER_WORD";
-    case 6:
-      return "SIX_LETTER_WORD";
-    default:
-      return "SIX_LETTER_WORD";
-  }
 };
 
 export const handleAttack = async (
@@ -292,37 +265,4 @@ export const handleIncorrectGuess = (
     ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word`),
     updatedWordData,
   );
-};
-
-export const createFirebaseSurvivalLobby = async (
-  lobbyId: string,
-  lobbyData: CustomLobbyData,
-  playerId: string,
-  playerInitials?: string,
-) => {
-  const playerData: SurvivalPlayerDataObject = {
-    health: 100,
-    shield: 50,
-    eliminated: false,
-    initials: playerInitials ?? "N/A",
-    word: {
-      word: handleGetNewWord(),
-      type: "shield",
-      value: TYPE_VALUE,
-      attack: ATTACK_VALUE,
-    },
-  };
-  try {
-    await set(ref(db, `SURVIVAL/`), {
-      [lobbyId]: {
-        lobbyData: { ...lobbyData },
-        players: {
-          [playerId]: playerData,
-        },
-      },
-    });
-    return true;
-  } catch (e) {
-    return false;
-  }
 };

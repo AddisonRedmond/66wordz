@@ -59,21 +59,14 @@ export const challengeRouter = createTRPCRouter({
         if (docs.length >= 8 || challengeeIds.length >= 5) {
           return "Too many open games or too many people added to challenge";
         }
-        // user can start as many games as they want
-        // user can ad upto 4 additional people
       } else {
-        // user can have up to two open games
-        // look up the other users to make sure they can be added
         if (docs.length >= 2 || challengeeIds.length >= 3) {
           return "Too many open games or too many people added to challenge";
         }
-        // user can only start two games with in 24 hours
-        // user can only add up to two additional peopel
       }
 
       for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;
-        console.log(challenge.gameOver);
         if (arraysContainSameElements(challenge.ids, challengeeIds)) {
           return "Challenge already exists";
         }
