@@ -53,7 +53,6 @@ const Survival: React.FC<SurvivalProps> = ({
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
-  const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
 
@@ -75,13 +74,6 @@ const Survival: React.FC<SurvivalProps> = ({
     }
     startGame.mutate();
   };
-
-  const control = { y: [0, -50], opacity: [100, 0], zIndex: [1, 1] };
-  useEffect(() => {
-    if (scope.current) {
-      animate(scope.current, control, { duration: 1.5 });
-    }
-  }, [correctGuess]);
 
   const targetOpponent = (playerId: string) => {
     if (playerData?.eliminated) {
@@ -122,7 +114,6 @@ const Survival: React.FC<SurvivalProps> = ({
           const eliminated = await handleAttack(
             lobbyId,
             playerToAttack,
-            playerData?.word.attack ?? 0,
             gameData.players[playerToAttack]!,
           );
 
@@ -315,7 +306,11 @@ const Survival: React.FC<SurvivalProps> = ({
               <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 {/* status indicators */}
                 <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between">
-                  <StatusBar value={5} color="bg-sky-400" sections={5} />
+                  <StatusBar
+                    value={playerData?.shield}
+                    color="bg-sky-400"
+                    sections={4}
+                  />
                   <Image
                     className="absolute -right-6"
                     src={shield}
@@ -324,7 +319,11 @@ const Survival: React.FC<SurvivalProps> = ({
                 </div>
 
                 <div className="relative mb-2 flex h-3 w-10/12 max-w-96 items-center justify-between gap-2">
-                  <StatusBar value={1} color="bg-green-400" sections={2} />
+                  <StatusBar
+                    value={playerData?.health}
+                    color="bg-green-400"
+                    sections={2}
+                  />
                   <Image
                     className="absolute -right-6"
                     src={health}
@@ -334,14 +333,7 @@ const Survival: React.FC<SurvivalProps> = ({
 
                 <div className="relative">
                   {/* guess container + attack value and button */}
-                  <div className="absolute top-0 w-full text-center">
-                    <p
-                      ref={scope}
-                      className="text-3xl font-bold text-green-500"
-                    >
-                      Success!
-                    </p>
-                  </div>
+
                   <GuessContainer
                     guess={guess}
                     playerData={playerData}

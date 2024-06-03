@@ -85,34 +85,18 @@ export function getRandomNumber(min: number, max: number): number {
   return randomNumber;
 }
 
-const calcualteUpdatedStatus = (
-  attackValue: number,
-  shield: number,
-  health: number,
-) => {
-  const updatedStatus: {
-    health: number;
-    shield: number;
-    eliminated: boolean;
-  } = {
-    health: health,
-    shield: shield,
-    eliminated: false,
-  };
-  if (shield - attackValue < 0) {
-    updatedStatus.shield = 0;
-    updatedStatus.health =
-      health - (attackValue - shield) < 0 ? 0 : health - (attackValue - shield);
-  } else if (shield - attackValue >= 0) {
-    updatedStatus.shield = shield - attackValue;
-    updatedStatus.health = health;
+const calcualteUpdatedStatus = (playerStatus: {
+  health: number;
+  shield: number;
+  eliminated: boolean;
+}) => {
+  if (playerStatus.health == 0) {
+    return {
+      shield: playerStatus.health,
+      health: playerStatus.health - 1,
+      eliminated: false,
+    };
   }
-
-  if (updatedStatus.health <= 0) {
-    updatedStatus.eliminated = true;
-  }
-
-  return updatedStatus;
 };
 
 export const createNewSurivivalLobby = () => {
@@ -227,17 +211,14 @@ export const checkSpelling = (word: string) => {
 export const handleAttack = async (
   lobbyId: string,
   playerId: string,
-  attackValue: number,
   playerStatus: {
     health: number;
     shield: number;
     eliminated: boolean;
   },
 ) => {
-  const { health, shield } = playerStatus;
-
   if (!playerStatus.eliminated) {
-    const updatedStatus = calcualteUpdatedStatus(attackValue, shield, health);
+    const updatedStatus = calcualteUpdatedStatus(playerStatus);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
       ...updatedStatus,
     });
