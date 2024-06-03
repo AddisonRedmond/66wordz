@@ -202,9 +202,7 @@ const Survival: React.FC<SurvivalProps> = ({
     }
 
     return (
-      <div
-        className={`flex cursor-pointer flex-col items-center justify-around gap-3`}
-      >
+      <div className={`flex flex-col items-center justify-around gap-3`}>
         <AnimatePresence>
           {isMobile && mobileMenuOpen && (
             <MobileAttack
@@ -316,11 +314,8 @@ const Survival: React.FC<SurvivalProps> = ({
             ) : (
               <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 {/* status indicators */}
-                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between  gap-2">
-                  <StatusBar
-                    statusValue={playerData?.shield}
-                    color="bg-sky-400"
-                  />
+                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between">
+                  <StatusBar value={5} color="bg-sky-400" sections={5} />
                   <Image
                     className="absolute -right-6"
                     src={shield}
@@ -329,10 +324,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 </div>
 
                 <div className="relative mb-2 flex h-3 w-10/12 max-w-96 items-center justify-between gap-2">
-                  <StatusBar
-                    statusValue={playerData?.health}
-                    color="bg-green-400"
-                  />
+                  <StatusBar value={1} color="bg-green-400" sections={2} />
                   <Image
                     className="absolute -right-6"
                     src={health}
