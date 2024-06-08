@@ -3,16 +3,12 @@ import SurvivalTile from "./survival-tile";
 import { m } from "framer-motion";
 type WordContainerProps = {
   word?: string;
-  type?: "shield" | "health";
-  value?: number;
-  attack?: number;
   match?: string[];
   eliminated?: boolean;
 };
 
 const WordContainer: React.FC<WordContainerProps> = ({
   word,
-  type,
   ...props
 }: WordContainerProps) => {
   if (word) {

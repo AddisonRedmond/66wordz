@@ -3,7 +3,7 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import shield from "../../../public/shield.svg";
@@ -17,11 +17,12 @@ import {
   handleAttack,
   handleIncorrectGuess,
   getPlayerPosition,
+  healPlayer,
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "../loading-game";
-import { AnimatePresence, useAnimate } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
@@ -116,13 +117,10 @@ const Survival: React.FC<SurvivalProps> = ({
             playerToAttack,
             gameData.players[playerToAttack]!,
           );
-
-          handleCorrectGuess(
-            lobbyId,
-            userId,
-            gameData?.players?.[userId],
-            playerData?.word,
-          );
+          if (eliminated) {
+            healPlayer(lobbyId, userId, playerData?.health);
+          }
+          handleCorrectGuess(lobbyId, userId, playerData);
 
           setGuess("");
           setCorrectGuess(true);
@@ -211,9 +209,6 @@ const Survival: React.FC<SurvivalProps> = ({
         {gameData?.lobbyData?.gameStarted && (
           <WordContainer
             word={playerData?.word.word}
-            type={playerData?.word.type}
-            value={playerData?.word.value}
-            attack={playerData?.word.attack}
             match={playerData?.word.matches?.full}
             eliminated={playerData?.eliminated}
           />
