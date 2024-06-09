@@ -16,7 +16,6 @@ import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
   const { user } = useUser();
 
-  const premiumUser = api.getUser.isPremiumUser.useQuery();
   const friends = api.friends.allFriends.useQuery();
 
   const requestChallenge = api.challenge.requestChallenge.useMutation();
@@ -119,7 +118,6 @@ const Challenges: NextPage = () => {
 
         <Header
           isLoading={false}
-          isPremiumUser={premiumUser.data?.isPremiumUser}
         />
         <div className="text-center">
           <p className="text-2xl font-semibold">Challenges</p>

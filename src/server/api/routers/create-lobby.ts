@@ -8,11 +8,7 @@ import {
   createCustomEliminationLobby,
 } from "~/utils/game";
 import { env } from "~/env.mjs";
-import {
-  hasBeen24Hours,
-  hasMoreFreeGames,
-  isPremiumUser,
-} from "~/utils/game-limit";
+import { hasBeen24Hours, hasMoreFreeGames } from "~/utils/game-limit";
 import { joinSurivivalLobby } from "~/utils/survival/surivival";
 import { joinEliminationLobby } from "~/utils/elimination";
 import { initAdmin } from "~/utils/firebase-admin";
@@ -36,16 +32,6 @@ export const createLobbyRouter = createTRPCRouter({
       });
 
       if (!user) return null;
-
-      const isPremiumUser = () => {
-        if (user?.currentPeriodEnd === null) return false;
-        return user.currentPeriodEnd > Date.now() / 1000;
-      };
-
-      if (!isPremiumUser()) {
-        return "User is not a premium user";
-      }
-      //
 
       const { lobbyName, passKey, enableBots, gameType } = input;
       // create unique lobby id "short"
@@ -115,20 +101,6 @@ export const createLobbyRouter = createTRPCRouter({
         where: { id: ctx.session.userId },
       });
       // check if user is premium user, if they are, proceed
-      if (isPremiumUser(user!) === false) {
-        if (hasBeen24Hours(user!)) {
-          // reset the timestamp to today at 12:00am and reset the free game count to 1
-          await ctx.db.user.update({
-            where: { id: ctx.session.userId },
-            data: {
-              freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
-              freeGameCount: 0,
-            },
-          });
-        } else if (hasMoreFreeGames(user!) === false) {
-          return "User has reached the maximum number of free games for the day";
-        }
-      }
 
       // check if user is already in a lobby
       const existingGame = await ctx.db.players.findFirst({

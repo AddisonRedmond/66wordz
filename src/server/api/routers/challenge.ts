@@ -17,15 +17,6 @@ export const challengeRouter = createTRPCRouter({
 
       const db = initAdmin().firestore();
 
-      const isPremiumUser = () => {
-        if (user?.currentPeriodEnd === null) return false;
-        return user?.currentPeriodEnd > Date.now() / 1000;
-      };
-      // make sure the user either has premium or has free games
-      // make sure the user doesn't already have too many pending games
-
-      // check and see if any of the documents.ids already have all of the same ids
-
       const ids = input.map((id) => {
         return id.friendRecordId;
       });
@@ -54,15 +45,8 @@ export const challengeRouter = createTRPCRouter({
 
       const docs = (await challengeRef.get()).docs;
 
-      if (isPremiumUser()) {
-        // user can have up to 8 open games
-        if (docs.length >= 8 || challengeeIds.length >= 5) {
-          return "Too many open games or too many people added to challenge";
-        }
-      } else {
-        if (docs.length >= 2 || challengeeIds.length >= 3) {
-          return "Too many open games or too many people added to challenge";
-        }
+      if (docs.length >= 8 || challengeeIds.length >= 5) {
+        return "Too many open games or too many people added to challenge";
       }
 
       for (const doc of docs) {

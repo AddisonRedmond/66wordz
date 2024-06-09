@@ -9,7 +9,6 @@ import PendingBadge from "~/components/friends/pending-badge";
 import FriendBadge from "~/components/friends/friend-badge";
 
 const Friends = () => {
-  const premiumUser = api.getUser.isPremiumUser.useQuery();
   const inputRef = useRef<HTMLInputElement>(null);
   const addFriend = api.friends.addNewFriend.useMutation();
   const newRequests = api.friends.allRequests.useQuery();
@@ -61,7 +60,6 @@ const Friends = () => {
         <Header
           isLoading={false}
           desktopOnly={false}
-          isPremiumUser={premiumUser.data?.isPremiumUser}
         />
         <h1 className="text-2xl font-bold">Friends</h1>
 

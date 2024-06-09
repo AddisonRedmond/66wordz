@@ -7,7 +7,6 @@ import {
   joinSurivivalLobby,
 } from "~/utils/survival/surivival";
 import {
-  isPremiumUser,
   hasBeen24Hours,
   hasMoreFreeGames,
 } from "~/utils/game-limit";
@@ -28,20 +27,7 @@ export const quickPlayRouter = createTRPCRouter({
         where: { id: ctx.session.userId },
       });
       // check if user is premium user, if they are, proceed
-      if (isPremiumUser(user!) === false) {
-        if (hasBeen24Hours(user!)) {
-          // reset the timestamp to today at 12:00am and reset the free game count to 1
-          await ctx.db.user.update({
-            where: { id: ctx.session.userId },
-            data: {
-              freeGameTimeStamp: new Date().setHours(0, 0, 0, 0) / 1000,
-              freeGameCount: 0,
-            },
-          });
-        } else if (hasMoreFreeGames(user!) === false) {
-          return "User has reached the maximum number of free games for the day";
-        }
-      }
+
 
       // check if player is already part of a game
 
