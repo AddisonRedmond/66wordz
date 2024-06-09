@@ -18,7 +18,6 @@ type MobileAttackProps = {
 const MobileAttack: React.FC<MobileAttackProps> = (
   props: MobileAttackProps,
 ) => {
-
   return (
     <m.div
       className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center overflow-auto bg-gray-400 bg-opacity-50"
@@ -53,7 +52,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                       strokeLinecap: "round",
                       pathTransitionDuration: 0.5,
                     })}
-                    value={props?.players[player]?.health ?? 0}
+                    value={(props?.players[player]?.health ?? 0 / 2) * 100}
                     strokeWidth={10}
                   >
                     <div className={`h-full w-full`}>
@@ -66,7 +65,7 @@ const MobileAttack: React.FC<MobileAttackProps> = (
                           pathTransitionDuration: 0.5,
                         })}
                         strokeWidth={10}
-                        value={props?.players[player]?.shield ?? 0}
+                        value={(props?.players[player]?.shield ?? 0 / 4) * 100}
                       >
                         <div className=" flex flex-col items-center justify-center font-semibold">
                           {props.players[player]?.eliminated ? (

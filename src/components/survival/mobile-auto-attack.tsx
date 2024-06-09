@@ -51,7 +51,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                 strokeLinecap: "round",
                 pathTransitionDuration: 0.5,
               })}
-              value={props?.first?.health ?? 0}
+              value={(props?.first?.health ?? 0 / 2) * 100}
               strokeWidth={10}
             >
               <div className="h-full w-full">
@@ -64,7 +64,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                     pathTransitionDuration: 0.5,
                   })}
                   strokeWidth={10}
-                  value={props?.first?.shield ?? 0}
+                  value={(props?.first?.shield ?? 0 / 4) * 100}
                 >
                   <div className=" flex flex-col items-center justify-center font-semibold">
                     {props?.first?.eliminated ? (
@@ -93,12 +93,12 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                 strokeLinecap: "round",
                 pathTransitionDuration: 0.5,
               })}
-              value={props?.last?.health ?? 0}
+              value={(props?.last?.health ?? 0 / 2) * 100}
               strokeWidth={10}
             >
               <div className="h-full w-full">
                 <CircularProgressbarWithChildren
-                   styles={buildStyles({
+                  styles={buildStyles({
                     pathColor: "#1E8BE1",
                     textColor: "black",
                     trailColor: "transparent",
@@ -106,7 +106,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                     pathTransitionDuration: 0.5,
                   })}
                   strokeWidth={10}
-                  value={props?.last?.shield ?? 0}
+                  value={((props?.last?.shield ?? 0) / 4) * 100}
                 >
                   <div className=" flex flex-col items-center justify-center font-semibold">
                     {props?.last?.eliminated ? (
@@ -140,7 +140,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
           >
             {/* if autoAttack = a user id show opponent other wise turn it off */}
             {isCustomTarget() ? (
-              <div className="relative aspect-square rounded-full h-full w-full bg-violet-200">
+              <div className="relative aspect-square h-full w-full rounded-full bg-violet-200">
                 <CircularProgressbarWithChildren
                   styles={buildStyles({
                     pathColor: "#57E98F",
@@ -148,7 +148,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                     strokeLinecap: "round",
                     pathTransitionDuration: 0.5,
                   })}
-                  value={props?.target?.health ?? 0}
+                  value={(props?.target?.health ?? 0 / 2) * 100}
                   strokeWidth={10}
                 >
                   <div className={`h-full w-full`}>
@@ -161,7 +161,7 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                         pathTransitionDuration: 0.5,
                       })}
                       strokeWidth={10}
-                      value={props?.target?.shield ?? 0}
+                      value={(props?.target?.shield ?? 0 / 4) * 100}
                     >
                       <div className=" flex flex-col items-center justify-center font-semibold">
                         {props.target?.eliminated ? (
@@ -175,8 +175,6 @@ const MobileAutoAttack: React.FC<AutoAttackProps> = (
                                 <Image alt="robot icon" width={20} src={bot} />
                               </div>
                             )}
-                            {/* <p className="text-sm text-sky-400">{shield}</p>
-                        <p className="text-sm text-green-400">{health}</p> */}
                           </>
                         )}
                       </div>

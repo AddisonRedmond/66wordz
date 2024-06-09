@@ -1,7 +1,7 @@
 import signout from "../../../public/signout.svg";
 import Image from "next/image";
 import Link from "next/link";
-
+import bell from "../../../public/bell.png";
 type DesktopNavbarProps = {
   handleSignOut: () => void;
 };
@@ -35,6 +35,13 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (
           </button>
         </Link>
 
+        <button className="relative rounded-md p-2 font-semibold text-black duration-150 ease-in-out hover:bg-gray-500">
+          <span className="absolute -top-[2px] right-1 flex">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
+          </span>
+          <Image src={bell} alt="notification icon" height={25} />
+        </button>
         <button
           onClick={() => props.handleSignOut()}
           className="rounded-md p-2 font-semibold text-black duration-150 ease-in-out hover:bg-gray-500"

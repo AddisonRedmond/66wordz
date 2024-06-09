@@ -192,7 +192,7 @@ export const handleAttack = async (
     eliminated: boolean;
   },
 ) => {
-  if (!playerStatus.eliminated) {
+  if (!playerStatus?.eliminated) {
     const updatedStatus = calcualteUpdatedStatus(playerStatus);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
       ...updatedStatus,

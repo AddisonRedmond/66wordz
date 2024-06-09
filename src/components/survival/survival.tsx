@@ -93,6 +93,8 @@ const Survival: React.FC<SurvivalProps> = ({
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
 
+    // TODO: ensure there is more than one person in the lobby
+
     if (playerData?.eliminated || !gameData?.lobbyData.gameStarted) return;
 
     if (key === "Backspace" && guess.length > 0) {
@@ -112,6 +114,7 @@ const Survival: React.FC<SurvivalProps> = ({
             autoAttack,
             userId,
           );
+
           const eliminated = await handleAttack(
             lobbyId,
             playerToAttack,
