@@ -1,30 +1,18 @@
 import { db } from "../firebase/firebase";
-import { ref, set, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
 
-const ATTACK_VALUE = 50;
-const TYPE_VALUE = 50;
+const MAX_SHIELD = 4;
 
 export type WordObject = {
   word: string;
-  type: "shield" | "health";
-  value: number;
-  attack: number;
   matches?: {
     full: string[];
     partial: string[];
     none: string[];
   };
-};
-
-export type SurvivalPlayerDataObject = {
-  health: number;
-  shield: number;
-  eliminated: boolean;
-  initials: string;
-  word: WordObject;
 };
 
 export type SurvivalPlayerData = {
@@ -85,34 +73,44 @@ export function getRandomNumber(min: number, max: number): number {
   return randomNumber;
 }
 
-const calcualteUpdatedStatus = (
-  attackValue: number,
-  shield: number,
-  health: number,
-) => {
-  const updatedStatus: {
-    health: number;
-    shield: number;
-    eliminated: boolean;
-  } = {
-    health: health,
-    shield: shield,
-    eliminated: false,
+const calcualteUpdatedStatus = (playerStatus: {
+  health: number;
+  shield: number;
+  eliminated: boolean;
+}) => {
+  // remove shield
+  // if shield isnt enough, then remove health
+  // check if the health has been removed fully and mark player eliminated
+  const { health, shield } = playerStatus;
+
+  if (shield > 0) {
+    return {
+      ...playerStatus,
+      shield: shield - 1,
+    };
+  } else if (shield <= 0 && health > 0) {
+    if (health - 1 <= 0) {
+      return {
+        ...playerStatus,
+        eliminated: true,
+        health: health - 1,
+      };
+    }
+    return {
+      ...playerStatus,
+      health: health - 1,
+    };
+  } else if (0 >= health) {
+    return {
+      ...playerStatus,
+      eliminated: true,
+      health: 0,
+    };
+  }
+
+  return {
+    ...playerStatus,
   };
-  if (shield - attackValue < 0) {
-    updatedStatus.shield = 0;
-    updatedStatus.health =
-      health - (attackValue - shield) < 0 ? 0 : health - (attackValue - shield);
-  } else if (shield - attackValue >= 0) {
-    updatedStatus.shield = shield - attackValue;
-    updatedStatus.health = health;
-  }
-
-  if (updatedStatus.health <= 0) {
-    updatedStatus.eliminated = true;
-  }
-
-  return updatedStatus;
 };
 
 export const createNewSurivivalLobby = () => {
@@ -131,15 +129,12 @@ export const joinSurivivalLobby = (
 ) => {
   const newPlayer: SurvivalPlayerData = {
     [userId]: {
-      health: 100,
-      shield: 50,
+      health: 2,
+      shield: 2,
       eliminated: false,
       initials: getInitials(fullName) || "N/A",
       word: {
         word: handleGetNewWord(),
-        type: "shield",
-        value: TYPE_VALUE,
-        attack: ATTACK_VALUE,
       },
     },
   };
@@ -150,97 +145,59 @@ export const joinSurivivalLobby = (
 export const handleCorrectGuess = async (
   lobbyId: string,
   userId: string,
-  currentStatus?: { health: number; shield: number },
-  wordValues?: { type: "health" | "shield"; value: number; attack: number },
+  playerStatus?: { health: number; shield: number; eliminated: boolean },
 ) => {
-  const determineType = (currentStatus?: {
-    health: number;
-    shield: number;
-  }) => {
-    if (!currentStatus) {
-      return "shield";
+  if (playerStatus) {
+    if (playerStatus.shield < MAX_SHIELD) {
+      await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
+        shield: playerStatus.shield + 1,
+        word: {
+          word: handleGetNewWord(),
+          matches: {},
+        },
+      });
+      return;
     }
-
-    if (currentStatus.health > currentStatus.shield) {
-      return "shield";
-    } else {
-      return "health";
-    }
-  };
-  const createUpdatedWordValues = () => {
-    const wordType = determineType(currentStatus);
-    const newWord = handleGetNewWord();
-
-    if (currentStatus?.health == 100 && currentStatus?.shield == 100) {
-      return {
-        word: newWord,
-        type: "shield",
-        value: 0,
-        attack: 100,
-      };
-    } else if (wordType === "health") {
-      return {
-        word: handleGetNewWord(),
-        type: "health",
-        value: 20,
-        attack: 60,
-      };
-    } else {
-      return {
-        word: handleGetNewWord(),
-        type: "shield",
-        value: 60,
-        attack: 20,
-      };
-    }
-  };
-  // check to make sure attack + current attack is not greater than 100
-  const maxValueCheck = (value1?: number, value2?: number) => {
-    if (value1 !== undefined && value2 !== undefined) {
-      if (value1 + value2 >= 100) {
-        return 100;
-      } else {
-        return value1 + value2;
-      }
-    } else {
-      return 0;
-    }
-  };
-  if (wordValues) {
-    await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
-      [wordValues.type]: maxValueCheck(
-        currentStatus?.[wordValues.type],
-        wordValues.value,
-      ),
-    });
-
-    await set(ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word`), {
-      ...createUpdatedWordValues(),
-    });
   }
+  await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
+    word: {
+      word: handleGetNewWord(),
+      matches: {},
+    },
+  });
 };
 
 export const checkSpelling = (word: string) => {
   return dictionary.includes(word.toLocaleUpperCase());
 };
 
+export const healPlayer = async (
+  lobbyId: string,
+  playerId: string,
+  healthValue?: number,
+) => {
+  if (healthValue && healthValue == 1) {
+    await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
+      health: 2,
+    });
+  }
+};
+
 export const handleAttack = async (
   lobbyId: string,
   playerId: string,
-  attackValue: number,
   playerStatus: {
     health: number;
     shield: number;
     eliminated: boolean;
   },
 ) => {
-  const { health, shield } = playerStatus;
-
-  if (!playerStatus.eliminated) {
-    const updatedStatus = calcualteUpdatedStatus(attackValue, shield, health);
+  if (!playerStatus?.eliminated) {
+    const updatedStatus = calcualteUpdatedStatus(playerStatus);
     await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
       ...updatedStatus,
     });
+
     return updatedStatus.eliminated;
   }
   return false;
@@ -254,15 +211,9 @@ export const handleIncorrectGuess = (
 ) => {
   // check each word for full, partial, and no matches
   const matches = handleMatched(guess, word.word, word.matches);
-  const updatedWordData = {
-    ...word,
-    matches: matches,
-    attack: word.attack <= 20 ? word.attack : word.attack - 5,
-    value: word.value <= 20 ? word.value : word.value - 5,
-  };
 
   update(
-    ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word`),
-    updatedWordData,
+    ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word/matches`),
+    matches,
   );
 };

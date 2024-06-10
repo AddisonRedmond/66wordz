@@ -24,7 +24,7 @@ const SurvivalTile: React.FC<SurvivalTile> = ({
       }}
       exit={{ scale: 0 }}
       transition={{ duration: 0.07 }}
-      className={`flex aspect-square h-[5vh] min-h-11 items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-2xl font-bold`}
+      className={`flex aspect-square h-[6vh] min-h-11 items-center justify-center rounded-md border-2 border-neutral-500 bg-stone-100 text-2xl font-bold`}
     >
       <AnimatePresence>
         {!!revealed && (

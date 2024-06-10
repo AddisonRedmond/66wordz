@@ -1,36 +1,36 @@
-import { m, useAnimate } from "framer-motion";
-import { useEffect } from "react";
+import { m } from "framer-motion";
 type StatusBarProps = {
-  statusValue?: number;
+  value?: number;
   color: string;
+  sections: number;
 };
 const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
-  const [scope, animate] = useAnimate();
-  const [scopeRed] = useAnimate();
-
   // TODO: change this to delayed children variant, rather than useEffect
-  useEffect(() => {
-    if (scope && scopeRed) {
-      animate(scope.current, {
-        width: `${props.statusValue ? props.statusValue - 0.5 : 0}%`,
-      }).then(() => {
-        animate(scopeRed.current, {
-          width: `${props.statusValue ? props.statusValue - 0.5 : 0}%`,
-        });
-      });
+
+  const getWidth = (index: number, value?: number) => {
+    if (!value || value < index + 1) {
+      return "0%";
     }
-  }, [props.statusValue]);
+    return "100%";
+  };
+
   return (
-    <div>
-      <m.div
-        ref={scopeRed}
-        className={`absolute h-2 rounded-full bg-red-600`}
-      ></m.div>
-      <m.div
-        ref={scope}
-        className={`absolute h-2 rounded-full ${props.color}`}
-      ></m.div>
-    </div>
+    <>
+      {Array.from({ length: props.sections }).map((_, index: number) => {
+        return (
+          <m.div
+            key={index}
+            style={{ width: `${98 / props.sections}%` }}
+            className={`h-2 rounded-full border-2 border-zinc-300 `}
+          >
+            <m.div
+              style={{ width: getWidth(index, props.value) }}
+              className={`h-full w-full ${props.color} rounded-full duration-300 ease-in-out`}
+            ></m.div>
+          </m.div>
+        );
+      })}
+    </>
   );
 };
 

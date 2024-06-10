@@ -9,7 +9,6 @@ import GameCardV2 from "~/components/game-card-v2";
 import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
-import { getRemaningGames } from "~/utils/game-limit";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
@@ -26,7 +25,6 @@ const Home = () => {
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const createLobby = api.createGame.createLobby.useMutation();
-  const premiumUser = api.getUser.isPremiumUser.useQuery();
   const userData = api.getUser.getUser.useQuery();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
@@ -69,22 +67,18 @@ const Home = () => {
     gameType: GameType,
     passKey?: string,
   ) => {
-    if (premiumUser.data?.isPremiumUser) {
-      await createLobby.mutateAsync({
-        lobbyName,
-        passKey,
-        enableBots,
-        gameType,
-      });
-      lobby.refetch();
-    }
+    await createLobby.mutateAsync({
+      lobbyName,
+      passKey,
+      enableBots,
+      gameType,
+    });
+    lobby.refetch();
   };
 
   const enableCreateLobby = (gameType: GameType) => {
-    if (premiumUser.data?.isPremiumUser) {
-      setIsCreateLobby(true);
-      setGameType(gameType);
-    }
+    setIsCreateLobby(true);
+    setGameType(gameType);
   };
 
   const handleStartGame = () => {
@@ -164,7 +158,6 @@ const Home = () => {
             lobby.isLoading || quickPlay.isLoading || joinLobby.isLoading
           }
           desktopOnly={!!lobby.data?.id}
-          isPremiumUser={premiumUser.data?.isPremiumUser}
         />
         <div className="flex flex-col gap-3">
           {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
@@ -184,14 +177,6 @@ const Home = () => {
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-              {userData.isSuccess &&
-                userData.data &&
-                !premiumUser.data?.isPremiumUser && (
-                  <p className="text-lg font-semibold">
-                    {getRemaningGames(userData.data)} free games remaning
-                  </p>
-                )}
-
               {isCreateLobby && (
                 <CreateLobby
                   setIsCreateLobby={setIsCreateLobby}
@@ -214,7 +199,7 @@ const Home = () => {
                   <GameCardV2
                     gameType="SURVIVAL"
                     image={survival}
-                    fullAccess={premiumUser.data?.isPremiumUser}
+                    fullAccess={true}
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
                     handleUpgrade={handleUpgrade}

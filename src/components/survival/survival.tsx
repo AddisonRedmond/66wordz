@@ -3,7 +3,7 @@ import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
 import WordContainer from "./word-container";
 import Keyboard from "../keyboard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import shield from "../../../public/shield.svg";
@@ -17,11 +17,12 @@ import {
   handleAttack,
   handleIncorrectGuess,
   getPlayerPosition,
+  healPlayer,
 } from "~/utils/survival/surivival";
 import GuessContainer from "./guess-container";
 import Eliminated from "./eliminated";
 import LoadingGame from "../loading-game";
-import { AnimatePresence, useAnimate } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import AutoAttack from "./auto-attack";
 import MobileAutoAttack from "./mobile-auto-attack";
 import MobileAttack from "./mobile-attack";
@@ -49,11 +50,9 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
-  const [correctGuess, setCorrectGuess] = useState<boolean>(false);
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
-  const [scope, animate] = useAnimate();
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
 
@@ -76,13 +75,6 @@ const Survival: React.FC<SurvivalProps> = ({
     startGame.mutate();
   };
 
-  const control = { y: [0, -50], opacity: [100, 0], zIndex: [1, 1] };
-  useEffect(() => {
-    if (scope.current) {
-      animate(scope.current, control, { duration: 1.5 });
-    }
-  }, [correctGuess]);
-
   const targetOpponent = (playerId: string) => {
     if (playerData?.eliminated) {
       return;
@@ -99,6 +91,8 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const handleKeyBoardLogic = async (key: string) => {
     const word = playerData?.word?.word;
+
+    // TODO: ensure there is more than one person in the lobby
 
     if (playerData?.eliminated || !gameData?.lobbyData.gameStarted) return;
 
@@ -119,22 +113,18 @@ const Survival: React.FC<SurvivalProps> = ({
             autoAttack,
             userId,
           );
+
           const eliminated = await handleAttack(
             lobbyId,
             playerToAttack,
-            playerData?.word.attack ?? 0,
             gameData.players[playerToAttack]!,
           );
-
-          handleCorrectGuess(
-            lobbyId,
-            userId,
-            gameData?.players?.[userId],
-            playerData?.word,
-          );
+          if (eliminated) {
+            healPlayer(lobbyId, userId, playerData?.health);
+          }
+          handleCorrectGuess(lobbyId, userId, playerData);
 
           setGuess("");
-          setCorrectGuess(true);
 
           if (eliminated) {
             setAutoAttack("first");
@@ -202,9 +192,7 @@ const Survival: React.FC<SurvivalProps> = ({
     }
 
     return (
-      <div
-        className={`flex cursor-pointer flex-col items-center justify-around gap-3`}
-      >
+      <div className={`flex flex-col items-center justify-around gap-3`}>
         <AnimatePresence>
           {isMobile && mobileMenuOpen && (
             <MobileAttack
@@ -222,9 +210,6 @@ const Survival: React.FC<SurvivalProps> = ({
         {gameData?.lobbyData?.gameStarted && (
           <WordContainer
             word={playerData?.word.word}
-            type={playerData?.word.type}
-            value={playerData?.word.value}
-            attack={playerData?.word.attack}
             match={playerData?.word.matches?.full}
             eliminated={playerData?.eliminated}
           />
@@ -316,10 +301,11 @@ const Survival: React.FC<SurvivalProps> = ({
             ) : (
               <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 {/* status indicators */}
-                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between  gap-2">
+                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between">
                   <StatusBar
-                    statusValue={playerData?.shield}
+                    value={playerData?.shield}
                     color="bg-sky-400"
+                    sections={4}
                   />
                   <Image
                     className="absolute -right-6"
@@ -330,8 +316,9 @@ const Survival: React.FC<SurvivalProps> = ({
 
                 <div className="relative mb-2 flex h-3 w-10/12 max-w-96 items-center justify-between gap-2">
                   <StatusBar
-                    statusValue={playerData?.health}
+                    value={playerData?.health}
                     color="bg-green-400"
+                    sections={2}
                   />
                   <Image
                     className="absolute -right-6"
@@ -342,14 +329,7 @@ const Survival: React.FC<SurvivalProps> = ({
 
                 <div className="relative">
                   {/* guess container + attack value and button */}
-                  <div className="absolute top-0 w-full text-center">
-                    <p
-                      ref={scope}
-                      className="text-3xl font-bold text-green-500"
-                    >
-                      Success!
-                    </p>
-                  </div>
+
                   <GuessContainer
                     guess={guess}
                     playerData={playerData}

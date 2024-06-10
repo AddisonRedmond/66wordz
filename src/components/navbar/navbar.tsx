@@ -8,10 +8,9 @@ import getStripe from "~/utils/get-stripejs";
 import { useClerk } from "@clerk/nextjs";
 
 const Navbar: React.FC = () => {
-  const {signOut} = useClerk()
+  const { signOut } = useClerk();
 
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
-  const isPremiumUser = api.getUser.isPremiumUser.useQuery();
   const isMobile = useIsMobile();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
@@ -32,14 +31,9 @@ const Navbar: React.FC = () => {
           menuIsOpen={menuIsOpen}
           setMenuIsOpen={setMenuIsOpen}
           handleSignOut={signOut}
-
         />
       ) : (
-        <DesktopNavbar
-          handleUpgrade={handleUpgrade}
-          isPremiumUser={isPremiumUser.data?.isPremiumUser}
-          handleSignOut={signOut}
-        />
+        <DesktopNavbar handleSignOut={signOut} />
       )}
     </>
   );

@@ -21,13 +21,11 @@ type OpponentProps = {
 };
 
 const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
-
   const { health, shield, eliminated } = props.opponentData ?? {
     health: 0,
     shield: 0,
     eliminated: false,
   };
-
 
   const opponentSizePercentage = 50 / Math.sqrt(props?.opponentCount ?? 0); // Using the square root for both width and height
   return (
@@ -54,7 +52,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
             trailColor: "#d3d3d3",
             pathTransitionDuration: 0.5,
           })}
-          value={health}
+          value={(health / 2) * 100}
           strokeWidth={10}
         >
           <div className="h-full w-full">
@@ -67,7 +65,7 @@ const Opponent: React.FC<OpponentProps> = (props: OpponentProps) => {
                 pathTransitionDuration: 0.5,
               })}
               strokeWidth={10}
-              value={shield}
+              value={(shield / 4) * 100}
             >
               <div className=" flex flex-col items-center justify-center font-semibold">
                 {eliminated ? (
