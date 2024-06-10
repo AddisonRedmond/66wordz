@@ -9,7 +9,6 @@ import GameCardV2 from "~/components/game-card-v2";
 import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
-import { getRemaningGames } from "~/utils/game-limit";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";

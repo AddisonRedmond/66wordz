@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { ref, set, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
 import { AutoAttackOption } from "~/components/survival/survival";
@@ -81,7 +81,7 @@ const calcualteUpdatedStatus = (playerStatus: {
   // remove shield
   // if shield isnt enough, then remove health
   // check if the health has been removed fully and mark player eliminated
-  const { health, shield, eliminated } = playerStatus;
+  const { health, shield } = playerStatus;
 
   if (shield > 0) {
     return {

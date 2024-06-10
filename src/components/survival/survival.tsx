@@ -50,7 +50,6 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const [guess, setGuess] = useState<string>("");
   const [spellCheck, setSpellCheck] = useState<boolean>(false);
-  const [correctGuess, setCorrectGuess] = useState<boolean>(false);
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
@@ -126,7 +125,6 @@ const Survival: React.FC<SurvivalProps> = ({
           handleCorrectGuess(lobbyId, userId, playerData);
 
           setGuess("");
-          setCorrectGuess(true);
 
           if (eliminated) {
             setAutoAttack("first");

@@ -6,10 +6,7 @@ import {
   createNewSurivivalLobby,
   joinSurivivalLobby,
 } from "~/utils/survival/surivival";
-import {
-  hasBeen24Hours,
-  hasMoreFreeGames,
-} from "~/utils/game-limit";
+
 import {
   createNewEliminationLobby,
   joinEliminationLobby,
@@ -23,11 +20,7 @@ export const quickPlayRouter = createTRPCRouter({
       // check if player has reached the max number of games for the day
       const gameMode = input.gameMode as GameType;
 
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.userId },
-      });
       // check if user is premium user, if they are, proceed
-
 
       // check if player is already part of a game
 
