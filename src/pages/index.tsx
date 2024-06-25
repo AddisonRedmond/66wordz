@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
-// import crown from "../../public/crown.png";
 import survival from "../../public/survival.png";
 import CreateLobby from "~/components/create-lobby";
 import JoinLobby from "~/components/join-lobby";
