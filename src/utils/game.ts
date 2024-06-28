@@ -101,7 +101,6 @@ export const createCustomEliminationLobby = (owner: string) => {
   return {
     gameStarted: false,
     round: 1,
-    pointsGoal: 300,
     finalRound: false,
     owner: owner,
   };

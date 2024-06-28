@@ -10,17 +10,13 @@ import { getInitials, handleGetNewWord, handleMatched } from "./game";
 
 export const createNewEliminationLobby = () => {
   return {
-    lobbyData: {
-      gameStarted: false,
-      round: 1,
-      gameStartTime: new Date().getTime() + 30000,
-      pointsGoal: 300,
-      totalSpots: 0,
-      finalRound: false,
-    },
+    gameStarted: false,
+    round: 1,
+    gameStartTime: new Date().getTime() + 30000,
+    totalSpots: 0,
+    finalRound: false,
   };
 };
-
 
 export const joinEliminationLobby = (
   playerId: string,
@@ -31,7 +27,6 @@ export const joinEliminationLobby = (
       isBot: false,
       initials: getInitials(fullName) ?? "N/A",
       word: handleGetNewWord(),
-      wordValue: 100,
       matches: { full: [], partial: [], none: [] },
       revealIndex: [],
       eliminated: false,
@@ -41,33 +36,8 @@ export const joinEliminationLobby = (
   return player;
 };
 
-export const handleCorrectGuess = async (
-  playerPath: string,
-  playerObject: EliminationPlayerObject,
-  pointsGoal: number,
-  pointsPath: string,
-  existingPoints: number,
-) => {
+export const handleCorrectGuess = async () => {
   const newWord = handleGetNewWord();
-
-  await update(ref(db, playerPath), {
-    ...playerObject,
-    word: newWord,
-    wordValue: 100,
-    matches: {
-      full: [],
-      partial: [],
-      none: [],
-    },
-    revealIndex: [],
-  });
-
-  const updatedPoints =
-    playerObject.wordValue + existingPoints >= pointsGoal
-      ? pointsGoal
-      : playerObject.wordValue + existingPoints;
-
-  await update(ref(db, pointsPath), { points: updatedPoints });
 };
 
 const getRevealIndex = (
@@ -86,30 +56,8 @@ const getRevealIndex = (
   return Array.from(revealIndex);
 };
 
-export const handleIncorrectGuess = async (
-  path: string,
-  playerObject: EliminationPlayerObject,
-  guess: string,
-) => {
+export const handleIncorrectGuess = async () => {
   // get reveal index from function
-  const revealIndex = getRevealIndex(
-    playerObject.word,
-    guess,
-    playerObject?.revealIndex,
-  );
-
-  const newWordValue = Math.max(20, playerObject.wordValue - 5);
-
-  const matches = handleMatched(guess, playerObject.word, playerObject.matches);
-
-  await update(ref(db, path), {
-    ...playerObject,
-    revealIndex: revealIndex,
-    wordValue: newWordValue,
-    matches: {
-      ...matches,
-    },
-  });
 };
 
 export const calculatePlacement = (
@@ -180,7 +128,6 @@ export const createEliminationPlayer = (
     initials: getInitials(fullName),
     isBot: false,
     word: handleGetNewWord(),
-    wordValue: 100,
     matches: { full: [], partial: [], none: [] },
     revealIndex: [],
     eliminated: false,

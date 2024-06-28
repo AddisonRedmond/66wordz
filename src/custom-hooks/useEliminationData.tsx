@@ -7,7 +7,6 @@ export type EliminationLobbyData = {
   nextRoundStartTime?: number;
   gameStartTime: number;
   roundTimer?: number;
-  wordGoal: number;
   winner?: string;
   totalSpots: number;
   finalRound: boolean;
@@ -22,7 +21,6 @@ export type EliminationPlayerObject = {
   initials?: string;
   isBot: boolean;
   word: string;
-  wordValue: number;
   matches?: {
     full: string[];
     partial: string[];
@@ -39,7 +37,6 @@ export type EliminationPlayerData = {
 export type GameData = {
   lobbyData: EliminationLobbyData;
   players: EliminationPlayerData;
-  playerPoints?: EliminationPlayerPoints;
 };
 
 const useEliminationData = (
