@@ -4,7 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#9462C6",
+        custom: {
+          primary: "#9462C6",
+          secondary: "#B987EB",
+          accent: "#9D4BEF",
+          match: "#219C90",
+          "partial-match": "#FFD23F",
+          "no-match": "#686D76",
+        },
       },
     },
   },
