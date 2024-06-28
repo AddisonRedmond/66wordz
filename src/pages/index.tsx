@@ -16,6 +16,7 @@ import ChallengeCard from "~/components/challenge-card";
 import { useUser } from "@clerk/nextjs";
 import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
+import crown from "~/../public/crown.png"
 
 const Home = () => {
   const { user } = useUser();
@@ -198,6 +199,16 @@ const Home = () => {
                   <GameCardV2
                     gameType="SURVIVAL"
                     image={survival}
+                    fullAccess={true}
+                    quickPlay={handleQuickPlay}
+                    enableCreateLobby={enableCreateLobby}
+                    handleUpgrade={handleUpgrade}
+                    desc="Offence is the best defence in this heated player vs player game"
+                  />
+
+                  <GameCardV2
+                    gameType="ELIMINATION"
+                    image={crown}
                     fullAccess={true}
                     quickPlay={handleQuickPlay}
                     enableCreateLobby={enableCreateLobby}
