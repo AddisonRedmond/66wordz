@@ -3,7 +3,7 @@ import WordTile from "./word-tile";
 import { m } from "framer-motion";
 type WordContainerProps = {
   word?: string;
-  match?: string[];
+  match?: number[];
   eliminated?: boolean;
 };
 
@@ -21,7 +21,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
             <WordTile
               key={index}
               letter={letter}
-              revealed={props.match?.includes(letter) || props?.eliminated}
+              revealed={props.match?.includes(index) || props?.eliminated}
               revealedColor="#219C90"
             />
           );

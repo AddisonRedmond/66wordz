@@ -28,8 +28,8 @@ const Elimination: React.FC<EliminationProps> = ({
       {/* hidden if game not started || if next round timer hasn't expired*/}
       <div className="flex w-1/4 flex-col items-center justify-center gap-y-3">
         {/* real word container */}
-        <WordContainer word="FROM" match={["F", "O"]} />
-        <Points pointsGoal={6} totalPoints={2} />
+        <WordContainer word="FROM" match={[1, 3, 0]} />
+        <Points pointsGoal={6} totalPoints={4} />
         {/* round info -> players position qualified or not, time left */}
         {/* guess container */}
         {/* keyboard */}
