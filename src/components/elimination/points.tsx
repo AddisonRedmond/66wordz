@@ -5,7 +5,7 @@ type PointsProps = {
 
 const Points: React.FC<PointsProps> = (props) => {
   return (
-    <div className="flex w-full justify-center gap-x-1 rounded-full px-2">
+    <div className="flex w-full justify-between rounded-full">
       {Array.from({ length: props.pointsGoal }).map((_, index: number) => {
         return (
           <div
