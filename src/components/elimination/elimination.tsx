@@ -43,6 +43,9 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
+    if (!playerData) {
+      return;
+    }
     if (!/[a-zA-Z]/.test(key)) {
       return;
     }

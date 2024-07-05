@@ -2,7 +2,6 @@ import {
   // EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
-  EliminationPlayerPoints,
 } from "~/custom-hooks/useEliminationData";
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
 import { default as FIVE_LETTER_WORDS } from "./words";
@@ -86,23 +85,10 @@ export const handleIncorrectGuess = async () => {
 
 export const calculatePlacement = (
   players: EliminationPlayerData,
-  playerPoints: EliminationPlayerPoints,
   playerId: string,
 ) => {
+  // organize users in order
   // return index of user id
-
-  const sortedPlayers = Object.keys(players)
-    .filter((playerId) => {
-      return !players[playerId]!.eliminated;
-    })
-    .sort(
-      (a, b) =>
-        (playerPoints?.[a]?.points ?? 0) - (playerPoints?.[b]?.points ?? 0),
-    );
-
-  // filter out eliminated players
-
-  return sortedPlayers.indexOf(playerId) + 1;
 };
 
 export const calculateSpots = (round: number, totalPlayers: number): number => {
@@ -131,18 +117,8 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
   return Math.floor(calculateNumber());
 };
 
-export const calculateQualified = (
-  pointsGoal: number,
-  totalSpots: number,
-  playerPoints?: EliminationPlayerPoints,
-) => {
-  if (playerPoints === undefined) return `0/${totalSpots}`;
-  // calculate how many players are at or above the points goal
-  const totalQualifiedPlayers = Object.keys(playerPoints).filter(
-    (playerId) => (playerPoints?.[playerId]?.points ?? 0) >= pointsGoal,
-  );
-
-  return `${totalQualifiedPlayers.length}/${totalSpots}`;
+export const calculateQualified = (pointsGoal: number, totalSpots: number) => {
+  //  calculate total qualified players
 };
 
 export const createEliminationPlayer = (
