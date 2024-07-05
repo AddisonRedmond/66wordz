@@ -1,5 +1,3 @@
-import { ref, update } from "firebase/database";
-import { db } from "./firebase/firebase";
 import {
   // EliminationLobbyData,
   EliminationPlayerData,
@@ -132,4 +130,8 @@ export const createEliminationPlayer = (
     revealIndex: [],
     eliminated: false,
   };
+};
+
+export const validateKey = (key: string): boolean => {
+  return /[a-zA-Z]/.test(key);
 };

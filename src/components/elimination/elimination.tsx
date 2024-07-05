@@ -13,6 +13,7 @@ import Round from "./round-counter";
 import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
+import { validateKey } from "~/utils/elimination";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -31,12 +32,28 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
-    console.log(key)
-    if (key === "BACKSPACE") {
-      setGuess("");
-    } else {
-      setGuess((prevGuess)=>`${prevGuess}${key}`);
+    if (!/[a-zA-Z]/.test(key)) {
+      return;
     }
+    switch (key) {
+      case "BACKSPACE":
+        console.log("backspace");
+        break;
+      case "ENTER":
+        console.log("enter");
+        break;
+      default:
+        if (key.length === 1) {
+          console.log(key);
+        }
+        break;
+    }
+
+    // if (key === "BACKSPACE") {
+    //   setGuess("");
+    // } else {
+    //   setGuess((prevGuess) => `${prevGuess}${key}`);
+    // }
   };
 
   useOnKeyUp(handleKeyUp, []);
