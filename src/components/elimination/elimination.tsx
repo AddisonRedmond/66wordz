@@ -11,6 +11,8 @@ import GameStatus from "../board-components/game-status";
 import GuessContainer from "../board-components/guess-container";
 import Round from "./round-counter";
 import Keyboard from "../board-components/keyboard";
+import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
+import { useState } from "react";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -22,9 +24,23 @@ const Elimination: React.FC<EliminationProps> = ({
   lobbyId,
   userId,
   gameType,
-  exitMatch,
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { lobbyId, gameType });
+
+  const [guess, setGuess] = useState("");
+
+  const handleKeyUp = (e: KeyboardEvent | string) => {
+    const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
+    console.log(key)
+    if (key === "BACKSPACE") {
+      setGuess("");
+    } else {
+      setGuess((prevGuess)=>`${prevGuess}${key}`);
+    }
+  };
+
+  useOnKeyUp(handleKeyUp, []);
+
   return (
     <div className="flex w-screen flex-grow justify-around">
       {/* opponets left side */}
@@ -35,8 +51,8 @@ const Elimination: React.FC<EliminationProps> = ({
         <Points pointsGoal={8} totalPoints={1} />
         <GameStatus />
 
-        <GuessContainer word="" wordLength={4} />
-        <Keyboard disabled={false} handleKeyBoardLogic={()=>{}}  />
+        <GuessContainer word={guess} wordLength={4} />
+        <Keyboard disabled={false} handleKeyBoardLogic={handleKeyUp} />
       </div>
       {/* opponents right side */}
     </div>
