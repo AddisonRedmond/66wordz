@@ -1,7 +1,5 @@
 import { GameType } from "@prisma/client";
 import useEliminationData, {
-  EliminationLobbyData,
-  EliminationPlayerData,
   EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
@@ -13,7 +11,7 @@ import Round from "./round-counter";
 import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
-import { validateKey } from "~/utils/elimination";
+import useSound from "use-sound";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -28,35 +26,59 @@ const Elimination: React.FC<EliminationProps> = ({
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { lobbyId, gameType });
 
+  const playerData: EliminationPlayerObject | undefined =
+    gameData?.players[userId];
+
   const [guess, setGuess] = useState("");
+
+  const [popSound] = useSound("/sounds/pop-2.mp3", {
+    volume: 0.5,
+    playbackRate: 1.5,
+  });
+
+  const [deleteSound] = useSound("/sounds/delete2.mp3", {
+    volume: 0.5,
+    playbackRate: 3,
+  });
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
     if (!/[a-zA-Z]/.test(key)) {
       return;
     }
+
+    const handleBackspace = () => {
+      if (guess.length === 0) return;
+      deleteSound();
+      setGuess((prev) => prev.slice(0, -1));
+    };
+
+    const handleEnder = () => {};
+
+    const handleLetter = (letter: string) => {
+      if (guess.length < playerData?.word.length) {
+        popSound();
+        setGuess((prev) => prev + letter);
+      }
+    };
+
     switch (key) {
       case "BACKSPACE":
-        console.log("backspace");
+        handleBackspace();
         break;
       case "ENTER":
         console.log("enter");
+        handleEnder();
         break;
       default:
         if (key.length === 1) {
-          console.log(key);
+          handleLetter(key);
         }
         break;
     }
-
-    // if (key === "BACKSPACE") {
-    //   setGuess("");
-    // } else {
-    //   setGuess((prevGuess) => `${prevGuess}${key}`);
-    // }
   };
 
-  useOnKeyUp(handleKeyUp, []);
+  useOnKeyUp(handleKeyUp, [guess]);
 
   return (
     <div className="flex w-screen flex-grow justify-around">
@@ -64,7 +86,7 @@ const Elimination: React.FC<EliminationProps> = ({
       {/* hidden if game not started || if next round timer hasn't expired*/}
       <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
         <Round />
-        <WordContainer word="FROM" match={[1, 3, 0]} />
+        <WordContainer word={playerData?.word} match={[1, 3, 0]} />
         <Points pointsGoal={8} totalPoints={1} />
         <GameStatus />
 

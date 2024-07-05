@@ -5,6 +5,32 @@ import {
   EliminationPlayerPoints,
 } from "~/custom-hooks/useEliminationData";
 import { getInitials, handleGetNewWord, handleMatched } from "./game";
+import { default as FIVE_LETTER_WORDS } from "./words";
+import SIX_LETTER_WORDS from "./six-letter-words";
+import FOUR_LETTER_WORDS from "./four-letter-words";
+
+export const getWordByLength = (length: number): string => {
+  switch (length) {
+    case 4:
+      const fourLetterIndex = Math.floor(
+        Math.random() * FOUR_LETTER_WORDS.length,
+      );
+      return FOUR_LETTER_WORDS[fourLetterIndex]!;
+    case 5:
+      const fiveLetterIndex = Math.floor(
+        Math.random() * FOUR_LETTER_WORDS.length,
+      );
+      return FIVE_LETTER_WORDS[fiveLetterIndex]!;
+    case 6:
+      const sixLetterIndex = Math.floor(
+        Math.random() * FOUR_LETTER_WORDS.length,
+      );
+      return SIX_LETTER_WORDS[sixLetterIndex]!;
+
+    default:
+      return "ERROR";
+  }
+};
 
 export const createNewEliminationLobby = () => {
   return {
@@ -24,7 +50,7 @@ export const joinEliminationLobby = (
     [playerId]: {
       isBot: false,
       initials: getInitials(fullName) ?? "N/A",
-      word: handleGetNewWord(),
+      word: getWordByLength(4),
       matches: { full: [], partial: [], none: [] },
       revealIndex: [],
       eliminated: false,

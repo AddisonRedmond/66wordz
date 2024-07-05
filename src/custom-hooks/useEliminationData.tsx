@@ -13,9 +13,6 @@ export type EliminationLobbyData = {
   owner?: string;
 };
 
-export type EliminationPlayerPoints = {
-  [keyof: string]: { points: number };
-};
 
 export type EliminationPlayerObject = {
   initials?: string;
