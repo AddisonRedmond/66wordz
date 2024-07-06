@@ -12,7 +12,7 @@ import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
-import { handleCorrectGuess } from "~/utils/elimination";
+import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/elimination";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -46,7 +46,7 @@ const Elimination: React.FC<EliminationProps> = ({
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
 
     if (!playerData || !gameData) {
-      console.log("no player data");
+      console.error("no player data");
       return;
     }
     if (!/[a-zA-Z]/.test(key)) {
@@ -69,7 +69,14 @@ const Elimination: React.FC<EliminationProps> = ({
         );
       } else {
         // handle incorrect guess
+        handleIncorrectGuess(
+          guess,
+          playerData,
+          `${gameType}/${lobbyId}/players/${userId}`,
+        );
       }
+
+      setGuess("");
     };
 
     const handleLetter = (letter: string) => {
@@ -102,7 +109,10 @@ const Elimination: React.FC<EliminationProps> = ({
       {/* hidden if game not started || if next round timer hasn't expired*/}
       <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
         <Round />
-        <WordContainer word={playerData?.word} match={[1, 3, 0]} />
+        <WordContainer
+          word={playerData?.word}
+          match={playerData?.revealIndex}
+        />
         <Points
           pointsGoal={gameData?.lobbyData.totalPoints}
           totalPoints={playerData?.points}
@@ -110,7 +120,11 @@ const Elimination: React.FC<EliminationProps> = ({
         <GameStatus />
 
         <GuessContainer word={guess} wordLength={playerData?.word.length} />
-        <Keyboard disabled={false} handleKeyBoardLogic={handleKeyUp} />
+        <Keyboard
+          disabled={false}
+          handleKeyBoardLogic={handleKeyUp}
+          matches={playerData?.matches}
+        />
       </div>
       {/* opponents right side */}
     </div>

@@ -59,7 +59,7 @@ export const handleMatched = (
     full?: string[];
     partial?: string[];
     none?: string[];
-  },
+  } | null,
 ): { full: string[]; partial: string[]; none: string[] } => {
   const full = new Set<string>([...(previousMatches?.full ?? [])]);
   const partial = new Set<string>([...(previousMatches?.partial ?? [])]);

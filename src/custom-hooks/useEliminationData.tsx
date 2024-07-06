@@ -22,7 +22,7 @@ export type EliminationPlayerObject = {
     full: string[];
     partial: string[];
     none: string[];
-  };
+  } | null;
   revealIndex?: number[];
   eliminated?: boolean;
   points: number;

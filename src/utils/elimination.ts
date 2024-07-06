@@ -62,31 +62,12 @@ export const joinEliminationLobby = (
       initials: getInitials(fullName) ?? "N/A",
       word: getWordByLength(4),
       matches: { full: [], partial: [], none: [] },
-      revealIndex: [],
       eliminated: false,
       points: 0,
     },
   };
 
   return player;
-};
-
-export const handleCorrectGuess = async (
-  playerData: EliminationPlayerObject,
-  round: number,
-  path: string,
-) => {
-  // increment player points, clear their matches, get them a new word
-  const wordLength = wordLengthLookUp[round] || 5;
-  if (round) {
-    const updatedPlayerData = {
-      ...playerData,
-      points: playerData.points + 1,
-      matches: null,
-      word: getWordByLength(wordLength),
-    };
-    update(ref(db, path), updatedPlayerData);
-  }
 };
 
 const getRevealIndex = (
@@ -105,8 +86,37 @@ const getRevealIndex = (
   return Array.from(revealIndex);
 };
 
-export const handleIncorrectGuess = async () => {
-  // get reveal index from function
+export const handleCorrectGuess = async (
+  playerData: EliminationPlayerObject,
+  round: number,
+  path: string,
+) => {
+  // increment player points, clear their matches, get them a new word
+  const wordLength = wordLengthLookUp[round] || 5;
+  if (round) {
+    const updatedPlayerData: EliminationPlayerObject = {
+      ...playerData,
+      points: playerData.points + 1,
+      matches: null,
+      word: getWordByLength(wordLength),
+      revealIndex: []
+    };
+    await update(ref(db, path), updatedPlayerData);
+  }
+};
+
+export const handleIncorrectGuess = async (
+  guess: string,
+  playerData: EliminationPlayerObject,
+  path: string,
+) => {
+  const updatedPlayerData: EliminationPlayerObject = {
+    ...playerData,
+    matches: handleMatched(guess, playerData.word, playerData.matches),
+    revealIndex: getRevealIndex(playerData.word, guess, playerData.revealIndex),
+  };
+
+  await update(ref(db, path), updatedPlayerData);
 };
 
 export const calculatePlacement = (
