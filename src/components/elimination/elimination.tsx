@@ -13,6 +13,7 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
 import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/elimination";
+import EliminationOpponent from "./elimination-opponent";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -106,6 +107,7 @@ const Elimination: React.FC<EliminationProps> = ({
   return (
     <div className="flex w-screen flex-grow justify-around">
       {/* opponets left side */}
+      <EliminationOpponent opponents={gameData?.players} />
       {/* hidden if game not started || if next round timer hasn't expired*/}
       <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
         <Round />
@@ -126,6 +128,8 @@ const Elimination: React.FC<EliminationProps> = ({
           matches={playerData?.matches}
         />
       </div>
+      <EliminationOpponent opponents={gameData?.players} />
+
       {/* opponents right side */}
     </div>
   );
