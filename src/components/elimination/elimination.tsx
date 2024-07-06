@@ -12,6 +12,7 @@ import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
+import { handleCorrectGuess } from "~/utils/elimination";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -43,7 +44,9 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
-    if (!playerData) {
+
+    if (!playerData || !gameData) {
+      console.log("no player data");
       return;
     }
     if (!/[a-zA-Z]/.test(key)) {
@@ -56,7 +59,18 @@ const Elimination: React.FC<EliminationProps> = ({
       setGuess((prev) => prev.slice(0, -1));
     };
 
-    const handleEnder = () => {};
+    const handleEnter = () => {
+      if (guess === playerData.word) {
+        // handle correct guess
+        handleCorrectGuess(
+          playerData,
+          gameData.lobbyData.round,
+          `${gameType}/${lobbyId}/players/${userId}`,
+        );
+      } else {
+        // handle incorrect guess
+      }
+    };
 
     const handleLetter = (letter: string) => {
       if (guess.length < playerData?.word.length) {
@@ -70,8 +84,7 @@ const Elimination: React.FC<EliminationProps> = ({
         handleBackspace();
         break;
       case "ENTER":
-        console.log("enter");
-        handleEnder();
+        handleEnter();
         break;
       default:
         if (key.length === 1) {
@@ -81,7 +94,7 @@ const Elimination: React.FC<EliminationProps> = ({
     }
   };
 
-  useOnKeyUp(handleKeyUp, [guess]);
+  useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   return (
     <div className="flex w-screen flex-grow justify-around">
@@ -90,10 +103,13 @@ const Elimination: React.FC<EliminationProps> = ({
       <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
         <Round />
         <WordContainer word={playerData?.word} match={[1, 3, 0]} />
-        <Points pointsGoal={8} totalPoints={1} />
+        <Points
+          pointsGoal={gameData?.lobbyData.totalPoints}
+          totalPoints={playerData?.points}
+        />
         <GameStatus />
 
-        <GuessContainer word={guess} wordLength={4} />
+        <GuessContainer word={guess} wordLength={playerData?.word.length} />
         <Keyboard disabled={false} handleKeyBoardLogic={handleKeyUp} />
       </div>
       {/* opponents right side */}

@@ -1,3 +1,5 @@
+import { DatabaseReference, ref, update } from "firebase/database";
+
 import {
   // EliminationLobbyData,
   EliminationPlayerData,
@@ -7,8 +9,16 @@ import { getInitials, handleGetNewWord, handleMatched } from "./game";
 import { default as FIVE_LETTER_WORDS } from "./words";
 import SIX_LETTER_WORDS from "./six-letter-words";
 import FOUR_LETTER_WORDS from "./four-letter-words";
+import { db } from "./firebase/firebase";
 
-export const getWordByLength = (length: number): string => {
+const wordLengthLookUp: { [key: number]: number } = {
+  1: 4,
+  2: 5,
+  3: 6,
+  5: 7,
+};
+
+export const getWordByLength = (length: number) => {
   switch (length) {
     case 4:
       const fourLetterIndex = Math.floor(
@@ -38,6 +48,7 @@ export const createNewEliminationLobby = () => {
     gameStartTime: new Date().getTime() + 30000,
     totalSpots: 0,
     finalRound: false,
+    totalPoints: 8,
   };
 };
 
@@ -53,14 +64,29 @@ export const joinEliminationLobby = (
       matches: { full: [], partial: [], none: [] },
       revealIndex: [],
       eliminated: false,
+      points: 0,
     },
   };
 
   return player;
 };
 
-export const handleCorrectGuess = async () => {
-  const newWord = handleGetNewWord();
+export const handleCorrectGuess = async (
+  playerData: EliminationPlayerObject,
+  round: number,
+  path: string,
+) => {
+  // increment player points, clear their matches, get them a new word
+  const wordLength = wordLengthLookUp[round] || 5;
+  if (round) {
+    const updatedPlayerData = {
+      ...playerData,
+      points: playerData.points + 1,
+      matches: null,
+      word: getWordByLength(wordLength),
+    };
+    update(ref(db, path), updatedPlayerData);
+  }
 };
 
 const getRevealIndex = (
@@ -119,19 +145,6 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
 
 export const calculateQualified = (pointsGoal: number, totalSpots: number) => {
   //  calculate total qualified players
-};
-
-export const createEliminationPlayer = (
-  fullName: string,
-): EliminationPlayerObject => {
-  return {
-    initials: getInitials(fullName),
-    isBot: false,
-    word: handleGetNewWord(),
-    matches: { full: [], partial: [], none: [] },
-    revealIndex: [],
-    eliminated: false,
-  };
 };
 
 export const validateKey = (key: string): boolean => {

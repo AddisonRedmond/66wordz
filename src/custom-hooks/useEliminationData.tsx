@@ -11,8 +11,8 @@ export type EliminationLobbyData = {
   totalSpots: number;
   finalRound: boolean;
   owner?: string;
+  totalPoints: number;
 };
-
 
 export type EliminationPlayerObject = {
   initials?: string;
@@ -25,6 +25,7 @@ export type EliminationPlayerObject = {
   };
   revealIndex?: number[];
   eliminated?: boolean;
+  points: number;
 };
 
 export type EliminationPlayerData = {

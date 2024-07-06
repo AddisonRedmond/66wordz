@@ -3,7 +3,7 @@ import WordTile from "./word-tile";
 import { m } from "framer-motion";
 type GuessContainerProps = {
   word?: string;
-  wordLength: number;
+  wordLength?: number;
 };
 
 const GuessContainer: React.FC<GuessContainerProps> = ({
@@ -21,7 +21,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
               letter={letter}
               revealed={true}
               revealedColor="white"
-              wordLength={wordLength}
+              wordLength={wordLength ?? 5}
             />
           );
         })}
