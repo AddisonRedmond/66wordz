@@ -1,20 +1,21 @@
 import { AnimatePresence, m } from "framer-motion";
 import { EliminationPlayerData } from "~/custom-hooks/useEliminationData";
+import Points from "./points";
 
 type EliminationOpponentProps = {
   opponents?: EliminationPlayerData;
+  pointsGoal?: number;
 };
 
 const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
   // Using the square root for both width and height
-  if (props?.opponents) {
-    const opponentSizePercentage =
-      90 / Math.sqrt(Object.keys(props.opponents).length);
+  if (props?.opponents && props.pointsGoal) {
+    const opponentSizePercentage = 90 / Math.sqrt(33);
     return (
       <div className="flex flex-grow flex-wrap items-center justify-center px-2">
         {Object.keys(props.opponents).map((id: string) => {
           return (
-            <AnimatePresence>
+            <AnimatePresence key={id}>
               <m.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -54,14 +55,20 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                     </m.p>
                   ) : (
                     <>
-                      <div>points</div>
+                      <Points
+                        pointsGoal={props.pointsGoal}
+                        totalPoints={props.opponents?.[id]?.points}
+                      />
                       <div className="flex h-fit items-center justify-center gap-1">
-                        {Array.from({ length: 5 }, (_, index) => (
-                          <div
-                            key={index}
-                            className={`aspect-square w-1/5 min-w-[5px] ${props.opponents?.[id]?.revealIndex?.includes(index) ? "bg-emerald-500" : "bg-zinc-300"}`}
-                          ></div>
-                        ))}
+                        {Array.from(
+                          { length: props.opponents?.[id]?.word.length ?? 5 },
+                          (_, index) => (
+                            <div
+                              key={index}
+                              className={`aspect-square w-1/5 min-w-[5px] ${props.opponents?.[id]?.revealIndex?.includes(index) ? "bg-[#00DFA2]" : "bg-zinc-300"}`}
+                            ></div>
+                          ),
+                        )}
                       </div>
                     </>
                   )}

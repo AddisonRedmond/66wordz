@@ -4,7 +4,8 @@ type PointsProps = {
 };
 
 const Points: React.FC<PointsProps> = ({ pointsGoal, totalPoints }) => {
-  if (!pointsGoal || !totalPoints) {
+  console.log({ pointsGoal, totalPoints });
+  if (!pointsGoal || totalPoints === undefined) {
     return (
       <div>
         <p>An error occurred</p>

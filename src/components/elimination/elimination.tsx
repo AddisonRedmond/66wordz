@@ -1,5 +1,6 @@
 import { GameType } from "@prisma/client";
 import useEliminationData, {
+  EliminationPlayerData,
   EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
 import { db } from "~/utils/firebase/firebase";
@@ -104,13 +105,40 @@ const Elimination: React.FC<EliminationProps> = ({
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
+  const getHalfOfOpponents = (
+    isEven: boolean,
+    opponents?: EliminationPlayerData,
+  ) => {
+    if (!opponents) {
+      return;
+    }
+    const filteredData: EliminationPlayerData = {};
+    const keys = Object.keys(opponents);
+
+    keys.forEach((key, index) => {
+      if (opponents[key]) {
+        if (isEven && index % 2 === 0) {
+          filteredData[key] = opponents[key];
+        } else if (!isEven && index % 2 !== 0) {
+          filteredData[key] = opponents[key];
+        }
+      }
+    });
+
+    return filteredData;
+  };
+
   return (
     <div className="flex w-screen flex-grow justify-around">
       {/* opponets left side */}
-      <EliminationOpponent opponents={gameData?.players} />
+      <EliminationOpponent
+        pointsGoal={gameData?.lobbyData.totalPoints}
+        opponents={getHalfOfOpponents(true, gameData?.players)}
+      />
       {/* hidden if game not started || if next round timer hasn't expired*/}
-      <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
+      <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-8">
         <Round />
+        <GameStatus />
         <WordContainer
           word={playerData?.word}
           match={playerData?.revealIndex}
@@ -119,16 +147,19 @@ const Elimination: React.FC<EliminationProps> = ({
           pointsGoal={gameData?.lobbyData.totalPoints}
           totalPoints={playerData?.points}
         />
-        <GameStatus />
-
-        <GuessContainer word={guess} wordLength={playerData?.word.length} />
-        <Keyboard
-          disabled={false}
-          handleKeyBoardLogic={handleKeyUp}
-          matches={playerData?.matches}
-        />
+        <div className="flex w-full flex-col gap-y-2">
+          <GuessContainer word={guess} wordLength={playerData?.word.length} />
+          <Keyboard
+            disabled={false}
+            handleKeyBoardLogic={handleKeyUp}
+            matches={playerData?.matches}
+          />
+        </div>
       </div>
-      <EliminationOpponent opponents={gameData?.players} />
+      <EliminationOpponent
+        pointsGoal={gameData?.lobbyData.totalPoints}
+        opponents={getHalfOfOpponents(false, gameData?.players)}
+      />
 
       {/* opponents right side */}
     </div>

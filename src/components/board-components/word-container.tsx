@@ -23,7 +23,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
               key={index}
               letter={letter}
               revealed={props.match?.includes(index) || props?.eliminated || props.revealAll}
-              revealedColor="#219C90"
+              revealedColor="#00DFA2"
               wordLength={word.length}
             />
           );
