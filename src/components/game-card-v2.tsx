@@ -41,12 +41,12 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
                 Upgrade to gold
               </button>
             )}
-            <button
+            {/* <button
               onClick={() => props.enableCreateLobby(props.gameType)}
               className={`w-full duration-150 ease-in-out ${props.fullAccess ? " opacity-100 hover:bg-zinc-200" : "opacity-25"} rounded-md border-2 border-zinc-500 bg-white py-2 font-semibold text-black`}
             >
               Create
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

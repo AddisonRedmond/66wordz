@@ -15,11 +15,11 @@ import { useState } from "react";
 import useSound from "use-sound";
 import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/elimination";
 import EliminationOpponent from "./elimination-opponent";
+import GameStarting from "../board-components/game-starting";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
   gameType: GameType;
-  exitMatch: () => void;
 };
 
 const Elimination: React.FC<EliminationProps> = ({
@@ -46,12 +46,22 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
+    // only run function if player isn't eliminated and if they dont have full points
 
+    // conditions to ensure the player should be guessing
     if (!playerData || !gameData) {
       console.error("no player data");
       return;
-    }
-    if (!/[a-zA-Z]/.test(key)) {
+    } else if (
+      playerData?.eliminated ||
+      playerData?.points >= gameData?.lobbyData.totalPoints
+    ) {
+      console.warn("player already qualified");
+      return;
+    } else if (!gameData.lobbyData.gameStarted) {
+      console.warn("Game hasn't started yet");
+      return;
+    } else if (!/[a-zA-Z]/.test(key)) {
       return;
     }
 
@@ -62,23 +72,25 @@ const Elimination: React.FC<EliminationProps> = ({
     };
 
     const handleEnter = () => {
-      if (guess === playerData.word) {
-        // handle correct guess
-        handleCorrectGuess(
-          playerData,
-          gameData.lobbyData.round,
-          `${gameType}/${lobbyId}/players/${userId}`,
-        );
-      } else {
-        // handle incorrect guess
-        handleIncorrectGuess(
-          guess,
-          playerData,
-          `${gameType}/${lobbyId}/players/${userId}`,
-        );
+      // ensure guess length is same length as word
+      if (guess.length === playerData.word.length) {
+        // check if guess is correct
+        if (guess === playerData.word) {
+          handleCorrectGuess(
+            playerData,
+            gameData.lobbyData.round,
+            `${gameType}/${lobbyId}/players/${userId}`,
+          );
+        } else {
+          // handle incorrect guess
+          handleIncorrectGuess(
+            guess,
+            playerData,
+            `${gameType}/${lobbyId}/players/${userId}`,
+          );
+        }
+        setGuess("");
       }
-
-      setGuess("");
     };
 
     const handleLetter = (letter: string) => {
@@ -113,7 +125,7 @@ const Elimination: React.FC<EliminationProps> = ({
       return;
     }
     const filteredData: EliminationPlayerData = {};
-    const keys = Object.keys(opponents);
+    const keys = Object.keys(opponents).filter((id) => id !== userId);
 
     keys.forEach((key, index) => {
       if (opponents[key]) {
@@ -127,43 +139,55 @@ const Elimination: React.FC<EliminationProps> = ({
 
     return filteredData;
   };
-
-  return (
-    <div className="flex w-screen flex-grow justify-around">
-      {/* opponets left side */}
-      <EliminationOpponent
-        pointsGoal={gameData?.lobbyData.totalPoints}
-        opponents={getHalfOfOpponents(true, gameData?.players)}
-      />
-      {/* hidden if game not started || if next round timer hasn't expired*/}
-      <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-8">
-        <Round />
-        <GameStatus />
-        <WordContainer
-          word={playerData?.word}
-          match={playerData?.revealIndex}
-        />
-        <Points
-          pointsGoal={gameData?.lobbyData.totalPoints}
-          totalPoints={playerData?.points}
-        />
-        <div className="flex w-full flex-col gap-y-2">
-          <GuessContainer word={guess} wordLength={playerData?.word.length} />
-          <Keyboard
-            disabled={false}
-            handleKeyBoardLogic={handleKeyUp}
-            matches={playerData?.matches}
-          />
-        </div>
+  if (gameData) {
+    return (
+      <div className="flex w-screen flex-grow justify-around">
+        {gameData?.lobbyData.gameStarted ? (
+          <>
+            {/* opponets left side */}
+            <EliminationOpponent
+              pointsGoal={gameData?.lobbyData.totalPoints}
+              opponents={getHalfOfOpponents(true, gameData?.players)}
+            />
+            {/* hidden if game not started || if next round timer hasn't expired*/}
+            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center sm:gap-y-8 gap-y-3">
+              <Round
+                round={gameData.lobbyData.round}
+                finalRound={gameData.lobbyData.finalRound}
+              />
+              <GameStatus />
+              <WordContainer
+                word={playerData?.word}
+                match={playerData?.revealIndex}
+              />
+              <Points
+                pointsGoal={gameData?.lobbyData.totalPoints}
+                totalPoints={playerData?.points}
+              />
+              <div className="flex w-full flex-col gap-y-2">
+                <GuessContainer
+                  word={guess}
+                  wordLength={playerData?.word.length}
+                />
+                <Keyboard
+                  disabled={false}
+                  handleKeyBoardLogic={handleKeyUp}
+                  matches={playerData?.matches}
+                />
+              </div>
+            </div>
+            <EliminationOpponent
+              pointsGoal={gameData?.lobbyData.totalPoints}
+              opponents={getHalfOfOpponents(false, gameData?.players)}
+            />
+            {/* opponents right side */}
+          </>
+        ) : (
+          <GameStarting expiryTimestamp={gameData.lobbyData.gameStartTime} />
+        )}
       </div>
-      <EliminationOpponent
-        pointsGoal={gameData?.lobbyData.totalPoints}
-        opponents={getHalfOfOpponents(false, gameData?.players)}
-      />
-
-      {/* opponents right side */}
-    </div>
-  );
+    );
+  }
 };
 
 export default Elimination;

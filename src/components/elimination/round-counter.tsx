@@ -1,7 +1,9 @@
-const Round = () => {
+const Round: React.FC<{ round: number; finalRound: Boolean }> = (props) => {
   return (
     <div>
-      <h2 className=" text-2xl font-bold">Round 2</h2>
+      <h2 className=" text-2xl font-bold">
+        {props.finalRound ? "Final Round" : `Round ${props.round}`}
+      </h2>
     </div>
   );
 };

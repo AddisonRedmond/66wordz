@@ -16,7 +16,7 @@ import ChallengeCard from "~/components/challenge-card";
 import { useUser } from "@clerk/nextjs";
 import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
-import crown from "~/../public/crown.png"
+import crown from "~/../public/crown.png";
 
 const Home = () => {
   const { user } = useUser();
@@ -101,9 +101,6 @@ const Home = () => {
               lobbyId={lobby.data.id}
               userId={user.id}
               gameType={lobby.data.gameType}
-              exitMatch={() => {
-                setQuitGame(true);
-              }}
             />
           );
       }
@@ -112,7 +109,6 @@ const Home = () => {
   useEffect(() => {
     const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "Are you sure you want to leave the game?";
     };
 
     if (lobby.data?.id) {
@@ -221,6 +217,16 @@ const Home = () => {
           )}
         </AnimatePresence>
       </div>
+      <footer className="m-auto pb-4">
+        {lobby.data && (
+          <button
+            onClick={() => setQuitGame(true)}
+            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+          >
+            LEAVE
+          </button>
+        )}
+      </footer>
     </div>
   );
 };
