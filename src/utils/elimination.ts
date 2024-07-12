@@ -48,7 +48,7 @@ export const createNewEliminationLobby = () => {
     gameStartTime: new Date().getTime() + 30000,
     totalSpots: 0,
     finalRound: false,
-    totalPoints: 8,
+    totalPoints: 6,
   };
 };
 
@@ -99,7 +99,7 @@ export const handleCorrectGuess = async (
       points: playerData.points + 1,
       matches: null,
       word: getWordByLength(wordLength),
-      revealIndex: []
+      revealIndex: [],
     };
     await update(ref(db, path), updatedPlayerData);
   }
@@ -123,10 +123,34 @@ export const calculatePlacement = (
   players: EliminationPlayerData,
   playerId: string,
 ) => {
-  // organize users in order
-  // return index of user id
+  const playerEntries = Object.entries(players);
+
+  // Sort the player entries based on their points in descending order
+  const sortedPlayers = playerEntries.sort(
+    ([, playerA], [, playerB]) => playerB.points - playerA.points,
+  );
+
+  // Find the index of the player with the given playerId
+  const playerIndex = sortedPlayers.findIndex(([id]) => id === playerId) + 1;
+
+  // Return the placement of the player if found, otherwise return null
+  return playerIndex >= 0 ? playerIndex : 99;
 };
 
+export const getQualified = (
+  players: EliminationPlayerData,
+  pointsGoal: number,
+): number => {
+  let qualifiedCount = 0;
+
+  for (const playerId in players) {
+    if (players[playerId]!.points >= pointsGoal) {
+      qualifiedCount++;
+    }
+  }
+
+  return qualifiedCount;
+};
 export const calculateSpots = (round: number, totalPlayers: number): number => {
   // function to total players and bots if bots exist, if bots doesnt exist then return playerPoints.length
   // function to calculate how many players and bots will be qualified for the next round

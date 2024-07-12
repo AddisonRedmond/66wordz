@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({
           <Loading />
         </m.div>
       ) : (
-        <m.div className="my-4 flex h-1/5 flex-col items-center justify-center gap-3">
+        <m.div className=" my-4 hidden h-1/5 flex-col items-center justify-center gap-3 sm:flex">
           <Tile letters={"66"} desktopOnly={desktopOnly} />
           <Tile letters="WORDZ" desktopOnly={desktopOnly} />
 

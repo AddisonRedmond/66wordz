@@ -13,9 +13,16 @@ import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
-import { handleCorrectGuess, handleIncorrectGuess } from "~/utils/elimination";
+import {
+  calculatePlacement,
+  getQualified,
+  handleCorrectGuess,
+  handleIncorrectGuess,
+} from "~/utils/elimination";
 import EliminationOpponent from "./elimination-opponent";
 import GameStarting from "../board-components/game-starting";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import MobileOpponents from "./mobile-opponents";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -28,6 +35,7 @@ const Elimination: React.FC<EliminationProps> = ({
   gameType,
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { lobbyId, gameType });
+  const isMobile = useIsMobile();
 
   const playerData: EliminationPlayerObject | undefined =
     gameData?.players[userId];
@@ -145,17 +153,29 @@ const Elimination: React.FC<EliminationProps> = ({
         {gameData?.lobbyData.gameStarted ? (
           <>
             {/* opponets left side */}
-            <EliminationOpponent
-              pointsGoal={gameData?.lobbyData.totalPoints}
-              opponents={getHalfOfOpponents(true, gameData?.players)}
-            />
+            {!isMobile && (
+              <EliminationOpponent
+                pointsGoal={gameData?.lobbyData.totalPoints}
+                opponents={getHalfOfOpponents(true, gameData?.players)}
+                wordLength={playerData?.word.length}
+              />
+            )}
             {/* hidden if game not started || if next round timer hasn't expired*/}
-            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center sm:gap-y-8 gap-y-3">
+            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <Round
                 round={gameData.lobbyData.round}
                 finalRound={gameData.lobbyData.finalRound}
               />
-              <GameStatus />
+              {gameData.lobbyData.roundTimer && (
+                <GameStatus
+                  qualified={getQualified(
+                    gameData.players,
+                    gameData.lobbyData.totalPoints,
+                  )}
+                  endTime={gameData.lobbyData.roundTimer}
+                  totalSpots={gameData.lobbyData.totalSpots}
+                />
+              )}
               <WordContainer
                 word={playerData?.word}
                 match={playerData?.revealIndex}
@@ -164,6 +184,13 @@ const Elimination: React.FC<EliminationProps> = ({
                 pointsGoal={gameData?.lobbyData.totalPoints}
                 totalPoints={playerData?.points}
               />
+              {isMobile && (
+                <MobileOpponents
+                  opponents={gameData.players}
+                  userId={userId}
+                  pointsGoal={8}
+                />
+              )}
               <div className="flex w-full flex-col gap-y-2">
                 <GuessContainer
                   word={guess}
@@ -176,10 +203,13 @@ const Elimination: React.FC<EliminationProps> = ({
                 />
               </div>
             </div>
-            <EliminationOpponent
-              pointsGoal={gameData?.lobbyData.totalPoints}
-              opponents={getHalfOfOpponents(false, gameData?.players)}
-            />
+            {!isMobile && (
+              <EliminationOpponent
+                pointsGoal={gameData?.lobbyData.totalPoints}
+                opponents={getHalfOfOpponents(false, gameData?.players)}
+                wordLength={playerData?.word.length}
+              />
+            )}
             {/* opponents right side */}
           </>
         ) : (

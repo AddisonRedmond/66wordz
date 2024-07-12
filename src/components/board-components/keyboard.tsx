@@ -42,7 +42,8 @@ const KeyboardRow = ({
               backgroundColor: handleColors(letter),
               color: handleColors(letter) === "#545B77" ? "#FFFFFF" : "#000000",
             }}
-            className={` flex h-12 w-[10%] min-w-8 max-w-12 sm:aspect-square sm:h-auto ${
+            style={{ width: "10%" }}
+            className={` flex h-full max-w-12 sm:aspect-square sm:h-auto ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md font-bold sm:border-none`}
             key={letter}
@@ -61,8 +62,8 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex w-full flex-col items-center gap-1">
-      <div className="flex w-full justify-center gap-1">
+    <div className="flex h-48 max-w-full flex-col items-center gap-1 md:h-fit">
+      <div className="flex h-1/3 w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
@@ -70,7 +71,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           disabled={props.disabled}
         />
       </div>
-      <div className="flex w-full justify-center gap-1">
+      <div className="flex h-1/3 w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
@@ -79,7 +80,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           specialKey={
             <button
               onClick={() => props.handleKeyBoardLogic("Backspace")}
-              className={`hidden aspect-square w-[10%] min-w-8 max-w-12 items-center justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
+              className={`hidden aspect-square items-center  justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
             >
               <Image
                 className={`${
@@ -92,7 +93,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           }
         />
       </div>
-      <div className="flex w-full justify-center gap-1">
+      <div className="flex h-1/3 w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}

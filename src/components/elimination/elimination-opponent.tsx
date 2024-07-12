@@ -5,6 +5,7 @@ import Points from "./points";
 type EliminationOpponentProps = {
   opponents?: EliminationPlayerData;
   pointsGoal?: number;
+  wordLength?: number;
 };
 
 const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
@@ -12,7 +13,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
   if (props?.opponents && props.pointsGoal) {
     const opponentSizePercentage = 90 / Math.sqrt(33);
     return (
-      <div className="flex flex-grow flex-wrap items-center justify-center px-2">
+      <div className="flex flex-grow flex-wrap items-center justify-between px-2">
         {Object.keys(props.opponents).map((id: string) => {
           return (
             <AnimatePresence key={id}>
@@ -61,7 +62,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                       />
                       <div className="flex h-fit items-center justify-center gap-1">
                         {Array.from(
-                          { length: props.opponents?.[id]?.word.length ?? 5 },
+                          { length: props.wordLength ?? 5 },
                           (_, index) => (
                             <div
                               key={index}
