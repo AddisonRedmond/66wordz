@@ -16,7 +16,7 @@ const ChallengeCard: React.FC = () => {
           <div>
             <h3 className="mb-0">Challenge</h3>
             <p className="hidden text-sm text-gray-500 sm:block">
-              Challenge a friend to see who can uncover a word faster
+              Challenge a friend or friends to see who can uncover a word faster
             </p>
           </div>
 

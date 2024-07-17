@@ -32,10 +32,10 @@ const GameStatus: React.FC<GameStatusProps> = (props) => {
   }
   return (
     <div className="flex h-14 w-60 rounded-md border-2">
-      <div className="grid h-full w-1/4 place-items-center rounded-l-md bg-zinc-700">
-        <p className=" text-2xl text-white">{`${props.qualified}/${props.totalSpots}`}</p>
+      <div className="grid h-full w-1/3 place-items-center rounded-l-md bg-zinc-700">
+        <p className=" text-lg text-white">{`${props.qualified} of ${props.totalSpots}`}</p>
       </div>
-      <div className="grid w-full place-items-center text-lg font-semibold">
+      <div className="grid w-2/3 place-items-center text-lg font-semibold">
         <p>{`${minutes}:${seconds.toString().padStart(2, "0")}`}</p>
       </div>
     </div>

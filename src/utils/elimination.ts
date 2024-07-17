@@ -144,7 +144,10 @@ export const getQualified = (
   let qualifiedCount = 0;
 
   for (const playerId in players) {
-    if (players[playerId]!.points >= pointsGoal) {
+    if (
+      players[playerId]!.points >= pointsGoal &&
+      !players[playerId]?.eliminated
+    ) {
       qualifiedCount++;
     }
   }

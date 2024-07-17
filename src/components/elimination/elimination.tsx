@@ -23,6 +23,8 @@ import EliminationOpponent from "./elimination-opponent";
 import GameStarting from "../board-components/game-starting";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
+import Modal from "../modal";
+import Intermission from "./intermission";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -150,6 +152,13 @@ const Elimination: React.FC<EliminationProps> = ({
   if (gameData) {
     return (
       <div className="flex w-screen flex-grow justify-around">
+        {gameData.lobbyData?.nextRoundStartTime && (
+          <Modal>
+            <Intermission
+              nextRoundStartTime={gameData.lobbyData.nextRoundStartTime}
+            />
+          </Modal>
+        )}
         {gameData?.lobbyData.gameStarted ? (
           <>
             {/* opponets left side */}
@@ -166,16 +175,17 @@ const Elimination: React.FC<EliminationProps> = ({
                 round={gameData.lobbyData.round}
                 finalRound={gameData.lobbyData.finalRound}
               />
-              {gameData.lobbyData.roundTimer && (
-                <GameStatus
-                  qualified={getQualified(
-                    gameData.players,
-                    gameData.lobbyData.totalPoints,
-                  )}
-                  endTime={gameData.lobbyData.roundTimer}
-                  totalSpots={gameData.lobbyData.totalSpots}
-                />
-              )}
+              {gameData.lobbyData.roundTimer &&
+                !gameData.lobbyData.nextRoundStartTime && (
+                  <GameStatus
+                    qualified={getQualified(
+                      gameData.players,
+                      gameData.lobbyData.totalPoints,
+                    )}
+                    endTime={gameData.lobbyData.roundTimer}
+                    totalSpots={gameData.lobbyData.totalSpots}
+                  />
+                )}
               <WordContainer
                 word={playerData?.word}
                 match={playerData?.revealIndex}

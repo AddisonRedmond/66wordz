@@ -155,19 +155,7 @@ const Home = () => {
           }
           desktopOnly={!!lobby.data?.id}
         />
-        <div className="flex flex-col gap-3">
-          {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
-            <div className="mb-5 flex flex-col justify-center">
-              <p className="text-xl font-semibold">Join Custom Lobby</p>
-              <button
-                onClick={() => setIsJoinLobby(true)}
-                className="rounded-full bg-black p-3 text-2xl font-semibold text-white duration-150 ease-in-out hover:bg-zinc-600"
-              >
-                Join Lobby
-              </button>
-            </div>
-          )}
-        </div>
+
         <AnimatePresence>
           {lobby.data?.id ? (
             handleStartGame()
@@ -180,14 +168,6 @@ const Home = () => {
                   gameType={gameType}
                 />
               )}
-              {isJoinLobby && (
-                <JoinLobby
-                  errorMessage={joinLobby.data}
-                  setIsJoinLobby={setIsJoinLobby}
-                  handleJoinLobby={handleJoinLobby}
-                />
-              )}
-
               {isCreateLobby === false && isJoinLobby === false && (
                 <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
                   <ChallengeCard />
@@ -197,7 +177,6 @@ const Home = () => {
                     image={survival}
                     fullAccess={true}
                     quickPlay={handleQuickPlay}
-                    enableCreateLobby={enableCreateLobby}
                     handleUpgrade={handleUpgrade}
                     desc="Offence is the best defence in this heated player vs player game"
                   />
@@ -207,7 +186,6 @@ const Home = () => {
                     image={crown}
                     fullAccess={true}
                     quickPlay={handleQuickPlay}
-                    enableCreateLobby={enableCreateLobby}
                     handleUpgrade={handleUpgrade}
                     desc="Offence is the best defence in this heated player vs player game"
                   />
