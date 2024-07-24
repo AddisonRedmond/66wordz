@@ -187,7 +187,7 @@ const Home = () => {
                     fullAccess={true}
                     quickPlay={handleQuickPlay}
                     handleUpgrade={handleUpgrade}
-                    desc="Offence is the best defence in this heated player vs player game"
+                    desc="Be the fastest to guess your words, in order to survive each round"
                   />
                 </div>
               )}

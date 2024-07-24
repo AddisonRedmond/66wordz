@@ -14,7 +14,6 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
 import {
-  calculatePlacement,
   getQualified,
   handleCorrectGuess,
   handleIncorrectGuess,
@@ -25,6 +24,9 @@ import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
 import Modal from "../modal";
 import Intermission from "./intermission";
+import Eliminated from "../board-components/eliminated";
+import Winner from "../board-components/winner";
+
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -73,6 +75,8 @@ const Elimination: React.FC<EliminationProps> = ({
       return;
     } else if (!/[a-zA-Z]/.test(key)) {
       return;
+    } else if (gameData.lobbyData?.winner) {
+      console.warn("Somebody already won");
     }
 
     const handleBackspace = () => {
@@ -186,14 +190,19 @@ const Elimination: React.FC<EliminationProps> = ({
                     totalSpots={gameData.lobbyData.totalSpots}
                   />
                 )}
-              <WordContainer
-                word={playerData?.word}
-                match={playerData?.revealIndex}
-              />
-              <Points
-                pointsGoal={gameData?.lobbyData.totalPoints}
-                totalPoints={playerData?.points}
-              />
+              {!playerData?.eliminated &&
+                gameData.lobbyData.winner !== userId && (
+                  <>
+                    <WordContainer
+                      word={playerData?.word}
+                      match={playerData?.revealIndex}
+                    />
+                    <Points
+                      pointsGoal={gameData?.lobbyData.totalPoints}
+                      totalPoints={playerData?.points}
+                    />
+                  </>
+                )}
               {isMobile && (
                 <MobileOpponents
                   opponents={gameData.players}
@@ -202,15 +211,22 @@ const Elimination: React.FC<EliminationProps> = ({
                 />
               )}
               <div className="flex w-full flex-col gap-y-2">
-                <GuessContainer
-                  word={guess}
-                  wordLength={playerData?.word.length}
-                />
-                <Keyboard
-                  disabled={false}
-                  handleKeyBoardLogic={handleKeyUp}
-                  matches={playerData?.matches}
-                />
+                {!playerData?.eliminated &&
+                  gameData.lobbyData.winner !== userId && (
+                    <>
+                      <GuessContainer
+                        word={guess}
+                        wordLength={playerData?.word.length}
+                      />
+                      <Keyboard
+                        disabled={false}
+                        handleKeyBoardLogic={handleKeyUp}
+                        matches={playerData?.matches}
+                      />
+                    </>
+                  )}
+                {playerData?.eliminated && <Eliminated />}
+                {gameData.lobbyData.winner === userId && <Winner />}
               </div>
             </div>
             {!isMobile && (
