@@ -1,4 +1,4 @@
-const Round: React.FC<{ round: number; finalRound: Boolean }> = (props) => {
+const Round: React.FC<{ round: number; finalRound: boolean }> = (props) => {
   return (
     <div>
       <h2 className=" text-2xl font-bold">

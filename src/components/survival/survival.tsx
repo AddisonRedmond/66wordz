@@ -53,7 +53,6 @@ const Survival: React.FC<SurvivalProps> = ({
   const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
-  const [history, setHistory] = useState<string[]>([])
   const isMobile = useIsMobile();
   const playerData = gameData?.players[userId];
 

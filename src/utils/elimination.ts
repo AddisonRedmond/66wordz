@@ -1,11 +1,11 @@
-import { DatabaseReference, ref, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 
 import {
   // EliminationLobbyData,
   EliminationPlayerData,
   EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
-import { getInitials, handleGetNewWord, handleMatched } from "./game";
+import { getInitials, handleMatched } from "./game";
 import { default as FIVE_LETTER_WORDS } from "./words";
 import SIX_LETTER_WORDS from "./six-letter-words";
 import FOUR_LETTER_WORDS from "./four-letter-words";
@@ -178,10 +178,6 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
   };
 
   return Math.floor(calculateNumber());
-};
-
-export const calculateQualified = (pointsGoal: number, totalSpots: number) => {
-  //  calculate total qualified players
 };
 
 export const validateKey = (key: string): boolean => {

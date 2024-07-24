@@ -6,8 +6,6 @@ import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
 import survival from "../../public/survival.png";
-import CreateLobby from "~/components/create-lobby";
-import JoinLobby from "~/components/join-lobby";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
@@ -24,7 +22,6 @@ const Home = () => {
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
-  const createLobby = api.createGame.createLobby.useMutation();
   const userData = api.getUser.getUser.useQuery();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
@@ -36,19 +33,10 @@ const Home = () => {
       await stripe.redirectToCheckout({ sessionId: checkoutURL });
     }
   };
-  const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
-  const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = async (gameMode: GameType) => {
     await quickPlay.mutateAsync({ gameMode: gameMode });
-    lobby.refetch();
-  };
-
-  const handleJoinLobby = async (lobbyId?: string, passKey?: string) => {
-    if (!lobbyId) return alert("Please enter a lobby id");
-    await joinLobby.mutateAsync({ lobbyId, passKey });
     lobby.refetch();
   };
 
@@ -59,26 +47,6 @@ const Home = () => {
     userData.refetch();
     // delete user from lobby db
     // delete user from firebase db
-  };
-
-  const handleCreateLobby = async (
-    lobbyName: string,
-    enableBots: boolean,
-    gameType: GameType,
-    passKey?: string,
-  ) => {
-    await createLobby.mutateAsync({
-      lobbyName,
-      passKey,
-      enableBots,
-      gameType,
-    });
-    lobby.refetch();
-  };
-
-  const enableCreateLobby = (gameType: GameType) => {
-    setIsCreateLobby(true);
-    setGameType(gameType);
   };
 
   const handleStartGame = () => {
@@ -161,36 +129,27 @@ const Home = () => {
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-              {isCreateLobby && (
-                <CreateLobby
-                  setIsCreateLobby={setIsCreateLobby}
-                  handleCreateLobby={handleCreateLobby}
-                  gameType={gameType}
+              <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
+                <ChallengeCard />
+
+                <GameCardV2
+                  gameType="SURVIVAL"
+                  image={survival}
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Offence is the best defence in this heated player vs player game"
                 />
-              )}
-              {isCreateLobby === false && isJoinLobby === false && (
-                <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
-                  <ChallengeCard />
 
-                  <GameCardV2
-                    gameType="SURVIVAL"
-                    image={survival}
-                    fullAccess={true}
-                    quickPlay={handleQuickPlay}
-                    handleUpgrade={handleUpgrade}
-                    desc="Offence is the best defence in this heated player vs player game"
-                  />
-
-                  <GameCardV2
-                    gameType="ELIMINATION"
-                    image={crown}
-                    fullAccess={true}
-                    quickPlay={handleQuickPlay}
-                    handleUpgrade={handleUpgrade}
-                    desc="Be the fastest to guess your words, in order to survive each round"
-                  />
-                </div>
-              )}
+                <GameCardV2
+                  gameType="ELIMINATION"
+                  image={crown}
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Be the fastest to guess your words, in order to survive each round"
+                />
+              </div>
             </div>
           )}
         </AnimatePresence>

@@ -1,5 +1,4 @@
 import { useTimer } from "react-timer-hook";
-import { getQualified } from "~/utils/elimination";
 
 type GameStatusProps = {
   qualified: number;
@@ -13,23 +12,7 @@ const GameStatus: React.FC<GameStatusProps> = (props) => {
     expiryTimestamp: new Date(props.endTime),
   });
 
-  function getOrdinalSuffix(num: number): string {
-    const remainder = num % 100;
-    if (remainder >= 11 && remainder <= 13) {
-      return `${num}th`;
-    }
 
-    switch (num % 10) {
-      case 1:
-        return `${num}st`;
-      case 2:
-        return `${num}nd`;
-      case 3:
-        return `${num}rd`;
-      default:
-        return `${num}th`;
-    }
-  }
   return (
     <div className="flex h-14 w-60 rounded-md border-2">
       <div className="grid h-full w-1/3 place-items-center rounded-l-md bg-zinc-700">
