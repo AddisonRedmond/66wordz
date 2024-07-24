@@ -196,7 +196,7 @@ export const challengeRouter = createTRPCRouter({
       let userId = "";
       firebaseChallenge.ids.forEach((id) => {
         if (firebaseChallenge[id]?.completed) {
-          const userGuessLength = firebaseChallenge[id]!.guesses!.length;
+          const userGuessLength = firebaseChallenge[id].guesses!.length;
 
           if (userGuessLength === shortestGuess) {
             // check the duration and add their id and shortest guess to the vars
@@ -205,8 +205,8 @@ export const challengeRouter = createTRPCRouter({
                 new Date(firebaseChallenge[userId]!.timeStamp).getTime(),
             ).getTime();
             const currentIdDuration = new Date(
-              new Date(firebaseChallenge[id]!.endTimeStamp).getTime() -
-                new Date(firebaseChallenge[id]!.timeStamp).getTime(),
+              new Date(firebaseChallenge[id].endTimeStamp).getTime() -
+                new Date(firebaseChallenge[id].timeStamp).getTime(),
             ).getTime();
 
             if (userIdDuration > currentIdDuration) {

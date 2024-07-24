@@ -4,15 +4,11 @@ import {
 } from "react-circular-progressbar";
 import Modal from "../modal";
 import { useState } from "react";
-import {
-  EliminationPlayerData,
-  EliminationPlayerPoints,
-} from "~/custom-hooks/useEliminationData";
+import { EliminationPlayerData } from "~/custom-hooks/useEliminationData";
 type MobileOpponentsProps = {
   opponents?: EliminationPlayerData;
   userId: string;
   pointsGoal: number;
-  playerPoints?: EliminationPlayerPoints;
 };
 
 const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
@@ -49,10 +45,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
                         className=" m-auto size-14"
                       >
                         <CircularProgressbarWithChildren
-                          value={calculatePrecentage(
-                            props?.playerPoints?.[playerId]?.points ?? 0,
-                            props.pointsGoal,
-                          )}
+                          value={calculatePrecentage(8, props.pointsGoal)}
                           strokeWidth={12}
                           styles={buildStyles({
                             pathColor: "#10b981",
@@ -74,18 +67,15 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
         </Modal>
       )}
       <p className="my-2 font-semibold">Opponents</p>
-      <div className="grid grid-flow-col grid-rows-2 gap-y-4 ">
+      <div className="grid grid-flow-col grid-rows-2 gap-1 ">
         {props.opponents &&
           Object.entries(props.opponents)
             .slice(0, 9)
             .map(([playerId, player]) => {
               return (
-                <div key={playerId} className=" m-auto size-14">
+                <div key={playerId} className=" m-auto size-12">
                   <CircularProgressbarWithChildren
-                    value={calculatePrecentage(
-                      props?.playerPoints?.[playerId]?.points ?? 0,
-                      props.pointsGoal,
-                    )}
+                    value={calculatePrecentage(8, props.pointsGoal)}
                     strokeWidth={12}
                     styles={buildStyles({
                       pathColor: "#10b981",
@@ -109,7 +99,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
               );
             })}
 
-        <div onClick={() => setShowModal(true)} className=" m-auto size-14">
+        <div onClick={() => setShowModal(true)} className=" m-auto size-12">
           <CircularProgressbarWithChildren
             value={0}
             strokeWidth={12}

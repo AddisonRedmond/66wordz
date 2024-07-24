@@ -12,6 +12,7 @@ import {
   joinEliminationLobby,
 } from "~/utils/elimination";
 import { initAdmin } from "~/utils/firebase-admin";
+import { EliminationLobbyData } from "~/custom-hooks/useEliminationData";
 
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
@@ -83,15 +84,18 @@ export const quickPlayRouter = createTRPCRouter({
                   body: JSON.stringify({ lobbyId: newLobby.id }),
                 },
               );
-            } catch (e) {}
+            } catch (e) {
+              // todo handle lobby register error
+            }
             break;
 
           case "ELIMINATION":
-            const eliminationLobbyData = createNewEliminationLobby();
+            const eliminationLobbyData: EliminationLobbyData =
+              createNewEliminationLobby();
             await db
               .ref(`/${gameMode}`)
               .child(newLobby.id)
-              .set({ lobbyData: eliminationLobbyData.lobbyData });
+              .set({ lobbyData: eliminationLobbyData });
             try {
               fetch(
                 `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
@@ -100,7 +104,9 @@ export const quickPlayRouter = createTRPCRouter({
                   body: JSON.stringify({ lobbyId: newLobby.id }),
                 },
               );
-            } catch (e) {}
+            } catch (e) {
+              // todo handle lobby register error
+            }
         }
 
         return newLobby;
@@ -140,7 +146,6 @@ export const quickPlayRouter = createTRPCRouter({
         });
 
         if (playerCount >= 67) {
-          // startGame(player.lobbyId, clientGameType);
           await ctx.db.lobby.update({
             where: {
               id: player.lobbyId,

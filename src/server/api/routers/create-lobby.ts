@@ -210,6 +210,8 @@ export const createLobbyRouter = createTRPCRouter({
     // register the lobby with firebase func
   }),
 
+  // TODO: rework lobby settings
+
   getLobby: protectedProcedure.query(async ({ ctx }) => {
     const db = initAdmin().database();
 
@@ -230,9 +232,12 @@ export const createLobbyRouter = createTRPCRouter({
       ).exists();
       if (firebaseLobbyReady) {
         return lobby;
+      } else {
+        await ctx.db.lobby.delete({ where: { id: lobby?.id } });
       }
     }
 
+    // todo: handle logic for game existing in db, but not in firebase
     return null;
   }),
 });

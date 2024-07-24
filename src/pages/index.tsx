@@ -5,10 +5,7 @@ import { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
-// import crown from "../../public/crown.png";
 import survival from "../../public/survival.png";
-import CreateLobby from "~/components/create-lobby";
-import JoinLobby from "~/components/join-lobby";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
@@ -17,6 +14,7 @@ import ChallengeCard from "~/components/challenge-card";
 import { useUser } from "@clerk/nextjs";
 import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
+import crown from "~/../public/crown.png";
 
 const Home = () => {
   const { user } = useUser();
@@ -24,7 +22,6 @@ const Home = () => {
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
-  const createLobby = api.createGame.createLobby.useMutation();
   const userData = api.getUser.getUser.useQuery();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
@@ -36,19 +33,10 @@ const Home = () => {
       await stripe.redirectToCheckout({ sessionId: checkoutURL });
     }
   };
-  const [gameType, setGameType] = useState<GameType>("SURVIVAL");
-  const [isCreateLobby, setIsCreateLobby] = useState<boolean>(false);
-  const [isJoinLobby, setIsJoinLobby] = useState<boolean>(false);
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = async (gameMode: GameType) => {
     await quickPlay.mutateAsync({ gameMode: gameMode });
-    lobby.refetch();
-  };
-
-  const handleJoinLobby = async (lobbyId?: string, passKey?: string) => {
-    if (!lobbyId) return alert("Please enter a lobby id");
-    await joinLobby.mutateAsync({ lobbyId, passKey });
     lobby.refetch();
   };
 
@@ -59,26 +47,6 @@ const Home = () => {
     userData.refetch();
     // delete user from lobby db
     // delete user from firebase db
-  };
-
-  const handleCreateLobby = async (
-    lobbyName: string,
-    enableBots: boolean,
-    gameType: GameType,
-    passKey?: string,
-  ) => {
-    await createLobby.mutateAsync({
-      lobbyName,
-      passKey,
-      enableBots,
-      gameType,
-    });
-    lobby.refetch();
-  };
-
-  const enableCreateLobby = (gameType: GameType) => {
-    setIsCreateLobby(true);
-    setGameType(gameType);
   };
 
   const handleStartGame = () => {
@@ -101,9 +69,6 @@ const Home = () => {
               lobbyId={lobby.data.id}
               userId={user.id}
               gameType={lobby.data.gameType}
-              exitMatch={() => {
-                setQuitGame(true);
-              }}
             />
           );
       }
@@ -112,7 +77,6 @@ const Home = () => {
   useEffect(() => {
     const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "Are you sure you want to leave the game?";
     };
 
     if (lobby.data?.id) {
@@ -159,58 +123,47 @@ const Home = () => {
           }
           desktopOnly={!!lobby.data?.id}
         />
-        <div className="flex flex-col gap-3">
-          {!(isJoinLobby || isCreateLobby || lobby.data?.id) && (
-            <div className="mb-5 flex flex-col justify-center">
-              <p className="text-xl font-semibold">Join Custom Lobby</p>
-              <button
-                onClick={() => setIsJoinLobby(true)}
-                className="rounded-full bg-black p-3 text-2xl font-semibold text-white duration-150 ease-in-out hover:bg-zinc-600"
-              >
-                Join Lobby
-              </button>
-            </div>
-          )}
-        </div>
+
         <AnimatePresence>
           {lobby.data?.id ? (
             handleStartGame()
           ) : (
             <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-              {isCreateLobby && (
-                <CreateLobby
-                  setIsCreateLobby={setIsCreateLobby}
-                  handleCreateLobby={handleCreateLobby}
-                  gameType={gameType}
-                />
-              )}
-              {isJoinLobby && (
-                <JoinLobby
-                  errorMessage={joinLobby.data}
-                  setIsJoinLobby={setIsJoinLobby}
-                  handleJoinLobby={handleJoinLobby}
-                />
-              )}
+              <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
+                <ChallengeCard />
 
-              {isCreateLobby === false && isJoinLobby === false && (
-                <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
-                  <ChallengeCard />
+                <GameCardV2
+                  gameType="SURVIVAL"
+                  image={survival}
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Offence is the best defence in this heated player vs player game"
+                />
 
-                  <GameCardV2
-                    gameType="SURVIVAL"
-                    image={survival}
-                    fullAccess={true}
-                    quickPlay={handleQuickPlay}
-                    enableCreateLobby={enableCreateLobby}
-                    handleUpgrade={handleUpgrade}
-                    desc="Offence is the best defence in this heated player vs player game"
-                  />
-                </div>
-              )}
+                <GameCardV2
+                  gameType="ELIMINATION"
+                  image={crown}
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Be the fastest to guess your words, in order to survive each round"
+                />
+              </div>
             </div>
           )}
         </AnimatePresence>
       </div>
+      <footer className="m-auto pb-4">
+        {lobby.data && (
+          <button
+            onClick={() => setQuitGame(true)}
+            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+          >
+            LEAVE
+          </button>
+        )}
+      </footer>
     </div>
   );
 };
