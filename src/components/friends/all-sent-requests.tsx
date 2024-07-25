@@ -1,5 +1,5 @@
-import { api } from "~/utils/api";
 import Loading from "./loading";
+import { Requests } from "@prisma/client";
 
 type PendingBadgeProps = {
   name: string;
@@ -22,15 +22,16 @@ const PendingBadge: React.FC<PendingBadgeProps> = (
   );
 };
 
-const AllSentRequests = () => {
-  const allSentRequests = api.friends.allPending.useQuery();
-
+const AllSentRequests: React.FC<{
+  isLoading: boolean;
+  data: Requests[] | undefined;
+}> = (props) => {
   return (
     <div>
-      {allSentRequests.isLoading ? (
+      {props.isLoading ? (
         <Loading />
       ) : (
-        allSentRequests.data?.map((request) => {
+        props.data?.map((request) => {
           return (
             <PendingBadge key={request.id} name={request.friendFullName} />
           );

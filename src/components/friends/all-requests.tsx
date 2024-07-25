@@ -1,5 +1,5 @@
-import { api } from "~/utils/api";
 import Loading from "./loading";
+import { Requests } from "@prisma/client";
 
 type RequestBadge = {
   name: string;
@@ -43,15 +43,16 @@ const RequestBadge: React.FC<RequestBadge> = (props) => {
 
 const AllRequests: React.FC<{
   handleAcceptRequest: (requestId: string, accept: boolean) => Promise<void>;
+  isLoading: boolean;
+  data: Requests[] | undefined;
 }> = (props) => {
-  const allRequests = api.friends.allRequests.useQuery();
 
   return (
     <div>
-      {allRequests.isLoading ? (
+      {props.isLoading ? (
         <Loading />
       ) : (
-        allRequests.data?.map((request) => {
+        props.data?.map((request) => {
           return (
             <RequestBadge
               key={request.id}

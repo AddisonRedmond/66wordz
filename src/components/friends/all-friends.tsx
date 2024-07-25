@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 import Loading from "./loading";
-import { api } from "~/utils/api";
 import { getInitials } from "~/utils/game";
+import { Friends } from "@prisma/client";
 
 type FriendBadgeProps = {
   fullName: string;
@@ -43,15 +43,15 @@ const FriendBadge: React.FC<FriendBadgeProps> = (props) => {
 
 const AllFriends: React.FC<{
   handleRemoveFriend: (friendId: string) => Promise<void>;
+  isLoading: boolean;
+  data: Friends[] | undefined;
 }> = (props) => {
-  const friends = api.friends.allFriends.useQuery();
-
   return (
     <div>
-      {friends.isLoading ? (
+      {props.isLoading ? (
         <Loading />
       ) : (
-        friends.data?.map((friend) => {
+        props.data?.map((friend) => {
           return (
             <FriendBadge
               key={friend.id}

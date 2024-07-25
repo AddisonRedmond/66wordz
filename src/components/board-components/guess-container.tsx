@@ -20,7 +20,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
               key={index}
               letter={letter}
               revealed={true}
-              revealedColor="white"
+              revealedColor="#FFFFFF"
               wordLength={wordLength ?? 5}
             />
           );

@@ -7,7 +7,6 @@ import toast, { Toaster } from "react-hot-toast";
 import AllRequests from "~/components/friends/all-requests";
 import AllSentRequest from "~/components/friends/all-sent-requests";
 import AllFriends from "~/components/friends/all-friends";
-import AllSentRequests from "~/components/friends/all-sent-requests";
 
 const Friends = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -116,12 +115,22 @@ const Friends = () => {
           </button>
         </div>
         <div className="flex w-full flex-grow flex-wrap justify-center gap-3 py-2">
-          {requestType === "pending" && <AllSentRequest />}
+          {requestType === "pending" && (
+            <AllSentRequest isLoading={sent.isLoading} data={sent.data} />
+          )}
           {requestType === "request" && (
-            <AllRequests handleAcceptRequest={handleAcceptRequest} />
+            <AllRequests
+              handleAcceptRequest={handleAcceptRequest}
+              isLoading={newRequests.isLoading}
+              data={newRequests.data}
+            />
           )}
           {requestType === "friend" && (
-            <AllFriends handleRemoveFriend={handleRemoveFriend} />
+            <AllFriends
+              isLoading={friends.isLoading}
+              data={friends.data}
+              handleRemoveFriend={handleRemoveFriend}
+            />
           )}
         </div>
       </div>
