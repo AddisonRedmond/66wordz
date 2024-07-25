@@ -21,7 +21,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
             <SurvivalTile
               key={index}
               letter={letter}
-              revealed={props.match?.includes(letter) ?? props?.eliminated}
+              revealed={props.match?.includes(letter) || props?.eliminated}
             />
           );
         })}

@@ -94,7 +94,7 @@ const Survival: React.FC<SurvivalProps> = ({
 
     // TODO: ensure there is more than one person in the lobby
 
-    if (playerData?.eliminated ?? !gameData?.lobbyData.gameStarted) return;
+    if (playerData?.eliminated || !gameData?.lobbyData.gameStarted) return;
 
     if (key === "Backspace" && guess.length > 0) {
       setGuess((prevGuess) => {
