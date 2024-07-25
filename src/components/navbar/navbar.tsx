@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
   const isMobile = useIsMobile();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
+  const newRequests = api.friends.allRequests.useQuery();
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -31,9 +32,13 @@ const Navbar: React.FC = () => {
           menuIsOpen={menuIsOpen}
           setMenuIsOpen={setMenuIsOpen}
           handleSignOut={signOut}
+          hasFriendRequest={!!newRequests.data?.length}
         />
       ) : (
-        <DesktopNavbar handleSignOut={signOut} />
+        <DesktopNavbar
+          hasFriendRequest={!!newRequests.data?.length}
+          handleSignOut={signOut}
+        />
       )}
     </>
   );

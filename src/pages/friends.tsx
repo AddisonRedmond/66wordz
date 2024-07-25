@@ -4,9 +4,9 @@ import { api } from "~/utils/api";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
-import RequestBadge from "~/components/friends/request-badge";
-import PendingBadge from "~/components/friends/pending-badge";
-import FriendBadge from "~/components/friends/friend-badge";
+import AllRequests from "~/components/friends/all-requests";
+import AllSentRequest from "~/components/friends/all-sent-requests";
+import AllFriends from "~/components/friends/all-friends";
 
 const Friends = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,10 +57,7 @@ const Friends = () => {
       <Navbar />
       <Toaster />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly">
-        <Header
-          isLoading={false}
-          desktopOnly={false}
-        />
+        <Header isLoading={false} desktopOnly={false} />
         <h1 className="text-2xl font-bold">Friends</h1>
 
         <div className="flex flex-col gap-2 font-medium">
@@ -118,38 +115,23 @@ const Friends = () => {
           </button>
         </div>
         <div className="flex w-full flex-grow flex-wrap justify-center gap-3 py-2">
-          {requestType === "pending" &&
-            sent.data?.map((pendingData) => {
-              return (
-                <PendingBadge
-                  key={pendingData.id}
-                  name={pendingData.friendFullName}
-                />
-              );
-            })}
-          {requestType === "request" &&
-            newRequests.data?.map((requestData) => {
-              return (
-                <RequestBadge
-                  key={requestData.id}
-                  name={requestData.userFullName}
-                  requestId={requestData.id}
-                  handleRequest={handleAcceptRequest}
-                />
-              );
-            })}
-          {requestType === "friend" &&
-            friends.data?.map((friend) => {
-              return (
-                <FriendBadge
-                  key={friend.id}
-                  fullName={friend.friendFullName}
-                  removeFriend={handleRemoveFriend}
-                  friendId={friend.id}
-                  friendImage={friend.friendImage}
-                />
-              );
-            })}
+          {requestType === "pending" && (
+            <AllSentRequest isLoading={sent.isLoading} data={sent.data} />
+          )}
+          {requestType === "request" && (
+            <AllRequests
+              handleAcceptRequest={handleAcceptRequest}
+              isLoading={newRequests.isLoading}
+              data={newRequests.data}
+            />
+          )}
+          {requestType === "friend" && (
+            <AllFriends
+              isLoading={friends.isLoading}
+              data={friends.data}
+              handleRemoveFriend={handleRemoveFriend}
+            />
+          )}
         </div>
       </div>
     </>

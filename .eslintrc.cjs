@@ -12,6 +12,7 @@ const config = {
   ],
   rules: {
     // Disable specific TypeScript rules causing errors
+    "@typescript-eslint/require-await": "warn",
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/consistent-type-definitions": "off",

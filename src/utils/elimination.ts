@@ -92,7 +92,7 @@ export const handleCorrectGuess = async (
   path: string,
 ) => {
   // increment player points, clear their matches, get them a new word
-  const wordLength = wordLengthLookUp[round] || 5;
+  const wordLength = wordLengthLookUp[round] ?? 5;
   if (round) {
     const updatedPlayerData: EliminationPlayerObject = {
       ...playerData,
