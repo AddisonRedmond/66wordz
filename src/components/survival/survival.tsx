@@ -279,23 +279,15 @@ const Survival: React.FC<SurvivalProps> = ({
             {/* nester ternary check to see if game started, if it hasn't then load the timer, 
           if it has then check if the player has been eliminate, if they haven't then load the game components */}
             {!gameData?.lobbyData.gameStarted ? (
-              <>
-                <button
-                  onClick={() => exitMatch()}
-                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-                >
-                  QUIT
-                </button>
-                <LoadingGame
-                  expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
-                  gameOwner={gameData.lobbyData.owner}
-                  isGameOwner={gameData.lobbyData.owner === userId}
-                  startGame={ownerStart}
-                  playerCount={Object.keys(gameData.players).length}
-                  exitMatch={exitMatch}
-                  lobbyId={lobbyId}
-                />
-              </>
+              <LoadingGame
+                expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
+                gameOwner={gameData.lobbyData.owner}
+                isGameOwner={gameData.lobbyData.owner === userId}
+                startGame={ownerStart}
+                playerCount={Object.keys(gameData.players).length}
+                exitMatch={exitMatch}
+                lobbyId={lobbyId}
+              />
             ) : playerData?.eliminated ? (
               <Eliminated exitMatch={exitMatch} />
             ) : (
@@ -346,14 +338,6 @@ const Survival: React.FC<SurvivalProps> = ({
                   handleKeyBoardLogic={handleKeyBoardLogic}
                   matches={playerData?.word.matches}
                 />
-                <button
-                  onClick={() => {
-                    exitMatch(), stop();
-                  }}
-                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-                >
-                  QUIT
-                </button>
               </div>
             )}
           </div>

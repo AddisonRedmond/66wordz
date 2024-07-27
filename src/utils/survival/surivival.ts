@@ -81,6 +81,7 @@ const calcualteUpdatedStatus = (playerStatus: {
   // remove shield
   // if shield isnt enough, then remove health
   // check if the health has been removed fully and mark player eliminated
+  console.log(playerStatus)
   const { health, shield } = playerStatus;
 
   if (shield > 0) {
