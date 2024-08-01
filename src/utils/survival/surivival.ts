@@ -1,10 +1,12 @@
 import { db } from "../firebase/firebase";
-import { ref, update } from "firebase/database";
+import { DatabaseReference, update } from "firebase/database";
 import { getInitials, handleGetNewWord, handleMatched } from "../game";
 import dictionary from "../dictionary";
-import { AutoAttackOption } from "~/components/survival/survival";
+import { AttackPosition } from "~/components/survival/survival";
 
 const MAX_SHIELD = 4;
+const MAX_HEALTH = 2;
+const MIN_HEALTH = 1;
 
 export type WordObject = {
   word: string;
@@ -15,102 +17,23 @@ export type WordObject = {
   };
 };
 
-export type SurvivalPlayerData = {
-  [id: string]: {
-    health: number;
-    shield: number;
-    eliminated: boolean;
-    initials?: string;
-    word: WordObject;
-  };
-};
-
-export const getPlayerPosition = (
-  players: SurvivalPlayerData,
-  autoAttack: AutoAttackOption,
-  playerId: string,
-): string => {
-  // Filter out eliminated players
-  const activePlayers = Object.fromEntries(
-    Object.entries(players).filter(([, player]) => !player.eliminated),
-  );
-
-  // Sort the active players
-  const sortedPlayers: SurvivalPlayerData = Object.fromEntries(
-    Object.entries(activePlayers).sort(
-      (a, b) => b[1].health + b[1].shield - (a[1].health + a[1].shield),
-    ),
-  );
-
-  switch (autoAttack) {
-    case "first":
-      if (playerId === Object.keys(sortedPlayers)[0]) {
-        return Object.keys(sortedPlayers)[1] as string;
-      } else {
-        return Object.keys(sortedPlayers)[0] as string;
-      }
-    case "last":
-      const keys = Object.keys(sortedPlayers);
-      if (playerId === keys[keys.length - 1]) {
-        return keys[keys.length - 2] as string;
-      } else {
-        return keys[keys.length - 1] as string;
-      }
-    case "random":
-      const randomIndex = Math.floor(
-        Math.random() * Object.keys(activePlayers).length,
-      );
-      const randomPlayerId = Object.keys(activePlayers)[randomIndex] as string;
-      return randomPlayerId === playerId ? "" : randomPlayerId;
-
-    default:
-      return autoAttack;
-  }
-};
-
-export function getRandomNumber(min: number, max: number): number {
-  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-  return randomNumber;
-}
-
-const calcualteUpdatedStatus = (playerStatus: {
+export type SurvivalPlayerObject = {
   health: number;
   shield: number;
   eliminated: boolean;
-}) => {
-  // remove shield
-  // if shield isnt enough, then remove health
-  // check if the health has been removed fully and mark player eliminated
-  console.log(playerStatus)
-  const { health, shield } = playerStatus;
+  word: WordObject;
+  initials?: string;
+  revealIndex: number[];
+};
 
-  if (shield > 0) {
-    return {
-      ...playerStatus,
-      shield: shield - 1,
-    };
-  } else if (shield <= 0 && health > 0) {
-    if (health - 1 <= 0) {
-      return {
-        ...playerStatus,
-        eliminated: true,
-        health: health - 1,
-      };
-    }
-    return {
-      ...playerStatus,
-      health: health - 1,
-    };
-  } else if (0 >= health) {
-    return {
-      ...playerStatus,
-      eliminated: true,
-      health: 0,
-    };
-  }
-
-  return {
-    ...playerStatus,
+export type SurvivalPlayerData = {
+  [keyof: string]: {
+    health: number;
+    shield: number;
+    eliminated: boolean;
+    word: WordObject;
+    initials?: string;
+    revealIndex: number[];
   };
 };
 
@@ -134,6 +57,7 @@ export const joinSurivivalLobby = (
       shield: 2,
       eliminated: false,
       initials: getInitials(fullName) || "N/A",
+      revealIndex: [],
       word: {
         word: handleGetNewWord(),
       },
@@ -143,78 +67,97 @@ export const joinSurivivalLobby = (
   return newPlayer;
 };
 
-export const handleCorrectGuess = async (
-  lobbyId: string,
-  userId: string,
-  playerStatus?: { health: number; shield: number; eliminated: boolean },
+export const findPlayerToAttack = (
+  playerId: string,
+  players: SurvivalPlayerData,
+  position: AttackPosition,
 ) => {
-  if (playerStatus) {
-    if (playerStatus.shield < MAX_SHIELD) {
-      await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
-        shield: playerStatus.shield + 1,
-        word: {
-          word: handleGetNewWord(),
-          matches: {},
-        },
-      });
-      return;
+  // alphabetically sorted players who aren't eliminated
+  const nonEliminatedPlayersOrdered: string[] = Object.keys(players)
+    .filter((id) => !players[id]?.eliminated || id !== playerId)
+    .toSorted(
+      (a, b) =>
+        players[b]!.health +
+        players[b]!.shield -
+        (players[a]!.health + players[a]!.shield),
+    );
+
+  const validateTarget = (id: string) => {
+    if (!players[id]?.eliminated) {
+      return id;
+    } else {
+      // return random id
+      return nonEliminatedPlayersOrdered[
+        Math.floor(Math.random() * nonEliminatedPlayersOrdered.length)
+      ];
     }
-  }
-  await update(ref(db, `SURVIVAL/${lobbyId}/players/${userId}`), {
-    word: {
-      word: handleGetNewWord(),
-      matches: {},
-    },
-  });
-};
+  };
 
-export const checkSpelling = (word: string) => {
-  return dictionary.includes(word.toLocaleUpperCase());
-};
+  // build updated player object,
 
-export const healPlayer = async (
-  lobbyId: string,
-  playerId: string,
-  healthValue?: number,
-) => {
-  if (healthValue && healthValue == 1) {
-    await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
-      health: 2,
-    });
+  // updated firebase
+
+  if (position === "first") {
+    return nonEliminatedPlayersOrdered[0];
+  } else if (position === "last") {
+    return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length - 1];
+  } else {
+    return validateTarget(position);
   }
 };
 
-export const handleAttack = async (
-  lobbyId: string,
-  playerId: string,
-  playerStatus: {
-    health: number;
-    shield: number;
-    eliminated: boolean;
-  },
-) => {
-  if (!playerStatus?.eliminated) {
-    const updatedStatus = calcualteUpdatedStatus(playerStatus);
-    await update(ref(db, `SURVIVAL/${lobbyId}/players/${playerId}`), {
-      ...updatedStatus,
-    });
-
-    return updatedStatus.eliminated;
-  }
-  return false;
-};
-
-export const handleIncorrectGuess = (
-  guess: string,
-  lobbyId: string,
+export const handleCorrectGuess = async (
+  lobbyRef: DatabaseReference,
   userId: string,
-  word: WordObject,
-) => {
-  // check each word for full, partial, and no matches
-  const matches = handleMatched(guess, word.word, word.matches);
+  userData: SurvivalPlayerObject,
+  playerToAttackId: string,
+  playerToAttackData: SurvivalPlayerObject,
+): Promise<boolean> => {
+  let playerEliminated = false;
 
-  update(
-    ref(db, `SURVIVAL/${lobbyId}/players/${userId}/word/matches`),
-    matches,
-  );
+  if (!playerToAttackId || !playerToAttackData) {
+    // TODO: add notification that there is no player to attack, or add other logic
+    return playerEliminated;
+  }
+
+  // Handle player elimination and health/shield adjustments
+  if (
+    playerToAttackData.shield <= 0 &&
+    playerToAttackData.health <= MIN_HEALTH
+  ) {
+    playerToAttackData.eliminated = true;
+    playerToAttackData.health = 0;
+    playerEliminated = true;
+  } else if (playerToAttackData.shield < MAX_SHIELD) {
+    playerToAttackData.shield = Math.min(
+      playerToAttackData.shield + 1,
+      MAX_SHIELD,
+    );
+  } else if (
+    playerToAttackData.shield >= MAX_SHIELD &&
+    playerToAttackData.health >= MIN_HEALTH
+  ) {
+    playerToAttackData.health -= 1;
+  }
+
+  // Update user's shield and health based on game logic
+  if (userData.shield < MAX_SHIELD) {
+    userData.shield = Math.min(userData.shield + 1, MAX_SHIELD);
+  } else if (userData.health < MAX_HEALTH && playerEliminated) {
+    userData.health = Math.min(userData.health + 1, MAX_HEALTH);
+  }
+
+  // Update the database
+  await update(lobbyRef, {
+    [userId]: userData,
+    [playerToAttackId]: playerToAttackData,
+  });
+
+  return playerEliminated;
+};
+export const handleIncorrectGuess = (
+  lobbyRef: DatabaseReference,
+  playerData: SurvivalPlayerObject,
+) => {
+  // update the matches, and the reveal index
 };

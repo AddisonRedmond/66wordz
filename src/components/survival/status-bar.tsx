@@ -15,7 +15,7 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
   };
 
   return (
-    <>
+    <div className=" relative flex h-3  items-center justify-between">
       {Array.from({ length: props.sections }).map((_, index: number) => {
         return (
           <m.div
@@ -30,7 +30,7 @@ const StatusBar: React.FC<StatusBarProps> = (props: StatusBarProps) => {
           </m.div>
         );
       })}
-    </>
+    </div>
   );
 };
 

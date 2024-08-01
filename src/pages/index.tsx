@@ -58,9 +58,6 @@ const Home = () => {
               lobbyId={lobby.data.id}
               userId={user.id}
               gameType={lobby.data.gameType}
-              exitMatch={() => {
-                setQuitGame(true);
-              }}
             />
           );
         case "ELIMINATION":

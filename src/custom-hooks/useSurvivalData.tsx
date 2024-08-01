@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ref, onValue, off, Database } from "firebase/database";
+import {
+  ref,
+  onValue,
+  off,
+  Database,
+  DatabaseReference,
+} from "firebase/database";
 import { GameType } from "@prisma/client";
 import { SurvivalPlayerData } from "~/utils/survival/surivival";
 
@@ -17,7 +23,7 @@ export type GameData = {
 };
 
 const useSurvialData = (
-  db: Database,
+  db: DatabaseReference,
   props: {
     userId: string;
     lobbyId: string;
@@ -26,7 +32,7 @@ const useSurvialData = (
 ) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
   useEffect(() => {
-    const playersQuery = ref(db, `${props.gameType}/${props.lobbyId}`);
+    const playersQuery = db;
 
     const handlePlayersDataChange = (snapshot: { val: () => GameData }) => {
       const gameData: GameData = snapshot.val();
