@@ -14,6 +14,8 @@ import {
 
 type SurvivalOpponentProps = {
   opponents?: SurvivalPlayerData;
+  setAttackPosition: (id: string) => void;
+  attackPosition: string;
 };
 
 const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
@@ -25,7 +27,7 @@ const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
   const opponentSizePercentage = 50 / totalOpponents; // Using the square root for both width and height
 
   return (
-    <div className="flex flex-grow flex-wrap items-center justify-between px-2">
+    <div className="flex flex-grow max-w-[37.5%] flex-wrap items-center justify-center gap-2 px-2">
       {props.opponents &&
         Object.keys(props.opponents).map((opponentId) => {
           const playerData: SurvivalPlayerObject | undefined =
@@ -50,8 +52,8 @@ const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
               } m-1 flex min-w-14 items-center justify-start`}
             >
               <div
-                onClick={() => console.log(opponentId)}
-                className={`w-full rounded-full duration-150 ease-in-out ${"bg-violet-300"}`}
+                onClick={() => props.setAttackPosition(opponentId)}
+                className={`w-full cursor-pointer rounded-full duration-150 ease-in-out ${props.attackPosition === opponentId ? "bg-zinc-400" : "hover:bg-zinc-300"}`}
               >
                 <CircularProgressbarWithChildren
                   styles={buildStyles({

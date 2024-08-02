@@ -5,7 +5,7 @@ const AttackButton: React.FC<{
   text: string;
   totalButtons: number;
   attackPosition: AttackPosition;
-  setAttackPosition: Dispatch<SetStateAction<string>>;
+  setAttackPosition: (id: string) => void;
 
   //   handleClick: () => void;
 }> = (props) => {
@@ -13,7 +13,12 @@ const AttackButton: React.FC<{
 
   return (
     <button
-      onClick={() => props.setAttackPosition(props.text)}
+      onClick={() => {
+        if (props.text === "Random") {
+        } else {
+          props.setAttackPosition(props.text);
+        }
+      }}
       style={{ width: `${Math.floor(100 / props.totalButtons)}%` }}
       className={`max-w-36 rounded-full border-2 border-zinc-500 py-1 font-semibold duration-150 ease-linear ${isSelected ? "bg-zinc-900 text-white" : "hover:bg-zinc-300"}`}
     >
@@ -24,7 +29,7 @@ const AttackButton: React.FC<{
 
 const AttackMenu: React.FC<{
   attackPosition: AttackPosition;
-  setAttackPosition: Dispatch<SetStateAction<string>>;
+  setAttackPosition: (id: string) => void;
 }> = (props) => {
   const buttons = ["First", "Random", "Last"];
   return (

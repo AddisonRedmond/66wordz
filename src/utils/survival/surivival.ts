@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { DatabaseReference, update } from "firebase/database";
+import { DatabaseReference, child, update } from "firebase/database";
 import {
   getInitials,
   getRevealIndex,
@@ -79,13 +79,15 @@ export const findPlayerToAttack = (
 ) => {
   // alphabetically sorted players who aren't eliminated
   const nonEliminatedPlayersOrdered: string[] = Object.keys(players)
-    .filter((id) => !players[id]?.eliminated || id !== playerId)
+    .filter((id) => !players[id]?.eliminated && id !== playerId)
     .toSorted(
       (a, b) =>
         players[b]!.health +
         players[b]!.shield -
         (players[a]!.health + players[a]!.shield),
     );
+
+  console.log(nonEliminatedPlayersOrdered);
 
   const validateTarget = (id: string) => {
     if (!players[id]?.eliminated) {
@@ -102,11 +104,13 @@ export const findPlayerToAttack = (
 
   // updated firebase
 
-  if (position === "first") {
+  if (position === "First") {
+    console.log("returning first");
     return nonEliminatedPlayersOrdered[0];
-  } else if (position === "last") {
+  } else if (position === "Last") {
     return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length - 1];
   } else {
+    console.log(`returning ${position}`);
     return validateTarget(position);
   }
 };
@@ -119,7 +123,7 @@ export const handleCorrectGuess = async (
   playerToAttackData?: SurvivalPlayerObject,
 ): Promise<boolean> => {
   let playerEliminated = false;
-
+  console.log(playerToAttackData);
   if (!playerToAttackId || !playerToAttackData) {
     // TODO: add notification that there is no player to attack, or add other logic
     return playerEliminated;
@@ -133,16 +137,16 @@ export const handleCorrectGuess = async (
     playerToAttackData.eliminated = true;
     playerToAttackData.health = 0;
     playerEliminated = true;
-  } else if (playerToAttackData.shield < MAX_SHIELD) {
+  } else if (playerToAttackData.shield > 0) {
     playerToAttackData.shield = Math.min(
-      playerToAttackData.shield + 1,
+      playerToAttackData.shield - 1,
       MAX_SHIELD,
     );
   } else if (
-    playerToAttackData.shield >= MAX_SHIELD &&
+    playerToAttackData.shield >= 0 &&
     playerToAttackData.health >= MIN_HEALTH
   ) {
-    playerToAttackData.health -= 1;
+    playerToAttackData.health = playerToAttackData.health - 1;
   }
 
   // Update user's shield and health based on game logic
@@ -152,8 +156,13 @@ export const handleCorrectGuess = async (
     userData.health = Math.min(userData.health + 1, MAX_HEALTH);
   }
 
+  userData.word.matches = { full: [], partial: [], none: [] };
+  userData.revealIndex = [];
+  userData.word.word = handleGetNewWord();
   // Update the database
-  await update(lobbyRef, {
+  const playersRef = child(lobbyRef, "players");
+
+  await update(playersRef, {
     [userId]: userData,
     [playerToAttackId]: playerToAttackData,
   });

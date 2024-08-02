@@ -20,6 +20,7 @@ import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
 import GameStarting from "../board-components/game-starting";
+import { P } from "@clerk/clerk-react/dist/controlComponents-CzpRUsyv";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -52,6 +53,36 @@ const Survival: React.FC<SurvivalProps> = ({
     volume: 0.5,
     playbackRate: 3,
   });
+
+  const handleSetAttackPosition = (id: string) => {
+    setAttackPosition(id);
+  };
+
+  const handleSetRandom = () => {
+    const players = gameData?.players;
+    if (!players) {
+      return;
+    }
+
+    const nonEliminatedPlayersOrdered: string[] = Object.keys(gameData.players)
+      .filter((id) => !players[id]?.eliminated && id !== userId)
+      .toSorted(
+        (a, b) =>
+          players[b]!.health +
+          players[b]!.shield -
+          (players[a]!.health + players[a]!.shield),
+      );
+
+    const randomPlayer =
+      nonEliminatedPlayersOrdered[
+        Math.floor(Math.random() * nonEliminatedPlayersOrdered.length - 1)
+      ];
+
+    if (randomPlayer) {
+      setAttackPosition(randomPlayer);
+    }
+  };
+  
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -88,21 +119,18 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData.players,
             attackPosition,
           );
+          console.log(playerToAttack);
           if (!playerToAttack || !gameData.players[playerToAttack]) {
             // TODO: add check for no player to attack
             return;
           }
-          const playerEliminated = await handleCorrectGuess(
+          await handleCorrectGuess(
             lobbyRef,
             userId,
             playerData,
             playerToAttack,
             gameData.players[playerToAttack],
           );
-
-          if (playerEliminated) {
-            //
-          }
         } else {
           // handle incorrect guess
           handleIncorrectGuess(playerRef, playerData, guess);
@@ -135,13 +163,12 @@ const Survival: React.FC<SurvivalProps> = ({
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
-  const getHalfOfOpponents = (
-    isEvenHalf: boolean,
-    opponents?: SurvivalPlayerData,
-  ) => {
-    if (!opponents) {
+  const getHalfOfOpponents = (isEvenHalf: boolean) => {
+    if (!gameData) {
       return;
     }
+
+    const opponents = gameData.players;
     const filteredData: SurvivalPlayerData = {};
 
     const keys = Object.keys(opponents).filter(
@@ -166,7 +193,11 @@ const Survival: React.FC<SurvivalProps> = ({
       <div className="flex w-screen flex-grow justify-around">
         {gameData?.lobbyData.gameStarted ? (
           <>
-            <SurvivalOpponent opponents={getHalfOfOpponents(true)} />
+            <SurvivalOpponent
+              opponents={getHalfOfOpponents(true)}
+              setAttackPosition={handleSetAttackPosition}
+              attackPosition={attackPosition}
+            />
 
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <WordContainer
@@ -176,7 +207,7 @@ const Survival: React.FC<SurvivalProps> = ({
 
               <AttackMenu
                 attackPosition={attackPosition}
-                setAttackPosition={setAttackPosition}
+                setAttackPosition={handleSetAttackPosition}
               />
 
               <div className="w-full">
@@ -204,7 +235,11 @@ const Survival: React.FC<SurvivalProps> = ({
               </div>
             </div>
 
-            <SurvivalOpponent opponents={getHalfOfOpponents(false)} />
+            <SurvivalOpponent
+              opponents={getHalfOfOpponents(false)}
+              setAttackPosition={handleSetAttackPosition}
+              attackPosition={attackPosition}
+            />
           </>
         ) : (
           <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
