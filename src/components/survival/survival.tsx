@@ -19,6 +19,7 @@ import useSound from "use-sound";
 import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
+import GameStarting from "../board-components/game-starting";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -34,6 +35,7 @@ const Survival: React.FC<SurvivalProps> = ({
   gameType,
 }: SurvivalProps) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
+  const playerRef = ref(db, `${gameType}/${lobbyId}/players/${userId}`);
   const gameData = useSurvialData(lobbyRef, { userId, lobbyId, gameType });
   const playerData: SurvivalPlayerObject | undefined =
     gameData?.players[userId];
@@ -103,7 +105,7 @@ const Survival: React.FC<SurvivalProps> = ({
           }
         } else {
           // handle incorrect guess
-          handleIncorrectGuess(lobbyRef, playerData);
+          handleIncorrectGuess(playerRef, playerData, guess);
         }
         setGuess("");
       }
@@ -159,48 +161,57 @@ const Survival: React.FC<SurvivalProps> = ({
     return filteredData;
   };
 
-  return (
-    <div className="flex w-screen flex-grow justify-around">
-      {/* left opponents, if is mobile is false */}
-      <SurvivalOpponent opponents={getHalfOfOpponents(true)} />
+  if (gameData) {
+    return (
+      <div className="flex w-screen flex-grow justify-around">
+        {gameData?.lobbyData.gameStarted ? (
+          <>
+            <SurvivalOpponent opponents={getHalfOfOpponents(true)} />
 
-      <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
-        <WordContainer
-          word={playerData?.word?.word}
-          match={playerData?.revealIndex}
-        />
+            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
+              <WordContainer
+                word={playerData?.word?.word}
+                match={playerData?.revealIndex}
+              />
 
-        <AttackMenu attackPosition={attackPosition} setAttackPosition={setAttackPosition} />
+              <AttackMenu
+                attackPosition={attackPosition}
+                setAttackPosition={setAttackPosition}
+              />
 
-        <div className="w-full">
-          <StatusBar
-            value={playerData?.shield}
-            color="bg-sky-400"
-            sections={4}
-          />
-          <StatusBar
-            value={playerData?.shield}
-            color="bg-green-400"
-            sections={2}
-          />
-        </div>
-        <div className="flex w-full flex-col gap-y-2">
-          <GuessContainer
-            wordLength={playerData?.word.word.length}
-            word={guess}
-          />
-          <Keyboard
-            matches={playerData?.word.matches}
-            handleKeyBoardLogic={handleKeyUp}
-            disabled={false}
-          />
-        </div>
+              <div className="w-full">
+                <StatusBar
+                  value={playerData?.shield}
+                  color="bg-sky-400"
+                  sections={4}
+                />
+                <StatusBar
+                  value={playerData?.shield}
+                  color="bg-green-400"
+                  sections={2}
+                />
+              </div>
+              <div className="flex w-full flex-col gap-y-2">
+                <GuessContainer
+                  wordLength={playerData?.word.word.length}
+                  word={guess}
+                />
+                <Keyboard
+                  matches={playerData?.word.matches}
+                  handleKeyBoardLogic={handleKeyUp}
+                  disabled={false}
+                />
+              </div>
+            </div>
+
+            <SurvivalOpponent opponents={getHalfOfOpponents(false)} />
+          </>
+        ) : (
+          <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
+        )}
       </div>
-
-      {/* right opponents, if is mobile is false */}
-      <SurvivalOpponent opponents={getHalfOfOpponents(false)} />
-    </div>
-  );
+    );
+  }
 };
 
 export default Survival;

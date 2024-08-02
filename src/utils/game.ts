@@ -140,3 +140,20 @@ export function arraysContainSameElements(arr1: string[], arr2: string[]) {
   // If all elements match, arrays contain the same elements
   return true;
 }
+
+
+export const getRevealIndex = (
+  word: string,
+  guess: string,
+  currentRevealedIndex?: number[],
+): number[] => {
+  const revealIndex = new Set([...(currentRevealedIndex ?? [])]);
+
+  word.split("").forEach((letter, index) => {
+    if (letter === guess.split("")[index]) {
+      revealIndex.add(index);
+    }
+  });
+
+  return Array.from(revealIndex);
+};

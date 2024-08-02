@@ -1,6 +1,11 @@
 import { db } from "../firebase/firebase";
 import { DatabaseReference, update } from "firebase/database";
-import { getInitials, handleGetNewWord, handleMatched } from "../game";
+import {
+  getInitials,
+  getRevealIndex,
+  handleGetNewWord,
+  handleMatched,
+} from "../game";
 import dictionary from "../dictionary";
 import { AttackPosition } from "~/components/survival/survival";
 
@@ -111,7 +116,7 @@ export const handleCorrectGuess = async (
   userId: string,
   userData: SurvivalPlayerObject,
   playerToAttackId: string,
-  playerToAttackData: SurvivalPlayerObject,
+  playerToAttackData?: SurvivalPlayerObject,
 ): Promise<boolean> => {
   let playerEliminated = false;
 
@@ -155,9 +160,28 @@ export const handleCorrectGuess = async (
 
   return playerEliminated;
 };
-export const handleIncorrectGuess = (
-  lobbyRef: DatabaseReference,
+export const handleIncorrectGuess = async (
+  playerRef: DatabaseReference,
   playerData: SurvivalPlayerObject,
+  guess: string,
 ) => {
   // update the matches, and the reveal index
+  const word = playerData.word.word;
+  const updatedRevealIndex = getRevealIndex(
+    word,
+    guess,
+    playerData.revealIndex,
+  );
+  const matches = handleMatched(guess, word, playerData.word.matches);
+
+  const updatedPlayerData = {
+    ...playerData,
+  };
+
+  updatedPlayerData.word.matches = matches;
+  updatedPlayerData.revealIndex = updatedRevealIndex;
+
+  console.log(updatedPlayerData);
+
+  await update(playerRef, { ...updatedPlayerData });
 };
