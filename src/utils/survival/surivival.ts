@@ -87,8 +87,6 @@ export const findPlayerToAttack = (
         (players[a]!.health + players[a]!.shield),
     );
 
-  console.log(nonEliminatedPlayersOrdered);
-
   const validateTarget = (id: string) => {
     if (!players[id]?.eliminated) {
       return id;
@@ -105,12 +103,10 @@ export const findPlayerToAttack = (
   // updated firebase
 
   if (position === "First") {
-    console.log("returning first");
     return nonEliminatedPlayersOrdered[0];
   } else if (position === "Last") {
-    return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length - 1];
+    return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length];
   } else {
-    console.log(`returning ${position}`);
     return validateTarget(position);
   }
 };

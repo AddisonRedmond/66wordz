@@ -75,14 +75,13 @@ const Survival: React.FC<SurvivalProps> = ({
 
     const randomPlayer =
       nonEliminatedPlayersOrdered[
-        Math.floor(Math.random() * nonEliminatedPlayersOrdered.length - 1)
+        Math.floor(Math.random() * nonEliminatedPlayersOrdered.length)
       ];
 
     if (randomPlayer) {
       setAttackPosition(randomPlayer);
     }
   };
-  
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -119,6 +118,7 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData.players,
             attackPosition,
           );
+          setAttackPosition(playerToAttack);
           console.log(playerToAttack);
           if (!playerToAttack || !gameData.players[playerToAttack]) {
             // TODO: add check for no player to attack
@@ -208,6 +208,7 @@ const Survival: React.FC<SurvivalProps> = ({
               <AttackMenu
                 attackPosition={attackPosition}
                 setAttackPosition={handleSetAttackPosition}
+                handleSetRandom={handleSetRandom}
               />
 
               <div className="w-full">

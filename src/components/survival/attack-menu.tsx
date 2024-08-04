@@ -6,6 +6,7 @@ const AttackButton: React.FC<{
   totalButtons: number;
   attackPosition: AttackPosition;
   setAttackPosition: (id: string) => void;
+  setRandomPosition: () => void;
 
   //   handleClick: () => void;
 }> = (props) => {
@@ -15,6 +16,7 @@ const AttackButton: React.FC<{
     <button
       onClick={() => {
         if (props.text === "Random") {
+          props.setRandomPosition();
         } else {
           props.setAttackPosition(props.text);
         }
@@ -30,6 +32,7 @@ const AttackButton: React.FC<{
 const AttackMenu: React.FC<{
   attackPosition: AttackPosition;
   setAttackPosition: (id: string) => void;
+  handleSetRandom: () => void;
 }> = (props) => {
   const buttons = ["First", "Random", "Last"];
   return (
@@ -42,6 +45,7 @@ const AttackMenu: React.FC<{
             text={button}
             attackPosition={props.attackPosition}
             setAttackPosition={props.setAttackPosition}
+            setRandomPosition={props.handleSetRandom}
           />
         );
       })}
