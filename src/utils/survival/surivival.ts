@@ -119,7 +119,6 @@ export const handleCorrectGuess = async (
   playerToAttackData?: SurvivalPlayerObject,
 ): Promise<boolean> => {
   let playerEliminated = false;
-  console.log(playerToAttackData);
   if (!playerToAttackId || !playerToAttackData) {
     // TODO: add notification that there is no player to attack, or add other logic
     return playerEliminated;
@@ -166,9 +165,10 @@ export const handleCorrectGuess = async (
   return playerEliminated;
 };
 export const handleIncorrectGuess = async (
-  playerRef: DatabaseReference,
+  lobbyRef: DatabaseReference,
   playerData: SurvivalPlayerObject,
   guess: string,
+  userId: string,
 ) => {
   // update the matches, and the reveal index
   const word = playerData.word.word;
@@ -186,7 +186,7 @@ export const handleIncorrectGuess = async (
   updatedPlayerData.word.matches = matches;
   updatedPlayerData.revealIndex = updatedRevealIndex;
 
-  console.log(updatedPlayerData);
+  const ref = child(lobbyRef, `players/${userId}`);
 
-  await update(playerRef, { ...updatedPlayerData });
+  await update(ref, { ...updatedPlayerData });
 };

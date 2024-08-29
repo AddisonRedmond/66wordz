@@ -27,7 +27,7 @@ const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
   const opponentSizePercentage = 50 / totalOpponents; // Using the square root for both width and height
 
   return (
-    <div className="flex flex-grow max-w-[37.5%] flex-wrap items-center justify-center gap-2 px-2">
+    <div className="flex max-w-[37.5%] flex-grow flex-wrap items-center justify-center gap-2 px-2">
       {props.opponents &&
         Object.keys(props.opponents).map((opponentId) => {
           const playerData: SurvivalPlayerObject | undefined =
@@ -45,11 +45,7 @@ const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
                 width: `${opponentSizePercentage}%`,
               }}
               exit={{ scale: 0 }}
-              className={`${
-                playerData.eliminated
-                  ? "cursor-not-allowed opacity-50"
-                  : "opacity-100"
-              } m-1 flex min-w-14 items-center justify-start`}
+              className={`m-1 flex min-w-14 items-center justify-start`}
             >
               <div
                 onClick={() => props.setAttackPosition(opponentId)}
@@ -79,20 +75,12 @@ const SurvivalOpponent: React.FC<SurvivalOpponentProps> = (
                       value={(playerData.shield / 4) * 100}
                     >
                       <div className=" flex flex-col items-center justify-center font-semibold">
-                        {playerData.eliminated ? (
-                          <p>❌</p>
+                        {playerData?.initials ? (
+                          <p className={`text-[1vw]`}>{playerData?.initials}</p>
                         ) : (
-                          <>
-                            {playerData?.initials ? (
-                              <p className={`text-[1vw]`}>
-                                {playerData?.initials}
-                              </p>
-                            ) : (
-                              <div className={`aspect-square h-[1vw]`}>
-                                <Image alt="robot icon" src={bot} />
-                              </div>
-                            )}
-                          </>
+                          <div className={`aspect-square h-[1vw]`}>
+                            <Image alt="robot icon" src={bot} />
+                          </div>
                         )}
                       </div>
                     </CircularProgressbarWithChildren>

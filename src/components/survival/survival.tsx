@@ -20,7 +20,7 @@ import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
 import GameStarting from "../board-components/game-starting";
-import { P } from "@clerk/clerk-react/dist/controlComponents-CzpRUsyv";
+import GameOver from "../board-components/game-over";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -36,7 +36,6 @@ const Survival: React.FC<SurvivalProps> = ({
   gameType,
 }: SurvivalProps) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
-  const playerRef = ref(db, `${gameType}/${lobbyId}/players/${userId}`);
   const gameData = useSurvialData(lobbyRef, { userId, lobbyId, gameType });
   const playerData: SurvivalPlayerObject | undefined =
     gameData?.players[userId];
@@ -118,8 +117,7 @@ const Survival: React.FC<SurvivalProps> = ({
             gameData.players,
             attackPosition,
           );
-          setAttackPosition(playerToAttack);
-          console.log(playerToAttack);
+
           if (!playerToAttack || !gameData.players[playerToAttack]) {
             // TODO: add check for no player to attack
             return;
@@ -133,7 +131,7 @@ const Survival: React.FC<SurvivalProps> = ({
           );
         } else {
           // handle incorrect guess
-          handleIncorrectGuess(playerRef, playerData, guess);
+          handleIncorrectGuess(lobbyRef, playerData, guess, userId);
         }
         setGuess("");
       }
@@ -203,37 +201,48 @@ const Survival: React.FC<SurvivalProps> = ({
               <WordContainer
                 word={playerData?.word?.word}
                 match={playerData?.revealIndex}
+                eliminated={playerData?.eliminated}
+                revealAll={gameData.lobbyData?.winner === userId}
               />
 
-              <AttackMenu
-                attackPosition={attackPosition}
-                setAttackPosition={handleSetAttackPosition}
-                handleSetRandom={handleSetRandom}
-              />
+              {playerData?.eliminated || gameData.lobbyData?.winner ? (
+                <GameOver
+                  eliminated={playerData?.eliminated}
+                  winner={gameData.lobbyData?.winner === userId}
+                />
+              ) : (
+                <>
+                  <AttackMenu
+                    attackPosition={attackPosition}
+                    setAttackPosition={handleSetAttackPosition}
+                    handleSetRandom={handleSetRandom}
+                  />
 
-              <div className="w-full">
-                <StatusBar
-                  value={playerData?.shield}
-                  color="bg-sky-400"
-                  sections={4}
-                />
-                <StatusBar
-                  value={playerData?.shield}
-                  color="bg-green-400"
-                  sections={2}
-                />
-              </div>
-              <div className="flex w-full flex-col gap-y-2">
-                <GuessContainer
-                  wordLength={playerData?.word.word.length}
-                  word={guess}
-                />
-                <Keyboard
-                  matches={playerData?.word.matches}
-                  handleKeyBoardLogic={handleKeyUp}
-                  disabled={false}
-                />
-              </div>
+                  <div className="w-full">
+                    <StatusBar
+                      value={playerData?.shield}
+                      color="bg-sky-400"
+                      sections={4}
+                    />
+                    <StatusBar
+                      value={playerData?.health}
+                      color="bg-green-400"
+                      sections={2}
+                    />
+                  </div>
+                  <div className="flex w-full flex-col gap-y-2">
+                    <GuessContainer
+                      wordLength={playerData?.word.word.length}
+                      word={guess}
+                    />
+                    <Keyboard
+                      matches={playerData?.word.matches}
+                      handleKeyBoardLogic={handleKeyUp}
+                      disabled={false}
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             <SurvivalOpponent
