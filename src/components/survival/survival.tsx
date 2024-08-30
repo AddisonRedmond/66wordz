@@ -161,15 +161,21 @@ const Survival: React.FC<SurvivalProps> = ({
 
   const evenIds = Object.keys(gameData?.players ?? {}).filter(
     (playerId: string, index: number) => {
-      if (index < 10) {
-        return index % 2 === 0 && !gameData?.players[playerId]?.eliminated;
-      }
+      return (
+        index % 2 === 0 &&
+        !gameData?.players[playerId]?.eliminated &&
+        playerId !== userId
+      );
     },
   );
 
   const oddIds = Object.keys(gameData?.players ?? {}).filter(
     (playerId: string, index: number) => {
-      return index % 2 !== 0 && !gameData?.players[playerId]?.eliminated;
+      return (
+        index % 2 !== 0 &&
+        !gameData?.players[playerId]?.eliminated &&
+        playerId !== userId
+      );
     },
   );
 
