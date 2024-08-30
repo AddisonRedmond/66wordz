@@ -36,7 +36,7 @@ const Survival: React.FC<SurvivalProps> = ({
   gameType,
 }: SurvivalProps) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
-  const gameData = useSurvialData(lobbyRef, { userId, lobbyId, gameType });
+  const gameData = useSurvialData(lobbyRef, { lobbyId });
   const playerData: SurvivalPlayerObject | undefined =
     gameData?.players[userId];
 
@@ -159,32 +159,23 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
-  useOnKeyUp(handleKeyUp, [guess, gameData]);
-
-  const getHalfOfOpponents = (isEvenHalf: boolean) => {
-    if (!gameData) {
-      return;
-    }
-
-    const opponents = gameData.players;
-    const filteredData: SurvivalPlayerData = {};
-
-    const keys = Object.keys(opponents).filter(
-      (id) => id !== userId && !opponents[id]?.eliminated,
-    );
-
-    keys.forEach((key, index) => {
-      if (opponents[key]) {
-        if (isEvenHalf && index % 2 === 0) {
-          filteredData[key] = opponents[key];
-        } else if (!isEvenHalf && index % 2 !== 0) {
-          filteredData[key] = opponents[key];
-        }
+  const evenIds = Object.keys(gameData?.players ?? {}).filter(
+    (playerId: string, index: number) => {
+      if (index < 10) {
+        return index % 2 === 0 && !gameData?.players[playerId]?.eliminated;
       }
-    });
+    },
+  );
 
-    return filteredData;
-  };
+  const oddIds = Object.keys(gameData?.players ?? {}).filter(
+    (playerId: string, index: number) => {
+      return index % 2 !== 0 && !gameData?.players[playerId]?.eliminated;
+    },
+  );
+
+  console.log(evenIds);
+
+  useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   if (gameData) {
     return (
@@ -192,9 +183,10 @@ const Survival: React.FC<SurvivalProps> = ({
         {gameData?.lobbyData.gameStarted ? (
           <>
             <SurvivalOpponent
-              opponents={getHalfOfOpponents(true)}
+              opponents={gameData.players}
               setAttackPosition={handleSetAttackPosition}
               attackPosition={attackPosition}
+              ids={evenIds}
             />
 
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
@@ -246,7 +238,8 @@ const Survival: React.FC<SurvivalProps> = ({
             </div>
 
             <SurvivalOpponent
-              opponents={getHalfOfOpponents(false)}
+              ids={oddIds}
+              opponents={gameData.players}
               setAttackPosition={handleSetAttackPosition}
               attackPosition={attackPosition}
             />

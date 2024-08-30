@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  ref,
   onValue,
   off,
-  Database,
   DatabaseReference,
 } from "firebase/database";
 import { GameType } from "@prisma/client";
@@ -25,9 +23,7 @@ export type GameData = {
 const useSurvialData = (
   db: DatabaseReference,
   props: {
-    userId: string;
     lobbyId: string;
-    gameType: GameType;
   },
 ) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
@@ -45,7 +41,7 @@ const useSurvialData = (
       off(playersQuery, "value", handlePlayersDataChange);
       unsubscribe();
     };
-  }, [db, props.gameType, props.lobbyId]);
+  }, []);
 
   return gameData;
 };
