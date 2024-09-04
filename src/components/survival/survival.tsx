@@ -6,14 +6,13 @@ import {
   findPlayerToAttack,
   handleCorrectGuess,
   handleIncorrectGuess,
-  SurvivalPlayerData,
   SurvivalPlayerObject,
 } from "~/utils/survival/surivival";
 import GuessContainer from "../board-components/guess-container";
 import Keyboard from "../board-components/keyboard";
 import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
-
+import { checkSpelling } from "~/utils/spellCheck";
 import SurvivalOpponent from "./survival-opponent";
 import useSound from "use-sound";
 import { ref } from "firebase/database";
@@ -36,11 +35,12 @@ const Survival: React.FC<SurvivalProps> = ({
   gameType,
 }: SurvivalProps) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
-  const gameData = useSurvialData(lobbyRef, { lobbyId });
+  const gameData = useSurvialData(lobbyRef);
   const playerData: SurvivalPlayerObject | undefined =
     gameData?.players[userId];
 
   const [guess, setGuess] = useState("");
+  const [spellCheck, setSpellCheck] = useState(false);
   const [attackPosition, setAttackPosition] = useState<AttackPosition>("First");
 
   const [popSound] = useSound("/sounds/pop-2.mp3", {
@@ -110,6 +110,10 @@ const Survival: React.FC<SurvivalProps> = ({
     const handleEnter = async () => {
       // ensure guess length is same length as word
       if (guess.length === playerData.word.word.length) {
+        if (!checkSpelling(guess)) {
+          setSpellCheck(false);
+          return;
+        }
         // check if guess is correct
         if (guess === playerData.word.word) {
           const playerToAttack = findPlayerToAttack(
@@ -179,8 +183,6 @@ const Survival: React.FC<SurvivalProps> = ({
     },
   );
 
-  console.log(evenIds);
-
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   if (gameData) {
@@ -232,6 +234,7 @@ const Survival: React.FC<SurvivalProps> = ({
                     <GuessContainer
                       wordLength={playerData?.word.word.length}
                       word={guess}
+                      spellCheck={spellCheck}
                     />
                     <Keyboard
                       matches={playerData?.word.matches}

@@ -1,4 +1,3 @@
-import { db } from "../firebase/firebase";
 import { DatabaseReference, child, update } from "firebase/database";
 import {
   getInitials,
@@ -6,7 +5,6 @@ import {
   handleGetNewWord,
   handleMatched,
 } from "../game";
-import dictionary from "../dictionary";
 import { AttackPosition } from "~/components/survival/survival";
 
 const MAX_SHIELD = 4;

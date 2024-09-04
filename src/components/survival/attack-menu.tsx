@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { AttackPosition } from "./survival";
 
 const AttackButton: React.FC<{

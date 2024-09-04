@@ -4,7 +4,7 @@ import Keyboard from "../keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useGetChallengeData from "~/custom-hooks/useGetChallengeData";
-import { checkSpelling } from "~/utils/survival/surivival";
+import { checkSpelling } from "~/utils/spellCheck";
 import { handleGuess } from "~/utils/challenge";
 import { doc } from "firebase/firestore";
 import { store } from "~/utils/firebase/firebase";

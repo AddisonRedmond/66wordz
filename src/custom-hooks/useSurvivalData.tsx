@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  onValue,
-  off,
-  DatabaseReference,
-} from "firebase/database";
-import { GameType } from "@prisma/client";
+import { onValue, off, DatabaseReference } from "firebase/database";
 import { SurvivalPlayerData } from "~/utils/survival/surivival";
 
 // todo: add word expiration timer
@@ -22,9 +17,6 @@ export type GameData = {
 
 const useSurvialData = (
   db: DatabaseReference,
-  props: {
-    lobbyId: string;
-  },
 ) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
   useEffect(() => {
