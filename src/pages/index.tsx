@@ -11,18 +11,16 @@ import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
-import { useUser } from "@clerk/nextjs";
-import { getAuth, buildClerkProps, clerkClient } from "@clerk/nextjs/server";
+
+import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
 
-const Home = () => {
-  const { user } = useUser();
+const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
-  const userData = api.getUser.getUser.useQuery();
 
   const upgrade = api.upgrade.createCheckout.useMutation();
 
@@ -44,19 +42,18 @@ const Home = () => {
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
     lobby.remove();
-    userData.refetch();
     // delete user from lobby db
     // delete user from firebase db
   };
 
   const handleStartGame = () => {
-    if (lobby.data && user) {
+    if (lobby.data) {
       switch (lobby.data.gameType) {
         case "SURVIVAL":
           return (
             <Survival
               lobbyId={lobby.data.id}
-              userId={user.id}
+              userId={userId}
               gameType={lobby.data.gameType}
             />
           );
@@ -64,7 +61,7 @@ const Home = () => {
           return (
             <Elimination
               lobbyId={lobby.data.id}
-              userId={user.id}
+              userId={userId}
               gameType={lobby.data.gameType}
             />
           );
@@ -169,7 +166,7 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
 
-  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+  // const user = userId ? await clerkClient.users.getUser(userId) : undefined;
   if (!userId) {
     // send user to index
     return {
@@ -180,5 +177,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  return { props: { ...buildClerkProps(ctx.req, { user }) } };
+  return { props: { userId } };
 };

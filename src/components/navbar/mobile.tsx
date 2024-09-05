@@ -4,16 +4,16 @@ import burger from "../../../public/burger.svg";
 import profile from "../../../public/profile.png";
 import signout from "../../../public/signout.svg";
 import home from "../../../public/home.png";
-import upgrade from "../../../public/upgrade.png";
+// import upgrade from "../../../public/upgrade.png";
 import friends from "../../../public/friends.png";
-
 
 import Link from "next/link";
 type MobileNavbarProps = {
   menuIsOpen: boolean;
   setMenuIsOpen: (isOpen: boolean) => void;
   handleUpgrade: () => void;
-  handleSignOut: ()=> void;
+  handleSignOut: () => void;
+  hasFriendRequest: boolean;
 };
 const MobileNavbar: React.FC<MobileNavbarProps> = (
   props: MobileNavbarProps,
@@ -28,7 +28,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
       <AnimatePresence>
         {props.menuIsOpen && (
           <m.div
-            transition={{ duration: 0.25, type: "just" }}
+            transition={{ duration: 0.20, type: "just" }}
             initial={{ opacity: 1, y: "-100vh" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 1, y: "-100vh" }}
@@ -68,20 +68,23 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                 </div>
               </Link>
               <Link href="/friends">
+                <div className="relative">
+                  {props.hasFriendRequest && (
+                    <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-custom-accent opacity-75"></span>
+                      <span className="relative inline-flex h-3 w-3 rounded-full bg-custom-accent"></span>
+                    </span>
+                  )}
+                </div>
                 <div
                   onClick={() => props.setMenuIsOpen(false)}
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Friends</p>
-                  <Image
-                    
-                    width={40}
-                    src={friends}
-                    alt="friends icon"
-                  />
+                  <Image width={40} src={friends} alt="friends icon" />
                 </div>
               </Link>
-              <div
+              {/* <div
                 onClick={() => props.handleUpgrade()}
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
               >
@@ -92,7 +95,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   src={upgrade}
                   alt="upgrade icon"
                 />
-              </div>
+              </div> */}
               <div
                 onClick={() => props.handleSignOut()}
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
@@ -115,7 +118,17 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
             <Link href="/">66</Link>
           </p>
         </div>
+
         <div>
+          <div className="relative">
+            {props.hasFriendRequest && !props.menuIsOpen && (
+              <span className="absolute -right-1 -top-1 flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-custom-accent opacity-75"></span>
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-custom-accent"></span>
+              </span>
+            )}
+          </div>
+
           <Image
             onClick={() => props.setMenuIsOpen(true)}
             src={burger}
