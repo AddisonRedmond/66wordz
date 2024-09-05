@@ -1,380 +1,267 @@
 import { GameType } from "@prisma/client";
 import useSurvialData from "../../custom-hooks/useSurvivalData";
 import { db } from "~/utils/firebase/firebase";
-import WordContainer from "./word-container";
-import Keyboard from "../keyboard";
+import WordContainer from "../board-components/word-container";
+import {
+  findPlayerToAttack,
+  handleCorrectGuess,
+  handleIncorrectGuess,
+  SurvivalPlayerObject,
+} from "~/utils/survival/surivival";
+import GuessContainer from "../board-components/guess-container";
+import Keyboard from "../board-components/keyboard";
 import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
-import { useIsMobile } from "~/custom-hooks/useIsMobile";
-import shield from "../../../public/shield.svg";
-import health from "../../../public/health.svg";
-import StatusBar from "./status-bar";
-import Image from "next/image";
-import Opponent from "./opponent";
-import {
-  checkSpelling,
-  handleCorrectGuess,
-  handleAttack,
-  handleIncorrectGuess,
-  getPlayerPosition,
-  healPlayer,
-} from "~/utils/survival/surivival";
-import GuessContainer from "./guess-container";
-import Eliminated from "./eliminated";
-import LoadingGame from "../loading-game";
-import { AnimatePresence } from "framer-motion";
-import AutoAttack from "./auto-attack";
-import MobileAutoAttack from "./mobile-auto-attack";
-import MobileAttack from "./mobile-attack";
+import { checkSpelling } from "~/utils/spellCheck";
+import SurvivalOpponent from "./survival-opponent";
 import useSound from "use-sound";
-import Confetti from "react-confetti";
-import { api } from "~/utils/api";
-export type AutoAttackOption = "first" | "last" | "random" | string;
+import { ref } from "firebase/database";
+import StatusBar from "./status-bar";
+import AttackMenu from "./attack-menu";
+import GameStarting from "../board-components/game-starting";
+import GameOver from "../board-components/game-over";
 
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
   gameType: GameType;
-  exitMatch: () => void;
 };
+
+export type AttackPosition = "First" | "Last" | "Random" | string;
 
 const Survival: React.FC<SurvivalProps> = ({
   lobbyId,
   userId,
   gameType,
-  exitMatch,
 }: SurvivalProps) => {
-  const gameData = useSurvialData(db, { userId, lobbyId, gameType });
+  const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
+  const gameData = useSurvialData(lobbyRef);
+  const playerData: SurvivalPlayerObject | undefined =
+    gameData?.players[userId];
 
-  const startGame = api.createGame.startGame.useMutation();
-
-  const [guess, setGuess] = useState<string>("");
-  const [spellCheck, setSpellCheck] = useState<boolean>(false);
-  const [incorrectGuess, setIncorrectGuess] = useState<boolean>(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [autoAttack, setAutoAttack] = useState<AutoAttackOption>("random");
-  const isMobile = useIsMobile();
-  const playerData = gameData?.players[userId];
+  const [guess, setGuess] = useState("");
+  const [spellCheck, setSpellCheck] = useState(false);
+  const [attackPosition, setAttackPosition] = useState<AttackPosition>("First");
 
   const [popSound] = useSound("/sounds/pop-2.mp3", {
-    volume: 1,
+    volume: 0.5,
     playbackRate: 1.5,
   });
 
   const [deleteSound] = useSound("/sounds/delete2.mp3", {
-    volume: 1,
-    playbackRate: 1.5,
+    volume: 0.5,
+    playbackRate: 3,
   });
 
-  // TODO: make a better correct guess animation
-
-  const ownerStart = () => {
-    if (startGame.isLoading) {
-      return;
-    }
-    startGame.mutate();
+  const finishSpellCheck = () => {
+    setSpellCheck(false);
   };
 
-  const targetOpponent = (playerId: string) => {
-    if (playerData?.eliminated) {
+  const handleSetAttackPosition = (id: string) => {
+    setAttackPosition(id);
+  };
+
+  const handleSetRandom = () => {
+    const players = gameData?.players;
+    if (!players) {
       return;
     }
-    if (
-      !gameData?.players[playerId]?.eliminated ||
-      playerId === "random" ||
-      playerId === "first" ||
-      playerId === "last"
-    ) {
-      setAutoAttack(playerId);
+
+    const nonEliminatedPlayersOrdered: string[] = Object.keys(gameData.players)
+      .filter((id) => !players[id]?.eliminated && id !== userId)
+      .toSorted(
+        (a, b) =>
+          players[b]!.health +
+          players[b]!.shield -
+          (players[a]!.health + players[a]!.shield),
+      );
+
+    const randomPlayer =
+      nonEliminatedPlayersOrdered[
+        Math.floor(Math.random() * nonEliminatedPlayersOrdered.length)
+      ];
+
+    if (randomPlayer) {
+      setAttackPosition(randomPlayer);
     }
   };
 
-  const handleKeyBoardLogic = async (key: string) => {
-    const word = playerData?.word?.word;
+  const handleKeyUp = (e: KeyboardEvent | string) => {
+    const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
 
-    // TODO: ensure there is more than one person in the lobby
+    // conditions to ensure the player should be guessing
+    if (!playerData || !gameData) {
+      console.error("no player data");
+      return;
+    } else if (playerData?.eliminated) {
+      console.warn("player already qualified");
+      return;
+    } else if (!gameData.lobbyData.gameStarted) {
+      console.warn("Game hasn't started yet");
+      return;
+    } else if (!/[a-zA-Z]/.test(key)) {
+      return;
+    } else if (gameData.lobbyData?.winner) {
+      console.warn("Somebody already won");
+    }
 
-    if (playerData?.eliminated || !gameData?.lobbyData.gameStarted) return;
+    const handleBackspace = () => {
+      if (guess.length === 0) return;
+      deleteSound();
+      setGuess((prev) => prev.slice(0, -1));
+    };
 
-    if (key === "Backspace" && guess.length > 0) {
-      setGuess((prevGuess) => {
-        deleteSound();
-        return prevGuess.slice(0, -1);
-      });
-    } else if (key === "Enter" && guess.length >= 5) {
-      // spell check word
-      const isSpellCheck = checkSpelling(guess);
-      // if correct
-      if (isSpellCheck) {
-        if (word === guess) {
-          // handle correct guess
-          const playerToAttack = getPlayerPosition(
-            gameData.players,
-            autoAttack,
-            userId,
-          );
+    const handleEnter = async () => {
+      // ensure guess length is same length as word
+      if (guess.length === playerData.word.word.length) {
+        if (!checkSpelling(guess)) {
+          setSpellCheck(true);
 
-          const eliminated = await handleAttack(
-            lobbyId,
-            playerToAttack,
-            gameData.players[playerToAttack]!,
-          );
-          if (eliminated) {
-            healPlayer(lobbyId, userId, playerData?.health);
-          }
-          handleCorrectGuess(lobbyId, userId, playerData);
-
-          setGuess("");
-
-          if (eliminated) {
-            setAutoAttack("first");
-          }
-        } else {
-          setGuess("");
-          setIncorrectGuess(true);
-          handleIncorrectGuess(guess, lobbyId, userId, playerData!.word);
+          return;
         }
-      } else {
-        // handle spell check is false
-        setSpellCheck(true);
+        // check if guess is correct
+        if (guess === playerData.word.word) {
+          const playerToAttack = findPlayerToAttack(
+            userId,
+            gameData.players,
+            attackPosition,
+          );
+
+          if (!playerToAttack || !gameData.players[playerToAttack]) {
+            // TODO: add check for no player to attack
+            return;
+          }
+          await handleCorrectGuess(
+            lobbyRef,
+            userId,
+            playerData,
+            playerToAttack,
+            gameData.players[playerToAttack],
+          );
+        } else {
+          // handle incorrect guess
+          handleIncorrectGuess(lobbyRef, playerData, guess, userId);
+        }
+        setGuess("");
       }
-    } else if (/[a-zA-Z]/.test(key) && key.length === 1 && guess.length < 5) {
-      popSound();
-      setGuess((prevGuess) => `${prevGuess}${key}`.toUpperCase());
+    };
+
+    const handleLetter = (letter: string) => {
+      if (guess.length < playerData?.word.word.length) {
+        popSound();
+        setGuess((prev) => prev + letter);
+      }
+    };
+
+    switch (key) {
+      case "BACKSPACE":
+        handleBackspace();
+        break;
+      case "ENTER":
+        handleEnter();
+        break;
+      default:
+        if (key.length === 1) {
+          handleLetter(key);
+        }
+        break;
     }
   };
 
-  const handleKeyUp = (e: KeyboardEvent) => {
-    handleKeyBoardLogic(e.key);
-  };
+  const evenIds = Object.keys(gameData?.players ?? {}).filter(
+    (playerId: string, index: number) => {
+      return (
+        index % 2 === 0 &&
+        !gameData?.players[playerId]?.eliminated &&
+        playerId !== userId
+      );
+    },
+  );
+
+  const oddIds = Object.keys(gameData?.players ?? {}).filter(
+    (playerId: string, index: number) => {
+      return (
+        index % 2 !== 0 &&
+        !gameData?.players[playerId]?.eliminated &&
+        playerId !== userId
+      );
+    },
+  );
+
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
-  const getHalfOfOpponents = (even: boolean): string[] => {
-    if (even) {
-      return Object.keys(gameData?.players ?? []).filter(
-        (_, index: number) => index % 2 === 0,
-      );
-    } else {
-      return Object.keys(gameData?.players ?? []).filter(
-        (_, index: number) => index % 2 !== 0,
-      );
-    }
-  };
-
-  const getAllQualifiedPlayers = () => {
-    let count = 0;
-    Object.keys(gameData!.players).forEach((playerId) => {
-      if (gameData?.players[playerId]?.eliminated === false) {
-        count++;
-      }
-    });
-    return count;
-  };
-
-  if (gameData?.players[autoAttack]?.eliminated === true) {
-    setAutoAttack("first");
-  }
-
   if (gameData) {
-    if (gameData.lobbyData?.winner === userId) {
-      return (
-        <div className="grid w-full place-content-center">
-          <Confetti width={window.innerWidth} />
-          <p className=" text-3xl font-semibold">You Won!</p>
-          <button
-            onClick={() => exitMatch()}
-            className="duration rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700"
-          >
-            LEAVE GAME
-          </button>
-        </div>
-      );
-    }
-
     return (
-      <div className={`flex flex-col items-center justify-around gap-3`}>
-        <AnimatePresence>
-          {isMobile && mobileMenuOpen && (
-            <MobileAttack
-              players={gameData.players}
-              userId={userId}
-              setMobileMenuOpen={setMobileMenuOpen}
-              setAutoAttack={targetOpponent}
-              autoAttack={autoAttack}
+      <div className="flex w-screen flex-grow justify-around">
+        {gameData?.lobbyData.gameStarted ? (
+          <>
+            <SurvivalOpponent
+              opponents={gameData.players}
+              setAttackPosition={handleSetAttackPosition}
+              attackPosition={attackPosition}
+              ids={evenIds}
             />
-          )}
-        </AnimatePresence>
 
-        {/* div for game info */}
+            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
+              <WordContainer
+                word={playerData?.word?.word}
+                match={playerData?.revealIndex}
+                eliminated={playerData?.eliminated}
+                revealAll={gameData.lobbyData?.winner === userId}
+              />
 
-        {gameData?.lobbyData?.gameStarted && (
-          <WordContainer
-            word={playerData?.word.word}
-            match={playerData?.word.matches?.full}
-            eliminated={playerData?.eliminated}
-          />
-        )}
-        <div className="flex w-screen justify-around">
-          {!isMobile && (
-            <div className="flex w-1/4 flex-wrap justify-center overflow-hidden lg:w-1/3">
-              {getHalfOfOpponents(false).map((playerId: string) => {
-                if (playerId === userId) return;
-                return (
-                  <Opponent
-                    key={playerId}
-                    playerId={playerId}
-                    opponentData={gameData?.players[playerId]}
-                    opponentCount={getHalfOfOpponents(false).length}
-                    setAutoAttack={targetOpponent}
-                    autoAttack={autoAttack}
+              {playerData?.eliminated || gameData.lobbyData?.winner ? (
+                <GameOver
+                  eliminated={playerData?.eliminated}
+                  winner={gameData.lobbyData?.winner === userId}
+                />
+              ) : (
+                <>
+                  <AttackMenu
+                    attackPosition={attackPosition}
+                    setAttackPosition={handleSetAttackPosition}
+                    handleSetRandom={handleSetRandom}
                   />
-                );
-              })}
-            </div>
-          )}
-          <div className="flex w-screen flex-col items-center justify-center gap-4 sm:w-1/3">
-            {/* nested ternairy. Only render out auto attack if game has started*/}
 
-            {gameData?.lobbyData.gameStarted && (
-              <>
-                {isMobile ? (
-                  <div className="flex w-screen flex-col items-center justify-center">
-                    <p className="font-semibold">
-                      Players Left - {getAllQualifiedPlayers()}
-                    </p>
-                    <MobileAutoAttack
-                      first={
-                        gameData?.players[
-                          getPlayerPosition(gameData.players, "first", userId)
-                        ]
-                      }
-                      last={
-                        gameData?.players[
-                          getPlayerPosition(gameData.players, "last", userId)
-                        ]
-                      }
-                      autoAttack={autoAttack}
-                      setAutoAttack={setAutoAttack}
-                      setMobileMenuOpen={setMobileMenuOpen}
-                      target={
-                        gameData?.players[
-                          getPlayerPosition(
-                            gameData.players,
-                            autoAttack,
-                            userId,
-                          )
-                        ]
-                      }
+                  <div className="w-full">
+                    <StatusBar
+                      value={playerData?.shield}
+                      color="bg-sky-400"
+                      sections={4}
+                    />
+                    <StatusBar
+                      value={playerData?.health}
+                      color="bg-green-400"
+                      sections={2}
                     />
                   </div>
-                ) : (
-                  <AutoAttack
-                    autoAttack={autoAttack}
-                    setAutoAttack={targetOpponent}
-                  />
-                )}
-              </>
-            )}
-
-            {/* nester ternary check to see if game started, if it hasn't then load the timer, 
-          if it has then check if the player has been eliminate, if they haven't then load the game components */}
-            {!gameData?.lobbyData.gameStarted ? (
-              <>
-                <button
-                  onClick={() => exitMatch()}
-                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-                >
-                  QUIT
-                </button>
-                <LoadingGame
-                  expiryTimestamp={new Date(gameData.lobbyData.gameStartTime)}
-                  gameOwner={gameData.lobbyData.owner}
-                  isGameOwner={gameData.lobbyData.owner === userId}
-                  startGame={ownerStart}
-                  playerCount={Object.keys(gameData.players).length}
-                  exitMatch={exitMatch}
-                  lobbyId={lobbyId}
-                />
-              </>
-            ) : playerData?.eliminated ? (
-              <Eliminated exitMatch={exitMatch} />
-            ) : (
-              <div className="flex w-full flex-col items-center justify-center gap-y-3">
-                {/* status indicators */}
-                <div className=" relative flex h-3 w-10/12 max-w-96 items-center justify-between">
-                  <StatusBar
-                    value={playerData?.shield}
-                    color="bg-sky-400"
-                    sections={4}
-                  />
-                  <Image
-                    className="absolute -right-6"
-                    src={shield}
-                    alt="shield Icon"
-                  />
-                </div>
-
-                <div className="relative mb-2 flex h-3 w-10/12 max-w-96 items-center justify-between gap-2">
-                  <StatusBar
-                    value={playerData?.health}
-                    color="bg-green-400"
-                    sections={2}
-                  />
-                  <Image
-                    className="absolute -right-6"
-                    src={health}
-                    alt="shield Icon"
-                  />
-                </div>
-
-                <div className="relative">
-                  {/* guess container + attack value and button */}
-
-                  <GuessContainer
-                    guess={guess}
-                    playerData={playerData}
-                    spellCheck={spellCheck}
-                    setSpellCheck={setSpellCheck}
-                    incorrectGuess={incorrectGuess}
-                    setIsIncorrectGuess={setIncorrectGuess}
-                  />
-                </div>
-
-                {/* keyboard */}
-                <Keyboard
-                  disabled={false}
-                  handleKeyBoardLogic={handleKeyBoardLogic}
-                  matches={playerData?.word.matches}
-                />
-                <button
-                  onClick={() => {
-                    exitMatch(), stop();
-                  }}
-                  className="rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
-                >
-                  QUIT
-                </button>
-              </div>
-            )}
-          </div>
-          {!isMobile && (
-            <div className="flex w-1/4 flex-wrap justify-center overflow-hidden lg:w-1/3">
-              {getHalfOfOpponents(true).map((playerId: string) => {
-                if (playerId === userId) return;
-                return (
-                  <Opponent
-                    key={playerId}
-                    playerId={playerId}
-                    opponentData={gameData?.players[playerId]}
-                    opponentCount={getHalfOfOpponents(true).length}
-                    setAutoAttack={targetOpponent}
-                    autoAttack={autoAttack}
-                  />
-                );
-              })}
+                  <div className="flex w-full flex-col gap-y-2">
+                    <GuessContainer
+                      wordLength={playerData?.word.word.length}
+                      word={guess}
+                      spellCheck={spellCheck}
+                      finishSpellCheck={finishSpellCheck}
+                    />
+                    <Keyboard
+                      matches={playerData?.word.matches}
+                      handleKeyBoardLogic={handleKeyUp}
+                      disabled={false}
+                    />
+                  </div>
+                </>
+              )}
             </div>
-          )}
-        </div>
+
+            <SurvivalOpponent
+              ids={oddIds}
+              opponents={gameData.players}
+              setAttackPosition={handleSetAttackPosition}
+              attackPosition={attackPosition}
+            />
+          </>
+        ) : (
+          <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
+        )}
       </div>
     );
   }

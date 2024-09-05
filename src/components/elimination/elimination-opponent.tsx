@@ -11,7 +11,8 @@ type EliminationOpponentProps = {
 const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
   // Using the square root for both width and height
   if (props?.opponents && props.pointsGoal) {
-    const opponentSizePercentage = 90 / Math.sqrt(33);
+    const opponentSizePercentage =
+      90 / Math.sqrt(Object.keys(props?.opponents).length);
     return (
       <div className="flex flex-grow flex-wrap items-center justify-between px-2">
         {Object.keys(props.opponents).map((id: string) => {

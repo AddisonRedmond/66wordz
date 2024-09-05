@@ -77,6 +77,7 @@ const Elimination: React.FC<EliminationProps> = ({
       return;
     } else if (gameData.lobbyData?.winner) {
       console.warn("Somebody already won");
+      return;
     }
 
     const handleBackspace = () => {

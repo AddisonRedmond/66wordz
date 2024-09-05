@@ -5,7 +5,7 @@ import {
   EliminationPlayerData,
   EliminationPlayerObject,
 } from "~/custom-hooks/useEliminationData";
-import { getInitials, handleMatched } from "./game";
+import { getInitials, getRevealIndex, handleMatched } from "./game";
 import { default as FIVE_LETTER_WORDS } from "./words";
 import SIX_LETTER_WORDS from "./six-letter-words";
 import FOUR_LETTER_WORDS from "./four-letter-words";
@@ -70,21 +70,7 @@ export const joinEliminationLobby = (
   return player;
 };
 
-const getRevealIndex = (
-  word: string,
-  guess: string,
-  currentRevealedIndex?: number[],
-): number[] => {
-  const revealIndex = new Set([...(currentRevealedIndex ?? [])]);
 
-  word.split("").forEach((letter, index) => {
-    if (letter === guess.split("")[index]) {
-      revealIndex.add(index);
-    }
-  });
-
-  return Array.from(revealIndex);
-};
 
 export const handleCorrectGuess = async (
   playerData: EliminationPlayerObject,

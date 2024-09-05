@@ -1,18 +1,38 @@
+import { useEffect } from "react";
 import WordTile from "./word-tile";
 
-import { m } from "framer-motion";
+import { m, useAnimate } from "framer-motion";
 type GuessContainerProps = {
   word?: string;
   wordLength?: number;
+  spellCheck?: boolean;
+  finishSpellCheck?: () => void;
 };
 
 const GuessContainer: React.FC<GuessContainerProps> = ({
   word,
   wordLength,
+  ...props
 }) => {
-    return (
+  const [scope, animate] = useAnimate();
+
+  const control = {
+    x: [-10, 10, -10, 10, 0],
+  };
+  useEffect(() => {
+    animate(scope.current, control, { duration: 0.3 });
+    if (props.finishSpellCheck) {
+      props.finishSpellCheck();
+    }
+  }, [props.spellCheck]);
+
+  return (
+    <div
+      className={`flex h-16 w-full flex-row  rounded-md border-2 border-zinc-200 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+    >
       <m.div
-        className={`flex h-16 w-full flex-row items-center justify-center gap-1 rounded-md border-2 border-zinc-200 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+        ref={scope}
+        className="flex h-full w-full items-center justify-center gap-1"
       >
         {word?.split("").map((letter: string, index: number) => {
           return (
@@ -26,8 +46,8 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
           );
         })}
       </m.div>
-    );
-  }
-
+    </div>
+  );
+};
 
 export default GuessContainer;

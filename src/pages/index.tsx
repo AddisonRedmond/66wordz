@@ -55,9 +55,6 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
               lobbyId={lobby.data.id}
               userId={userId}
               gameType={lobby.data.gameType}
-              exitMatch={() => {
-                setQuitGame(true);
-              }}
             />
           );
         case "ELIMINATION":
