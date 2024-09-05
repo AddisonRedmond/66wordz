@@ -9,7 +9,6 @@ export const friendsRouter = createTRPCRouter({
       const currentUser = await ctx.db.user.findUnique({
         where: { id: ctx.session.userId },
       });
-      console.log(currentUser);
 
       if (!currentUser) {
         return { success: false, message: "Not authed" };
@@ -35,8 +34,13 @@ export const friendsRouter = createTRPCRouter({
 
       // check if friend is already a friend
 
-      const isFriend = await ctx.db.requests.findUnique({
-        where: { userId: currentUser.id, friendId: friend.id },
+      const isFriend = await ctx.db.requests.findFirst({
+        where: {
+          OR: [
+            { userId: currentUser.id, friendId: friend.id },
+            { userId: friend.id, friendId: currentUser.id },
+          ],
+        },
       });
       if (isFriend?.accepted === false) {
         return {
