@@ -48,7 +48,7 @@ const AllRequests: React.FC<{
 }> = (props) => {
 
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {props.isLoading ? (
         <Loading />
       ) : (

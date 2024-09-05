@@ -47,7 +47,7 @@ const AllFriends: React.FC<{
   data: Friends[] | undefined;
 }> = (props) => {
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {props.isLoading ? (
         <Loading />
       ) : (

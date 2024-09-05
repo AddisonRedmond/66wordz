@@ -27,7 +27,7 @@ const AllSentRequests: React.FC<{
   data: Requests[] | undefined;
 }> = (props) => {
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {props.isLoading ? (
         <Loading />
       ) : (
