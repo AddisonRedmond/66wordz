@@ -53,6 +53,10 @@ const Survival: React.FC<SurvivalProps> = ({
     playbackRate: 3,
   });
 
+  const finishSpellCheck = () => {
+    setSpellCheck(false);
+  };
+
   const handleSetAttackPosition = (id: string) => {
     setAttackPosition(id);
   };
@@ -111,7 +115,8 @@ const Survival: React.FC<SurvivalProps> = ({
       // ensure guess length is same length as word
       if (guess.length === playerData.word.word.length) {
         if (!checkSpelling(guess)) {
-          setSpellCheck(false);
+          setSpellCheck(true);
+
           return;
         }
         // check if guess is correct
@@ -235,6 +240,7 @@ const Survival: React.FC<SurvivalProps> = ({
                       wordLength={playerData?.word.word.length}
                       word={guess}
                       spellCheck={spellCheck}
+                      finishSpellCheck={finishSpellCheck}
                     />
                     <Keyboard
                       matches={playerData?.word.matches}

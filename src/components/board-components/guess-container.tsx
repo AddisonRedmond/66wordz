@@ -6,6 +6,7 @@ type GuessContainerProps = {
   word?: string;
   wordLength?: number;
   spellCheck?: boolean;
+  finishSpellCheck?: () => void;
 };
 
 const GuessContainer: React.FC<GuessContainerProps> = ({
@@ -20,25 +21,32 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
   };
   useEffect(() => {
     animate(scope.current, control, { duration: 0.3 });
+    if (props.finishSpellCheck) {
+      props.finishSpellCheck();
+    }
   }, [props.spellCheck]);
 
   return (
-    <m.div
-      ref={scope}
-      className={`flex h-16 w-full flex-row items-center justify-center gap-1 rounded-md border-2 border-zinc-200 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+    <div
+      className={`flex h-16 w-full flex-row  rounded-md border-2 border-zinc-200 bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
     >
-      {word?.split("").map((letter: string, index: number) => {
-        return (
-          <WordTile
-            key={index}
-            letter={letter}
-            revealed={true}
-            revealedColor="#FFFFFF"
-            wordLength={wordLength ?? 5}
-          />
-        );
-      })}
-    </m.div>
+      <m.div
+        ref={scope}
+        className="flex h-full w-full items-center justify-center gap-1"
+      >
+        {word?.split("").map((letter: string, index: number) => {
+          return (
+            <WordTile
+              key={index}
+              letter={letter}
+              revealed={true}
+              revealedColor="#FFFFFF"
+              wordLength={wordLength ?? 5}
+            />
+          );
+        })}
+      </m.div>
+    </div>
   );
 };
 
