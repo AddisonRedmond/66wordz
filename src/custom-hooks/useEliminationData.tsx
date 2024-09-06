@@ -59,7 +59,7 @@ const useEliminationData = (
       off(playersQuery, "value", handlePlayersDataChange);
       unsubscribe();
     };
-  }, [db, props.gameType, props.lobbyId]);
+  }, []);
 
   return gameData;
 };

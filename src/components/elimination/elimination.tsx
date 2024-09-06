@@ -41,6 +41,8 @@ const Elimination: React.FC<EliminationProps> = ({
   const gameData = useEliminationData(db, { lobbyId, gameType });
   const isMobile = useIsMobile();
 
+  console.log("test")
+
   const playerData: EliminationPlayerObject | undefined =
     gameData?.players[userId];
 
