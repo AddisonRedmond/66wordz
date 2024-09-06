@@ -20,6 +20,8 @@ import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
 import GameStarting from "../board-components/game-starting";
 import GameOver from "../board-components/game-over";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import MobileOpponents from "./mobile-opponents";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -34,6 +36,8 @@ const Survival: React.FC<SurvivalProps> = ({
   userId,
   gameType,
 }: SurvivalProps) => {
+  const isMobile = useIsMobile();
+
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useSurvialData(lobbyRef);
   const playerData: SurvivalPlayerObject | undefined =
@@ -195,13 +199,14 @@ const Survival: React.FC<SurvivalProps> = ({
       <div className="flex w-screen flex-grow justify-around">
         {gameData?.lobbyData.gameStarted ? (
           <>
-            <SurvivalOpponent
-              opponents={gameData.players}
-              setAttackPosition={handleSetAttackPosition}
-              attackPosition={attackPosition}
-              ids={evenIds}
-            />
-
+            {!isMobile && (
+              <SurvivalOpponent
+                opponents={gameData.players}
+                setAttackPosition={handleSetAttackPosition}
+                attackPosition={attackPosition}
+                ids={evenIds}
+              />
+            )}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <WordContainer
                 word={playerData?.word?.word}
@@ -222,6 +227,7 @@ const Survival: React.FC<SurvivalProps> = ({
                     setAttackPosition={handleSetAttackPosition}
                     handleSetRandom={handleSetRandom}
                   />
+                  {isMobile && <MobileOpponents />}
 
                   <div className="w-full">
                     <StatusBar
@@ -252,12 +258,14 @@ const Survival: React.FC<SurvivalProps> = ({
               )}
             </div>
 
-            <SurvivalOpponent
-              ids={oddIds}
-              opponents={gameData.players}
-              setAttackPosition={handleSetAttackPosition}
-              attackPosition={attackPosition}
-            />
+            {!isMobile && (
+              <SurvivalOpponent
+                ids={oddIds}
+                opponents={gameData.players}
+                setAttackPosition={handleSetAttackPosition}
+                attackPosition={attackPosition}
+              />
+            )}
           </>
         ) : (
           <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
