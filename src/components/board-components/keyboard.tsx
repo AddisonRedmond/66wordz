@@ -114,13 +114,13 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
       <div className="sm:invisibile visible mt-3 flex w-full justify-around text-center text-lg font-semibold">
         <button
           onClick={() => props.handleKeyBoardLogic("Enter")}
-          className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
+          className="h-12 w-1/3 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
         >
           Enter
         </button>
         <button
           onClick={() => props.handleKeyBoardLogic("Backspace")}
-          className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
+          className="h-12 w-1/3 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
         >
           Delete
         </button>

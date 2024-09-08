@@ -8,6 +8,8 @@ type MobileAttackMenuProps = {
   firstPlace?: SurvivalPlayerObject;
   lastPlace?: SurvivalPlayerObject;
   random?: SurvivalPlayerObject;
+  setAttackPosition: (id: string) => void;
+  attackPosition: string;
 };
 
 const MobileOpponent: React.FC<{
@@ -28,7 +30,9 @@ const MobileOpponent: React.FC<{
           strokeLinecap: "round",
           trailColor: "#d3d3d3",
           pathTransitionDuration: 0.5,
+          backgroundColor: "#d1d5db",
         })}
+        background={true}
         strokeWidth={11}
       >
         <div className="h-full w-full">
@@ -44,8 +48,8 @@ const MobileOpponent: React.FC<{
             strokeWidth={11}
           >
             <div>
-              <p className="font-semibold text-sm">{props.title}</p>
-              <p className="text-sm font-semibold">{props.initials}</p>
+              <p className="text-sm font-semibold">{props.title}</p>
+              <p className="text-xs font-medium">{props.initials}</p>
             </div>
           </CircularProgressbarWithChildren>
         </div>
@@ -61,6 +65,13 @@ const MobileAttackMenu: React.FC<MobileAttackMenuProps> = (props) => {
 
   const MAX_HEALTH = 2;
   const MAX_SHIELD = 4;
+
+  const handleSelecte = () => {
+    switch(props.attackPosition){
+      case "first"
+        return 
+    }
+  }
 
   return (
     <div className="flex h-16 w-full items-center justify-between">
@@ -93,6 +104,7 @@ const MobileAttackMenu: React.FC<MobileAttackMenuProps> = (props) => {
           maxHealth={MAX_HEALTH}
           maxShield={MAX_SHIELD}
           title="Rand"
+
         />
       </div>
       <div className="flex h-16 w-16 items-center justify-center rounded-full border-8 border-zinc-700 text-sm font-bold">

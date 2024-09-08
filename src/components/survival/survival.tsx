@@ -193,46 +193,6 @@ const Survival: React.FC<SurvivalProps> = ({
     },
   );
 
-  const getOpponents = () => {
-    if (!gameData?.players) {
-      return;
-    }
-    const opponents = Object.entries(gameData?.players).filter(
-      ([_, player]) => !player.eliminated,
-    );
-
-    if (opponents.length === 0) {
-      return { topPlayer: null, lastPlayer: null };
-    }
-
-    // Find the top player based on health and shield
-    const topPlayer = opponents.reduce((prev, curr) => {
-      const prevPlayer = prev[1];
-      const currPlayer = curr[1];
-
-      const prevScore = prevPlayer.health + prevPlayer.shield;
-      const currScore = currPlayer.health + currPlayer.shield;
-
-      return currScore > prevScore ? curr : prev;
-    });
-
-    // Find the last player based on health and shield
-    const lastPlayer = opponents.reduce((prev, curr) => {
-      const prevPlayer = prev[1];
-      const currPlayer = curr[1];
-
-      const prevScore = prevPlayer.health + prevPlayer.shield;
-      const currScore = currPlayer.health + currPlayer.shield;
-
-      return currScore < prevScore ? curr : prev;
-    });
-
-    return {
-      topPlayer: topPlayer[0], // Return the ID of the top player
-      lastPlayer: lastPlayer[0], // Return the ID of the last player
-    };
-  };
-
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
   if (gameData) {
@@ -268,6 +228,8 @@ const Survival: React.FC<SurvivalProps> = ({
                       firstPlace={gameData.players["bot0"]}
                       lastPlace={gameData.players["bot1"]}
                       random={gameData.players["bot2"]}
+                      setAttackPosition={handleSetAttackPosition}
+                      attackPosition={attackPosition}
                       />
                   ) : (
                     <AttackMenu
