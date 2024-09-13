@@ -34,6 +34,8 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = async (gameMode: GameType) => {
+    // TODO: Add a do you want to rejoin previous game message
+    // TODO: Add detection for stale lobby 
     await quickPlay.mutateAsync({ gameMode: gameMode });
     lobby.refetch();
   };

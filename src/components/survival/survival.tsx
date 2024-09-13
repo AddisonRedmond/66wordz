@@ -21,8 +21,7 @@ import AttackMenu from "./attack-menu";
 import GameStarting from "../board-components/game-starting";
 import GameOver from "../board-components/game-over";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
-import MobileOpponents from "./mobile-opponents";
-import MobileAttackMenu from "./mobile-attack-menu";
+import MobileMenu from "./mobile-menu";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -54,7 +53,7 @@ const Survival: React.FC<SurvivalProps> = ({
   });
 
   const [deleteSound] = useSound("/sounds/delete2.mp3", {
-    volume: 0.5,
+    volume: 1,
     playbackRate: 3,
   });
 
@@ -136,13 +135,17 @@ const Survival: React.FC<SurvivalProps> = ({
             // TODO: add check for no player to attack
             return;
           }
-          await handleCorrectGuess(
+          // TODO: create eliminated notifcation, for when you eliminate another player
+          const playerEliminated = await handleCorrectGuess(
             lobbyRef,
             userId,
             playerData,
             playerToAttack,
             gameData.players[playerToAttack],
           );
+          if (playerEliminated) {
+            setAttackPosition("First");
+          }
         } else {
           // handle incorrect guess
           handleIncorrectGuess(lobbyRef, playerData, guess, userId);
@@ -224,13 +227,13 @@ const Survival: React.FC<SurvivalProps> = ({
               ) : (
                 <>
                   {isMobile ? (
-                    <MobileAttackMenu
-                      firstPlace={gameData.players["bot0"]}
-                      lastPlace={gameData.players["bot1"]}
-                      random={gameData.players["bot2"]}
+                    <MobileMenu
+                      allPlayers={gameData.players}
                       setAttackPosition={handleSetAttackPosition}
                       attackPosition={attackPosition}
-                      />
+                      userId={userId}
+                      handleSetRandom={handleSetRandom}
+                    />
                   ) : (
                     <AttackMenu
                       attackPosition={attackPosition}
