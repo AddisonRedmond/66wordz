@@ -17,12 +17,7 @@ type MobileOpponentsProps = {
 const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
   const MAX_HEALTH = 2;
   const MAX_SHIELD = 4;
-  const handleSetAttackPosition = (id: string) => {
-    if (props.allPlayers[id]?.eliminated) {
-      return;
-    }
-    props.setAttackPosition(id);
-  };
+  
   return (
     <m.div
       className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center overflow-auto bg-gray-400 bg-opacity-50"
