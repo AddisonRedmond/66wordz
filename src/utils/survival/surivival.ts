@@ -103,7 +103,7 @@ export const findPlayerToAttack = (
   if (position === "First") {
     return nonEliminatedPlayersOrdered[0];
   } else if (position === "Last") {
-    return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length];
+    return nonEliminatedPlayersOrdered[nonEliminatedPlayersOrdered.length - 1];
   } else {
     return validateTarget(position);
   }

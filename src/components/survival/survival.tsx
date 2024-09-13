@@ -20,6 +20,8 @@ import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
 import GameStarting from "../board-components/game-starting";
 import GameOver from "../board-components/game-over";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import MobileMenu from "./mobile-menu";
 
 type SurvivalProps = {
   lobbyId: string;
@@ -34,6 +36,8 @@ const Survival: React.FC<SurvivalProps> = ({
   userId,
   gameType,
 }: SurvivalProps) => {
+  const isMobile = useIsMobile();
+
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useSurvialData(lobbyRef);
   const playerData: SurvivalPlayerObject | undefined =
@@ -49,7 +53,7 @@ const Survival: React.FC<SurvivalProps> = ({
   });
 
   const [deleteSound] = useSound("/sounds/delete2.mp3", {
-    volume: 0.5,
+    volume: 1,
     playbackRate: 3,
   });
 
@@ -131,13 +135,17 @@ const Survival: React.FC<SurvivalProps> = ({
             // TODO: add check for no player to attack
             return;
           }
-          await handleCorrectGuess(
+          // TODO: create eliminated notifcation, for when you eliminate another player
+          const playerEliminated = await handleCorrectGuess(
             lobbyRef,
             userId,
             playerData,
             playerToAttack,
             gameData.players[playerToAttack],
           );
+          if (playerEliminated) {
+            setAttackPosition("First");
+          }
         } else {
           // handle incorrect guess
           handleIncorrectGuess(lobbyRef, playerData, guess, userId);
@@ -195,13 +203,14 @@ const Survival: React.FC<SurvivalProps> = ({
       <div className="flex w-screen flex-grow justify-around">
         {gameData?.lobbyData.gameStarted ? (
           <>
-            <SurvivalOpponent
-              opponents={gameData.players}
-              setAttackPosition={handleSetAttackPosition}
-              attackPosition={attackPosition}
-              ids={evenIds}
-            />
-
+            {!isMobile && (
+              <SurvivalOpponent
+                opponents={gameData.players}
+                setAttackPosition={handleSetAttackPosition}
+                attackPosition={attackPosition}
+                ids={evenIds}
+              />
+            )}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <WordContainer
                 word={playerData?.word?.word}
@@ -217,11 +226,21 @@ const Survival: React.FC<SurvivalProps> = ({
                 />
               ) : (
                 <>
-                  <AttackMenu
-                    attackPosition={attackPosition}
-                    setAttackPosition={handleSetAttackPosition}
-                    handleSetRandom={handleSetRandom}
-                  />
+                  {isMobile ? (
+                    <MobileMenu
+                      allPlayers={gameData.players}
+                      setAttackPosition={handleSetAttackPosition}
+                      attackPosition={attackPosition}
+                      userId={userId}
+                      handleSetRandom={handleSetRandom}
+                    />
+                  ) : (
+                    <AttackMenu
+                      attackPosition={attackPosition}
+                      setAttackPosition={handleSetAttackPosition}
+                      handleSetRandom={handleSetRandom}
+                    />
+                  )}
 
                   <div className="w-full">
                     <StatusBar
@@ -252,12 +271,14 @@ const Survival: React.FC<SurvivalProps> = ({
               )}
             </div>
 
-            <SurvivalOpponent
-              ids={oddIds}
-              opponents={gameData.players}
-              setAttackPosition={handleSetAttackPosition}
-              attackPosition={attackPosition}
-            />
+            {!isMobile && (
+              <SurvivalOpponent
+                ids={oddIds}
+                opponents={gameData.players}
+                setAttackPosition={handleSetAttackPosition}
+                attackPosition={attackPosition}
+              />
+            )}
           </>
         ) : (
           <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
