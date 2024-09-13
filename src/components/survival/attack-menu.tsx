@@ -35,19 +35,22 @@ const AttackMenu: React.FC<{
 }> = (props) => {
   const buttons = ["First", "Random", "Last"];
   return (
-    <div className="flex w-full justify-between">
-      {buttons.map((button) => {
-        return (
-          <AttackButton
-            key={button}
-            totalButtons={buttons.length}
-            text={button}
-            attackPosition={props.attackPosition}
-            setAttackPosition={props.setAttackPosition}
-            setRandomPosition={props.handleSetRandom}
-          />
-        );
-      })}
+    <div className="w-full text-center">
+      <p className="font-semibold">Attack</p>
+      <div className="flex justify-between">
+        {buttons.map((button) => {
+          return (
+            <AttackButton
+              key={button}
+              totalButtons={buttons.length}
+              text={button}
+              attackPosition={props.attackPosition}
+              setAttackPosition={props.setAttackPosition}
+              setRandomPosition={props.handleSetRandom}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };
