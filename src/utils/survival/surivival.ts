@@ -37,6 +37,7 @@ export type SurvivalPlayerData = {
     word: WordObject;
     initials?: string;
     revealIndex: number[];
+    // add new shit to player object
   };
 };
 
