@@ -11,13 +11,12 @@ export type GameData = {
     winner: string;
     owner?: string;
     passkey?: string;
+    roundTimer: number;
   };
   players: SurvivalPlayerData;
 };
 
-const useSurvialData = (
-  db: DatabaseReference,
-) => {
+const useSurvialData = (db: DatabaseReference) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
   useEffect(() => {
     const playersQuery = db;

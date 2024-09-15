@@ -19,7 +19,7 @@ import {
   handleIncorrectGuess,
 } from "~/utils/elimination";
 import EliminationOpponent from "./elimination-opponent";
-import GameStarting from "../board-components/game-starting";
+import GameStarting from "../board-components/countdown-timer";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
 import Modal from "../modal";
@@ -240,7 +240,10 @@ const Elimination: React.FC<EliminationProps> = ({
             {/* opponents right side */}
           </>
         ) : (
-          <GameStarting expiryTimestamp={gameData.lobbyData.gameStartTime} />
+          <GameStarting
+            expiryTimestamp={gameData?.lobbyData.gameStartTime}
+            timerTitle="Game Starting In"
+          />
         )}
       </div>
     );

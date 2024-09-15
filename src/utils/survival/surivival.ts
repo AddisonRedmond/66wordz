@@ -27,18 +27,13 @@ export type SurvivalPlayerObject = {
   word: WordObject;
   initials?: string;
   revealIndex: number[];
+  eliminatedCount: number;
+  correctGuessCount: number;
 };
 
 export type SurvivalPlayerData = {
-  [keyof: string]: {
-    health: number;
-    shield: number;
-    eliminated: boolean;
-    word: WordObject;
-    initials?: string;
-    revealIndex: number[];
-    // add new shit to player object
-  };
+  [keyof: string]: SurvivalPlayerObject;
+  // add new shit to player object
 };
 
 export const createNewSurivivalLobby = () => {
@@ -62,6 +57,8 @@ export const joinSurivivalLobby = (
       eliminated: false,
       initials: getInitials(fullName) || "N/A",
       revealIndex: [],
+      eliminatedCount: 0,
+      correctGuessCount: 0,
       word: {
         word: handleGetNewWord(),
       },

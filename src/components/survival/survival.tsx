@@ -18,11 +18,11 @@ import useSound from "use-sound";
 import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
-import GameStarting from "../board-components/game-starting";
+import GameStarting from "../board-components/countdown-timer";
 import GameOver from "../board-components/game-over";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileMenu from "./mobile-menu";
-
+import CountDownTimer from "../board-components/countdown-timer";
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -212,12 +212,14 @@ const Survival: React.FC<SurvivalProps> = ({
               />
             )}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
-              <WordContainer
-                word={playerData?.word?.word}
-                match={playerData?.revealIndex}
-                eliminated={playerData?.eliminated}
-                revealAll={gameData.lobbyData?.winner === userId}
-              />
+              <div className="w-full">
+                <WordContainer
+                  word={playerData?.word?.word}
+                  match={playerData?.revealIndex}
+                  eliminated={playerData?.eliminated}
+                  revealAll={gameData.lobbyData?.winner === userId}
+                />
+              </div>
 
               {playerData?.eliminated || gameData.lobbyData?.winner ? (
                 <GameOver
@@ -281,7 +283,10 @@ const Survival: React.FC<SurvivalProps> = ({
             )}
           </>
         ) : (
-          <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
+          <GameStarting
+            expiryTimestamp={gameData?.lobbyData.gameStartTime}
+            timerTitle="Game Starting In"
+          />
         )}
       </div>
     );
