@@ -18,11 +18,11 @@ import useSound from "use-sound";
 import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
-import GameStarting from "../board-components/countdown-timer";
 import GameOver from "../board-components/game-over";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileMenu from "./mobile-menu";
 import CountDownTimer from "../board-components/countdown-timer";
+import GameTimer from "./game-timer";
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -212,7 +212,8 @@ const Survival: React.FC<SurvivalProps> = ({
               />
             )}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
-              <div className="w-full">
+              <div className="flex w-full flex-col gap-1">
+                <GameTimer timer={gameData.lobbyData.roundTimer} />
                 <WordContainer
                   word={playerData?.word?.word}
                   match={playerData?.revealIndex}
@@ -283,7 +284,7 @@ const Survival: React.FC<SurvivalProps> = ({
             )}
           </>
         ) : (
-          <GameStarting
+          <CountDownTimer
             expiryTimestamp={gameData?.lobbyData.gameStartTime}
             timerTitle="Game Starting In"
           />

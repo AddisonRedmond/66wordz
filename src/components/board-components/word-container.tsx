@@ -17,21 +17,9 @@ const WordContainer: React.FC<WordContainerProps> = ({
   if (word) {
     return (
       <div
-        className={`test relative flex h-16 flex-row items-center justify-center gap-1 rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+        className={`flex h-16 flex-row items-center justify-center gap-1 rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
       >
-        <style jsx>
-          {`
-            .test:before {
-              content: "";
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 0;
-              height: 0;
-              border-top: 2px solid white;
-            }
-          `}
-        </style>
+      
         {word.split("").map((letter: string, index: number) => {
           return (
             <WordTile
