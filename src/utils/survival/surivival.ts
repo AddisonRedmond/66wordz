@@ -162,8 +162,6 @@ export const handleCorrectGuess = async (
     );
   }
 
-  // Handle player elimination and health/shield adjustments
-
   const attackedPlayerData = calculatePlayerStatus(playerToAttackData);
 
   // Update user's shield and health based on game logic
@@ -176,6 +174,10 @@ export const handleCorrectGuess = async (
   userData.word.matches = { full: [], partial: [], none: [] };
   userData.revealIndex = [];
   userData.word.word = handleGetNewWord();
+  userData.correctGuessCount++;
+  if (attackedPlayerData.eliminated) {
+    userData.eliminatedCount++;
+  }
   // Update the database
   const playersRef = child(lobbyRef, "players");
 
