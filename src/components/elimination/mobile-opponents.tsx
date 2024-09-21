@@ -37,7 +37,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
               <div className="grid grid-cols-5 gap-y-2">
                 {props.opponents &&
                   Object.entries(props.opponents).map(([playerId, player]) => {
-                    if (props.userId === playerId) return;
+                    if (props.userId === playerId || player.eliminated) return;
                     return (
                       <div
                         key={playerId}
