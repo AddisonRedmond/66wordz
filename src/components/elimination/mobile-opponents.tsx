@@ -45,7 +45,10 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
                         className=" m-auto size-14"
                       >
                         <CircularProgressbarWithChildren
-                          value={calculatePrecentage(8, props.pointsGoal)}
+                          value={calculatePrecentage(
+                            player.points,
+                            props.pointsGoal,
+                          )}
                           strokeWidth={12}
                           styles={buildStyles({
                             pathColor: "#10b981",
@@ -75,7 +78,10 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
               return (
                 <div key={playerId} className=" m-auto size-12">
                   <CircularProgressbarWithChildren
-                    value={calculatePrecentage(props.opponents?.[playerId]?.points ?? 0, props.pointsGoal)}
+                    value={calculatePrecentage(
+                      player?.points ?? 0,
+                      props.pointsGoal,
+                    )}
                     strokeWidth={12}
                     styles={buildStyles({
                       pathColor: "#10b981",
