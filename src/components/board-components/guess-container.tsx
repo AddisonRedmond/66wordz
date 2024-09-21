@@ -19,7 +19,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
     x: [-10, 10, -10, 10, 0],
   };
   useEffect(() => {
-    animate(scope.current, control, { duration: 0.3 });
+    void animate(scope.current, control, { duration: 0.3 });
     if (props.finishSpellCheck) {
       props.finishSpellCheck();
     }

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import WordTile from "./word-tile";
 
 type WordContainerProps = {
@@ -8,18 +7,16 @@ type WordContainerProps = {
   revealAll?: boolean;
 };
 
-// each border of the div, is 25%, 
+// each border of the div, is 25%,
 const WordContainer: React.FC<WordContainerProps> = ({
   word,
   ...props
 }: WordContainerProps) => {
-  const [progress, setProgress] = useState(90);
   if (word) {
     return (
       <div
         className={`flex h-16 flex-row items-center justify-center gap-1 rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
       >
-      
         {word.split("").map((letter: string, index: number) => {
           return (
             <WordTile
