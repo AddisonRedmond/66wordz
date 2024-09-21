@@ -4,6 +4,7 @@ import { db } from "~/utils/firebase/firebase";
 import WordContainer from "../board-components/word-container";
 import {
   findPlayerToAttack,
+  getGuessTimer,
   handleCorrectGuess,
   handleGuessExpired,
   handleIncorrectGuess,
@@ -224,10 +225,14 @@ const Survival: React.FC<SurvivalProps> = ({
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <div className="flex w-full flex-col gap-1">
                 {playerData?.guessTimer && !gameData.lobbyData?.winner && (
-                  <GameTimer
-                    timer={playerData?.guessTimer}
-                    handleExpired={handleExpiredGuessTimer}
-                  />
+                  <div>
+                    <p className="text-sm font-semibold">{`Guess Timer - ${(getGuessTimer(gameData.lobbyData.round) - new Date().getTime()) / 1000} sec`}</p>
+
+                    <GameTimer
+                      timer={playerData?.guessTimer}
+                      handleExpired={handleExpiredGuessTimer}
+                    />
+                  </div>
                 )}
                 <WordContainer
                   word={playerData?.word?.word}

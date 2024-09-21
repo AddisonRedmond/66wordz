@@ -125,7 +125,7 @@ const calculatePlayerStatus = (playerData: SurvivalPlayerObject) => {
   return playerData;
 };
 
-const getGuessTimer = (round?: number) => {
+export const getGuessTimer = (round?: number) => {
   let timer = 0;
   switch (round) {
     case 1:

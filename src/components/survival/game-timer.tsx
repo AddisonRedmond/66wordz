@@ -21,14 +21,13 @@ const GameTimer: React.FC<GameTimerProps> = ({ timer, handleExpired }) => {
       return;
     }
     const totalInitialSeconds = (timer - new Date().getTime()) / 1000;
-    restart(new Date(timer!));
+    restart(new Date(timer));
 
     setInitialDuration(totalInitialSeconds);
   }, [timer]);
 
   const progress = () => {
     const calculatedProgress = (totalSeconds / initialDuration) * 100;
-
     // Ensure progress is valid and returns 0 if NaN or negative
     return Math.max(0, isNaN(calculatedProgress) ? 0 : calculatedProgress);
   };
@@ -46,13 +45,15 @@ const GameTimer: React.FC<GameTimerProps> = ({ timer, handleExpired }) => {
   };
 
   return (
-    <div
-      style={{
-        width: `${progress()}%`,
-        filter: `hue-rotate(${calculateHue(totalSeconds, initialDuration)}deg)`,
-      }}
-      className={`h-1 rounded-full bg-cyan-400 duration-1000 ease-linear`}
-    ></div>
+    <div>
+      <div
+        style={{
+          width: `${progress()}%`,
+          filter: `hue-rotate(${calculateHue(totalSeconds, initialDuration)}deg)`,
+        }}
+        className={`h-1 rounded-full bg-cyan-400 duration-1000 ease-linear`}
+      ></div>
+    </div>
   );
 };
 
