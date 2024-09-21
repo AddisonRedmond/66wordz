@@ -4,7 +4,9 @@ import { db } from "~/utils/firebase/firebase";
 import WordContainer from "../board-components/word-container";
 import {
   findPlayerToAttack,
+  getGuessTimer,
   handleCorrectGuess,
+  handleGuessExpired,
   handleIncorrectGuess,
   SurvivalPlayerObject,
 } from "~/utils/survival/surivival";
@@ -18,11 +20,11 @@ import useSound from "use-sound";
 import { ref } from "firebase/database";
 import StatusBar from "./status-bar";
 import AttackMenu from "./attack-menu";
-import GameStarting from "../board-components/game-starting";
 import GameOver from "../board-components/game-over";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileMenu from "./mobile-menu";
-
+import CountDownTimer from "../board-components/countdown-timer";
+import GameTimer from "./game-timer";
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -88,6 +90,15 @@ const Survival: React.FC<SurvivalProps> = ({
     if (randomPlayer) {
       setAttackPosition(randomPlayer);
     }
+  };
+
+  const handleExpiredGuessTimer = async () => {
+    await handleGuessExpired(
+      lobbyRef,
+      userId,
+      playerData,
+      gameData?.lobbyData.round,
+    );
   };
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
@@ -212,12 +223,24 @@ const Survival: React.FC<SurvivalProps> = ({
               />
             )}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
-              <WordContainer
-                word={playerData?.word?.word}
-                match={playerData?.revealIndex}
-                eliminated={playerData?.eliminated}
-                revealAll={gameData.lobbyData?.winner === userId}
-              />
+              <div className="flex w-full flex-col gap-1">
+                {playerData?.guessTimer && !gameData.lobbyData?.winner && (
+                  <div>
+                    <p className="text-sm font-semibold">{`Guess Timer - ${(getGuessTimer(gameData.lobbyData.round) - new Date().getTime()) / 1000} sec`}</p>
+
+                    <GameTimer
+                      timer={playerData?.guessTimer}
+                      handleExpired={handleExpiredGuessTimer}
+                    />
+                  </div>
+                )}
+                <WordContainer
+                  word={playerData?.word?.word}
+                  match={playerData?.revealIndex}
+                  eliminated={playerData?.eliminated}
+                  revealAll={gameData.lobbyData?.winner === userId}
+                />
+              </div>
 
               {playerData?.eliminated || gameData.lobbyData?.winner ? (
                 <GameOver
@@ -281,7 +304,10 @@ const Survival: React.FC<SurvivalProps> = ({
             )}
           </>
         ) : (
-          <GameStarting expiryTimestamp={gameData?.lobbyData.gameStartTime} />
+          <CountDownTimer
+            expiryTimestamp={gameData?.lobbyData.gameStartTime}
+            timerTitle="Game Starting In"
+          />
         )}
       </div>
     );

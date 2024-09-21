@@ -35,7 +35,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
 
   const handleQuickPlay = async (gameMode: GameType) => {
     // TODO: Add a do you want to rejoin previous game message
-    // TODO: Add detection for stale lobby 
+    // TODO: Add detection for stale lobby
     await quickPlay.mutateAsync({ gameMode: gameMode });
     lobby.refetch();
   };
@@ -168,7 +168,6 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
 
-  // const user = userId ? await clerkClient.users.getUser(userId) : undefined;
   if (!userId) {
     // send user to index
     return {

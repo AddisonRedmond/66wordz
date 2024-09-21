@@ -11,13 +11,13 @@ export type GameData = {
     winner: string;
     owner?: string;
     passkey?: string;
+    roundTimer: number;
+    round: number;
   };
   players: SurvivalPlayerData;
 };
 
-const useSurvialData = (
-  db: DatabaseReference,
-) => {
+const useSurvialData = (db: DatabaseReference) => {
   const [gameData, setGameData] = useState<GameData | null>(null);
   useEffect(() => {
     const playersQuery = db;
@@ -30,6 +30,7 @@ const useSurvialData = (
     const unsubscribe = onValue(playersQuery, handlePlayersDataChange);
 
     return () => {
+      console.log("Listener removed")
       off(playersQuery, "value", handlePlayersDataChange);
       unsubscribe();
     };
