@@ -12,6 +12,7 @@ export type GameData = {
     owner?: string;
     passkey?: string;
     roundTimer: number;
+    round: number;
   };
   players: SurvivalPlayerData;
 };
@@ -29,6 +30,7 @@ const useSurvialData = (db: DatabaseReference) => {
     const unsubscribe = onValue(playersQuery, handlePlayersDataChange);
 
     return () => {
+      console.log("Listener removed")
       off(playersQuery, "value", handlePlayersDataChange);
       unsubscribe();
     };

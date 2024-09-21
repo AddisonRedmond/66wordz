@@ -18,6 +18,7 @@ export type WordObject = {
     partial: string[];
     none: string[];
   };
+  guessCount: number;
 };
 
 export type SurvivalPlayerObject = {
@@ -29,6 +30,7 @@ export type SurvivalPlayerObject = {
   revealIndex: number[];
   eliminatedCount: number;
   correctGuessCount: number;
+  guessTimer: number;
 };
 
 export type SurvivalPlayerData = {
@@ -41,7 +43,7 @@ export const createNewSurivivalLobby = () => {
     lobbyData: {
       gameStarted: false,
       gameStartTime: new Date().getTime() + 30000,
-      damangeValue: 0,
+      round: 1,
     },
   };
 };
@@ -59,7 +61,9 @@ export const joinSurivivalLobby = (
       revealIndex: [],
       eliminatedCount: 0,
       correctGuessCount: 0,
+      guessTimer: 0,
       word: {
+        guessCount: 0,
         word: handleGetNewWord(),
       },
     },
@@ -107,6 +111,43 @@ export const findPlayerToAttack = (
   }
 };
 
+const calculatePlayerStatus = (playerData: SurvivalPlayerObject) => {
+  if (playerData.shield <= 0 && playerData.health <= MIN_HEALTH) {
+    playerData.eliminated = true;
+    playerData.health = 0;
+    playerData.eliminated = true;
+  } else if (playerData.shield > 0) {
+    playerData.shield = Math.min(playerData.shield - 1, MAX_SHIELD);
+  } else if (playerData.shield >= 0 && playerData.health >= MIN_HEALTH) {
+    playerData.health = playerData.health - 1;
+  }
+
+  return playerData;
+};
+
+const getGuessTimer = (round?: number) => {
+  let timer = 0;
+  switch (round) {
+    case 1:
+      timer = 45000;
+      break;
+    case 2:
+      timer = 30000;
+      break;
+    case 3:
+      timer = 20000;
+      break;
+    case 4:
+      timer = 15000;
+      break;
+    default:
+      timer = 10000;
+      break;
+  }
+
+  return new Date().getTime() + timer;
+};
+
 export const handleCorrectGuess = async (
   lobbyRef: DatabaseReference,
   userId: string,
@@ -114,36 +155,21 @@ export const handleCorrectGuess = async (
   playerToAttackId: string,
   playerToAttackData?: SurvivalPlayerObject,
 ): Promise<boolean> => {
-  let playerEliminated = false;
   if (!playerToAttackId || !playerToAttackData) {
     // TODO: add notification that there is no player to attack, or add other logic
-    return playerEliminated;
+    return Promise.reject(
+      new Error("No player to attack or missing player data."),
+    );
   }
 
   // Handle player elimination and health/shield adjustments
-  if (
-    playerToAttackData.shield <= 0 &&
-    playerToAttackData.health <= MIN_HEALTH
-  ) {
-    playerToAttackData.eliminated = true;
-    playerToAttackData.health = 0;
-    playerEliminated = true;
-  } else if (playerToAttackData.shield > 0) {
-    playerToAttackData.shield = Math.min(
-      playerToAttackData.shield - 1,
-      MAX_SHIELD,
-    );
-  } else if (
-    playerToAttackData.shield >= 0 &&
-    playerToAttackData.health >= MIN_HEALTH
-  ) {
-    playerToAttackData.health = playerToAttackData.health - 1;
-  }
+
+  const attackedPlayerData = calculatePlayerStatus(playerToAttackData);
 
   // Update user's shield and health based on game logic
   if (userData.shield < MAX_SHIELD) {
     userData.shield = Math.min(userData.shield + 1, MAX_SHIELD);
-  } else if (userData.health < MAX_HEALTH && playerEliminated) {
+  } else if (userData.health < MAX_HEALTH && attackedPlayerData.eliminated) {
     userData.health = Math.min(userData.health + 1, MAX_HEALTH);
   }
 
@@ -155,18 +181,19 @@ export const handleCorrectGuess = async (
 
   await update(playersRef, {
     [userId]: userData,
-    [playerToAttackId]: playerToAttackData,
+    [playerToAttackId]: attackedPlayerData,
   });
 
-  return playerEliminated;
+  return attackedPlayerData.eliminated;
 };
+
 export const handleIncorrectGuess = async (
   lobbyRef: DatabaseReference,
   playerData: SurvivalPlayerObject,
   guess: string,
   userId: string,
 ) => {
-  // update the matches, and the reveal index
+  // TODO: incorrect guess increments
   const word = playerData.word.word;
   const updatedRevealIndex = getRevealIndex(
     word,
@@ -185,4 +212,32 @@ export const handleIncorrectGuess = async (
   const ref = child(lobbyRef, `players/${userId}`);
 
   await update(ref, { ...updatedPlayerData });
+};
+
+export const handleGuessExpired = async (
+  lobbyRef: DatabaseReference,
+  userId: string,
+  playerData?: SurvivalPlayerObject,
+  round?: number,
+) => {
+  if (!playerData) {
+    return;
+    // probably remove player from lobby
+  }
+  const playerStatus = calculatePlayerStatus(playerData);
+
+  playerStatus.guessTimer = getGuessTimer(round);
+  playerStatus.word.word = handleGetNewWord();
+  playerStatus.word.guessCount = 0;
+  playerStatus.word.matches = { full: [], partial: [], none: [] };
+  playerStatus.revealIndex = [];
+
+  const ref = child(lobbyRef, `players/${userId}`);
+
+  await update(ref, {
+    ...playerStatus,
+  });
+
+  // decrement health or shiled, or eliminate player
+  // if player isnt elminated, then reset the timer, based off of the "round", get a new word, and reset the matches and guesses
 };

@@ -52,7 +52,7 @@ export default function Login() {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
 
-  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+  const user = userId ? await clerkClient().users.getUser(userId) : undefined;
   if (userId) {
     // send user to index
     return {
