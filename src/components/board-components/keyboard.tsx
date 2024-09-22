@@ -62,7 +62,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex h-48 max-w-full flex-col items-center gap-1 md:h-fit">
+    <div className="flex h-56 max-w-full flex-col items-center gap-1 md:h-fit">
       <div className="flex h-1/3 w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}

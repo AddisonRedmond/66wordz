@@ -223,7 +223,7 @@ const Survival: React.FC<SurvivalProps> = ({
                 ids={evenIds}
               />
             )}
-            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
+            <div className="flex sm:w-1/4 w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <div className="flex w-full flex-col gap-1">
                 {playerData?.guessTimer && !gameData.lobbyData?.winner && (
                   <div>
