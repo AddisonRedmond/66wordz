@@ -1,12 +1,12 @@
 import { m } from "framer-motion";
 import { RefObject } from "react";
 
-type ChallengeDropdownProps = {
+type FriendDropdownProps = {
   children: JSX.Element | JSX.Element[];
   dropdownRef: RefObject<HTMLDivElement>;
 };
 
-const ChallengeDropdown: React.FC<ChallengeDropdownProps> = ({
+const FriendDropdown: React.FC<FriendDropdownProps> = ({
   children,
   ...props
 }) => {
@@ -22,4 +22,4 @@ const ChallengeDropdown: React.FC<ChallengeDropdownProps> = ({
     </m.div>
   );
 };
-export default ChallengeDropdown;
+export default FriendDropdown;

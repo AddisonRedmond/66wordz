@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getInitials } from "~/utils/game";
 
-type ChallengeDropdownItemProps = {
+type FriendDropdownItemProps = {
   image?: string | null;
   id: string;
   name: string;
@@ -9,7 +9,7 @@ type ChallengeDropdownItemProps = {
   selected: boolean;
 };
 
-const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
+const FriendDropdownItem: React.FC<FriendDropdownItemProps> = (props) => {
   return (
     <div
       className={`flex h-20 w-full items-center justify-between border-b-2 border-white px-4 duration-150 ease-in-out ${props.selected ? "bg-zinc-200" : ""}`}
@@ -35,7 +35,7 @@ const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
           onClick={() => {
             props.handleFriendToList(props.id, props.name);
           }}
-          className="rounded-md border-2 bg-[#9462C6] ease-in-out duration-150 hover:bg-[#a985cd] p-2 font-semibold text-white"
+          className="rounded-md border-2 bg-[#9462C6] p-2 font-semibold text-white duration-150 ease-in-out hover:bg-[#a985cd]"
         >
           Add
         </button>
@@ -44,4 +44,4 @@ const ChallengeDropdownItem: React.FC<ChallengeDropdownItemProps> = (props) => {
   );
 };
 
-export default ChallengeDropdownItem;
+export default FriendDropdownItem;
