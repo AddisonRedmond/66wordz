@@ -152,6 +152,7 @@ const Survival: React.FC<SurvivalProps> = ({
             userId,
             playerData,
             playerToAttack,
+            gameData?.lobbyData.round,
             gameData.players[playerToAttack],
           );
           if (playerEliminated) {

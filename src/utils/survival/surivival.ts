@@ -153,6 +153,7 @@ export const handleCorrectGuess = async (
   userId: string,
   userData: SurvivalPlayerObject,
   playerToAttackId: string,
+  round: number,
   playerToAttackData?: SurvivalPlayerObject,
 ): Promise<boolean> => {
   if (!playerToAttackId || !playerToAttackData) {
@@ -171,6 +172,7 @@ export const handleCorrectGuess = async (
     userData.health = Math.min(userData.health + 1, MAX_HEALTH);
   }
 
+  userData.guessTimer = getGuessTimer(round);
   userData.word.matches = { full: [], partial: [], none: [] };
   userData.revealIndex = [];
   userData.word.word = handleGetNewWord();
