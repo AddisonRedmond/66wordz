@@ -49,6 +49,7 @@ export const challengeRouter = createTRPCRouter({
         return "Too many open games or too many people added to challenge";
       }
 
+      // TODO: add check for games with duplicate ids already
       for (const doc of docs) {
         const challenge = doc.data() as ChallengeData;
         if (arraysContainSameElements(challenge.ids, challengeeIds)) {
@@ -78,9 +79,7 @@ export const challengeRouter = createTRPCRouter({
       const userId = ctx.session.userId;
       //   look up the challenge
       const db = initAdmin().firestore();
-
       const challengeRef = db.doc(`challenges/${input.challengeId}`);
-
       const firebaseChallengeData = (
         await challengeRef.get()
       ).data() as ChallengeData;

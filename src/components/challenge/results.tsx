@@ -48,11 +48,14 @@ const Results: React.FC<ResultsProps> = (props) => {
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
 
       <div className="mb-3 w-full text-center text-2xl">
-        <p className="text-4xl">👑</p>
-        <m.p animate={controls} style={{ color: "var(--rainbow-color)" }}>
-          {props.challengeData?.winner?.name ?? "TBD"}
-        </m.p>
-
+        {props.challengeData?.winner?.name && (
+          <div>
+            <p className="text-4xl">👑</p>
+            <m.p animate={controls} style={{ color: "var(--rainbow-color)" }}>
+              {props.challengeData?.winner?.name}
+            </m.p>
+          </div>
+        )}
         <div className="flex justify-center gap-x-1 font-semibold">
           {props.challengeData?.word
             .split("")

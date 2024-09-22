@@ -4,13 +4,12 @@ import Navbar from "~/components/navbar/navbar";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
 import Challenge from "~/components/challenge/challenge";
-import ChallengeDropdown from "~/components/challenge/challenge-dropdown";
-import ChallengeDropdownItem from "~/components/challenge/challenge-dropdown-item";
+import FriendDropdown from "~/components/challenge/friend-dropdown";
+import FriendDropdownItem from "~/components/challenge/friend-dropdown-item";
 import { AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import NewChallenge from "~/components/challenge/new-challenge";
+import ChallengeInvite from "~/components/challenge/challenge-invite";
 import ChallengeBoard from "~/components/challenge/challenge-board";
-
 
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
 const Challenges: NextPage = () => {
@@ -36,7 +35,6 @@ const Challenges: NextPage = () => {
     if (list.length) {
       await requestChallenge.mutateAsync(list);
     }
-
     setList([]);
   };
   const handleStartChallenge = (challengeId: string) => {
@@ -116,9 +114,7 @@ const Challenges: NextPage = () => {
           )}
         </AnimatePresence>
 
-        <Header
-          isLoading={false}
-        />
+        <Header isLoading={false} />
         <div className="text-center">
           <p className="text-2xl font-semibold">Challenges</p>
           <p>challenge friends to a game</p>
@@ -139,11 +135,11 @@ const Challenges: NextPage = () => {
             />
             <AnimatePresence>
               {revealList && (
-                <ChallengeDropdown dropdownRef={dropdownRef}>
+                <FriendDropdown dropdownRef={dropdownRef}>
                   {friends.data?.length ? (
                     friendSearch.map((friend) => {
                       return (
-                        <ChallengeDropdownItem
+                        <FriendDropdownItem
                           key={friend.id}
                           name={friend.friendFullName}
                           image={friend.friendImage}
@@ -160,7 +156,7 @@ const Challenges: NextPage = () => {
                       <p>No friends in friends list</p>
                     </div>
                   )}
-                </ChallengeDropdown>
+                </FriendDropdown>
               )}
             </AnimatePresence>
           </div>
@@ -180,13 +176,11 @@ const Challenges: NextPage = () => {
             <div className="flex items-center border-b-4 border-neutral-900 p-1 text-xs">
               <p>unknown</p>
             </div>
-
-            <div className="items-center gap-1 text-sm"></div>
           </div>
           <div className="h-full overflow-hidden rounded-md border-2">
             <AnimatePresence>
               {!!list.length && (
-                <NewChallenge
+                <ChallengeInvite
                   sendChallenge={sendChallenge}
                   players={list}
                   removePlayer={removePlayer}
