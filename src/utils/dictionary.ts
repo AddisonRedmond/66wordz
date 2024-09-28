@@ -1234,6 +1234,8 @@ const dictionary: string[] = [
   "DEAF",
   "DEAL",
   "DEAN",
+  "DANE",
+  "DUNE",
   "DEAR",
   "DEBT",
   "DECK",

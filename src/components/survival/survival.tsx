@@ -4,9 +4,7 @@ import { db } from "~/utils/firebase/firebase";
 import WordContainer from "../board-components/word-container";
 import {
   findPlayerToAttack,
-  getGuessTimer,
   handleCorrectGuess,
-  handleGuessExpired,
   handleIncorrectGuess,
   SurvivalPlayerObject,
 } from "~/utils/survival/surivival";
@@ -24,7 +22,6 @@ import GameOver from "../board-components/game-over";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileMenu from "./mobile-menu";
 import CountDownTimer from "../board-components/countdown-timer";
-import GameTimer from "./game-timer";
 type SurvivalProps = {
   lobbyId: string;
   userId: string;
@@ -92,14 +89,14 @@ const Survival: React.FC<SurvivalProps> = ({
     }
   };
 
-  const handleExpiredGuessTimer = async () => {
-    await handleGuessExpired(
-      lobbyRef,
-      userId,
-      playerData,
-      gameData?.lobbyData.round,
-    );
-  };
+  // const handleExpiredGuessTimer = async () => {
+  //   await handleGuessExpired(
+  //     lobbyRef,
+  //     userId,
+  //     playerData,
+  //     gameData?.lobbyData.round,
+  //   );
+  // };
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -223,18 +220,9 @@ const Survival: React.FC<SurvivalProps> = ({
                 ids={evenIds}
               />
             )}
-            <div className="flex sm:w-1/4 w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
+            <div className="flex w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:w-1/4 sm:gap-y-8">
               <div className="flex w-full flex-col gap-1">
-                {playerData?.guessTimer && !gameData.lobbyData?.winner && (
-                  <div>
-                    <p className="text-sm font-semibold">{`Guess Timer - ${(getGuessTimer(gameData.lobbyData.round) - new Date().getTime()) / 1000} sec`}</p>
-
-                    <GameTimer
-                      timer={playerData?.guessTimer}
-                      handleExpired={handleExpiredGuessTimer}
-                    />
-                  </div>
-                )}
+                {/* add guess counter ui element */}
                 <WordContainer
                   word={playerData?.word?.word}
                   match={playerData?.revealIndex}

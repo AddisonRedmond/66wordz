@@ -236,7 +236,6 @@ export const challengeRouter = createTRPCRouter({
       // if theres a tie, pick the person who guessed in the least amount of time
     }),
   gameFinished: protectedProcedure
-
     .input(
       z.object({
         challengeId: z.string(),

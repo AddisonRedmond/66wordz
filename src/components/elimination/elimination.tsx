@@ -26,6 +26,7 @@ import Modal from "../modal";
 import Intermission from "./intermission";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
+import { checkSpelling } from "~/utils/spellCheck";
 
 type EliminationProps = {
   lobbyId: string;
@@ -40,6 +41,11 @@ const Elimination: React.FC<EliminationProps> = ({
 }: EliminationProps) => {
   const gameData = useEliminationData(db, { lobbyId, gameType });
   const isMobile = useIsMobile();
+  const [spellCheck, setSpellCheck] = useState(false);
+
+  const finishSpellCheck = () => {
+    setSpellCheck(false);
+  };
 
   const playerData: EliminationPlayerObject | undefined =
     gameData?.players[userId];
@@ -90,6 +96,11 @@ const Elimination: React.FC<EliminationProps> = ({
       // ensure guess length is same length as word
       if (guess.length === playerData.word.length) {
         // check if guess is correct
+        if (!checkSpelling(guess)) {
+          setSpellCheck(true);
+
+          return;
+        }
         if (guess === playerData.word) {
           handleCorrectGuess(
             playerData,
@@ -156,7 +167,7 @@ const Elimination: React.FC<EliminationProps> = ({
   };
   if (gameData) {
     return (
-      <div className="flex w-screen flex-grow justify-around">
+      <div className="flex w-screen flex-grow justify-center">
         {gameData.lobbyData?.nextRoundStartTime && (
           <Modal>
             <Intermission
@@ -181,7 +192,8 @@ const Elimination: React.FC<EliminationProps> = ({
                 finalRound={gameData.lobbyData.finalRound}
               />
               {gameData.lobbyData.roundTimer &&
-                !gameData.lobbyData.nextRoundStartTime && (
+                !gameData.lobbyData.nextRoundStartTime &&
+                !gameData.lobbyData.winner && (
                   <GameStatus
                     qualified={getQualified(
                       gameData.players,
@@ -218,6 +230,8 @@ const Elimination: React.FC<EliminationProps> = ({
                       <GuessContainer
                         word={guess}
                         wordLength={playerData?.word.length}
+                        spellCheck={spellCheck}
+                        finishSpellCheck={finishSpellCheck}
                       />
                       <Keyboard
                         disabled={false}

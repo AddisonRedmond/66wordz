@@ -48,7 +48,7 @@ export const createNewEliminationLobby = () => {
     gameStartTime: new Date().getTime() + 30000,
     totalSpots: 0,
     finalRound: false,
-    totalPoints: 5,
+    totalPoints: 3,
   };
 };
 

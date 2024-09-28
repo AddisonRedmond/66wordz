@@ -30,7 +30,7 @@ export type SurvivalPlayerObject = {
   revealIndex: number[];
   eliminatedCount: number;
   correctGuessCount: number;
-  guessTimer: number;
+  guessCount: number;
 };
 
 export type SurvivalPlayerData = {
@@ -48,23 +48,48 @@ export const createNewSurivivalLobby = () => {
   };
 };
 
+const determineReveal = (numberToReveal: number) => {
+  const availableNumbers = [0, 1, 2, 3, 4];
+  const results = new Set<number>();
+
+  // if number to reveal is higher than availNumber.length, it will add undefined
+  for (let i = 0; i < numberToReveal; i++) {
+    const numberToAdd = availableNumbers[
+      Math.floor(Math.random() * availableNumbers.length)
+    ] as number;
+    results.add(numberToAdd);
+    availableNumbers.splice(availableNumbers.indexOf(numberToAdd), 1);
+  }
+
+  return Array.from(results);
+};
+
 export const joinSurivivalLobby = (
   userId: string,
   fullName?: string | null,
 ) => {
+  const word = handleGetNewWord();
+  const revealIndex = determineReveal(2);
   const newPlayer: SurvivalPlayerData = {
     [userId]: {
       health: 2,
       shield: 2,
       eliminated: false,
       initials: getInitials(fullName) || "N/A",
-      revealIndex: [],
+      revealIndex: revealIndex,
       eliminatedCount: 0,
       correctGuessCount: 0,
-      guessTimer: 0,
+      guessCount: 0,
       word: {
         guessCount: 0,
-        word: handleGetNewWord(),
+        word: word,
+        matches: {
+          full: revealIndex.map((index) => {
+            return word.split("")[index];
+          }) as string[],
+          partial: [],
+          none: [],
+        },
       },
     },
   };
@@ -172,7 +197,7 @@ export const handleCorrectGuess = async (
     userData.health = Math.min(userData.health + 1, MAX_HEALTH);
   }
 
-  userData.guessTimer = getGuessTimer(round);
+  userData.guessCount = 0;
   userData.word.matches = { full: [], partial: [], none: [] };
   userData.revealIndex = [];
   userData.word.word = handleGetNewWord();
@@ -197,7 +222,7 @@ export const handleIncorrectGuess = async (
   guess: string,
   userId: string,
 ) => {
-  // TODO: incorrect guess increments
+  // TODO: incorrect guess increment
   const word = playerData.word.word;
   const updatedRevealIndex = getRevealIndex(
     word,
@@ -222,7 +247,7 @@ export const handleGuessExpired = async (
   lobbyRef: DatabaseReference,
   userId: string,
   playerData?: SurvivalPlayerObject,
-  round?: number,
+  // round?: number,
 ) => {
   if (!playerData) {
     return;
@@ -230,7 +255,6 @@ export const handleGuessExpired = async (
   }
   const playerStatus = calculatePlayerStatus(playerData);
 
-  playerStatus.guessTimer = getGuessTimer(round);
   playerStatus.word.word = handleGetNewWord();
   playerStatus.word.guessCount = 0;
   playerStatus.word.matches = { full: [], partial: [], none: [] };
