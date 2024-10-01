@@ -48,7 +48,7 @@ export const createNewSurivivalLobby = () => {
   };
 };
 
-const determineReveal = (numberToReveal: number) => {
+const determineReveal = (word: string, numberToReveal: number) => {
   const availableNumbers = [0, 1, 2, 3, 4];
   const results = new Set<number>();
 
@@ -61,7 +61,12 @@ const determineReveal = (numberToReveal: number) => {
     availableNumbers.splice(availableNumbers.indexOf(numberToAdd), 1);
   }
 
-  return Array.from(results);
+  const revealIndex = Array.from(results);
+  const matches = revealIndex.map((index) => {
+    return word.split("")[index];
+  }) as string[];
+
+  return { revealIndex, matches };
 };
 
 export const joinSurivivalLobby = (
@@ -69,7 +74,7 @@ export const joinSurivivalLobby = (
   fullName?: string | null,
 ) => {
   const word = handleGetNewWord();
-  const revealIndex = determineReveal(2);
+  const { revealIndex, matches } = determineReveal(word, 4);
   const newPlayer: SurvivalPlayerData = {
     [userId]: {
       health: 2,
@@ -84,9 +89,7 @@ export const joinSurivivalLobby = (
         guessCount: 0,
         word: word,
         matches: {
-          full: revealIndex.map((index) => {
-            return word.split("")[index];
-          }) as string[],
+          full: matches,
           partial: [],
           none: [],
         },
@@ -150,27 +153,19 @@ const calculatePlayerStatus = (playerData: SurvivalPlayerObject) => {
   return playerData;
 };
 
-export const getGuessTimer = (round?: number) => {
-  let timer = 0;
+export const getRevealNumber = (round?: number) => {
   switch (round) {
     case 1:
-      timer = 45000;
-      break;
+      return 4;
     case 2:
-      timer = 30000;
-      break;
+      return 3;
     case 3:
-      timer = 20000;
-      break;
+      return 2;
     case 4:
-      timer = 15000;
-      break;
+      return 1;
     default:
-      timer = 10000;
-      break;
+      return 0;
   }
-
-  return new Date().getTime() + timer;
 };
 
 export const handleCorrectGuess = async (
@@ -197,10 +192,16 @@ export const handleCorrectGuess = async (
     userData.health = Math.min(userData.health + 1, MAX_HEALTH);
   }
 
+  const word = handleGetNewWord();
+  const { revealIndex, matches } = determineReveal(
+    word,
+    getRevealNumber(round),
+  );
+
   userData.guessCount = 0;
-  userData.word.matches = { full: [], partial: [], none: [] };
-  userData.revealIndex = [];
-  userData.word.word = handleGetNewWord();
+  userData.word.matches = { full: matches, partial: [], none: [] };
+  userData.revealIndex = revealIndex;
+  userData.word.word = word;
   userData.correctGuessCount++;
   if (attackedPlayerData.eliminated) {
     userData.eliminatedCount++;
@@ -237,6 +238,7 @@ export const handleIncorrectGuess = async (
 
   updatedPlayerData.word.matches = matches;
   updatedPlayerData.revealIndex = updatedRevealIndex;
+  updatedPlayerData.guessCount++;
 
   const ref = child(lobbyRef, `players/${userId}`);
 
