@@ -30,7 +30,7 @@ const KeyboardRow = ({
       return "#545B77";
     }
 
-    return "#e5e5e5"
+    return "#e5e5e5";
   };
   return (
     <>
@@ -42,7 +42,7 @@ const KeyboardRow = ({
               backgroundColor: handleColors(letter),
               color: handleColors(letter) === "#545B77" ? "#FFFFFF" : "#000000",
             }}
-            className={` flex sm:aspect-square sm:h-auto h-12 w-[10%] min-w-8 max-w-12 ${
+            className={` flex h-12 w-[10%] min-w-8 max-w-12 sm:aspect-square sm:h-auto ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md font-bold sm:border-none`}
             key={letter}
@@ -61,7 +61,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex w-11/12 flex-col items-center gap-1">
+    <div className="flex w-full flex-col items-center justify-center gap-1">
       <div className="flex w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
@@ -110,7 +110,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           }
         />
       </div>
-      <div className="sm:invisibile mt-3 visible flex w-full justify-around text-center text-lg font-semibold">
+      <div className="sm:invisibile visible mt-3 flex w-full justify-around text-center text-lg font-semibold">
         <button
           onClick={() => props.handleKeyBoardLogic("Enter")}
           className="h-10 w-1/4 rounded-md  border-2 border-neutral-700 text-center sm:hidden"

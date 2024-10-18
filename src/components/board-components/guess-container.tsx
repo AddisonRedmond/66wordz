@@ -19,7 +19,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
     x: [-10, 10, -10, 10, 0],
   };
   useEffect(() => {
-    void animate(scope.current, control, { duration: 0.3 });
+    animate(scope.current, control, { duration: 0.3 });
     if (props.finishSpellCheck) {
       props.finishSpellCheck();
     }
@@ -27,7 +27,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
 
   return (
     <div
-      className={`flex h-16 w-full flex-row  rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+      className={`flex h-16 w-full flex-row  rounded-md bg-stone-100 px-2  py-1 duration-150 ease-in-out`}
     >
       <m.div
         ref={scope}

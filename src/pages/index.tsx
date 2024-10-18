@@ -11,6 +11,7 @@ import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
+import Race from "~/components/race/race";
 
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
@@ -51,17 +52,17 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const handleStartGame = () => {
     if (lobby.data) {
       switch (lobby.data.gameType) {
-        case "SURVIVAL":
+        case "ELIMINATION":
           return (
-            <Survival
+            <Elimination
               lobbyId={lobby.data.id}
               userId={userId}
               gameType={lobby.data.gameType}
             />
           );
-        case "ELIMINATION":
+        case "RACE":
           return (
-            <Elimination
+            <Race
               lobbyId={lobby.data.id}
               userId={userId}
               gameType={lobby.data.gameType}
@@ -124,28 +125,25 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
           {lobby.data?.id ? (
             handleStartGame()
           ) : (
-            <div className="flex flex-col flex-wrap items-center justify-center gap-2">
-              <div className="flex flex-grow flex-wrap items-center justify-center gap-3">
-                <ChallengeCard />
+            <div className="w flex flex-grow flex-wrap items-center justify-center gap-3">
+              <ChallengeCard />
 
-                <GameCardV2
-                  gameType="SURVIVAL"
-                  image={survival}
-                  fullAccess={true}
-                  quickPlay={handleQuickPlay}
-                  handleUpgrade={handleUpgrade}
-                  desc="Offence is the best defence in this heated player vs player game"
-                />
-
-                <GameCardV2
-                  gameType="ELIMINATION"
-                  image={crown}
-                  fullAccess={true}
-                  quickPlay={handleQuickPlay}
-                  handleUpgrade={handleUpgrade}
-                  desc="Be the fastest to guess your words, in order to survive each round"
-                />
-              </div>
+              <GameCardV2
+                gameType="ELIMINATION"
+                image={crown}
+                fullAccess={true}
+                quickPlay={handleQuickPlay}
+                handleUpgrade={handleUpgrade}
+                desc="Be the fastest to guess your words, in order to survive each round"
+              />
+              <GameCardV2
+                gameType="RACE"
+                image={survival}
+                fullAccess={true}
+                quickPlay={handleQuickPlay}
+                handleUpgrade={handleUpgrade}
+                desc="Guess words fast"
+              />
             </div>
           )}
         </AnimatePresence>

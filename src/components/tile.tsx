@@ -53,10 +53,10 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
       animate={{ scale: 1, opacity: 1 }}
       className={`flex gap-2 ${props.desktopOnly ? "hidden sm:flex" : ""}`}
     >
-      {props.letters.split("").map((letter: string, index: number) => {
+      {props.letters.split("").map((letter: string, tileIndex: number) => {
         return (
           <div
-            key={index}
+            key={tileIndex}
             className={`flex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-bold  ${
               props.bg ? props.bg : "bg-[#9462C6]"
             } ${props.textColor ? props.textColor : "text-white"} `}
@@ -70,9 +70,9 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
                   }}
                   transition={{
                     duration: 0.8,
-                    delay: 0.25,
                     type: "spring",
                     damping: 12,
+                    delay: tileIndex * 0.1,
                   }}
                   key={`${index}letter`}
                 >

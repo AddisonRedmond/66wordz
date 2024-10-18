@@ -1,4 +1,4 @@
-import { SurvivalPlayerData } from "~/utils/survival/surivival";
+import { SurvivalPlayerData } from "~/utils/surivival";
 import {
   CircularProgressbarWithChildren,
   buildStyles,

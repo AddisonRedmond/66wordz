@@ -1,12 +1,30 @@
 import { ref, remove, set } from "firebase/database";
 import words from "./words";
 import { db } from "./firebase/firebase";
+import { env } from "~/env.mjs";
+import { GameType } from "@prisma/client";
 
-export type Matches = {
-  full?: string[];
-  partial?: string[];
-  none?: string[];
-};
+export interface DefaultPlayerData {
+  initials: string;
+  word: string;
+  matches: Matches;
+  revealIndex?: number[];
+}
+
+export interface DefaultLobbyData {
+  gameStarted: boolean;
+  gameStartTime: number;
+  winner?: string;
+}
+
+export type Matches =
+  | {
+      full?: string[];
+      partial?: string[];
+      none?: string[];
+    }
+  | undefined
+  | null;
 
 export type CustomEliminationLobby = {
   gameStarted: boolean;
@@ -152,4 +170,35 @@ export const getRevealIndex = (
   });
 
   return Array.from(revealIndex);
+};
+
+export const registerLobbyWithServer = (
+  gameMode: GameType,
+  lobbyId: string,
+) => {
+  void fetch(`${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`, {
+    method: "POST",
+    body: JSON.stringify({ lobbyId }),
+  });
+};
+
+export const determineReveal = (word: string, numberToReveal: number) => {
+  const availableNumbers = [0, 1, 2, 3, 4];
+  const results = new Set<number>();
+
+  // if number to reveal is higher than availNumber.length, it will add undefined
+  for (let i = 0; i < numberToReveal; i++) {
+    const numberToAdd = availableNumbers[
+      Math.floor(Math.random() * availableNumbers.length)
+    ] as number;
+    results.add(numberToAdd);
+    availableNumbers.splice(availableNumbers.indexOf(numberToAdd), 1);
+  }
+
+  const revealIndex = Array.from(results);
+  const matches = revealIndex.map((index) => {
+    return word.split("")[index];
+  }) as string[];
+
+  return { revealIndex, matches };
 };

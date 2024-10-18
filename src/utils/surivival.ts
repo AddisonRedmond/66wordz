@@ -4,7 +4,7 @@ import {
   getRevealIndex,
   handleGetNewWord,
   handleMatched,
-} from "../game";
+} from "./game";
 import { AttackPosition } from "~/components/survival/survival";
 
 const MAX_SHIELD = 4;

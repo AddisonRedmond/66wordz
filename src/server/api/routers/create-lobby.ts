@@ -8,7 +8,7 @@ import {
   createCustomEliminationLobby,
 } from "~/utils/game";
 import { env } from "~/env.mjs";
-import { joinSurivivalLobby } from "~/utils/survival/surivival";
+import { joinSurivivalLobby } from "~/utils/surivival";
 import { joinEliminationLobby } from "~/utils/elimination";
 import { initAdmin } from "~/utils/firebase-admin";
 

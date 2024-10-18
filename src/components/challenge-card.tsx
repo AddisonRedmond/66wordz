@@ -4,34 +4,26 @@ import Link from "next/link";
 
 const ChallengeCard: React.FC = () => {
   return (
-    <div className=" bg-card text-card-foreground prose w-full max-w-xs rounded-lg border-2 border-zinc-200 shadow-sm">
-      <div className="flex flex-col items-center">
-        <Image
-          className="mb-0"
-          src={challenge}
-          alt={`image for challenge game`}
-          height={20}
-        />
-        <div className="flex w-full flex-col space-y-1.5 px-6 pb-6">
-          <div>
-            <h3 className="mb-0">Challenge</h3>
-            <p className="hidden text-sm text-gray-500 sm:block">
-              Challenge a friend or friends to see who can uncover a word faster
-            </p>
-          </div>
-
-          <Link href="/challenges">
-            <button className=" w-full rounded-md bg-zinc-900 py-2 font-semibold text-white duration-150 ease-in-out hover:bg-zinc-700">
-              Challenges
-            </button>
-          </Link>
-
-          {/* <button
-            className={` disabled w-full cursor-default rounded-md border-2 border-zinc-500 bg-white py-2 font-semibold text-black opacity-0 duration-150 ease-in-out hover:bg-zinc-200`}
-          >
-            Create
-          </button> */}
+    <div className=" bg-card text-card-foreground prose flex h-60 w-1/4 flex-col rounded-lg border-2 border-zinc-200 px-6 py-5 shadow-sm">
+      <Image
+        className="mb-0"
+        src={challenge}
+        alt={`image for game`}
+        height={20}
+      />
+      <div className="flex justify-between w-full flex-col space-y-1.5 flex-grow">
+      <div>
+          <h3 className="mb-0">Challenge</h3>
+          <p className="hidden text-sm text-gray-500 sm:block">
+            Challenge a friend or friends to see who can uncover a word faster
+          </p>
         </div>
+
+        <Link href="/challenges">
+          <button className=" w-full rounded-md bg-zinc-900 py-2 font-semibold text-white duration-150 ease-in-out hover:bg-zinc-700">
+            Challenges
+          </button>
+        </Link>
       </div>
     </div>
   );

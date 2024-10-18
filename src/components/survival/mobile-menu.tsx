@@ -5,7 +5,7 @@ import {
 import {
   SurvivalPlayerData,
   findPlayerToAttack,
-} from "~/utils/survival/surivival";
+} from "~/utils/surivival";
 import { useState } from "react";
 import MobileOpponents from "./mobile-opponents";
 import { AnimatePresence } from "framer-motion";
