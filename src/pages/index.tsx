@@ -3,7 +3,6 @@ import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
-import Survival from "~/components/survival/survival";
 import GameCardV2 from "~/components/game-card-v2";
 import survival from "../../public/survival.png";
 import Elimination from "~/components/elimination/elimination";

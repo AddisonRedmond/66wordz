@@ -44,9 +44,8 @@ const Results: React.FC<ResultsProps> = (props) => {
   }, [props.challengeData]);
 
   return (
-    <div className="relative z-10 h-full overflow-x-auto p-4">
+    (<div className="relative z-10 h-full overflow-x-auto p-4">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
-
       <div className="mb-3 w-full text-center text-2xl">
         {props.challengeData?.winner?.name && (
           <div>
@@ -71,7 +70,6 @@ const Results: React.FC<ResultsProps> = (props) => {
             })}
         </div>
       </div>
-
       <table className="w-full border-collapse text-left">
         <thead className="bg-emerald-600 text-white">
           <tr>
@@ -94,7 +92,7 @@ const Results: React.FC<ResultsProps> = (props) => {
                 `${props.challengeData?.[player.friendId]?.endTimeStamp}`,
               );
               return (
-                <tr
+                (<tr
                   className="p-4 font-semibold odd:bg-gray-200"
                   key={player.friendId}
                 >
@@ -126,13 +124,13 @@ const Results: React.FC<ResultsProps> = (props) => {
                       </p>
                     </div>
                   </td>
-                </tr>
+                </tr>)
               );
             }
           })}
         </tbody>
       </table>
-    </div>
+    </div>)
   );
 };
 
