@@ -1,4 +1,4 @@
-import { DatabaseReference } from "firebase/database";
+import { child, DatabaseReference, update } from "firebase/database";
 import {
   handleGetNewWord,
   DefaultPlayerData,
@@ -9,10 +9,12 @@ import {
 export interface RacePlayerData extends DefaultPlayerData {
   eliminated: boolean;
   correctGuesses: number;
+  totalGuesses: number;
 }
 
 export interface RaceLobbyData extends DefaultLobbyData {
   round: number;
+  roundTimer: number;
 }
 
 export type RaceGameData = {
@@ -25,6 +27,7 @@ export const createNewRaceLobby = () => {
     gameStarted: false,
     round: 1,
     gameStartTime: new Date().getTime() + 30000,
+    roundTimer: new Date().getTime() + 130000,
   };
 };
 
@@ -36,24 +39,40 @@ export const joinRaceLobby = (playerId: string, fullName?: string | null) => {
       matches: { full: [], partial: [], none: [] },
       eliminated: false,
       correctGuesses: 0,
+      totalGuesses: 0,
     },
   };
 
   return player;
 };
 
-export const getUserPlacement = (players: Record<string, RacePlayerData>) => {
-  return Object.entries(players)
+export const getUserPlacement = (
+  userId: string,
+  players?: Record<string, RacePlayerData>,
+) => {
+  if (!players) {
+    return { userPlacement: 100, remainingPlayers: 1 };
+  }
+  const sortedPlayers = Object.entries(players)
     .filter(([_, player]) => !player.eliminated)
-    .sort(([, a], [, b]) => b.correctGuesses - a.correctGuesses)
+    .sort(([, a], [, b]) => {
+      if (b.correctGuesses !== a.correctGuesses) {
+        return b.correctGuesses - a.correctGuesses;
+      }
+      return a.totalGuesses - b.totalGuesses; // Fallback to totalGuesses
+    })
     .map(([id]) => id);
-};
 
+  return {
+    userPlacement: sortedPlayers.indexOf(userId),
+    remainingPlayers: sortedPlayers.length,
+  };
+};
 export const handleCorrectGuess = (
   userId: string,
   userData: RacePlayerData,
   dbRef: DatabaseReference,
-  placement: string[],
+  placement: { placement: number; remainingPlayers: number },
 ) => {
   const updatedUserObject = userData;
 
@@ -63,8 +82,11 @@ export const handleCorrectGuess = (
   updatedUserObject.revealIndex = revealIndex;
   updatedUserObject.matches = { full: matches };
   updatedUserObject.correctGuesses++;
-  updatedUserObject.word = handleGetNewWord();
+  updatedUserObject.word = newWord;
 
+  const playersRef = child(dbRef, "players");
+
+  update(playersRef, { [userId]: updatedUserObject });
   // break users into 5ths,
   // 1 one revealed letter
   // 2 two revealed letters
