@@ -1,7 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import GameCardV2 from "~/components/game-card-v2";
 import survival from "../../public/survival.png";
@@ -12,6 +12,7 @@ import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import Race from "~/components/race/race";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
@@ -21,8 +22,8 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
-
   const upgrade = api.upgrade.createCheckout.useMutation();
+  const queryClient = useQueryClient();
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -43,7 +44,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const exitMatch: () => void = async () => {
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
-    lobby.remove();
+    queryClient.removeQueries(lobby);
     // delete user from lobby db
     // delete user from firebase db
   };
@@ -115,7 +116,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
           isLoading={
-            lobby.isLoading || quickPlay.isLoading || joinLobby.isLoading
+            lobby.isLoading || quickPlay.isPending || joinLobby.isPending
           }
           desktopOnly={!!lobby.data?.id}
         />

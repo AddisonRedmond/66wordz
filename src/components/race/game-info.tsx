@@ -7,7 +7,7 @@ type GameInfoProps = {
 };
 
 const GameInfo: React.FC<GameInfoProps> = (props) => {
-  const { seconds, minutes, restart, start } = useTimer({
+  const { seconds, minutes } = useTimer({
     expiryTimestamp: new Date(props.roundTimer),
   });
   return (

@@ -7,7 +7,7 @@ import { LazyMotion, domAnimation } from "framer-motion";
 import Head from "next/head";
 const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   return (
-    <ClerkProvider {...pageProps}>
+    <ClerkProvider dynamic {...pageProps}>
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />

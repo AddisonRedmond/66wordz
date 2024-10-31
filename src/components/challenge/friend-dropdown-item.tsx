@@ -10,6 +10,7 @@ type FriendDropdownItemProps = {
 };
 
 const FriendDropdownItem: React.FC<FriendDropdownItemProps> = (props) => {
+  console.log(props.image);
   return (
     <div
       className={`flex h-20 w-full items-center justify-between border-b-2 border-white px-4 duration-150 ease-in-out ${props.selected ? "bg-zinc-200" : ""}`}

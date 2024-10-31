@@ -51,10 +51,10 @@ export const getUserPlacement = (
   players?: Record<string, RacePlayerData>,
 ) => {
   if (!players) {
-    return { userPlacement: 100, remainingPlayers: 1 };
+    return { userPlacement: 100, remainingPlayers: 1, sortedPlayers: [""] };
   }
   const sortedPlayers = Object.entries(players)
-    .filter(([_, player]) => !player.eliminated)
+    .filter(([, player]) => !player.eliminated)
     .sort(([, a], [, b]) => {
       if (b.correctGuesses !== a.correctGuesses) {
         return b.correctGuesses - a.correctGuesses;
@@ -66,6 +66,7 @@ export const getUserPlacement = (
   return {
     userPlacement: sortedPlayers.indexOf(userId),
     remainingPlayers: sortedPlayers.length,
+    sortedPlayers,
   };
 };
 export const handleCorrectGuess = (
@@ -75,6 +76,8 @@ export const handleCorrectGuess = (
   placement: { placement: number; remainingPlayers: number },
 ) => {
   const updatedUserObject = userData;
+
+  placement;
 
   const newWord = handleGetNewWord();
   const { revealIndex, matches } = determineReveal(newWord, 1);
@@ -94,4 +97,6 @@ export const handleCorrectGuess = (
   // 4 four letters revealed
 };
 
-export const handleIncorrectGuess = () => {};
+export const handleIncorrectGuess = () => {
+  console.log("TEST");
+};

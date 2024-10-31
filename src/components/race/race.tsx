@@ -27,10 +27,11 @@ type RaceProps = {
 const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useGameData<RaceGameData>(lobbyRef);
-  const [spellCheck, setSpellCheck] = useState(false);
+  const [, setSpellCheck] = useState(false);
   const [placement, setPlacement] = useState({
     placement: 0,
     remainingPlayers: 0,
+    sortedPlayers: [""],
   });
   const [guess, setGuess] = useState("");
   const playerData = gameData?.players[userId];
@@ -104,12 +105,26 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
+  const getHalf = (isFirstHalf: boolean) => {
+    const playerIdsMinusUserId = placement.sortedPlayers.filter((playerId) => {
+      return userId !== playerId;
+    });
+
+    const halfLength = Math.ceil(playerIdsMinusUserId.length / 2);
+
+    if (isFirstHalf) {
+      return playerIdsMinusUserId.slice(0, halfLength);
+    } else {
+      return playerIdsMinusUserId.slice(halfLength);
+    }
+  };
+
   useEffect(() => {
-    const { userPlacement, remainingPlayers } = getUserPlacement(
+    const { userPlacement, remainingPlayers, sortedPlayers } = getUserPlacement(
       userId,
       gameData?.players,
     );
-    setPlacement({ placement: userPlacement, remainingPlayers });
+    setPlacement({ placement: userPlacement, remainingPlayers, sortedPlayers });
   }, [gameData]);
 
   if (gameData) {
@@ -118,7 +133,10 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
         {gameData.lobbyData.gameStarted ? (
           <>
             {/* opponesnts left */}
-            <div className="w-1/3"></div>
+            <RaceOpponents
+              opponents={gameData.players}
+              opponentIds={getHalf(true)}
+            />
             {/* main content */}
             <div className="flex w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:w-1/4 sm:gap-y-8">
               {/* make the info portion into its own component */}
@@ -137,13 +155,15 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                 <Keyboard
                   disabled={gameData.lobbyData.gameStarted}
                   handleKeyBoardLogic={handleKeyUp}
-                  matches={playerData?.matches}
+                  // matches={playerData?.matches}
                 />
               </div>
             </div>
-            <div className="w-1/3">
-              <RaceOpponents opponents={gameData.players} />
-            </div>
+
+            <RaceOpponents
+              opponents={gameData.players}
+              opponentIds={getHalf(false)}
+            />
           </>
         ) : (
           <CountDownTimer
