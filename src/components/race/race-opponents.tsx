@@ -46,14 +46,14 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
                         ? "#00DFA2"
                         : "#d4d4d8",
                     }}
-                    className={`min-w-1 my-1 grid aspect-square h-full w-1/5 place-content-center duration-150 ease-in-out ${opponentSizePercentage < 20 ? "rounded-none" : "rounded-md"}`}
+                    className={`my-1 grid aspect-square h-full w-1/5 min-w-1 place-content-center duration-150 ease-in-out ${opponentSizePercentage < 20 ? "rounded-none" : "rounded-md"}`}
                   >
                     {props.opponents[id]?.revealIndex?.includes(index) && (
                       <m.p
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         style={{ fontSize: `${opponentSizePercentage / 2}px` }}
-                        className={`font-bold hidden lg:block`}
+                        className={`hidden font-bold lg:block`}
                       >
                         {letter}
                       </m.p>

@@ -76,7 +76,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
           handleCorrectGuess(userId, playerData, lobbyRef, placement);
         } else {
           // handle incorrect guess
-          handleIncorrectGuess();
+          handleIncorrectGuess({ [userId]: playerData }, guess, lobbyRef);
         }
         setGuess("");
       }
@@ -153,9 +153,9 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                 />
                 <GuessContainer word={guess} wordLength={5} />
                 <Keyboard
-                  disabled={gameData.lobbyData.gameStarted}
+                  disabled={!gameData.lobbyData.gameStarted}
                   handleKeyBoardLogic={handleKeyUp}
-                  // matches={playerData?.matches}
+                  matches={playerData?.matches}
                 />
               </div>
             </div>
