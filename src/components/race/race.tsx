@@ -105,18 +105,19 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
 
-  const getHalf = (isFirstHalf: boolean) => {
-    const playerIdsMinusUserId = placement.sortedPlayers.filter((playerId) => {
-      return userId !== playerId;
-    });
-
-    const halfLength = Math.ceil(playerIdsMinusUserId.length / 2);
-
-    if (isFirstHalf) {
-      return playerIdsMinusUserId.slice(0, halfLength);
-    } else {
-      return playerIdsMinusUserId.slice(halfLength);
-    }
+  const getHalf = (isEven: boolean) => {
+    // this should run if there are players in the db
+    return Object.keys(gameData!.players).filter(
+      (id: string, index: number) => {
+        const player = gameData!.players[id];
+        return (
+          id !== userId && // Exclude the user's ID
+          player && // Ensure player exists
+          !player.eliminated && // Filter out eliminated players
+          (isEven ? index % 2 === 0 : index % 2 !== 0) // Filter by even/odd index
+        );
+      },
+    );
   };
 
   useEffect(() => {
@@ -141,11 +142,13 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
             <div className="flex w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:w-1/4 sm:gap-y-8">
               {/* make the info portion into its own component */}
               <p className="font-bold">{`${placement.placement + 1}st place`}</p>
-              <GameInfo
-                correctGuesses={playerData?.correctGuesses}
-                guesses={playerData?.totalGuesses}
-                roundTimer={gameData.lobbyData.roundTimer}
-              />
+              {!!gameData?.lobbyData?.roundTimer && (
+                <GameInfo
+                  correctGuesses={playerData?.correctGuesses}
+                  guesses={playerData?.totalGuesses}
+                  roundTimer={gameData.lobbyData.roundTimer}
+                />
+              )}
               <div className="flex w-full flex-col gap-y-2">
                 <WordContainer
                   word={playerData?.word}

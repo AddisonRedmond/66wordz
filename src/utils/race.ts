@@ -112,8 +112,6 @@ export const handleCorrectGuess = (
 
   const playerRef = child(dbRef, "players");
 
-  console.log(updatedUserObject);
-
   update(playerRef, { [userId]: updatedUserObject });
   // break users into 5ths,
   // 1 one revealed letter
