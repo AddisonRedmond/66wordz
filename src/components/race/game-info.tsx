@@ -1,4 +1,4 @@
-import {} from "react";
+import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 
 type GameInfoProps = {
@@ -12,10 +12,16 @@ const GameInfo: React.FC<GameInfoProps> = ({
   roundTimer,
   ...props
 }) => {
-  const { seconds, minutes } = useTimer({
+  const { seconds, minutes, restart } = useTimer({
     autoStart: true,
     expiryTimestamp: new Date(roundTimer),
   });
+
+  useEffect(() => {
+    restart(new Date(roundTimer));
+  },[roundTimer]);
+
+  console.log(roundTimer);
 
   return (
     <div className="full flex h-16 min-w-60 items-center">
