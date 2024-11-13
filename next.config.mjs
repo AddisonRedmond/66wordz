@@ -7,6 +7,11 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import("next").NextConfig} */
 const config = {
+  experimental: {
+    turbo: {
+      // ...
+    },
+  },
   reactStrictMode: true,
 
   /**

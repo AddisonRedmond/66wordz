@@ -3,6 +3,8 @@ import { useTimer } from "react-timer-hook";
 
 type GameInfoProps = {
   roundTimer: number;
+  numberOfPlayersToEliminate: number;
+  placement: number;
   correctGuesses?: number;
   guesses?: number;
 };
@@ -19,20 +21,30 @@ const GameInfo: React.FC<GameInfoProps> = ({
 
   useEffect(() => {
     restart(new Date(roundTimer));
-  },[roundTimer]);
+  }, [roundTimer]);
 
-  console.log(roundTimer);
+  console.log(props.placement >= props.numberOfPlayersToEliminate)
 
   return (
     <div className="full flex h-16 min-w-60 items-center">
-      <div className="grid aspect-square h-full place-items-center rounded-l-lg border-2 border-zinc-600">
+      <div
+        style={{
+          backgroundColor:
+            props.placement >= props.numberOfPlayersToEliminate
+              ? "#FFAAAA": "#ECFFE6"
+        }}
+        className="grid aspect-square h-full place-items-center rounded-l-lg border-2 border-zinc-600 duration-150 ease-in-out"
+      >
         <p>Points</p>
         <p className="text-xl font-semibold">{correctGuesses}</p>
       </div>
       <div className="flex h-full w-full flex-col justify-center rounded-r-lg border-2 border-black bg-black px-3 text-white">
         <p>
-          Bottom <span className="font-semibold text-green-500">7</span> Will Be
-          Eliminated in
+          Bottom{" "}
+          <span className="font-semibold">
+            {props.numberOfPlayersToEliminate}
+          </span>{" "}
+          Will Be Eliminated in
         </p>
         <p>
           <span className="font-semibold">{minutes} </span>

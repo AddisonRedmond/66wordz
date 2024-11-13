@@ -4,6 +4,9 @@ import useGameData from "~/custom-hooks/useGameData";
 import { db } from "~/utils/firebase/firebase";
 import {
   RaceGameData,
+  calcualteSpots,
+  calculateNumberOfPlayersToEliminate,
+  getOrinalSuffix,
   getUserPlacement,
   handleCorrectGuess,
   handleIncorrectGuess,
@@ -17,6 +20,8 @@ import { checkSpelling } from "~/utils/spellCheck";
 import GameInfo from "./game-info";
 import RaceOpponents from "./race-opponents";
 import CountDownTimer from "../board-components/countdown-timer";
+import Eliminated from "../board-components/eliminated";
+import Winner from "../board-components/winner";
 
 type RaceProps = {
   lobbyId: string;
@@ -128,6 +133,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
     setPlacement({ placement: userPlacement, remainingPlayers, sortedPlayers });
   }, [gameData]);
 
+  // TODO: Add final round logic and notification
   if (gameData) {
     return (
       <div className="flex w-full flex-grow justify-center">
@@ -141,25 +147,39 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
             {/* main content */}
             <div className="flex w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:w-1/4 sm:gap-y-8">
               {/* make the info portion into its own component */}
-              <p className="font-bold">{`${placement.placement + 1}st place`}</p>
-              {!!gameData?.lobbyData?.roundTimer && (
-                <GameInfo
-                  correctGuesses={playerData?.correctGuesses}
-                  guesses={playerData?.totalGuesses}
-                  roundTimer={gameData.lobbyData.roundTimer}
-                />
+
+              {!!gameData?.lobbyData?.roundTimer && !playerData?.eliminated && (
+                <>
+                  <p className="font-bold">{`${getOrinalSuffix(placement.placement + 1)} place`}</p>
+                  <GameInfo
+                    placement={placement.placement}
+                    correctGuesses={playerData?.correctGuesses}
+                    guesses={playerData?.totalGuesses}
+                    roundTimer={gameData.lobbyData.roundTimer}
+                    numberOfPlayersToEliminate={calculateNumberOfPlayersToEliminate(
+                      gameData.players,
+                    )}
+                  />
+                </>
               )}
               <div className="flex w-full flex-col gap-y-2">
-                <WordContainer
-                  word={playerData?.word}
-                  match={playerData?.revealIndex}
-                />
-                <GuessContainer word={guess} wordLength={5} />
-                <Keyboard
-                  disabled={!gameData.lobbyData.gameStarted}
-                  handleKeyBoardLogic={handleKeyUp}
-                  matches={playerData?.matches}
-                />
+                {playerData?.eliminated && <Eliminated />}
+                {gameData.lobbyData.winner === userId && <Winner />}
+
+                {!playerData?.eliminated && !gameData.lobbyData.winner && (
+                  <>
+                    <WordContainer
+                      word={playerData?.word}
+                      match={playerData?.revealIndex}
+                    />
+                    <GuessContainer word={guess} wordLength={5} />
+                    <Keyboard
+                      disabled={!gameData.lobbyData.gameStarted}
+                      handleKeyBoardLogic={handleKeyUp}
+                      matches={playerData?.matches}
+                    />
+                  </>
+                )}
               </div>
             </div>
 

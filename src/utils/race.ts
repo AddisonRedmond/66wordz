@@ -109,6 +109,7 @@ export const handleCorrectGuess = (
   updatedUserObject.matches = { full: matches };
   updatedUserObject.correctGuesses = updatedUserObject.correctGuesses + 1;
   updatedUserObject.word = newWord;
+  updatedUserObject.totalGuesses = updatedUserObject.totalGuesses + 1;
 
   const playerRef = child(dbRef, "players");
 
@@ -137,6 +138,7 @@ export const handleIncorrectGuess = async (
     ...data,
     matches,
     revealIndex,
+    totalGuesses: data.totalGuesses + 1,
   };
   const playerRef = child(dbRef, "players");
 
@@ -147,4 +149,36 @@ export const handleIncorrectGuess = async (
 
 export const calcualteSpots = (playerCount: number) => {
   return Math.ceil(playerCount / 1.6);
+};
+
+export const calculateNumberOfPlayersToEliminate = (
+  players: Record<string, RacePlayerData>,
+) => {
+  const nonElimiatedPlayers = Object.entries(players).filter(([id, data]) => {
+    return data.eliminated === false;
+  });
+
+  const spots = calcualteSpots(nonElimiatedPlayers.length);
+
+  return nonElimiatedPlayers.length - spots;
+};
+
+export const getOrinalSuffix = (num: number) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const remainder = num % 100;
+
+  if (remainder >= 11 && remainder <= 13) {
+    return `${num}th`;
+  }
+
+  switch (num % 10) {
+    case 1:
+      return `${num}${suffixes[1]}`;
+    case 2:
+      return `${num}${suffixes[2]}`;
+    case 3:
+      return `${num}${suffixes[3]}`;
+    default:
+      return `${num}${suffixes[0]}`;
+  }
 };
