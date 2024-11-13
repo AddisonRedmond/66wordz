@@ -3,7 +3,7 @@ import { buffer } from "micro";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 
-import type { WebhookEvent } from "@clerk/nextjs/dist/types/server";
+import { WebhookEvent } from '@clerk/nextjs/server'
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
