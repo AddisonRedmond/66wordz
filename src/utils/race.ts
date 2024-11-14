@@ -154,7 +154,7 @@ export const calcualteSpots = (playerCount: number) => {
 export const calculateNumberOfPlayersToEliminate = (
   players: Record<string, RacePlayerData>,
 ) => {
-  const nonElimiatedPlayers = Object.entries(players).filter(([id, data]) => {
+  const nonElimiatedPlayers = Object.entries(players).filter(([, data]) => {
     return data.eliminated === false;
   });
 

@@ -83,16 +83,21 @@ const Challenges: NextPage = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
       if (
         inputRef.current &&
-        !inputRef.current.contains(event.target) &&
+        !inputRef.current.contains(target) &&
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
+        !dropdownRef.current.contains(target)
       ) {
-        onClickOutside && onClickOutside();
+        if (onClickOutside) {
+          onClickOutside();
+        }
       }
     };
+
     document.addEventListener("click", handleClickOutside, true);
     return () => {
       document.removeEventListener("click", handleClickOutside, true);

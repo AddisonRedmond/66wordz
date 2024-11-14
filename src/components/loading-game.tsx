@@ -47,7 +47,9 @@ const LoadingCustomGame = (
         <div className="flex flex-col">
           <button
             onClick={() => {
-              props.playerCount >= 2 && props.startGame();
+              if (props.playerCount >= 2) {
+                props.startGame();
+              }
             }}
             className={`my-3 rounded-full bg-zinc-800 p-2 text-white duration-150 ease-in-out hover:bg-zinc-600 ${props.playerCount >= 2 ? "cursor-pointer" : "cursor-not-allowed"}`}
           >

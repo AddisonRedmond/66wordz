@@ -22,11 +22,11 @@ const KeyboardRow = ({
 }) => {
   const handleColors = (letter: string) => {
     if (!matches) return "#e5e5e5";
-    if (matches?.full && matches.full.includes(letter)) {
+    if (matches?.full?.includes(letter)) {
       return "#00DFA2";
-    } else if (matches?.partial && matches.partial.includes(letter)) {
+    } else if (matches?.partial?.includes(letter)) {
       return "#F6FA70";
-    } else if (matches?.none && matches.none.includes(letter)) {
+    } else if (matches?.none?.includes(letter)) {
       return "#545B77";
     }
 

@@ -4,7 +4,6 @@ import useGameData from "~/custom-hooks/useGameData";
 import { db } from "~/utils/firebase/firebase";
 import {
   RaceGameData,
-  calcualteSpots,
   calculateNumberOfPlayersToEliminate,
   getOrinalSuffix,
   getUserPlacement,

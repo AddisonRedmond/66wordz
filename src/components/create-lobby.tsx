@@ -8,7 +8,7 @@ type CreateLobbyProps = {
     lobbyName: string,
     enableBots: boolean,
     gameType: GameType,
-    passKey?: string | undefined,
+    passKey?: string,
   ) => void;
   gameType: GameType;
 };
