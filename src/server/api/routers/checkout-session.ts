@@ -8,7 +8,7 @@ export const checkoutRouter = createTRPCRouter({
   createCheckout: protectedProcedure.mutation(async ({ ctx }) => {
     const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       typescript: true,
-      apiVersion: "2024-09-30.acacia",
+      apiVersion: "2024-10-28.acacia",
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -40,7 +40,7 @@ export const checkoutRouter = createTRPCRouter({
 
     const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       typescript: true,
-      apiVersion: "2024-09-30.acacia",
+      apiVersion: "2024-10-28.acacia",
     });
 
     const subscriptionId = await ctx.db.user.findUnique({
