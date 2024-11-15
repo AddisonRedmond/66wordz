@@ -11,7 +11,7 @@ export const config = {
 };
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-09-30.acacia",
+  apiVersion: "2024-10-28.acacia",
 });
 
 async function getRawBody(readable: Readable): Promise<Buffer> {
