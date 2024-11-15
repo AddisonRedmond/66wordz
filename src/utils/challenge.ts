@@ -24,6 +24,8 @@ export const handleGuess = async (
         [`${userId}.matches`]: { ...newMatches },
       });
     } catch (e) {
+      console.error(e);
+      // TODO: create an error logger
       return;
     }
   }

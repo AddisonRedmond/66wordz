@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { onValue, off, DatabaseReference } from "firebase/database";
-import { SurvivalPlayerData } from "~/utils/survival/surivival";
+import { SurvivalPlayerData } from "~/utils/surivival";
 
 // todo: add word expiration timer
 
@@ -30,7 +30,6 @@ const useSurvialData = (db: DatabaseReference) => {
     const unsubscribe = onValue(playersQuery, handlePlayersDataChange);
 
     return () => {
-      console.log("Listener removed")
       off(playersQuery, "value", handlePlayersDataChange);
       unsubscribe();
     };

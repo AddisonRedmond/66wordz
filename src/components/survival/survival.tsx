@@ -7,7 +7,7 @@ import {
   handleCorrectGuess,
   handleIncorrectGuess,
   SurvivalPlayerObject,
-} from "~/utils/survival/surivival";
+} from "~/utils/surivival";
 import GuessContainer from "../board-components/guess-container";
 import Keyboard from "../board-components/keyboard";
 import { useState } from "react";
@@ -88,15 +88,6 @@ const Survival: React.FC<SurvivalProps> = ({
       setAttackPosition(randomPlayer);
     }
   };
-
-  // const handleExpiredGuessTimer = async () => {
-  //   await handleGuessExpired(
-  //     lobbyRef,
-  //     userId,
-  //     playerData,
-  //     gameData?.lobbyData.round,
-  //   );
-  // };
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();

@@ -12,6 +12,10 @@ export default function Login() {
       <Head>
         <title>66 Wordz</title>
         <meta name="66 wordz" content="Log in screen for 66 wordz" />
+        <meta
+          name="description"
+          content="Compete in a thrilling battle royale word game! Challenge friends or go head-to-head with up to 65 players. Test your word skills and climb the leaderboard in real-time!"
+        />
         <link rel="icon" href="/favicon.png" />
       </Head>
       <div className="flex h-screen flex-col md:flex-row">
@@ -22,12 +26,12 @@ export default function Login() {
         <div className="relative flex h-1/2 flex-col items-center justify-center gap-48 bg-white font-bold md:h-full md:w-1/2">
           <div className="flex items-center gap-10">
             <SignInButton>
-              <button className=" rounded-md border-2 border-[#9462C6] bg-black px-4 text-[4vh] text-white duration-150 ease-in-out hover:bg-zinc-700">
+              <button className="rounded-md border-2 border-[#9462C6] bg-black px-4 text-[4vh] text-white duration-150 ease-in-out hover:bg-zinc-700">
                 SIGN IN
               </button>
             </SignInButton>
           </div>
-          <div className=" absolute bottom-2 flex w-full justify-around text-sm text-zinc-600">
+          <div className="absolute bottom-2 flex w-full justify-around text-sm text-zinc-600">
             <Link className="... w-1/5 truncate" href="terms-of-service">
               Terms of Service
             </Link>
@@ -37,7 +41,7 @@ export default function Login() {
             <Link className="... w-1/5 truncate" href="refund">
               Refund Policy
             </Link>
-            <div className=" w-1/5">
+            <div className="w-1/5">
               <p className="... truncate">
                 Contact:hosanna_golfers_0o@icloud.com
               </p>
@@ -52,7 +56,7 @@ export default function Login() {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
 
-  const user = userId ? await clerkClient().users.getUser(userId) : undefined;
+  const user = userId ? await (await clerkClient()).users.getUser(userId) : undefined;
   if (userId) {
     // send user to index
     return {

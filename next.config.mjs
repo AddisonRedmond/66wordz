@@ -7,6 +7,11 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import("next").NextConfig} */
 const config = {
+  experimental: {
+    turbo: {
+      // ...
+    },
+  },
   reactStrictMode: true,
 
   /**
@@ -19,7 +24,10 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    remotePatterns: [{ hostname: "lh3.googleusercontent.com" }, {hostname: "img.clerk.com"}],
+    remotePatterns: [
+      { hostname: "lh3.googleusercontent.com" },
+      { hostname: "img.clerk.com" },
+    ],
   },
 };
 

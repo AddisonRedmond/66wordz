@@ -144,7 +144,7 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.success`]: false,
           });
 
-          firebaseChallengeData;
+          return firebaseChallengeData;
         } else {
           // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
@@ -222,9 +222,9 @@ export const challengeRouter = createTRPCRouter({
       await challengeRef.update({
         [`winner`]: {
           id: userId,
-          name: firebaseChallenge.players.filter(
+          name: firebaseChallenge.players.find(
             (player) => player.friendId === userId,
-          )[0]?.friendFullName,
+          )?.friendFullName,
         },
         ["gameOver"]: true,
       });

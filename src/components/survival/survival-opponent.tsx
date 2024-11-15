@@ -10,7 +10,7 @@ import bot from "../../../public/bot.svg";
 import {
   SurvivalPlayerData,
   SurvivalPlayerObject,
-} from "~/utils/survival/surivival";
+} from "~/utils/surivival";
 
 type SurvivalOpponentProps = {
   opponents?: SurvivalPlayerData;

@@ -2,10 +2,7 @@ import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
-import {
-  SurvivalPlayerData,
-  findPlayerToAttack,
-} from "~/utils/survival/surivival";
+import { SurvivalPlayerData, findPlayerToAttack } from "~/utils/surivival";
 import { useState } from "react";
 import MobileOpponents from "./mobile-opponents";
 import { AnimatePresence } from "framer-motion";
@@ -107,7 +104,8 @@ const MobileMenu: React.FC<MobileMenuProps> = (props) => {
       <div className="flex h-16 w-full items-center justify-between">
         <div
           onClick={() => {
-            props.setAttackPosition("First"), setIsRandom(false);
+            props.setAttackPosition("First");
+            setIsRandom(false);
           }}
           className=" size-16 text-center"
         >
@@ -125,7 +123,8 @@ const MobileMenu: React.FC<MobileMenuProps> = (props) => {
         </div>
         <div
           onClick={() => {
-            props.setAttackPosition("Last"), setIsRandom(false);
+            props.setAttackPosition("Last");
+            setIsRandom(false);
           }}
           className=" h-16 w-16 text-center"
         >
@@ -143,7 +142,8 @@ const MobileMenu: React.FC<MobileMenuProps> = (props) => {
         </div>
         <div
           onClick={() => {
-            props.handleSetRandom(), setIsRandom(true);
+            props.handleSetRandom();
+            setIsRandom(true);
           }}
           className=" h-16 w-16 text-center"
         >
@@ -168,7 +168,8 @@ const MobileMenu: React.FC<MobileMenuProps> = (props) => {
 
         <div
           onClick={() => {
-            setMobileOpponentsIsOpen(true), setIsRandom(false);
+            setMobileOpponentsIsOpen(true);
+            setIsRandom(false);
           }}
           className={`flex h-16 w-16 items-center ${!isSpecificTarget() && "justify-center rounded-full border-8 border-zinc-700 text-sm font-bold"}`}
         >

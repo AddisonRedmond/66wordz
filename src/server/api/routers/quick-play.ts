@@ -1,32 +1,23 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { z } from "zod";
-import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
-import {
-  createNewSurivivalLobby,
-  joinSurivivalLobby,
-} from "~/utils/survival/surivival";
+import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/surivival";
 
 import {
   createNewEliminationLobby,
   joinEliminationLobby,
 } from "~/utils/elimination";
 import { initAdmin } from "~/utils/firebase-admin";
-import { EliminationLobbyData } from "~/custom-hooks/useEliminationData";
+import { registerLobbyWithServer } from "~/utils/game";
+import { createNewRaceLobby, joinRaceLobby } from "~/utils/race";
+import { z } from "zod";
 
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
     .input(z.object({ gameMode: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // check if player has reached the max number of games for the day
       const gameMode = input.gameMode as GameType;
 
-      // check if user is premium user, if they are, proceed
-
-      // check if player is already part of a game
-
-      const clientGameType = input.gameMode as GameType;
-
+      // check if user is already in a lobby
       const rejoin: {
         userId: string;
         lobbyId: string;
@@ -35,7 +26,6 @@ export const quickPlayRouter = createTRPCRouter({
           userId: ctx.session.userId,
         },
       });
-
       if (rejoin) {
         return await ctx.db.lobby.findUnique({
           where: {
@@ -44,6 +34,7 @@ export const quickPlayRouter = createTRPCRouter({
         });
       }
 
+      // try to find a lobby of the specified gameType that has less than 67 real players and that hasn't started
       const findLobby = async () => {
         const lobby: { id: string; started: boolean }[] = await ctx.db
           .$queryRaw`
@@ -61,8 +52,9 @@ export const quickPlayRouter = createTRPCRouter({
 
       const db = initAdmin().database();
 
+      // create lobby in postgres and fb realtime db, and registers the lobby with function
+      // that runs the lobby
       const createNewLobby = async () => {
-        // create the new lobby in the database
         const clientGameType = input.gameMode as GameType;
         const newLobby: { id: string } = await ctx.db.lobby.create({
           data: {
@@ -71,45 +63,30 @@ export const quickPlayRouter = createTRPCRouter({
         });
         //   create the new lobby in firebase realtime db
 
+        let lobbyData;
         switch (clientGameType) {
           case "SURVIVAL":
-            // TODO: add logic to function to make sure a lobby is created successfully, before registering it
-            const lobbyData = createNewSurivivalLobby();
-            await db.ref(`/${gameMode}`).child(newLobby.id).set(lobbyData);
-            try {
-              fetch(
-                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
-                {
-                  method: "POST",
-                  body: JSON.stringify({ lobbyId: newLobby.id }),
-                },
-              );
-            } catch (e) {
-              // todo handle lobby register error
-            }
+            lobbyData = createNewSurivivalLobby();
             break;
-
           case "ELIMINATION":
-            const eliminationLobbyData: EliminationLobbyData =
-              createNewEliminationLobby();
-            await db
-              .ref(`/${gameMode}`)
-              .child(newLobby.id)
-              .set({ lobbyData: eliminationLobbyData });
-            try {
-              fetch(
-                `${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`,
-                {
-                  method: "POST",
-                  body: JSON.stringify({ lobbyId: newLobby.id }),
-                },
-              );
-            } catch (e) {
-              // todo handle lobby register error
-            }
+            lobbyData = createNewEliminationLobby();
+            break;
+          case "RACE":
+            lobbyData = createNewRaceLobby();
+            break;
         }
-
-        return newLobby;
+        return db
+          .ref(`/${gameMode}`)
+          .child(newLobby.id)
+          .set({ lobbyData })
+          .then(() => {
+            registerLobbyWithServer(gameMode, newLobby.id);
+            return newLobby.id;
+          })
+          .catch((error: Error) => {
+            //TODO: do something with the error
+            console.log(error);
+          });
       };
 
       const joinLobby = async (lobbyId: string) => {
@@ -128,38 +105,46 @@ export const quickPlayRouter = createTRPCRouter({
             },
           });
 
-        switch (clientGameType) {
+        let newPlayer;
+        switch (gameMode) {
           case "SURVIVAL":
-            const newSurvivalPlayer = joinSurivivalLobby(user.id, user?.name);
-            db.ref(`/${gameMode}/${lobbyId}/players`).update(newSurvivalPlayer);
+            newPlayer = joinSurivivalLobby(user.id, user?.name);
             break;
           case "ELIMINATION":
-            const newPlayer = joinEliminationLobby(user.id, user?.name);
-            db.ref(`/${gameMode}/${lobbyId}/players`).update(newPlayer);
+            newPlayer = joinEliminationLobby(user.id, user?.name);
+            break;
+          case "RACE":
+            newPlayer = joinRaceLobby(user.id, user?.name);
             break;
         }
-
-        const playerCount = await ctx.db.players.count({
-          where: {
-            lobbyId: player.lobbyId,
-          },
-        });
-
-        if (playerCount >= 67) {
-          await ctx.db.lobby.update({
-            where: {
-              id: player.lobbyId,
-            },
-            data: {
-              started: true,
-            },
-          });
+        if (!newPlayer) {
+          return;
         }
-        return await ctx.db.lobby.findUnique({
-          where: {
-            id: player.lobbyId,
-          },
-        });
+        db.ref(`/${gameMode}/${lobbyId}/players`)
+          .update({ ...newPlayer })
+          .then(async () => {
+            const playerCount = await ctx.db.players.count({
+              where: {
+                lobbyId: player.lobbyId,
+              },
+            });
+
+            if (playerCount >= 67) {
+              await ctx.db.lobby.update({
+                where: {
+                  id: player.lobbyId,
+                },
+                data: {
+                  started: true,
+                },
+              });
+            }
+            return await ctx.db.lobby.findUnique({
+              where: {
+                id: player.lobbyId,
+              },
+            });
+          });
       };
 
       return findLobby()
@@ -168,16 +153,14 @@ export const quickPlayRouter = createTRPCRouter({
             return joinLobby(lobby.id);
           } else {
             const newLobby = await createNewLobby();
-            return await joinLobby(newLobby.id);
+            if (newLobby) {
+              return await joinLobby(newLobby);
+            }
           }
         })
         .catch((error) => {
           console.error("Error finding lobby:", error);
         });
-
-      // if there is one already add the user template to the firebase lobby
-
-      // if there is NOT create a new row in the DB and add the user to template to the firebase lobby
     }),
 
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
