@@ -19,7 +19,7 @@ import crown from "~/../public/crown.png";
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
-  // const lobby = api.createGame.getLobby.useQuery();
+  const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
