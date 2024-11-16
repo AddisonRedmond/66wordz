@@ -12,18 +12,17 @@ import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import Race from "~/components/race/race";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
+  // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
-  const lobby = api.createGame.getLobby.useQuery();
+  // const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const joinLobby = api.createGame.joinLobby.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
-  const queryClient = useQueryClient();
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -38,54 +37,55 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
     // TODO: Add a do you want to rejoin previous game message
     // TODO: Add detection for stale lobby
     await quickPlay.mutateAsync({ gameMode: gameMode });
-    lobby.refetch();
+    // lobby.refetch();
   };
 
   const exitMatch: () => void = async () => {
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
-    queryClient.removeQueries(lobby);
+    quickPlay.reset()
+    // queryClient.removeQueries(lobby);
     // delete user from lobby db
     // delete user from firebase db
   };
 
   const handleStartGame = () => {
-    if (lobby.data) {
-      switch (lobby.data.gameType) {
+    if (quickPlay.data) {
+      switch (quickPlay.data.gameType) {
         case "ELIMINATION":
           return (
             <Elimination
-              lobbyId={lobby.data.id}
+              lobbyId={quickPlay.data.id}
               userId={userId}
-              gameType={lobby.data.gameType}
+              gameType={quickPlay.data.gameType}
             />
           );
         case "RACE":
           return (
             <Race
-              lobbyId={lobby.data.id}
+              lobbyId={quickPlay.data.id}
               userId={userId}
-              gameType={lobby.data.gameType}
+              gameType={quickPlay.data.gameType}
             />
           );
       }
     }
   };
-  useEffect(() => {
-    const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-    };
+  // useEffect(() => {
+  //   const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+  //     event.preventDefault();
+  //   };
 
-    if (lobby.data?.id) {
-      window.addEventListener("beforeunload", beforeUnloadHandler);
-    } else {
-      window.removeEventListener("beforeunload", beforeUnloadHandler);
-    }
+  //   if (lobby.data?.id) {
+  //     window.addEventListener("beforeunload", beforeUnloadHandler);
+  //   } else {
+  //     window.removeEventListener("beforeunload", beforeUnloadHandler);
+  //   }
 
-    return () => {
-      window.removeEventListener("beforeunload", beforeUnloadHandler);
-    };
-  }, [lobby]);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", beforeUnloadHandler);
+  //   };
+  // }, [lobby]);
   return (
     <div className="flex flex-grow flex-col">
       {quitGame && (
@@ -115,14 +115,12 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
-          isLoading={
-            lobby.isLoading || quickPlay.isPending || joinLobby.isPending
-          }
-          desktopOnly={!!lobby.data?.id}
+          isLoading={quickPlay.isPending || joinLobby.isPending}
+          desktopOnly={!!quickPlay.data?.id}
         />
 
         <AnimatePresence>
-          {lobby.data?.id ? (
+          {quickPlay.data?.id ? (
             handleStartGame()
           ) : (
             <div className="w flex flex-grow flex-wrap items-center justify-center gap-3">
@@ -149,10 +147,10 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
         </AnimatePresence>
       </div>
       <footer className="m-auto pb-4">
-        {lobby.data && (
+        {quickPlay.data && (
           <button
             onClick={() => setQuitGame(true)}
-            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block"
           >
             LEAVE
           </button>
