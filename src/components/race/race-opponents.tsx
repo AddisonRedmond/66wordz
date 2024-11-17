@@ -9,7 +9,14 @@ type RaceOpponentsProps = {
 
 const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
   if (!props.opponentIds?.length) {
-    return <p>Waiting for other players</p>;
+    return (
+      <p
+        style={{ maxWidth: "33%" }}
+        className="flex w-1/4 flex-grow flex-wrap items-center justify-evenly px-2"
+      >
+        Waiting for other players
+      </p>
+    );
   }
 
   const opponentSizePercentage =
