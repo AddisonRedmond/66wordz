@@ -17,6 +17,7 @@ import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
 import toast, { Toaster } from "react-hot-toast";
 import RejoinGame from "~/components/survival/rejoin-game";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
@@ -24,6 +25,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
+  const isMobile = useIsMobile();
 
   const rejoinGame = () => {
     toast.dismiss();
@@ -165,6 +167,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
                 quickPlay={handleQuickPlay}
                 handleUpgrade={handleUpgrade}
                 desc="Try to keep up with others to make it to the end"
+                disabled={isMobile}
               />
             </div>
           )}

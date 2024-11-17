@@ -136,6 +136,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   }, [gameData]);
 
   // TODO: Add final round logic and notification
+
   if (gameData) {
     return (
       <div className="flex w-full flex-grow justify-center">
