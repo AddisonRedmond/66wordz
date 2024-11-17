@@ -8,26 +8,40 @@ type GameCardV2Props = {
   quickPlay: (gameMode: GameType) => void;
   handleUpgrade: () => void;
   desc: string;
+  disabled?: boolean;
 };
 
 const GameCardV2: React.FC<GameCardV2Props> = (props) => {
   return (
-    <div className=" bg-card text-card-foreground prose flex h-60 w-1/4  flex-col rounded-lg border-2 border-zinc-200 px-6 py-5 shadow-sm">
+    <div
+      style={props.disabled ? { opacity: "50%" } : {}}
+      className="bg-card text-card-foreground prose flex h-60 w-1/4 min-w-64 flex-col rounded-lg border-2 border-zinc-200 px-6 py-5 shadow-sm"
+    >
       <Image
         className="m-0"
         src={props.image}
         alt={`image for ${props.gameType} game`}
         width={20}
       />
-      <div className="flex justify-between w-full flex-col space-y-1.5 flex-grow">
+      <div className="flex w-full flex-grow flex-col justify-between space-y-1.5">
         <div>
           <h3 className="mb-0">{props.gameType}</h3>
           <p className="hidden text-sm text-gray-500 sm:block">{props.desc}</p>
         </div>
 
+        {props.disabled && (
+          <div>
+            <p>Desktop only for now</p>
+          </div>
+        )}
+
         <button
-          onClick={() => props.quickPlay(props.gameType)}
-          className=" w-full rounded-md bg-zinc-900 py-2 font-semibold text-white duration-150 ease-in-out hover:bg-zinc-700"
+          onClick={() => {
+            if (!props.disabled) {
+              props.quickPlay(props.gameType);
+            }
+          }}
+          className="w-full rounded-md bg-zinc-900 py-2 font-semibold text-white duration-150 ease-in-out hover:bg-zinc-700"
         >
           Play
         </button>

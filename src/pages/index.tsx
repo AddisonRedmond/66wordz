@@ -12,18 +12,43 @@ import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 import Race from "~/components/race/race";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
+import toast, { Toaster } from "react-hot-toast";
+import RejoinGame from "~/components/survival/rejoin-game";
+import { useIsMobile } from "~/custom-hooks/useIsMobile";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
+  // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
-  const joinLobby = api.createGame.joinLobby.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
-  const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
+
+  const rejoinGame = () => {
+    toast.dismiss();
+    quickPlay.mutate({ lobbyId: lobby.data?.id });
+  };
+
+  const declineRejoinGame = () => {
+    exitMatch();
+    toast.dismiss();
+  };
+  useEffect(() => {
+    if (lobby.data && !quickPlay.data) {
+      toast(<RejoinGame rejoin={rejoinGame} decline={declineRejoinGame} />, {
+        duration: Infinity,
+        id: "rejoin", // Ensure the toast ID is specified to avoid duplicates
+        position: "bottom-right",
+      });
+    }
+    // Cleanup: Optionally dismiss the toast when the component unmounts or dependencies change
+    return () => {
+      toast.dismiss("rejoin");
+    };
+  }, [lobby.data]); // Add necessary dependencies
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -34,38 +59,39 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   };
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
-  const handleQuickPlay = async (gameMode: GameType) => {
+  const handleQuickPlay = (gameMode: GameType) => {
     // TODO: Add a do you want to rejoin previous game message
     // TODO: Add detection for stale lobby
-    await quickPlay.mutateAsync({ gameMode: gameMode });
-    lobby.refetch();
+    toast.dismiss();
+    quickPlay.mutate({ gameMode: gameMode });
   };
 
   const exitMatch: () => void = async () => {
+    quickPlay.reset();
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
-    queryClient.removeQueries(lobby);
+    // queryClient.removeQueries(lobby);
     // delete user from lobby db
     // delete user from firebase db
   };
 
   const handleStartGame = () => {
-    if (lobby.data) {
-      switch (lobby.data.gameType) {
+    if (quickPlay.data) {
+      switch (quickPlay.data.gameType) {
         case "ELIMINATION":
           return (
             <Elimination
-              lobbyId={lobby.data.id}
+              lobbyId={quickPlay.data.id}
               userId={userId}
-              gameType={lobby.data.gameType}
+              gameType={quickPlay.data.gameType}
             />
           );
         case "RACE":
           return (
             <Race
-              lobbyId={lobby.data.id}
+              lobbyId={quickPlay.data.id}
               userId={userId}
-              gameType={lobby.data.gameType}
+              gameType={quickPlay.data.gameType}
             />
           );
       }
@@ -76,7 +102,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       event.preventDefault();
     };
 
-    if (lobby.data?.id) {
+    if (quickPlay.data?.id) {
       window.addEventListener("beforeunload", beforeUnloadHandler);
     } else {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
@@ -85,7 +111,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
     return () => {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
     };
-  }, [lobby]);
+  }, [quickPlay]);
   return (
     <div className="flex flex-grow flex-col">
       {quitGame && (
@@ -115,14 +141,12 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
-          isLoading={
-            lobby.isLoading || quickPlay.isPending || joinLobby.isPending
-          }
-          desktopOnly={!!lobby.data?.id}
+          isLoading={quickPlay.isPending}
+          desktopOnly={!!quickPlay.data?.id}
         />
 
         <AnimatePresence>
-          {lobby.data?.id ? (
+          {quickPlay.data?.id ? (
             handleStartGame()
           ) : (
             <div className="w flex flex-grow flex-wrap items-center justify-center gap-3">
@@ -142,22 +166,24 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
                 fullAccess={true}
                 quickPlay={handleQuickPlay}
                 handleUpgrade={handleUpgrade}
-                desc="Guess words fast"
+                desc="Try to keep up with others to make it to the end"
+                disabled={isMobile}
               />
             </div>
           )}
         </AnimatePresence>
       </div>
       <footer className="m-auto pb-4">
-        {lobby.data && (
+        {quickPlay.data && (
           <button
             onClick={() => setQuitGame(true)}
-            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block "
+            className="w-fit rounded-md bg-zinc-800 p-2 font-semibold text-white transition hover:bg-zinc-700 sm:right-72 sm:top-2 sm:block"
           >
             LEAVE
           </button>
         )}
       </footer>
+      <Toaster />
     </div>
   );
 };

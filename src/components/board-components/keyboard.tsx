@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Delete from "../../../public/Delete.svg";
 import { m } from "framer-motion";
+import { Matches } from "~/utils/game";
 type KeyboardProps = {
   disabled: boolean;
-  matches?: { full: string[]; partial: string[]; none: string[] } | null;
+  matches: Matches;
   handleKeyBoardLogic: (letter: string) => void;
 };
 
@@ -16,7 +17,7 @@ const KeyboardRow = ({
 }: {
   letters: string;
   specialKey?: JSX.Element;
-  matches?: { full: string[]; partial: string[]; none: string[] } | null;
+  matches: Matches;
   disabled: boolean;
   handleKeyBoardLogic: (letter: string) => void;
 }) => {
@@ -42,7 +43,7 @@ const KeyboardRow = ({
               color: handleColors(letter) === "#545B77" ? "#FFFFFF" : "#000000",
             }}
             style={{ width: "10%" }}
-            className={` flex h-full max-w-12 sm:aspect-square sm:h-auto ${
+            className={`flex h-full max-w-12 sm:aspect-square sm:h-auto ${
               disabled ? "cursor-not-allowed" : "cursor-pointer"
             } items-center justify-center rounded-md font-bold sm:border-none`}
             key={letter}
@@ -79,7 +80,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           specialKey={
             <button
               onClick={() => props.handleKeyBoardLogic("Backspace")}
-              className={`hidden aspect-square items-center  justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
+              className={`hidden aspect-square items-center justify-center rounded-md bg-neutral-200 font-bold sm:visible sm:flex sm:w-10`}
             >
               <Image
                 className={`${
@@ -103,7 +104,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
               onClick={() => props.handleKeyBoardLogic("Enter")}
               className={`${
                 props.disabled ? "cursor-not-allowed" : "cursor-pointer"
-              }  hidden cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold sm:visible sm:flex`}
+              } hidden cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold sm:visible sm:flex`}
             >
               ENTER
             </button>
@@ -113,13 +114,13 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
       <div className="sm:invisibile visible mt-3 flex w-full justify-around text-center text-lg font-semibold">
         <button
           onClick={() => props.handleKeyBoardLogic("Enter")}
-          className="h-12 w-1/3 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
+          className="h-12 w-1/3 rounded-md border-2 border-neutral-700 text-center sm:hidden"
         >
           Enter
         </button>
         <button
           onClick={() => props.handleKeyBoardLogic("Backspace")}
-          className="h-12 w-1/3 rounded-md  border-2 border-neutral-700 text-center sm:hidden"
+          className="h-12 w-1/3 rounded-md border-2 border-neutral-700 text-center sm:hidden"
         >
           Delete
         </button>

@@ -12,7 +12,7 @@ import {
 } from "~/utils/race";
 import GuessContainer from "../board-components/guess-container";
 import WordContainer from "../board-components/word-container";
-import Keyboard from "../keyboard";
+import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useEffect, useState } from "react";
 import { checkSpelling } from "~/utils/spellCheck";
@@ -38,7 +38,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
     sortedPlayers: [""],
   });
   const [guess, setGuess] = useState("");
-  const playerData = gameData?.players[userId];
+  const playerData = gameData?.players?.[userId];
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -111,9 +111,12 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
 
   const getHalf = (isEven: boolean) => {
     // this should run if there are players in the db
-    return Object.keys(gameData!.players).filter(
+    if (!gameData?.players) {
+      return;
+    }
+    return Object.keys(gameData.players).filter(
       (id: string, index: number) => {
-        const player = gameData!.players[id];
+        const player = gameData.players[id];
         return (
           id !== userId && // Exclude the user's ID
           player && // Ensure player exists
@@ -133,16 +136,16 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   }, [gameData]);
 
   // TODO: Add final round logic and notification
+
   if (gameData) {
     return (
       <div className="flex w-full flex-grow justify-center">
+        <RaceOpponents
+          opponents={gameData.players}
+          opponentIds={getHalf(true)}
+        />
         {gameData.lobbyData.gameStarted ? (
           <>
-            {/* opponesnts left */}
-            <RaceOpponents
-              opponents={gameData.players}
-              opponentIds={getHalf(true)}
-            />
             {/* main content */}
             <div className="flex w-11/12 min-w-80 flex-col items-center justify-center gap-y-3 sm:w-1/4 sm:gap-y-8">
               {/* make the info portion into its own component */}
@@ -181,11 +184,6 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                 )}
               </div>
             </div>
-
-            <RaceOpponents
-              opponents={gameData.players}
-              opponentIds={getHalf(false)}
-            />
           </>
         ) : (
           <CountDownTimer
@@ -193,6 +191,10 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
             timerTitle="Game Starting In"
           />
         )}
+        <RaceOpponents
+          opponents={gameData.players}
+          opponentIds={getHalf(false)}
+        />
       </div>
     );
   }

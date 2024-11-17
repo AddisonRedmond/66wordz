@@ -23,8 +23,6 @@ const GameInfo: React.FC<GameInfoProps> = ({
     restart(new Date(roundTimer));
   }, [roundTimer]);
 
-  console.log(props.placement >= props.numberOfPlayersToEliminate)
-
   return (
     <div className="full flex h-16 min-w-60 items-center">
       <div

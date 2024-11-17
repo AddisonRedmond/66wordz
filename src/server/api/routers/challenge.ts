@@ -1,20 +1,19 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { initAdmin } from "~/utils/firebase-admin";
-
 import { arraysContainSameElements, handleGetNewWord } from "~/utils/game";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
     .input(z.array(z.object({ friendRecordId: z.string(), name: z.string() })))
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.userId },
-      });
+      const userId = ctx.auth.userId as string;
 
-      if (!user) return null;
-
+      const user = await (
+        await clerkClient()
+      ).users.getUser(ctx.auth.userId as string);
       const db = initAdmin().firestore();
 
       const ids = input.map((id) => {
@@ -36,7 +35,7 @@ export const challengeRouter = createTRPCRouter({
         return challengee.friendId;
       });
 
-      challengeeIds.push(user.id);
+      challengeeIds.push(userId);
 
       const challengeRef = db
         .collection("challenges")
@@ -57,16 +56,16 @@ export const challengeRouter = createTRPCRouter({
         }
       }
 
-      ids.push(user.id);
+      ids.push(userId);
 
       await db.collection("challenges").add({
         timeStamp: new Date().getTime(),
         players: [
           ...challengees,
-          { friendFullName: user.name, friendId: user.id },
+          { friendFullName: user?.fullName, friendId: userId },
         ],
         ids: challengeeIds,
-        creator: user.id,
+        creator: userId,
         word: handleGetNewWord(),
         gameOver: false,
       });
@@ -76,7 +75,7 @@ export const challengeRouter = createTRPCRouter({
     .input(z.object({ challengeId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // create a firebase document with an id of the challenge id
-      const userId = ctx.session.userId;
+      const userId = ctx.auth.userId as string;
       //   look up the challenge
       const db = initAdmin().firestore();
       const challengeRef = db.doc(`challenges/${input.challengeId}`);
@@ -119,23 +118,14 @@ export const challengeRouter = createTRPCRouter({
   giveUp: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      // get the challenge id
-      const userId = ctx.session.userId;
-      //   look up the challenge
+      const userId = ctx.auth.userId as string;
       const db = initAdmin().firestore();
-
       const challengeRef = db.doc(`challenges/${input}`);
 
       const firebaseChallengeData = (
         await challengeRef.get()
       ).data() as ChallengeData;
-      // check to make sure document exists and that user is part of the document
 
-      // if both exist add a start time time stamp to user
-
-      // return the document id
-
-      // run check for winner logic
       if (firebaseChallengeData.ids.includes(userId)) {
         // check if user is in the doc
         if (firebaseChallengeData?.[userId]) {
@@ -143,10 +133,9 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.completed`]: false,
             [`${userId}.success`]: false,
           });
-
+          // TODO if everyone gives up, then the challenge doesnt get cleared
           return firebaseChallengeData;
         } else {
-          // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
             (id) => id !== userId,
           );
@@ -164,9 +153,6 @@ export const challengeRouter = createTRPCRouter({
             });
           }
         }
-        // if they do, set completed and succsess to false
-
-        // if they dont have a ts then delete them out of the doc
       }
     }),
 
@@ -249,7 +235,7 @@ export const challengeRouter = createTRPCRouter({
       const db = initAdmin().firestore();
 
       const challengeRef = db.doc(`challenges/${input.challengeId}`);
-      const userId = ctx.session.userId;
+      const userId = ctx.auth.userId;
       await challengeRef.update({
         [`${userId}.guesses`]: input.guesses,
         [`${userId}.completed`]: input.completed,

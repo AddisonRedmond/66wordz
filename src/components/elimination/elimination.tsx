@@ -48,7 +48,7 @@ const Elimination: React.FC<EliminationProps> = ({
   };
 
   const playerData: EliminationPlayerObject | undefined =
-    gameData?.players[userId];
+    gameData?.players?.[userId];
 
   const [guess, setGuess] = useState("");
 
@@ -83,6 +83,8 @@ const Elimination: React.FC<EliminationProps> = ({
       return;
     } else if (gameData.lobbyData?.winner) {
       console.warn("Somebody already won");
+      return;
+    } else if (gameData.lobbyData.nextRoundStartTime) {
       return;
     }
 
@@ -175,16 +177,17 @@ const Elimination: React.FC<EliminationProps> = ({
             />
           </Modal>
         )}
+        {!isMobile && (
+          <EliminationOpponent
+            pointsGoal={gameData?.lobbyData.totalPoints}
+            opponents={getHalfOfOpponents(true, gameData?.players)}
+            wordLength={playerData?.word.length}
+          />
+        )}
         {gameData?.lobbyData.gameStarted ? (
           <>
             {/* opponets left side */}
-            {!isMobile && (
-              <EliminationOpponent
-                pointsGoal={gameData?.lobbyData.totalPoints}
-                opponents={getHalfOfOpponents(true, gameData?.players)}
-                wordLength={playerData?.word.length}
-              />
-            )}
+
             {/* hidden if game not started || if next round timer hasn't expired*/}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
               <Round
@@ -244,19 +247,20 @@ const Elimination: React.FC<EliminationProps> = ({
                 {gameData.lobbyData.winner === userId && <Winner />}
               </div>
             </div>
-            {!isMobile && (
-              <EliminationOpponent
-                pointsGoal={gameData?.lobbyData.totalPoints}
-                opponents={getHalfOfOpponents(false, gameData?.players)}
-                wordLength={playerData?.word.length}
-              />
-            )}
+
             {/* opponents right side */}
           </>
         ) : (
           <GameStarting
             expiryTimestamp={gameData?.lobbyData.gameStartTime}
             timerTitle="Game Starting In"
+          />
+        )}
+        {!isMobile && (
+          <EliminationOpponent
+            pointsGoal={gameData?.lobbyData.totalPoints}
+            opponents={getHalfOfOpponents(false, gameData?.players)}
+            wordLength={playerData?.word.length}
           />
         )}
       </div>

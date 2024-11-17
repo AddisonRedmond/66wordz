@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
 import Stripe from "stripe";
 
-const url = "https://www.66wordz.com/"
+const url = "https://www.66wordz.com/";
 
 export const checkoutRouter = createTRPCRouter({
   createCheckout: protectedProcedure.mutation(async ({ ctx }) => {
@@ -15,7 +15,7 @@ export const checkoutRouter = createTRPCRouter({
       payment_method_types: ["card", "us_bank_account"],
       mode: "subscription",
       metadata: {
-        userId: ctx.session.userId,
+        userId: ctx.auth.userId,
       },
       line_items: [
         {
@@ -31,8 +31,9 @@ export const checkoutRouter = createTRPCRouter({
     return session.id;
   }),
   cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.auth.userId as string;
     const user = await ctx.db.user.findUnique({
-      where: { id: ctx.session.userId },
+      where: { id: userId },
     });
     if (user?.cancelAtPeriodEnd === null || user?.cancelAtPeriodEnd === true) {
       return;
@@ -44,7 +45,7 @@ export const checkoutRouter = createTRPCRouter({
     });
 
     const subscriptionId = await ctx.db.user.findUnique({
-      where: { id: ctx.session.userId },
+      where: { id: userId },
     });
 
     if (!subscriptionId?.subscriptionId) {
@@ -55,14 +56,14 @@ export const checkoutRouter = createTRPCRouter({
       subscriptionId?.subscriptionId,
       {
         metadata: {
-          userId: ctx.session.userId,
+          userId: userId,
         },
         cancel_at_period_end: true,
       },
     );
 
     await ctx.db.user.update({
-      where: { id: ctx.session.userId },
+      where: { id: userId },
       data: { cancelAtPeriodEnd: true },
     });
 
