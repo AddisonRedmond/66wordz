@@ -64,7 +64,6 @@ export const friendsRouter = createTRPCRouter({
 
   allRequests: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.auth.userId as string;
-    // Fetch the user and the pending requests in parallel
     return await ctx.db.requests.findMany({
       where: { friendId: userId, accepted: false },
     });

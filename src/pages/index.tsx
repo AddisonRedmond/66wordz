@@ -19,9 +19,8 @@ import crown from "~/../public/crown.png";
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
-  const lobby = api.createGame.getLobby.useQuery();
+  // const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
-  const joinLobby = api.createGame.joinLobby.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
 
   const handleUpgrade = async () => {
@@ -43,7 +42,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const exitMatch: () => void = async () => {
     await lobbyCleanUp.mutateAsync();
     setQuitGame(false);
-    quickPlay.reset()
+    quickPlay.reset();
     // queryClient.removeQueries(lobby);
     // delete user from lobby db
     // delete user from firebase db
@@ -71,21 +70,21 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       }
     }
   };
-  // useEffect(() => {
-  //   const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
-  //     event.preventDefault();
-  //   };
+  useEffect(() => {
+    const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
 
-  //   if (lobby.data?.id) {
-  //     window.addEventListener("beforeunload", beforeUnloadHandler);
-  //   } else {
-  //     window.removeEventListener("beforeunload", beforeUnloadHandler);
-  //   }
+    if (quickPlay.data?.id) {
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+    } else {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    }
 
-  //   return () => {
-  //     window.removeEventListener("beforeunload", beforeUnloadHandler);
-  //   };
-  // }, [lobby]);
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
+  }, [quickPlay]);
   return (
     <div className="flex flex-grow flex-col">
       {quitGame && (
@@ -115,7 +114,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header
-          isLoading={quickPlay.isPending || joinLobby.isPending}
+          isLoading={quickPlay.isPending}
           desktopOnly={!!quickPlay.data?.id}
         />
 
