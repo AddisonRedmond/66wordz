@@ -16,6 +16,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
 import toast, { Toaster } from "react-hot-toast";
+import RejoinGame from "~/components/survival/rejoin-game";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
@@ -24,14 +25,28 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
 
+  const rejoinGame = () => {
+    toast.dismiss();
+    quickPlay.mutate({ lobbyId: lobby.data?.id });
+  };
+
+  const declineRejoinGame = () => {
+    exitMatch();
+    toast.dismiss();
+  };
   useEffect(() => {
-    // if (lobby.data) {
-      console.log("Reconnect");
-      toast.loading("Rejoin lobby?", {
+    if (lobby.data && !quickPlay.data) {
+      toast(<RejoinGame rejoin={rejoinGame} decline={declineRejoinGame} />, {
+        duration: Infinity,
+        id: "rejoin", // Ensure the toast ID is specified to avoid duplicates
         position: "bottom-right",
       });
-    // }
-  }, []);
+    }
+    // Cleanup: Optionally dismiss the toast when the component unmounts or dependencies change
+    return () => {
+      toast.dismiss("rejoin");
+    };
+  }, [lobby.data]); // Add necessary dependencies
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -42,11 +57,11 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   };
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
-  const handleQuickPlay = async (gameMode: GameType) => {
+  const handleQuickPlay = (gameMode: GameType) => {
     // TODO: Add a do you want to rejoin previous game message
     // TODO: Add detection for stale lobby
-    await quickPlay.mutateAsync({ gameMode: gameMode });
-    // lobby.refetch();
+    toast.dismiss();
+    quickPlay.mutate({ gameMode: gameMode });
   };
 
   const exitMatch: () => void = async () => {

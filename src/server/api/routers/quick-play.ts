@@ -13,11 +13,25 @@ import { z } from "zod";
 
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
-    .input(z.object({ gameMode: z.string() }))
+    .input(
+      z.object({
+        gameMode: z.string().optional(),
+        lobbyId: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const gameMode = input.gameMode as GameType;
+      const lobbyId = input.lobbyId;
       const db = initAdmin().database();
       const userId = ctx.auth.userId as string;
+
+      if (!lobbyId && !gameMode) {
+        return;
+      }
+
+      if (lobbyId) {
+        return ctx.db.lobby.findUnique({ where: { id: lobbyId } });
+      }
 
       const findLobby = async (): Promise<Lobby | null> => {
         const lobbies = await ctx.db.lobby.findMany({
@@ -35,7 +49,7 @@ export const quickPlayRouter = createTRPCRouter({
 
         const eligibleLobby = lobbies.find((lobby) => lobby.player.length < 67);
 
-        return eligibleLobby || null;
+        return eligibleLobby ?? null;
       };
 
       // create lobby in postgres and fb realtime db, and registers the lobby with function

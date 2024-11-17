@@ -12,7 +12,7 @@ import {
 } from "~/utils/race";
 import GuessContainer from "../board-components/guess-container";
 import WordContainer from "../board-components/word-container";
-import Keyboard from "../keyboard";
+import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useEffect, useState } from "react";
 import { checkSpelling } from "~/utils/spellCheck";
@@ -176,7 +176,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                       disabled={!gameData.lobbyData.gameStarted}
                       handleKeyBoardLogic={handleKeyUp}
                       matches={playerData?.matches}
-                    />
+                      />
                   </>
                 )}
               </div>
