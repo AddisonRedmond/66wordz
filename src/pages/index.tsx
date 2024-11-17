@@ -164,7 +164,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
                 fullAccess={true}
                 quickPlay={handleQuickPlay}
                 handleUpgrade={handleUpgrade}
-                desc="Guess words fast"
+                desc="Try to keep up with others to make it to the end"
               />
             </div>
           )}

@@ -6,7 +6,6 @@ type RejoinGameProps = {
 const RejoinGame: React.FC<RejoinGameProps> = ({
   rejoin,
   decline,
-  ...props
 }) => {
   return (
     <div className="flex max-w-56 flex-col gap-2">

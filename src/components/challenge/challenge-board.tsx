@@ -1,6 +1,6 @@
 import { m } from "framer-motion";
 import GuessGrid from "./guess-grid";
-import Keyboard from "../keyboard";
+import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useGetChallengeData from "~/custom-hooks/useGetChallengeData";
