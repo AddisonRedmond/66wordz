@@ -3,7 +3,7 @@ import { z } from "zod";
 import { initAdmin } from "~/utils/firebase-admin";
 import { arraysContainSameElements, handleGetNewWord } from "~/utils/game";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
-import { currentUser } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export const challengeRouter = createTRPCRouter({
   requestChallenge: protectedProcedure
@@ -11,7 +11,9 @@ export const challengeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.auth.userId as string;
 
-      const user = await currentUser();
+      const user = await (
+        await clerkClient()
+      ).users.getUser(ctx.auth.userId as string);
       const db = initAdmin().firestore();
 
       const ids = input.map((id) => {
@@ -116,23 +118,14 @@ export const challengeRouter = createTRPCRouter({
   giveUp: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
-      // get the challenge id
       const userId = ctx.auth.userId as string;
-      //   look up the challenge
       const db = initAdmin().firestore();
-
       const challengeRef = db.doc(`challenges/${input}`);
 
       const firebaseChallengeData = (
         await challengeRef.get()
       ).data() as ChallengeData;
-      // check to make sure document exists and that user is part of the document
 
-      // if both exist add a start time time stamp to user
-
-      // return the document id
-
-      // run check for winner logic
       if (firebaseChallengeData.ids.includes(userId)) {
         // check if user is in the doc
         if (firebaseChallengeData?.[userId]) {
@@ -140,10 +133,9 @@ export const challengeRouter = createTRPCRouter({
             [`${userId}.completed`]: false,
             [`${userId}.success`]: false,
           });
-
+          // TODO if everyone gives up, then the challenge doesnt get cleared
           return firebaseChallengeData;
         } else {
-          // const updatedPlayerIds =
           const updatedIds = firebaseChallengeData.ids.filter(
             (id) => id !== userId,
           );
@@ -161,9 +153,6 @@ export const challengeRouter = createTRPCRouter({
             });
           }
         }
-        // if they do, set completed and succsess to false
-
-        // if they dont have a ts then delete them out of the doc
       }
     }),
 

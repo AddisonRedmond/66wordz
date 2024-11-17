@@ -146,11 +146,14 @@ const ChallengeBoard: React.FC<ChallengeBoardProps> = (props) => {
               setSpellCheck={setSpellCheck}
               spellCheck={spellCheck}
             />
-            <Keyboard
-              disabled={false}
-              handleKeyBoardLogic={handleKeyBoardLogic}
-              matches={data?.[props.userId ?? ""]?.matches}
-            />
+            <div className="w-full">
+              <Keyboard
+                disabled={false}
+                handleKeyBoardLogic={handleKeyBoardLogic}
+                matches={data?.[props.userId ?? ""]?.matches}
+              />
+            </div>
+
             {!data?.[props.userId]?.completed && (
               <button
                 onClick={() => {
