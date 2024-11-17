@@ -1,9 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { initAdmin } from "~/utils/firebase-admin";
 
-const MAX_PLAYERS = 67;
-
-export const createLobbyRouter = createTRPCRouter({
+export const lobbyRouter = createTRPCRouter({
   getLobby: protectedProcedure.query(async ({ ctx }) => {
     const existingGame = await ctx.db.players.findUnique({
       where: { userId: ctx.auth.userId as string },

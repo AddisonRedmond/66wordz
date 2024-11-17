@@ -17,6 +17,7 @@ export const quickPlayRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const gameMode = input.gameMode as GameType;
       const db = initAdmin().database();
+      const userId = ctx.auth.userId as string;
 
       const findLobby = async (): Promise<Lobby | null> => {
         const lobbies = await ctx.db.lobby.findMany({
@@ -77,9 +78,6 @@ export const quickPlayRouter = createTRPCRouter({
         const user = await (
           await clerkClient()
         ).users.getUser(ctx.auth.userId as string);
-        const userId = ctx.auth.userId;
-
-        if (!userId) return;
 
         let newPlayer;
         switch (gameMode) {

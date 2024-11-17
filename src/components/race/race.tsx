@@ -38,7 +38,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
     sortedPlayers: [""],
   });
   const [guess, setGuess] = useState("");
-  const playerData = gameData?.players[userId];
+  const playerData = gameData?.players?.[userId];
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();

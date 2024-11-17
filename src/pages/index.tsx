@@ -15,13 +15,23 @@ import Race from "~/components/race/race";
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import crown from "~/../public/crown.png";
+import toast, { Toaster } from "react-hot-toast";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
-  // const lobby = api.createGame.getLobby.useQuery();
+  const lobby = api.createGame.getLobby.useQuery();
   const lobbyCleanUp = api.quickPlay.lobbyCleanUp.useMutation();
   const upgrade = api.upgrade.createCheckout.useMutation();
+
+  useEffect(() => {
+    // if (lobby.data) {
+      console.log("Reconnect");
+      toast.loading("Rejoin lobby?", {
+        position: "bottom-right",
+      });
+    // }
+  }, []);
 
   const handleUpgrade = async () => {
     const checkoutURL = await upgrade.mutateAsync();
@@ -155,6 +165,7 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
           </button>
         )}
       </footer>
+      <Toaster />
     </div>
   );
 };
