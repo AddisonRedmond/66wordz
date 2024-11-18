@@ -66,9 +66,9 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
     quickPlay.mutate({ gameMode: gameMode });
   };
 
-  const exitMatch: () => void = async () => {
+  const exitMatch = () => {
     quickPlay.reset();
-    await lobbyCleanUp.mutateAsync();
+    lobbyCleanUp.mutate();
     setQuitGame(false);
     // queryClient.removeQueries(lobby);
     // delete user from lobby db

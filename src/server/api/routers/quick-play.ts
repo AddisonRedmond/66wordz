@@ -110,7 +110,7 @@ export const quickPlayRouter = createTRPCRouter({
           data: { userId: userId, lobbyId: lobbyId },
         });
 
-        void db.ref(`/${gameMode}/${lobbyId}/players`).update({
+        await db.ref(`/${gameMode}/${lobbyId}/players`).update({
           ...newPlayer,
         });
 
@@ -144,14 +144,17 @@ export const quickPlayRouter = createTRPCRouter({
     }),
 
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
-    const user = ctx.auth.userId as string;
+    if (!ctx.auth?.userId) {
+      throw new Error("User is not authenticated");
+    }
+    const userId = ctx.auth.userId;
 
     const deletedPlayer = await ctx.db.players.delete({
-      where: { userId: user },
+      where: { userId: userId },
       select: { lobbyId: true },
     });
 
-    const lobbyId = deletedPlayer.lobbyId;
+    const { lobbyId } = deletedPlayer;
 
     const [lobby, playerCount] = await Promise.all([
       ctx.db.lobby.findUnique({ where: { id: lobbyId } }),
