@@ -131,12 +131,10 @@ export const quickPlayRouter = createTRPCRouter({
         const lobby = await findLobby();
         if (lobby) {
           void joinLobby(lobby.id);
-          console.log(lobby);
           return lobby;
         } else {
           const newLobby = await createNewLobby();
           void joinLobby(newLobby.id);
-          console.log(lobby);
           return newLobby; // Return the lobby ID for a new lobby
         }
       } catch (error) {
@@ -146,10 +144,10 @@ export const quickPlayRouter = createTRPCRouter({
     }),
 
   lobbyCleanUp: protectedProcedure.mutation(async ({ ctx }) => {
-    const user = ctx.auth.userId;
+    const user = ctx.auth.userId as string;
 
     const deletedPlayer = await ctx.db.players.delete({
-      where: { userId: user ?? undefined },
+      where: { userId: user },
       select: { lobbyId: true },
     });
 
