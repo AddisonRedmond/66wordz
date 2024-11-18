@@ -110,7 +110,7 @@ export const quickPlayRouter = createTRPCRouter({
           data: { userId: userId, lobbyId: lobbyId },
         });
 
-        await db.ref(`/${gameMode}/${lobbyId}/players`).update({
+        void db.ref(`/${gameMode}/${lobbyId}/players`).update({
           ...newPlayer,
         });
 
@@ -130,11 +130,11 @@ export const quickPlayRouter = createTRPCRouter({
       try {
         const lobby = await findLobby();
         if (lobby) {
-          void joinLobby(lobby.id);
+          await joinLobby(lobby.id);
           return lobby;
         } else {
           const newLobby = await createNewLobby();
-          void joinLobby(newLobby.id);
+          await joinLobby(newLobby.id);
           return newLobby; // Return the lobby ID for a new lobby
         }
       } catch (error) {
