@@ -26,8 +26,6 @@ model User {
     losses        Int       @default(0)
     gamesPlayed   Int       @default(0)
     Players       Players[]
-    issues        Issues[]
-    lobbyOwner    Lobby?    @relation(fields: [lobbyId], references: [id])
     lobbyId       String?
 
     challenge Challenge[]
@@ -62,36 +60,16 @@ model Lobby {
     started  Boolean   @default(false)
     player   Players[]
     gameType GameType
-    bot      Boolean   @default(false)
-    passkey  String?
-    name     String?
-    User     User[]
 }
 
 model Players {
-    userId    String  @unique
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    lobbyId   String
-    lobby     Lobby   @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-    qualified Boolean @default(false)
+    id String @id @default(cuid())
+    userId  String @unique
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    lobbyId String
+    lobby   Lobby  @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
 
     @@index([lobbyId])
-}
-
-enum IssueType {
-    MARATHON
-    ELIMINATION
-    OTHER
-}
-
-model Issues {
-    id          String    @id @default(cuid())
-    createdById String
-    createdBy   User      @relation(fields: [createdById], references: [id])
-    issueType   IssueType
-    summary     String
-
-    @@index([createdById])
 }
 
 model Requests {
