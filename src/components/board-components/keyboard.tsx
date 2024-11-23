@@ -3,8 +3,8 @@ import Delete from "../../../public/Delete.svg";
 import { m } from "framer-motion";
 import { Matches } from "~/utils/game";
 type KeyboardProps = {
-  disabled: boolean;
-  matches: Matches;
+  disabled?: boolean;
+  matches?: Matches;
   handleKeyBoardLogic: (letter: string) => void;
 };
 
@@ -57,7 +57,10 @@ const KeyboardRow = ({
   );
 };
 
-const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
+const Keyboard: React.FC<KeyboardProps> = ({
+  disabled = true,
+  ...props
+}: KeyboardProps) => {
   const topRow = "QWERTYUIOP";
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
@@ -68,7 +71,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
           letters={topRow}
-          disabled={props.disabled}
+          disabled={disabled}
         />
       </div>
       <div className="flex h-1/3 w-full justify-center gap-1">
@@ -76,7 +79,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
           letters={middleRow}
-          disabled={props.disabled}
+          disabled={disabled}
           specialKey={
             <button
               onClick={() => props.handleKeyBoardLogic("Backspace")}
@@ -84,7 +87,7 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
             >
               <Image
                 className={`${
-                  props.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                  disabled ? "cursor-not-allowed" : "cursor-pointer"
                 } `}
                 src={Delete}
                 alt="Delete svg"
@@ -98,12 +101,12 @@ const Keyboard: React.FC<KeyboardProps> = (props: KeyboardProps) => {
           handleKeyBoardLogic={props.handleKeyBoardLogic}
           matches={props.matches}
           letters={bottomRow}
-          disabled={props.disabled}
+          disabled={disabled}
           specialKey={
             <button
               onClick={() => props.handleKeyBoardLogic("Enter")}
               className={`${
-                props.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                disabled ? "cursor-not-allowed" : "cursor-pointer"
               } hidden cursor-pointer items-center justify-center rounded-md bg-neutral-200 px-1 font-bold sm:visible sm:flex`}
             >
               ENTER

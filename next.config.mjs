@@ -27,6 +27,7 @@ const config = {
     remotePatterns: [
       { hostname: "lh3.googleusercontent.com" },
       { hostname: "img.clerk.com" },
+      {hostname: "utfs.io/f/e8LGKadgGfdIEbAOC484OC5cU3GY6ZanoMtWuLQwsKVTzFJr"}
     ],
   },
 };

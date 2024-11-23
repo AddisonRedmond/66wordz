@@ -10,6 +10,7 @@ import { initAdmin } from "~/utils/firebase-admin";
 import { registerLobbyWithServer } from "~/utils/game";
 import { createNewRaceLobby, joinRaceLobby } from "~/utils/race";
 import { z } from "zod";
+import { joinMarathonLobby, marathonLobbyData } from "~/utils/marathon";
 
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
@@ -20,6 +21,7 @@ export const quickPlayRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // might need to put in a limiter so someone cant just make like 1000 lobbies with cURL
       const gameMode = input.gameMode as GameType;
       const lobbyId = input.lobbyId;
       const db = initAdmin().database();
@@ -74,6 +76,9 @@ export const quickPlayRouter = createTRPCRouter({
           case "RACE":
             lobbyData = createNewRaceLobby();
             break;
+          case "MARATHON":
+            lobbyData = marathonLobbyData;
+            break;
         }
         await db
           .ref(`/${gameMode}/${newLobby.id}`)
@@ -103,6 +108,9 @@ export const quickPlayRouter = createTRPCRouter({
             break;
           case "RACE":
             newPlayer = joinRaceLobby(userId, user?.fullName);
+            break;
+          case "MARATHON":
+            newPlayer = joinMarathonLobby(userId, user?.fullName);
             break;
         }
         if (!newPlayer) return;
