@@ -22,6 +22,10 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
 
   // if playerData is undefined and game started is true, error boundary
 
+  if(gameData?.lobbyData.gameStarted && !playerData || !gameData){
+    return <div>Something weird happened. Leave and try again</div>
+  }
+
   return (
     <div className="flex h-full w-full justify-evenly">
       <OpponentsContainer>
