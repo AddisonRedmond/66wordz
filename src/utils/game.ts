@@ -9,6 +9,7 @@ export interface DefaultPlayerData {
   word: string;
   matches: Matches;
   revealIndex?: number[];
+  eliminated: boolean;
 }
 
 export interface DefaultLobbyData {

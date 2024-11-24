@@ -12,7 +12,6 @@ export interface MarathonLobbyData extends DefaultLobbyData {
 export interface MarathonPlayerData extends DefaultPlayerData {
   lifeTimer?: number;
   correctGuessCount: number;
-  board: string[];
 }
 
 export type MarathonGameData = {
@@ -33,7 +32,7 @@ export const joinMarathonLobby = (userId: string, fullName: string | null) => {
       word: handleGetNewWord(),
       matches: { full: [], partial: [], none: [] },
       correctGuessCount: 0,
-      board: [],
+      eliminated: false,
     },
   };
 
