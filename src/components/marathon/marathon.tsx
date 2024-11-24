@@ -6,10 +6,8 @@ import { MarathonGameData, MarathonPlayerData } from "~/utils/marathon";
 import Keyboard from "../board-components/keyboard";
 import WordContainer from "../board-components/word-container";
 import GuessContainer from "../board-components/guess-container";
-import OpponentsContainer from "../board-components/opponents-container";
 import LifeTimer from "./life-timer";
 import MarathonOpponents from "./marathon-opponents";
-import Eliminated from "../board-components/eliminated";
 
 type MarathonProps = {
   lobbyId: string;
@@ -42,11 +40,12 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
     return fakeOpponent;
   };
 
+  console.log(playerData);
   return (
     <div className="flex h-full w-full justify-evenly">
       <MarathonOpponents opponents={getHalfOfOpponents()} />
       <div className="flex h-full w-1/4 flex-col justify-center gap-4">
-        <LifeTimer endTime={playerData?.lifeTimer} />
+        {playerData?.lifeTimer && <LifeTimer endTime={playerData?.lifeTimer} />}
         <WordContainer word={playerData?.word} />
         <GuessContainer />
         <Keyboard

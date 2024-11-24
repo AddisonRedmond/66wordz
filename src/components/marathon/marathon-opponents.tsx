@@ -18,7 +18,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
     <OpponentsContainer>
       {Object.entries(opponents).map(([id, data]) => {
         return (
-          <div>
+          <div key={id}>
             <p>{id}</p>
             {JSON.stringify(data)}
           </div>
