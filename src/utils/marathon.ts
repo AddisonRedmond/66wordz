@@ -38,3 +38,7 @@ export const joinMarathonLobby = (userId: string, fullName: string | null) => {
 
   return playerData;
 };
+
+export const handleCorrectMarathonGuess = () => {};
+
+export const handleIncorrectMarathonGuess = () => {};

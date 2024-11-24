@@ -18,7 +18,11 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
     <OpponentsContainer>
       {Object.entries(opponents).map(([id, data]) => {
         return (
-          <div key={id}>
+          <div
+            className="rounded-md border-2"
+            style={{ width: `${opponentSizePercentage}%`, maxWidth: "450px"}}
+            key={id}
+          >
             <p>{id}</p>
             {JSON.stringify(data)}
           </div>
