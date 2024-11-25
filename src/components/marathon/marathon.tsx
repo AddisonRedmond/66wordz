@@ -63,10 +63,15 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
         }
         if (guess === playerData.word) {
           // get current placement
-          handleCorrectMarathonGuess();
+          handleCorrectMarathonGuess(
+            lobbyRef,
+            userId,
+            playerData,
+            gameData.lobbyData.round,
+          );
         } else {
           // handle incorrect guess
-          handleIncorrectMarathonGuess();
+          handleIncorrectMarathonGuess(lobbyRef, userId, playerData, guess);
         }
         setGuess("");
       }
@@ -90,7 +95,7 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
           handleLetter(key);
         }
         break;
-    } 
+    }
   };
 
   useOnKeyUp(handleKeyUp, [guess, gameData]);
@@ -110,6 +115,7 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
         matches: { full: [], partial: [], none: [] },
         word: "CLEAR",
         initials: "ALR",
+        incorrectGuessCount: 0,
       },
     };
     return fakeOpponent;
