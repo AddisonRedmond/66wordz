@@ -31,7 +31,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
                 width: `${opponentSizePercentage}%`,
               }}
               key={id}
-              className="flex flex-col gap-1 max-w-96 rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out"
+              className="flex flex-col gap-1 max-w-96  rounded-md border-2 border-zinc-300 p-2 duration-150 ease-in-out"
             >
               <OpponentHeader
                 initials={data.initials}
