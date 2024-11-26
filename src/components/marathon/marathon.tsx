@@ -111,11 +111,13 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
     const fakeOpponent: Record<string, MarathonPlayerData> = {
       player1: {
         eliminated: false,
-        correctGuessCount: 0,
+        correctGuessCount: 9,
         matches: { full: [], partial: [], none: [] },
         word: "CLEAR",
         initials: "ALR",
         incorrectGuessCount: 0,
+        revealIndex: [1, 0],
+        lifeTimer: new Date().getTime() + 60000,
       },
     };
     return fakeOpponent;

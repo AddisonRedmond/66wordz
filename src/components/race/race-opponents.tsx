@@ -31,7 +31,6 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
     <RaceOpponentsContainer>
       <AnimatePresence>
         {props.opponentIds.map((id) => {
-          // Destructuring as an array
           return (
             <m.div
               initial={{ scale: 0 }}
@@ -42,10 +41,6 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
               }}
               key={id}
             >
-              {/* <p className="ml-2 w-fit rounded-t-md bg-zinc-700 px-2 py-1 text-xs font-semibold text-white">
-                {props.opponents?.[id]?.initials ?? "N/A"}
-              </p> */}
-
               <div className="rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out">
                 <div className="flex justify-between text-sm">
                   <p className="font-bold">

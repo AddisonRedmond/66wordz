@@ -5,9 +5,7 @@ import {
   getInitials,
   handleGetNewWord,
   handleMatched,
-  Matches,
 } from "./game";
-import words from "./words";
 
 export interface MarathonLobbyData extends DefaultLobbyData {
   round: number;
