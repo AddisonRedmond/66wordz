@@ -6,10 +6,13 @@ import OpponentWord from "../board-components/opponent-word";
 import LifeTimer from "./life-timer";
 
 type MarathonOpponentsProps = {
-  opponents: Record<string, MarathonPlayerData>;
+  opponents?: Record<string, MarathonPlayerData>;
 };
 
 const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
+  if (!opponents) {
+    return;
+  }
   const opponentSizePercentage =
     90 /
     Math.sqrt(
@@ -31,7 +34,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
                 width: `${opponentSizePercentage}%`,
               }}
               key={id}
-              className="flex flex-col gap-1 max-w-96 rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out"
+              className="flex max-w-96 flex-col gap-1 rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out"
             >
               <OpponentHeader
                 initials={data.initials}

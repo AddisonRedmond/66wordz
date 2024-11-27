@@ -1,6 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { GameType, Lobby } from "@prisma/client";
-import { createNewSurivivalLobby, joinSurivivalLobby } from "~/utils/surivival";
 import { clerkClient } from "@clerk/nextjs/server";
 import {
   createNewEliminationLobby,
@@ -10,7 +9,7 @@ import { initAdmin } from "~/utils/firebase-admin";
 import { registerLobbyWithServer } from "~/utils/game";
 import { createNewRaceLobby, joinRaceLobby } from "~/utils/race";
 import { z } from "zod";
-import { joinMarathonLobby, marathonLobbyData } from "~/utils/marathon";
+import { createNewMarathonLobby, joinMarathonLobby } from "~/utils/marathon";
 
 export const quickPlayRouter = createTRPCRouter({
   quickPlay: protectedProcedure
@@ -67,9 +66,6 @@ export const quickPlayRouter = createTRPCRouter({
 
         let lobbyData;
         switch (clientGameType) {
-          case "SURVIVAL":
-            lobbyData = createNewSurivivalLobby();
-            break;
           case "ELIMINATION":
             lobbyData = createNewEliminationLobby();
             break;
@@ -77,9 +73,10 @@ export const quickPlayRouter = createTRPCRouter({
             lobbyData = createNewRaceLobby();
             break;
           case "MARATHON":
-            lobbyData = marathonLobbyData;
+            lobbyData = createNewMarathonLobby();
             break;
         }
+
         await db
           .ref(`/${gameMode}/${newLobby.id}`)
           .set({ lobbyData })
@@ -88,7 +85,12 @@ export const quickPlayRouter = createTRPCRouter({
             throw error;
           });
 
-        registerLobbyWithServer(gameMode, newLobby.id);
+        //
+        registerLobbyWithServer(
+          gameMode,
+          newLobby.id,
+          lobbyData?.gameStartTime,
+        );
         return newLobby;
       };
 
@@ -100,9 +102,6 @@ export const quickPlayRouter = createTRPCRouter({
 
         let newPlayer;
         switch (gameMode) {
-          case "SURVIVAL":
-            newPlayer = joinSurivivalLobby(userId, user?.fullName);
-            break;
           case "ELIMINATION":
             newPlayer = joinEliminationLobby(userId, user?.fullName);
             break;

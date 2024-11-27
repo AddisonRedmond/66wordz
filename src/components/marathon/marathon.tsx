@@ -16,6 +16,7 @@ import MarathonOpponents from "./marathon-opponents";
 import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { checkSpelling } from "~/utils/spellCheck";
+import CountDownTimer from "../board-components/countdown-timer";
 
 type MarathonProps = {
   lobbyId: string;
@@ -107,36 +108,53 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
     return <div>Something weird happened. I would leave and try again</div>;
   }
 
-  const getHalfOfOpponents = () => {
-    const fakeOpponent: Record<string, MarathonPlayerData> = {
-      player1: {
-        eliminated: false,
-        correctGuessCount: 9,
-        matches: { full: [], partial: [], none: [] },
-        word: "CLEAR",
-        initials: "ALR",
-        incorrectGuessCount: 0,
-        revealIndex: [1, 0],
-        lifeTimer: new Date().getTime() + 60000,
-      },
-    };
-    return fakeOpponent;
+  const getHalf = (isEven: boolean) => {
+    // this should run if there are players in the db
+    if (!gameData?.players) {
+      return;
+    }
+    const players: Record<string, MarathonPlayerData> = {};
+    Object.keys(gameData.players).forEach((id: string, index: number) => {
+      const player = gameData.players?.[id];
+      if (
+        id !== userId &&
+        player &&
+        !player.eliminated &&
+        (isEven ? index % 2 === 0 : index % 2 !== 0)
+      ) {
+        players[id] = {
+          ...player,
+        };
+      }
+    });
+
+    return players;
   };
 
   return (
     <div className="flex h-full w-full justify-evenly">
-      <MarathonOpponents opponents={getHalfOfOpponents()} />
-      <div className="flex h-full w-1/4 flex-col justify-center gap-4">
-        {playerData?.lifeTimer && <LifeTimer endTime={playerData?.lifeTimer} />}
-        <WordContainer word={playerData?.word} />
-        <GuessContainer word={guess} wordLength={5} />
-        <Keyboard
-          matches={playerData?.matches}
-          handleKeyBoardLogic={handleKeyUp}
-          disabled={!gameData.lobbyData.gameStarted}
+      <MarathonOpponents opponents={getHalf(true)} />
+      {gameData.lobbyData.gameStarted ? (
+        <div className="flex h-full w-1/4 flex-col justify-center gap-4">
+          {playerData?.lifeTimer && (
+            <LifeTimer endTime={playerData?.lifeTimer} />
+          )}
+          <WordContainer word={playerData?.word} />
+          <GuessContainer word={guess} wordLength={5} />
+          <Keyboard
+            matches={playerData?.matches}
+            handleKeyBoardLogic={handleKeyUp}
+            disabled={!gameData.lobbyData.gameStarted}
+          />
+        </div>
+      ) : (
+        <CountDownTimer
+          expiryTimestamp={gameData?.lobbyData.gameStartTime}
+          timerTitle="Game Starting In"
         />
-      </div>
-      <MarathonOpponents opponents={getHalfOfOpponents()} />
+      )}
+
+      <MarathonOpponents opponents={getHalf(false)} />
     </div>
   );
 };

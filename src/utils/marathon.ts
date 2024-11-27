@@ -22,10 +22,12 @@ export type MarathonGameData = {
   players: Record<string, MarathonPlayerData>;
 };
 
-export const marathonLobbyData: MarathonLobbyData = {
-  gameStarted: false,
-  gameStartTime: new Date().getTime() + 30000,
-  round: 1,
+export const createNewMarathonLobby = () => {
+  return {
+    gameStarted: false,
+    gameStartTime: new Date().getTime() + 30000,
+    round: 1,
+  };
 };
 
 export const joinMarathonLobby = (userId: string, fullName: string | null) => {
