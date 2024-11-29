@@ -7,9 +7,13 @@ import LifeTimer from "./life-timer";
 
 type MarathonOpponentsProps = {
   opponents?: Record<string, MarathonPlayerData>;
+  lifeTimers: Record<string, number>;
 };
 
-const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
+const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({
+  opponents,
+  lifeTimers,
+}) => {
   if (!opponents) {
     return;
   }
@@ -40,7 +44,9 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({ opponents }) => {
                 initials={data.initials}
                 correctGuessCount={data.correctGuessCount}
               />
-              {data.lifeTimer && <LifeTimer endTime={data.lifeTimer} />}
+              {lifeTimers?.[id] && (
+                <LifeTimer small={true} endTime={lifeTimers[id]} />
+              )}
               <OpponentWord
                 revealIndex={data.revealIndex}
                 uniqueKey={id}

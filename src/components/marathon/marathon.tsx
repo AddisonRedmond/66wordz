@@ -68,6 +68,7 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
             lobbyRef,
             userId,
             playerData,
+            gameData.timers[userId]!,
             gameData.lobbyData.round,
           );
         } else {
@@ -133,13 +134,19 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
 
   return (
     <div className="flex h-full w-full justify-evenly">
-      <MarathonOpponents opponents={getHalf(true)} />
+      <MarathonOpponents
+        opponents={getHalf(true)}
+        lifeTimers={gameData.timers}
+      />
       {gameData.lobbyData.gameStarted ? (
         <div className="flex h-full w-1/4 flex-col justify-center gap-4">
-          {playerData?.lifeTimer && (
-            <LifeTimer endTime={playerData?.lifeTimer} />
+          {gameData.timers[userId] && (
+            <LifeTimer endTime={gameData.timers[userId]} />
           )}
-          <WordContainer word={playerData?.word} />
+          <WordContainer
+            word={playerData?.word}
+            match={playerData?.revealIndex}
+          />
           <GuessContainer word={guess} wordLength={5} />
           <Keyboard
             matches={playerData?.matches}
@@ -154,7 +161,10 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
         />
       )}
 
-      <MarathonOpponents opponents={getHalf(false)} />
+      <MarathonOpponents
+        opponents={getHalf(false)}
+        lifeTimers={gameData.timers}
+      />
     </div>
   );
 };

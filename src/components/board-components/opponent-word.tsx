@@ -12,7 +12,7 @@ const OpponentWord: React.FC<OpponentWordProps> = ({
   ...props
 }) => {
   return (
-    <div className="mt-2 flex justify-between">
+    <div className="mt-1 flex justify-between">
       {word.split("").map((letter, index) => {
         return (
           <div

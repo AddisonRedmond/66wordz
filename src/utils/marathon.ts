@@ -3,6 +3,7 @@ import {
   DefaultLobbyData,
   DefaultPlayerData,
   getInitials,
+  getRevealIndex,
   handleGetNewWord,
   handleMatched,
 } from "./game";
@@ -12,7 +13,6 @@ export interface MarathonLobbyData extends DefaultLobbyData {
 }
 
 export interface MarathonPlayerData extends DefaultPlayerData {
-  lifeTimer?: number;
   correctGuessCount: number;
   incorrectGuessCount: number;
 }
@@ -20,6 +20,7 @@ export interface MarathonPlayerData extends DefaultPlayerData {
 export type MarathonGameData = {
   lobbyData: MarathonLobbyData;
   players: Record<string, MarathonPlayerData>;
+  timers: Record<string, number>;
 };
 
 export const createNewMarathonLobby = () => {
@@ -47,19 +48,16 @@ export const joinMarathonLobby = (userId: string, fullName: string | null) => {
 
 const lifeTimerIndex = [30, 25, 20, 15, 10, 5];
 
-const mutateCorrectGuessData = (
-  userData: MarathonPlayerData,
-  round: number,
-) => {
-  const lifeTime = lifeTimerIndex[round] ?? 15;
+const mutateCorrectGuessData = (userData: MarathonPlayerData) => {
   return {
     ...userData,
     correctGuessCount: userData.correctGuessCount + 1,
     // TODO: set a max time. Math.min(being 3 mins probably)
     incorrectGuessCount: 0,
-    lifeTimer: userData.lifeTimer + lifeTime,
+    // TODO: remove and handle non null assertion
     matches: null,
     word: handleGetNewWord(),
+    revealIndex: null,
   };
 };
 
@@ -69,10 +67,10 @@ const mutateIncorrectGuessData = (
 ) => {
   return {
     ...userData,
-    // TODO: set a max time. Math.min(being 3 mins probably)
+    // TODO: set a max time. Math.min(being 3 mins or 180 seconds probably)
     incorrectGuessCount: userData.incorrectGuessCount + 1,
     matches: handleMatched(guess, userData.word, userData.matches),
-    word: handleGetNewWord(),
+    revealIndex: getRevealIndex(userData.word, guess, userData?.revealIndex),
   };
 };
 
@@ -80,11 +78,15 @@ export const handleCorrectMarathonGuess = async (
   lobbyRef: DatabaseReference,
   userId: string,
   userData: MarathonPlayerData,
+  userTimer: number,
   round: number,
 ) => {
   const userPath = child(lobbyRef, `/players/${userId}`);
+  const timerPath = child(lobbyRef, `/timers/`);
+  const lifeTime = lifeTimerIndex[round] ?? 15;
 
-  await update(userPath, mutateCorrectGuessData(userData, round));
+  void update(timerPath, { [userId]: userTimer + lifeTime });
+  void update(userPath, mutateCorrectGuessData(userData));
 };
 
 export const handleIncorrectMarathonGuess = async (
