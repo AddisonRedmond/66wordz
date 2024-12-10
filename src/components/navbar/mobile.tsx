@@ -1,6 +1,5 @@
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import burger from "../../../public/burger.svg";
 import profile from "../../../public/profile.png";
 import signout from "../../../public/signout.svg";
 import home from "../../../public/home.png";
@@ -8,6 +7,7 @@ import home from "../../../public/home.png";
 import friends from "../../../public/friends.png";
 
 import Link from "next/link";
+import CustomImage from "../custom-image";
 type MobileNavbarProps = {
   menuIsOpen: boolean;
   setMenuIsOpen: (isOpen: boolean) => void;
@@ -18,6 +18,8 @@ type MobileNavbarProps = {
 const MobileNavbar: React.FC<MobileNavbarProps> = (
   props: MobileNavbarProps,
 ) => {
+  const burger =
+    "https://utfs.io/f/e8LGKadgGfdISHzA1tBL1A7qyKpf45WPivbGZs2ItcuQgrmR";
   return (
     <m.div
       initial={{ opacity: 0 }}
@@ -28,7 +30,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
       <AnimatePresence>
         {props.menuIsOpen && (
           <m.div
-            transition={{ duration: 0.20, type: "just" }}
+            transition={{ duration: 0.2, type: "just" }}
             initial={{ opacity: 1, y: "-100vh" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 1, y: "-100vh" }}
@@ -129,7 +131,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
             )}
           </div>
 
-          <Image
+          <CustomImage
             onClick={() => props.setMenuIsOpen(true)}
             src={burger}
             alt="burger menu icon"

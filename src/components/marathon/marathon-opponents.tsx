@@ -20,7 +20,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({
   const opponentSizePercentage =
     90 /
     Math.sqrt(
-      Object.entries(opponents).filter(([id, data]) => {
+      Object.values(opponents).filter((data) => {
         return !data.eliminated;
       }).length,
     );
@@ -38,7 +38,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({
                 width: `${opponentSizePercentage}%`,
               }}
               key={id}
-              className="flex max-w-96 flex-col gap-1 rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out"
+              className="flex max-w-96 flex-col gap-1 rounded-md p-1 shadow-md outline outline-1 outline-zinc-200 duration-150 ease-in-out"
             >
               <OpponentHeader
                 initials={data.initials}

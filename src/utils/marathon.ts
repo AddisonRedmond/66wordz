@@ -10,6 +10,7 @@ import {
 
 export interface MarathonLobbyData extends DefaultLobbyData {
   round: number;
+  isSuddenDeath?: boolean;
 }
 
 export interface MarathonPlayerData extends DefaultPlayerData {
@@ -46,7 +47,7 @@ export const joinMarathonLobby = (userId: string, fullName: string | null) => {
   return playerData;
 };
 
-const lifeTimerIndex = [30, 25, 20, 15, 10, 5];
+export const lifeTimerIndex = [30, 25, 20, 15, 10, 5];
 
 const mutateCorrectGuessData = (userData: MarathonPlayerData) => {
   return {
@@ -65,13 +66,23 @@ const mutateIncorrectGuessData = (
   userData: MarathonPlayerData,
   guess: string,
 ) => {
-  return {
-    ...userData,
-    // TODO: set a max time. Math.min(being 3 mins or 180 seconds probably)
-    incorrectGuessCount: userData.incorrectGuessCount + 1,
-    matches: handleMatched(guess, userData.word, userData.matches),
-    revealIndex: getRevealIndex(userData.word, guess, userData?.revealIndex),
-  };
+  if (userData.incorrectGuessCount >= 6) {
+    // reset matches and get a new word
+    return {
+      ...userData,
+      incorrectGuessCount: 0,
+      matches: null,
+      revealIndex: null,
+      word: handleGetNewWord(),
+    };
+  } else {
+    return {
+      ...userData,
+      incorrectGuessCount: userData.incorrectGuessCount + 1,
+      matches: handleMatched(guess, userData.word, userData.matches),
+      revealIndex: getRevealIndex(userData.word, guess, userData?.revealIndex),
+    };
+  }
 };
 
 export const handleCorrectMarathonGuess = async (
@@ -81,11 +92,14 @@ export const handleCorrectMarathonGuess = async (
   userTimer: number,
   round: number,
 ) => {
+  const now = new Date().getTime();
   const userPath = child(lobbyRef, `/players/${userId}`);
   const timerPath = child(lobbyRef, `/timers/`);
-  const lifeTime = lifeTimerIndex[round] ?? 15;
+  const lifeTime = lifeTimerIndex[round - 1] ?? 15;
 
-  void update(timerPath, { [userId]: userTimer + lifeTime });
+  void update(timerPath, {
+    [userId]: Math.min(now + 180 * 1000, userTimer + lifeTime * 1000),
+  });
   void update(userPath, mutateCorrectGuessData(userData));
 };
 

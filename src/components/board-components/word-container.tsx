@@ -15,7 +15,7 @@ const WordContainer: React.FC<WordContainerProps> = ({
   if (word) {
     return (
       <div
-        className={`flex h-16 w-full flex-row items-center justify-center gap-1 rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
+        className={`shadow-md flex h-16 w-full flex-row items-center justify-center gap-1 rounded-md bg-stone-300 px-2  py-1 duration-150 ease-in-out`}
       >
         {word.split("").map((letter: string, index: number) => {
           return (

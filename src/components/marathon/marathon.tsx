@@ -5,18 +5,20 @@ import { db } from "~/utils/firebase/firebase";
 import {
   handleCorrectMarathonGuess,
   handleIncorrectMarathonGuess,
+  lifeTimerIndex,
   MarathonGameData,
   MarathonPlayerData,
 } from "~/utils/marathon";
 import Keyboard from "../board-components/keyboard";
 import WordContainer from "../board-components/word-container";
 import GuessContainer from "../board-components/guess-container";
-import LifeTimer from "./life-timer";
 import MarathonOpponents from "./marathon-opponents";
 import { useState } from "react";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { checkSpelling } from "~/utils/spellCheck";
 import CountDownTimer from "../board-components/countdown-timer";
+import MarathonGameInfo from "./marathon-game-info";
+import Winner from "../board-components/winner";
 
 type MarathonProps = {
   lobbyId: string;
@@ -140,9 +142,15 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
       />
       {gameData.lobbyData.gameStarted ? (
         <div className="flex h-full w-1/4 flex-col justify-center gap-4">
-          {gameData.timers[userId] && (
-            <LifeTimer endTime={gameData.timers[userId]} />
+          {gameData.lobbyData.winner === userId && <Winner />}
+          {gameData.timers[userId] && !gameData.lobbyData.winner && (
+            <MarathonGameInfo
+              additionalTime={lifeTimerIndex[gameData.lobbyData.round - 1]}
+              remainingGuesses={6 - (playerData?.incorrectGuessCount ?? 0)}
+              endTime={gameData.timers[userId]}
+            />
           )}
+
           <WordContainer
             word={playerData?.word}
             match={playerData?.revealIndex}
