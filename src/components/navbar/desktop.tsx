@@ -14,7 +14,8 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (props) => {
           <p>66</p>
         </Link>
       </div>
-      <div className="relative flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
+      <div className="
+      relative flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         <Link href="/">
           <button className="rounded-md p-1 text-sm duration-150 ease-in-out hover:bg-gray-500">
             Home

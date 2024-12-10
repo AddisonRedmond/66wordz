@@ -9,7 +9,6 @@ import {
   getRevealIndex,
 } from "./game";
 export interface RacePlayerData extends DefaultPlayerData {
-  eliminated: boolean;
   correctGuesses: number;
   totalGuesses: number;
 }

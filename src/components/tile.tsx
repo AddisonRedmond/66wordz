@@ -57,7 +57,7 @@ const Tile: React.FC<TileProps> = (props: TileProps) => {
         return (
           <div
             key={tileIndex}
-            className={`flex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-bold  ${
+            className={`vcflex aspect-square w-[7vh] flex-col items-center overflow-hidden rounded-md text-[6vh] font-bold  ${
               props.bg ? props.bg : "bg-[#9462C6]"
             } ${props.textColor ? props.textColor : "text-white"} `}
           >

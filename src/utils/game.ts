@@ -7,8 +7,9 @@ import { GameType } from "@prisma/client";
 export interface DefaultPlayerData {
   initials: string;
   word: string;
-  matches: Matches;
+  matches?: Matches;
   revealIndex?: number[];
+  eliminated: boolean;
 }
 
 export interface DefaultLobbyData {
@@ -175,10 +176,11 @@ export const getRevealIndex = (
 export const registerLobbyWithServer = (
   gameMode: GameType,
   lobbyId: string,
+  gameStartTime?: number,
 ) => {
   void fetch(`${env.BOT_SERVER}/register_${gameMode.toLowerCase()}_lobby`, {
     method: "POST",
-    body: JSON.stringify({ lobbyId }),
+    body: JSON.stringify({ lobbyId, gameStartTime }),
   });
 };
 

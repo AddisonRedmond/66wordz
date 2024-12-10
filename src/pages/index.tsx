@@ -4,7 +4,6 @@ import Header from "~/components/hearder";
 import React, { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import GameCardV2 from "~/components/game-card-v2";
-import survival from "../../public/survival.png";
 import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
@@ -14,10 +13,10 @@ import Race from "~/components/race/race";
 
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
-import crown from "~/../public/crown.png";
 import toast, { Toaster } from "react-hot-toast";
 import RejoinGame from "~/components/survival/rejoin-game";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import Marathon from "~/components/marathon/marathon";
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
@@ -60,7 +59,6 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
   const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = (gameMode: GameType) => {
-    // TODO: Add a do you want to rejoin previous game message
     // TODO: Add detection for stale lobby
     toast.dismiss();
     quickPlay.mutate({ gameMode: gameMode });
@@ -94,6 +92,14 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
               gameType={quickPlay.data.gameType}
             />
           );
+          case "MARATHON":
+            return (
+              <Marathon
+                lobbyId={quickPlay.data.id}
+                userId={userId}
+                gameType={quickPlay.data.gameType}
+              />
+            );
       }
     }
   };
@@ -154,7 +160,9 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
 
               <GameCardV2
                 gameType="ELIMINATION"
-                image={crown}
+                image={
+                  "https://utfs.io/f/e8LGKadgGfdIPrp16cAFN2LzSnekdTxwXAr56uZhqvJ9jCiQ"
+                }
                 fullAccess={true}
                 quickPlay={handleQuickPlay}
                 handleUpgrade={handleUpgrade}
@@ -162,11 +170,24 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
               />
               <GameCardV2
                 gameType="RACE"
-                image={survival}
+                image={
+                  "https://utfs.io/f/e8LGKadgGfdIwrST4xRkSq6CTb0YOPGdeVulZgx4JU7HmWXL"
+                }
                 fullAccess={true}
                 quickPlay={handleQuickPlay}
                 handleUpgrade={handleUpgrade}
                 desc="Try to keep up with others to make it to the end"
+                disabled={isMobile}
+              />
+              <GameCardV2
+                gameType="MARATHON"
+                image={
+                  "https://utfs.io/f/e8LGKadgGfdIEbAOC484OC5cU3GY6ZanoMtWuLQwsKVTzFJr"
+                }
+                fullAccess={true}
+                quickPlay={handleQuickPlay}
+                handleUpgrade={handleUpgrade}
+                desc="Guess words to outlast the competition"
                 disabled={isMobile}
               />
             </div>
