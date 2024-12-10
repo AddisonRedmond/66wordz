@@ -10,7 +10,13 @@ const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
     <ClerkProvider dynamic {...pageProps}>
       <Head>
         <title>66 Wordz</title>
-        <meta name="66 wordz" content="Log in screen for 66 wordz" />
+        <meta name="66 wordz" content="66wordz the game" />
+        <meta name="description" content="Battle royale word game. Play up to 66 players at a time" />
+        <meta name="keywords" content="Battle royale, brain game, competitive, multiplayer" />
+        <meta name="author" content="Addison Redmond" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
         <link rel="icon" href="/favicon.png" />
       </Head>
       <LazyMotion features={domAnimation}>
