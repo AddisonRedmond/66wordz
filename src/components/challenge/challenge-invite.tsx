@@ -1,6 +1,5 @@
 import { m } from "framer-motion";
 import Image from "next/image";
-import send from "../../../public/send.png";
 import { getInitials } from "~/utils/game";
 type ChallengeInviteProps = {
   players: { friendRecordId: string; name: string }[];
@@ -9,6 +8,8 @@ type ChallengeInviteProps = {
 };
 
 const ChallengeInvite: React.FC<ChallengeInviteProps> = (props) => {
+  const send =
+    "https://utfs.io/f/e8LGKadgGfdIIjmA3diWjqcbmODSYeAwFzRl0iydf8KV4Zou";
   return (
     <m.div
       initial={{ height: 0 }}
@@ -40,7 +41,14 @@ const ChallengeInvite: React.FC<ChallengeInviteProps> = (props) => {
         onClick={() => props.sendChallenge()}
         className="rounded-full bg-zinc-600 p-3 duration-150 ease-in-out hover:bg-zinc-400"
       >
-        <Image alt="Send challenge" src={send} height={25} width={25} />
+        <Image
+          loading="lazy"
+          unoptimized
+          alt="Send challenge"
+          src={send}
+          height={25}
+          width={25}
+        />
       </button>
     </m.div>
   );

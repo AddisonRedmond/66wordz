@@ -13,11 +13,7 @@ const CustomImage: React.FC<CustomImageProps> = ({
   height = 30,
   ...props
 }) => {
-  return (
-    <span className="size-7">
-      <Image width={width} height={height} unoptimized {...props} />
-    </span>
-  );
+  return <Image width={width} height={height} unoptimized {...props} />;
 };
 
 export default CustomImage;

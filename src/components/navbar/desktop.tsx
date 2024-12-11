@@ -1,4 +1,3 @@
-import signout from "../../../public/signout.svg";
 import Image from "next/image";
 import Link from "next/link";
 type DesktopNavbarProps = {
@@ -7,6 +6,8 @@ type DesktopNavbarProps = {
 };
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = (props) => {
+  const signOut =
+    "https://utfs.io/f/e8LGKadgGfdI49znZzmTRywNkmWY9Z3USKtaOiejHrsl8xv1";
   return (
     <div className="sticky top-0 hidden h-14 w-screen items-center justify-between px-8 sm:flex">
       <div className="cursor-pointer text-4xl font-semibold">
@@ -14,8 +15,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (props) => {
           <p>66</p>
         </Link>
       </div>
-      <div className="
-      relative flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
+      <div className="relative flex items-center justify-around gap-8 rounded-full bg-neutral-900 px-5 py-1 font-semibold text-white">
         <Link href="/">
           <button className="rounded-md p-1 text-sm duration-150 ease-in-out hover:bg-gray-500">
             Home
@@ -46,7 +46,14 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (props) => {
           onClick={() => props.handleSignOut()}
           className="rounded-md p-2 font-semibold text-black duration-150 ease-in-out hover:bg-gray-500"
         >
-          <Image src={signout} alt="signout icon" height={25} />
+          <Image
+            loading="lazy"
+            unoptimized
+            src={signOut}
+            alt="signout icon"
+            height={25}
+            width={25}
+          />
         </button>
       </div>
     </div>

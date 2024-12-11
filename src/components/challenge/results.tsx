@@ -1,7 +1,5 @@
 import Image from "next/image";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
-import True from "../../../public/true.png";
-import False from "../../../public/false.png";
 import { m, useAnimation } from "framer-motion";
 import { useEffect } from "react";
 
@@ -10,6 +8,10 @@ type ResultsProps = {
 };
 
 const Results: React.FC<ResultsProps> = (props) => {
+  const failure =
+    "https://utfs.io/f/e8LGKadgGfdI59fxleGI8vZJdPyrXuwn0N1aGE2q6Yh3scoB";
+  const success =
+    "https://utfs.io/f/e8LGKadgGfdI1WN4Nh69TR2r5GS4vk10y3bMH6iJA7XjchVf";
   function calculateDuration(
     start: string,
     end: string,
@@ -44,7 +46,7 @@ const Results: React.FC<ResultsProps> = (props) => {
   }, [props.challengeData]);
 
   return (
-    (<div className="relative z-10 h-full overflow-x-auto p-4">
+    <div className="relative z-10 h-full overflow-x-auto p-4">
       <p className="my-4 text-center text-2xl font-semibold">Results</p>
       <div className="mb-3 w-full text-center text-2xl">
         {props.challengeData?.winner?.name && (
@@ -61,7 +63,7 @@ const Results: React.FC<ResultsProps> = (props) => {
             .map((letter: string, index: number) => {
               return (
                 <p
-                  className=" flex size-10 items-center justify-center rounded-md bg-neutral-200"
+                  className="flex size-10 items-center justify-center rounded-md bg-neutral-200"
                   key={index}
                 >
                   {letter}
@@ -92,7 +94,7 @@ const Results: React.FC<ResultsProps> = (props) => {
                 `${props.challengeData?.[player.friendId]?.endTimeStamp}`,
               );
               return (
-                (<tr
+                <tr
                   className="p-4 font-semibold odd:bg-gray-200"
                   key={player.friendId}
                 >
@@ -101,16 +103,17 @@ const Results: React.FC<ResultsProps> = (props) => {
                   </td>
                   <td className="p-3">
                     <Image
+                      unoptimized
                       src={
                         props.challengeData?.[player.friendId]?.success
-                          ? True
-                          : False
+                          ? success
+                          : failure
                       }
                       alt={"Success or failure img"}
                       height={25}
                     />
                   </td>
-                  <td className=" max-w-24 text-pretty break-words p-3 text-sm">
+                  <td className="max-w-24 text-pretty break-words p-3 text-sm">
                     {props.challengeData?.[player.friendId]?.endTimeStamp
                       ? `${props.challengeData?.[player.friendId]?.guesses?.toString().replace(/,/g, " ")}`
                       : "Gave Up"}
@@ -124,13 +127,13 @@ const Results: React.FC<ResultsProps> = (props) => {
                       </p>
                     </div>
                   </td>
-                </tr>)
+                </tr>
               );
             }
           })}
         </tbody>
       </table>
-    </div>)
+    </div>
   );
 };
 

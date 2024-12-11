@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Delete from "../../../public/Delete.svg";
 import { m } from "framer-motion";
 import { Matches } from "~/utils/game";
 type KeyboardProps = {
@@ -89,8 +88,9 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 className={`${
                   disabled ? "cursor-not-allowed" : "cursor-pointer"
                 } `}
-                src={Delete}
+                src={"https://utfs.io/f/e8LGKadgGfdISbCQ3VBL1A7qyKpf45WPivbGZs2ItcuQgrmR"}
                 alt="Delete svg"
+                unoptimized
               />
             </button>
           }

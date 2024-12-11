@@ -1,10 +1,5 @@
 import { m, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import profile from "../../../public/profile.png";
-import signout from "../../../public/signout.svg";
-import home from "../../../public/home.png";
 // import upgrade from "../../../public/upgrade.png";
-import friends from "../../../public/friends.png";
 
 import Link from "next/link";
 import CustomImage from "../custom-image";
@@ -20,6 +15,18 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
 ) => {
   const burger =
     "https://utfs.io/f/e8LGKadgGfdISHzA1tBL1A7qyKpf45WPivbGZs2ItcuQgrmR";
+
+  const profile =
+    "https://utfs.io/f/e8LGKadgGfdIdNWSxeXyLxKtzJOHPXcMlIN97ehp0vEqn61s";
+
+  const friends =
+    "https://utfs.io/f/e8LGKadgGfdIlxHXFNV2VobYUl65uwdNGWpM7ImPkzsXFtga";
+
+  const signout =
+    "https://utfs.io/f/e8LGKadgGfdI49znZzmTRywNkmWY9Z3USKtaOiejHrsl8xv1";
+
+  const home =
+    "https://utfs.io/f/e8LGKadgGfdIIMEQuXiWjqcbmODSYeAwFzRl0iydf8KV4Zou";
   return (
     <m.div
       initial={{ opacity: 0 }}
@@ -52,7 +59,12 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Home</p>
-                  <Image height={28} width={28} src={home} alt="home icon" />
+                  <CustomImage
+                    height={28}
+                    width={28}
+                    src={home}
+                    alt="home icon"
+                  />
                 </div>
               </Link>
               <Link href="/profile">
@@ -61,7 +73,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Profile</p>
-                  <Image
+                  <CustomImage
                     height={28}
                     width={28}
                     src={profile}
@@ -83,7 +95,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                   className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
                 >
                   <p>Friends</p>
-                  <Image width={40} src={friends} alt="friends icon" />
+                  <CustomImage width={40} src={friends} alt="friends icon" />
                 </div>
               </Link>
               {/* <div
@@ -103,7 +115,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = (
                 className="flex justify-between rounded-md bg-neutral-700 px-2 py-1"
               >
                 <p>Log out</p>
-                <Image
+                <CustomImage
                   height={28}
                   width={28}
                   src={signout}
