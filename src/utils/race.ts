@@ -49,11 +49,8 @@ export const joinRaceLobby = (playerId: string, fullName?: string | null) => {
 
 export const getUserPlacement = (
   userId: string,
-  players?: Record<string, RacePlayerData>,
+  players: Record<string, RacePlayerData>,
 ) => {
-  if (!players) {
-    return { userPlacement: 100, remainingPlayers: 1, sortedPlayers: [""] };
-  }
   const sortedPlayers = Object.entries(players)
     .filter(([, player]) => !player.eliminated)
     .sort(([, a], [, b]) => {
@@ -65,7 +62,7 @@ export const getUserPlacement = (
     .map(([id]) => id);
 
   return {
-    userPlacement: sortedPlayers.indexOf(userId),
+    userPlacement: sortedPlayers.indexOf(userId) + 1,
     remainingPlayers: sortedPlayers.length,
     sortedPlayers,
   };
@@ -153,7 +150,7 @@ export const calcualteSpots = (playerCount: number) => {
 export const calculateNumberOfPlayersToEliminate = (
   players: Record<string, RacePlayerData>,
 ) => {
-  const nonElimiatedPlayers = Object.entries(players).filter(([, data]) => {
+  const nonElimiatedPlayers = Object.values(players).filter((data) => {
     return data.eliminated === false;
   });
 

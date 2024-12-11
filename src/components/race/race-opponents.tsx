@@ -1,6 +1,6 @@
 import { RacePlayerData } from "~/utils/race";
-import RaceOpponentsContainer from "./race-opponents-container";
 import { AnimatePresence, m } from "framer-motion";
+import OpponentsContainer from "../board-components/opponents-container";
 
 type RaceOpponentsProps = {
   opponents: Record<string, RacePlayerData>;
@@ -28,7 +28,7 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
     );
 
   return (
-    <RaceOpponentsContainer>
+    <OpponentsContainer>
       <AnimatePresence>
         {props.opponentIds.map((id) => {
           return (
@@ -41,7 +41,7 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
               }}
               key={id}
             >
-              <div className="rounded-md border-2 border-zinc-300 p-1 duration-150 ease-in-out">
+              <div className="flex max-w-96 flex-col gap-1 rounded-md p-1 shadow-md outline outline-1 outline-zinc-200 duration-150 ease-in-out">
                 <div className="flex justify-between text-sm">
                   <p className="font-bold">
                     {props.opponents?.[id]?.initials ?? "N/A"}
@@ -85,7 +85,7 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
           );
         })}
       </AnimatePresence>
-    </RaceOpponentsContainer>
+    </OpponentsContainer>
   );
 };
 

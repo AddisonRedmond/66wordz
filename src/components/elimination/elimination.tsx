@@ -8,7 +8,6 @@ import WordContainer from "../board-components/word-container";
 import Points from "./points";
 import GameStatus from "../board-components/game-status";
 import GuessContainer from "../board-components/guess-container";
-import Round from "./round-counter";
 import Keyboard from "../board-components/keyboard";
 import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
@@ -27,6 +26,7 @@ import Intermission from "./intermission";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
 import { checkSpelling } from "~/utils/spellCheck";
+import GameInfoContainer from "../board-components/game-info-container";
 
 type EliminationProps = {
   lobbyId: string;
@@ -189,22 +189,21 @@ const Elimination: React.FC<EliminationProps> = ({
             {/* opponets left side */}
 
             {/* hidden if game not started || if next round timer hasn't expired*/}
-            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3 sm:gap-y-8">
-              <Round
-                round={gameData.lobbyData.round}
-                finalRound={gameData.lobbyData.finalRound}
-              />
+            <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
               {gameData.lobbyData.roundTimer &&
                 !gameData.lobbyData.nextRoundStartTime &&
                 !gameData.lobbyData.winner && (
-                  <GameStatus
-                    qualified={getQualified(
-                      gameData.players,
-                      gameData.lobbyData.totalPoints,
-                    )}
-                    endTime={gameData.lobbyData.roundTimer}
-                    totalSpots={gameData.lobbyData.totalSpots}
-                  />
+                  <GameInfoContainer>
+                    <GameStatus
+                      qualified={getQualified(
+                        gameData.players,
+                        gameData.lobbyData.totalPoints,
+                      )}
+                      endTime={gameData.lobbyData.roundTimer}
+                      totalSpots={gameData.lobbyData.totalSpots}
+                      round={gameData.lobbyData.round}
+                    />
+                  </GameInfoContainer>
                 )}
               {!playerData?.eliminated &&
                 gameData.lobbyData.winner !== userId && (
@@ -214,6 +213,7 @@ const Elimination: React.FC<EliminationProps> = ({
                       match={playerData?.revealIndex}
                     />
                     <Points
+                      large={true}
                       pointsGoal={gameData?.lobbyData.totalPoints}
                       totalPoints={playerData?.points}
                     />

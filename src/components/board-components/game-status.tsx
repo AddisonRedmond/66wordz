@@ -1,9 +1,10 @@
 import { useTimer } from "react-timer-hook";
-
+import Image from "next/image";
 type GameStatusProps = {
   qualified: number;
   endTime: number;
   totalSpots: number;
+  round: number;
 };
 
 const GameStatus: React.FC<GameStatusProps> = (props) => {
@@ -12,13 +13,26 @@ const GameStatus: React.FC<GameStatusProps> = (props) => {
     expiryTimestamp: new Date(props.endTime),
   });
 
-
   return (
-    <div className="flex h-14 w-60 rounded-md border-2">
-      <div className="grid h-full w-1/3 place-items-center rounded-l-md bg-zinc-700">
-        <p className=" text-lg text-white">{`${props.qualified} of ${props.totalSpots}`}</p>
+    <div className="flex w-full items-center justify-around font-semibold py-2">
+      <div className="text-center">
+        <p className="text-xs">Qualified</p>
+        <p>{`${props.qualified}/${props.totalSpots}`}</p>
       </div>
-      <div className="grid w-2/3 place-items-center text-lg font-semibold">
+      <div className="text-center">
+        <p>Round</p>
+        <p>{props.round}</p>
+      </div>
+
+      <div className="grid place-items-center text-lg">
+        <Image
+          unoptimized
+          src="https://utfs.io/f/e8LGKadgGfdIj6AGUvybY5N3wIvPhWRso1lep8jrEmnVxTQf"
+          height={15}
+          width={15}
+          alt="stop watch image"
+          title="Time left before eliminated"
+        />
         <p>{`${minutes}:${seconds.toString().padStart(2, "0")}`}</p>
       </div>
     </div>

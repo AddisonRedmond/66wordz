@@ -1,6 +1,6 @@
 type OpponentHeaderProps = {
   initials?: string;
-  correctGuessCount: number;
+  correctGuessCount?: number;
 };
 
 const OpponentHeader: React.FC<OpponentHeaderProps> = ({

@@ -11,6 +11,8 @@ export default {
           match: "#00DFA2",
           "partial-match": "#F6FA70",
           "no-match": "#545B77",
+          green: "#059212",
+          red: "#DF2E38",
         },
       },
     },

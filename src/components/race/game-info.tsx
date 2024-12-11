@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
-
+import Image from "next/image";
+import { getOrinalSuffix } from "~/utils/race";
 type GameInfoProps = {
   roundTimer: number;
   numberOfPlayersToEliminate: number;
@@ -22,32 +23,37 @@ const GameInfo: React.FC<GameInfoProps> = ({
   useEffect(() => {
     restart(new Date(roundTimer));
   }, [roundTimer]);
-
   return (
-    <div className="full flex h-16 min-w-60 items-center">
-      <div
-        style={{
-          backgroundColor:
-            props.placement >= props.numberOfPlayersToEliminate
-              ? "#FFAAAA": "#ECFFE6"
-        }}
-        className="grid aspect-square h-full place-items-center rounded-l-lg border-2 border-zinc-600 duration-150 ease-in-out"
-      >
-        <p>Points</p>
+    <div className="flex items-center justify-around p-2 font-semibold">
+      <div className="grid place-content-center text-center text-custom-accent">
+        <p>pts</p>
         <p className="text-xl font-semibold">{correctGuesses}</p>
       </div>
-      <div className="flex h-full w-full flex-col justify-center rounded-r-lg border-2 border-black bg-black px-3 text-white">
-        <p>
-          Bottom{" "}
-          <span className="font-semibold">
-            {props.numberOfPlayersToEliminate}
-          </span>{" "}
-          Will Be Eliminated in
-        </p>
-        <p>
-          <span className="font-semibold">{minutes} </span>
-          <span>min</span> <span className="font-semibold">{seconds} </span>
-          <span>sec</span>
+      <div
+        className="flex flex-col items-center justify-center duration-150 ease-in-out"
+        style={{
+          color:
+            props.placement <= props.numberOfPlayersToEliminate
+              ? "#059212"
+              : "#DF2E38",
+        }}
+      >
+        <p>#</p>
+        <p>{`${getOrinalSuffix(props.placement)}`}</p>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <span className="aspect-square">
+          <Image
+            src="https://utfs.io/f/e8LGKadgGfdIj6AGUvybY5N3wIvPhWRso1lep8jrEmnVxTQf"
+            unoptimized
+            height={15}
+            width={15}
+            alt="stop watch image"
+            title="Time left before eliminated"
+          />
+        </span>
+        <p className="font-semibold">
+          {`${minutes}:${seconds.toString().padStart(2, "0")}`}
         </p>
       </div>
     </div>
