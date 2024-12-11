@@ -88,6 +88,8 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 className={`${
                   disabled ? "cursor-not-allowed" : "cursor-pointer"
                 } `}
+                 width={20}
+                 height={20}
                 src={"https://utfs.io/f/e8LGKadgGfdISbCQ3VBL1A7qyKpf45WPivbGZs2ItcuQgrmR"}
                 alt="Delete svg"
                 unoptimized
