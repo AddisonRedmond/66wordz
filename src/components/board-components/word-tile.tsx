@@ -26,7 +26,7 @@ const WordTile: React.FC<WordTile> = ({
       style={{ width: `${95 / props.wordLength}%` }}
       exit={{ scale: 0 }}
       transition={{ duration: 0.07 }}
-      className={`flex aspect-square h-full items-center justify-center rounded-md border-2 border-zinc-300 bg-stone-100 text-2xl font-bold`}
+      className={`flex aspect-square h-full items-center justify-center rounded-md bg-stone-100 text-2xl font-bold shadow-sm border-zinc-200 border-2`}
     >
       <AnimatePresence>
         {!!revealed && (

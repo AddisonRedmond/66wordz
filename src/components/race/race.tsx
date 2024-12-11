@@ -5,7 +5,6 @@ import { db } from "~/utils/firebase/firebase";
 import {
   RaceGameData,
   calculateNumberOfPlayersToEliminate,
-  getOrinalSuffix,
   getUserPlacement,
   handleCorrectGuess,
   handleIncorrectGuess,
@@ -21,6 +20,7 @@ import RaceOpponents from "./race-opponents";
 import CountDownTimer from "../board-components/countdown-timer";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
+import GameInfoContainer from "../board-components/game-info-container";
 
 type RaceProps = {
   lobbyId: string;
@@ -32,6 +32,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useGameData<RaceGameData>(lobbyRef);
   const [, setSpellCheck] = useState(false);
+  // fix the placement issue
   const [placement, setPlacement] = useState({
     placement: 0,
     remainingPlayers: 0,
@@ -114,26 +115,32 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
     if (!gameData?.players) {
       return;
     }
-    return Object.keys(gameData.players).filter(
-      (id: string, index: number) => {
-        const player = gameData.players[id];
-        return (
-          id !== userId && // Exclude the user's ID
-          player && // Ensure player exists
-          !player.eliminated && // Filter out eliminated players
-          (isEven ? index % 2 === 0 : index % 2 !== 0) // Filter by even/odd index
-        );
-      },
-    );
+    return Object.keys(gameData.players).filter((id: string, index: number) => {
+      const player = gameData.players[id];
+      return (
+        id !== userId && // Exclude the user's ID
+        player && // Ensure player exists
+        !player.eliminated && // Filter out eliminated players
+        (isEven ? index % 2 === 0 : index % 2 !== 0) // Filter by even/odd index
+      );
+    });
   };
 
   useEffect(() => {
-    const { userPlacement, remainingPlayers, sortedPlayers } = getUserPlacement(
-      userId,
-      gameData?.players,
-    );
-    setPlacement({ placement: userPlacement, remainingPlayers, sortedPlayers });
+    if (gameData?.players) {
+      console.log("Reassigning game info")
+      const { userPlacement, remainingPlayers, sortedPlayers } =
+        getUserPlacement(userId, gameData?.players);
+        console.log(userPlacement)
+      setPlacement({
+        placement: userPlacement,
+        remainingPlayers,
+        sortedPlayers,
+      });
+    }
   }, [gameData]);
+
+  console.log(placement.placement)
 
   // TODO: Add final round logic and notification
 
@@ -151,8 +158,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
               {/* make the info portion into its own component */}
 
               {!!gameData?.lobbyData?.roundTimer && !playerData?.eliminated && (
-                <>
-                  <p className="font-bold">{`${getOrinalSuffix(placement.placement + 1)} place`}</p>
+                <GameInfoContainer>
                   <GameInfo
                     placement={placement.placement}
                     correctGuesses={playerData?.correctGuesses}
@@ -162,7 +168,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                       gameData.players,
                     )}
                   />
-                </>
+                </GameInfoContainer>
               )}
               <div className="flex w-full flex-col gap-y-2">
                 {playerData?.eliminated && <Eliminated />}
