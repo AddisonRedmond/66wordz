@@ -6,6 +6,7 @@ type CustomImageProps = {
   alt: string;
   width?: number;
   height?: number;
+  className?: string;
 };
 
 const CustomImage: React.FC<CustomImageProps> = ({

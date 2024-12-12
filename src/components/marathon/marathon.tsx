@@ -25,7 +25,6 @@ type MarathonProps = {
   userId: string;
   gameType: GameType;
 };
-
 const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useGameData<MarathonGameData>(lobbyRef);
