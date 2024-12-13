@@ -2,7 +2,6 @@ import { useTimer } from "react-timer-hook";
 import Tile from "../tile";
 import Carousel from "../carousel/carousel";
 import { GameDetails } from "~/utils/types";
-import { GameType } from "@prisma/client";
 
 type CountDownTimerProps = {
   expiryTimestamp?: number;

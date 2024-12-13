@@ -1,8 +1,8 @@
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { CarouselButton, useDotButton } from "./carousel-button";
+import styles from "../../styles/embla.module.css";
 
-import "../../styles/embla.css";
 import { GameDetails } from "~/utils/types";
 
 type CarouselProps = {
@@ -18,12 +18,14 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     useDotButton(emblaApi);
 
   return (
-    <section className="embla m-atuo max-w-96 rounded-md shadow-md outline outline-1 outline-zinc-200">
+    <section
+      className={`${styles.embla} m-atuo max-w-96 rounded-md shadow-md outline outline-1 outline-zinc-200`}
+    >
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="embla__container px-2">
+        <div className={`${styles.embla__container} px-2`}>
           {slides.map((slide, index) => (
-            <div className="embla__slide" key={index}>
-              <div className="embla__slide__number flex flex-col">
+            <div className={styles.embla__slide} key={index}>
+              <div className={`${styles.embla__slide__number} flex flex-col`}>
                 <h3 className="grid h-1/3 place-content-center text-xl">
                   {slide.header}
                 </h3>

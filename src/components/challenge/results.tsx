@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ChallengeData } from "~/custom-hooks/useGetChallengeData";
 import { m, useAnimation } from "framer-motion";
 import { useEffect } from "react";
