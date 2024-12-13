@@ -1,25 +1,47 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Header from "~/components/hearder";
 import Navbar from "~/components/navbar/navbar";
 import { api } from "~/utils/api";
 import { useEffect, useRef, useState } from "react";
 import Challenge from "~/components/challenge/challenge";
-import FriendDropdown from "~/components/challenge/friend-dropdown";
-import FriendDropdownItem from "~/components/challenge/friend-dropdown-item";
 import { AnimatePresence } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
-import ChallengeInvite from "~/components/challenge/challenge-invite";
-import ChallengeBoard from "~/components/challenge/challenge-board";
-
 import useGetChallenges from "~/custom-hooks/useGetChallenges";
-const Challenges: NextPage = () => {
-  const { user } = useUser();
+import dynamic from "next/dynamic";
+import { getAuth } from "@clerk/nextjs/server";
 
+const ChallengeBoard = dynamic(
+  () => import("~/components/challenge/challenge-board"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+
+const FriendDropdown = dynamic(
+  () => import("~/components/challenge/friend-dropdown"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+
+const FriendDropdownItem = dynamic(
+  () => import("~/components/challenge/friend-dropdown-item"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+
+const ChallengeInvite = dynamic(
+  () => import("~/components/challenge/challenge-invite"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+const Challenges: NextPage<{ userId: string }> = ({ userId }) => {
   const friends = api.friends.allFriends.useQuery();
-
   const requestChallenge = api.challenge.requestChallenge.useMutation();
   const startChallenge = api.challenge.startChallenge.useMutation();
   const giveUp = api.challenge.giveUp.useMutation();
+
   const [revealList, setRevealList] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -29,26 +51,29 @@ const Challenges: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { challenges } = useGetChallenges(user?.id);
+  const { challenges } = useGetChallenges(userId);
 
   const sendChallenge = async () => {
-    if (list.length) {
+    // debounce the request
+    if (!requestChallenge.isPending && list.length) {
       await requestChallenge.mutateAsync(list);
     }
+
     setList([]);
   };
   const handleStartChallenge = (challengeId: string) => {
-    if (startChallenge.data) {
-      return;
+    if (!startChallenge.data && !startChallenge.isPending) {
+      startChallenge.mutate({ challengeId: challengeId });
     }
-    startChallenge.mutate({ challengeId: challengeId });
   };
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
   const handleGiveUpOrQuit = async (lobbyId: string) => {
-    await giveUp.mutateAsync(lobbyId);
-    startChallenge.reset();
+    if (!giveUp.isPending) {
+      await giveUp.mutateAsync(lobbyId);
+      startChallenge.reset();
+    }
   };
   const handleFriendToList = (friendId: string, name: string) => {
     const isDuplicate = list.some((item) => item.friendRecordId === friendId);
@@ -109,10 +134,10 @@ const Challenges: NextPage = () => {
       <Navbar />
       <div className="flex flex-grow flex-col items-center justify-evenly pb-3">
         <AnimatePresence>
-          {startChallenge.data && user?.id && (
+          {startChallenge.data && userId && (
             <ChallengeBoard
               challengeId={startChallenge.data}
-              userId={user?.id}
+              userId={userId}
               handleGiveUp={handleGiveUpOrQuit}
               handleCloseChallenge={handleCloseChallenge}
             />
@@ -126,7 +151,7 @@ const Challenges: NextPage = () => {
         </div>
 
         <div className="flex w-11/12 min-w-80 flex-grow flex-col gap-2 duration-150 ease-in-out xl:w-1/2">
-          <div className=" relative my-4 flex h-fit w-full items-center justify-center gap-x-2">
+          <div className="relative my-4 flex h-fit w-full items-center justify-center gap-x-2">
             <input
               ref={inputRef}
               id="friend-list"
@@ -157,7 +182,7 @@ const Challenges: NextPage = () => {
                       );
                     })
                   ) : (
-                    <div className=" flex h-32 items-center justify-center text-xl font-semibold">
+                    <div className="flex h-32 items-center justify-center text-xl font-semibold">
                       <p>No friends in friends list</p>
                     </div>
                   )}
@@ -194,18 +219,17 @@ const Challenges: NextPage = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-              {user?.id &&
-                (challenges ?? []).map((challenge) => {
-                  return (
-                    <Challenge
-                      handleStartChallenge={handleStartChallenge}
-                      key={`${challenge.id}`}
-                      challenge={challenge}
-                      userId={user?.id}
-                      handleGiveUpOrQuit={handleGiveUpOrQuit}
-                    />
-                  );
-                })}
+              {(challenges ?? []).map((challenge) => {
+                return (
+                  <Challenge
+                    handleStartChallenge={handleStartChallenge}
+                    key={`${challenge.id}`}
+                    challenge={challenge}
+                    userId={userId}
+                    handleGiveUpOrQuit={handleGiveUpOrQuit}
+                  />
+                );
+              })}
             </AnimatePresence>
           </div>
         </div>
@@ -215,3 +239,9 @@ const Challenges: NextPage = () => {
 };
 
 export default Challenges;
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
+
+  return { props: { userId } };
+};

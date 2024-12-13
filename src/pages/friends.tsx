@@ -4,10 +4,19 @@ import { api } from "~/utils/api";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import toast, { Toaster } from "react-hot-toast";
-import AllRequests from "~/components/friends/all-requests";
-import AllSentRequest from "~/components/friends/all-sent-requests";
+import dynamic from "next/dynamic";
 import AllFriends from "~/components/friends/all-friends";
 
+const AllRequests = dynamic(() => import("~/components/friends/all-requests"), {
+  loading: () => <p>Loading...</p>,
+});
+
+const AllSentRequest = dynamic(
+  () => import("~/components/friends/all-sent-requests"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
 const Friends = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const addFriend = api.friends.addNewFriend.useMutation();
@@ -22,6 +31,9 @@ const Friends = () => {
   >("friend");
 
   const handleAddFriend = async () => {
+    if (addFriend.isPending) {
+      return;
+    }
     const input = inputRef.current?.value;
     const emailSchema = z.string().email();
     if (!emailSchema.safeParse(input).success) {
@@ -41,15 +53,19 @@ const Friends = () => {
   };
 
   const handleRemoveFriend = async (friendId: string) => {
-    await removeFriend.mutateAsync(friendId);
-    friends.refetch();
+    if (!removeFriend.isPending) {
+      await removeFriend.mutateAsync(friendId);
+      friends.refetch();
+    }
   };
 
   const handleAcceptRequest = async (requestId: string, accept: boolean) => {
-    await acceptRequest.mutateAsync({ requestId: requestId, accept: accept });
-    friends.refetch();
-    newRequests.refetch();
-    sent.refetch();
+    if (!acceptRequest.isPending) {
+      await acceptRequest.mutateAsync({ requestId: requestId, accept: accept });
+      friends.refetch();
+      newRequests.refetch();
+      sent.refetch();
+    }
   };
 
   return (
@@ -80,7 +96,7 @@ const Friends = () => {
           <button
             className={
               requestType === "friend"
-                ? "underline decoration-2  underline-offset-8"
+                ? "underline decoration-2 underline-offset-8"
                 : ""
             }
             onClick={() => {

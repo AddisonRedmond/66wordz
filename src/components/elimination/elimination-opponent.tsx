@@ -11,18 +11,20 @@ type EliminationOpponentProps = {
 
 const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
   // Using the square root for both width and height
-  if (props?.opponents && props.pointsGoal) {
-    const opponentSizePercentage =
-      90 /
-      Math.sqrt(
-        Object.keys(props?.opponents).filter((playerId) => {
-          return !props.opponents![playerId]?.eliminated;
-        }).length,
-      );
-    return (
-      <OpponentsContainer>
-        <AnimatePresence>
-          {Object.keys(props.opponents).map((id: string) => {
+
+  const opponentSizePercentage =
+    90 /
+    Math.sqrt(
+      Object.keys(props?.opponents || []).filter((playerId) => {
+        return !props.opponents![playerId]?.eliminated;
+      }).length,
+    );
+
+  return (
+    <OpponentsContainer>
+      <AnimatePresence>
+        {props.opponents &&
+          Object.keys(props.opponents).map((id: string) => {
             if (!props.opponents?.[id]?.eliminated)
               return (
                 <m.div
@@ -37,7 +39,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                     minHeight: "20px",
                     maxWidth: "300px",
                   }}
-                  className="flex max-w-96 flex-col gap-1 rounded-md p-1 shadow-md outline outline-1 bg-zinc-50 outline-zinc-200 duration-150 ease-in-out"
+                  className="flex max-w-96 flex-col gap-1 rounded-md bg-zinc-50 p-1 shadow-md outline outline-1 outline-zinc-200 duration-150 ease-in-out"
                 >
                   <div className="flex w-full justify-between text-xs">
                     <p className="font-bold">
@@ -62,10 +64,9 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                 </m.div>
               );
           })}
-        </AnimatePresence>
-      </OpponentsContainer>
-    );
-  }
+      </AnimatePresence>
+    </OpponentsContainer>
+  );
 };
 
 export default EliminationOpponent;

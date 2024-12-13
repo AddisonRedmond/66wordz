@@ -6,8 +6,6 @@ import toast, { Toaster } from "react-hot-toast";
 import Navbar from "~/components/navbar/navbar";
 
 const Profile: NextPage = () => {
-
-
   const user = api.getUser.getUser.useQuery();
   const cancelSubscription = api.upgrade.cancelSubscription.useMutation();
 
