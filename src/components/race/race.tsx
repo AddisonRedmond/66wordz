@@ -8,6 +8,7 @@ import {
   getUserPlacement,
   handleCorrectGuess,
   handleIncorrectGuess,
+  raceGameDetails,
 } from "~/utils/race";
 import GuessContainer from "../board-components/guess-container";
 import WordContainer from "../board-components/word-container";
@@ -195,6 +196,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
           <CountDownTimer
             expiryTimestamp={gameData?.lobbyData.gameStartTime}
             timerTitle="Game Starting In"
+            gameDetails={raceGameDetails}
           />
         )}
         <RaceOpponents

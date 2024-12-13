@@ -13,6 +13,7 @@ import { useOnKeyUp } from "~/custom-hooks/useOnKeyUp";
 import { useState } from "react";
 import useSound from "use-sound";
 import {
+  eliminationGameDetails,
   getQualified,
   handleCorrectGuess,
   handleIncorrectGuess,
@@ -27,7 +28,6 @@ import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
 import { checkSpelling } from "~/utils/spellCheck";
 import GameInfoContainer from "../board-components/game-info-container";
-
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -254,6 +254,7 @@ const Elimination: React.FC<EliminationProps> = ({
           <GameStarting
             expiryTimestamp={gameData?.lobbyData.gameStartTime}
             timerTitle="Game Starting In"
+            gameDetails={eliminationGameDetails}
           />
         )}
         {!isMobile && (

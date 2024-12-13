@@ -7,6 +7,7 @@ import {
   handleIncorrectMarathonGuess,
   lifeTimerIndex,
   MarathonGameData,
+  marathonGameDetails,
   MarathonPlayerData,
 } from "~/utils/marathon";
 import Keyboard from "../board-components/keyboard";
@@ -25,7 +26,6 @@ type MarathonProps = {
   userId: string;
   gameType: GameType;
 };
-
 const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useGameData<MarathonGameData>(lobbyRef);
@@ -166,6 +166,7 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
         <CountDownTimer
           expiryTimestamp={gameData?.lobbyData.gameStartTime}
           timerTitle="Game Starting In"
+          gameDetails={marathonGameDetails}
         />
       )}
 

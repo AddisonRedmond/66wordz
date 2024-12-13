@@ -8,6 +8,7 @@ import {
   handleMatched,
   getRevealIndex,
 } from "./game";
+import { GameDetails } from "./types";
 export interface RacePlayerData extends DefaultPlayerData {
   correctGuesses: number;
   totalGuesses: number;
@@ -178,3 +179,20 @@ export const getOrinalSuffix = (num: number) => {
       return `${num}${suffixes[0]}`;
   }
 };
+
+export const raceGameDetails: GameDetails = [
+  {
+    header: "Race",
+    content: "Only the fastest players will advance to the next round.",
+  },
+  {
+    header: "Race",
+    content:
+      "Depending on how many points you have, you will get a letters revealed for free",
+  },
+  {
+    header: "Race",
+    content:
+      "A winner is determeined by who has the most points and fewest incorrect guesses",
+  },
+];

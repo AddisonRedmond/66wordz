@@ -1,22 +1,33 @@
+import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import React, { useEffect, useState } from "react";
 import { GameType } from "@prisma/client";
 import GameCardV2 from "~/components/game-card-v2";
-import Elimination from "~/components/elimination/elimination";
 import Navbar from "~/components/navbar/navbar";
 import getStripe from "~/utils/get-stripejs";
 import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
-import Race from "~/components/race/race";
 
 import { getAuth } from "@clerk/nextjs/server";
 import { GetServerSideProps } from "next";
 import toast, { Toaster } from "react-hot-toast";
 import RejoinGame from "~/components/survival/rejoin-game";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
-import Marathon from "~/components/marathon/marathon";
+
+const Elimination = dynamic(
+  () => import("~/components/elimination/elimination"),
+  {
+    loading: () => <p>Loading game...</p>,
+  },
+);
+const Race = dynamic(() => import("~/components/race/race"), {
+  loading: () => <p>Loading game...</p>,
+});
+const Marathon = dynamic(() => import("~/components/marathon/marathon"), {
+  loading: () => <p>Loading game...</p>,
+});
 
 const Home: React.FC<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
@@ -92,14 +103,14 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
               gameType={quickPlay.data.gameType}
             />
           );
-          case "MARATHON":
-            return (
-              <Marathon
-                lobbyId={quickPlay.data.id}
-                userId={userId}
-                gameType={quickPlay.data.gameType}
-              />
-            );
+        case "MARATHON":
+          return (
+            <Marathon
+              lobbyId={quickPlay.data.id}
+              userId={userId}
+              gameType={quickPlay.data.gameType}
+            />
+          );
       }
     }
   };
@@ -155,41 +166,42 @@ const Home: React.FC<{ userId: string }> = ({ userId }) => {
           {quickPlay.data?.id ? (
             handleStartGame()
           ) : (
-            <div className="w flex flex-grow flex-wrap items-center justify-center gap-3">
+            <div className="flex w-full flex-grow grid-rows-2 flex-col items-center gap-y-4 md:grid">
               <ChallengeCard />
-
-              <GameCardV2
-                gameType="ELIMINATION"
-                image={
-                  "https://utfs.io/f/e8LGKadgGfdIPrp16cAFN2LzSnekdTxwXAr56uZhqvJ9jCiQ"
-                }
-                fullAccess={true}
-                quickPlay={handleQuickPlay}
-                handleUpgrade={handleUpgrade}
-                desc="Be the fastest to guess your words, in order to survive each round"
-              />
-              <GameCardV2
-                gameType="RACE"
-                image={
-                  "https://utfs.io/f/e8LGKadgGfdIwrST4xRkSq6CTb0YOPGdeVulZgx4JU7HmWXL"
-                }
-                fullAccess={true}
-                quickPlay={handleQuickPlay}
-                handleUpgrade={handleUpgrade}
-                desc="Try to keep up with others to make it to the end"
-                disabled={isMobile}
-              />
-              <GameCardV2
-                gameType="MARATHON"
-                image={
-                  "https://utfs.io/f/e8LGKadgGfdIEbAOC484OC5cU3GY6ZanoMtWuLQwsKVTzFJr"
-                }
-                fullAccess={true}
-                quickPlay={handleQuickPlay}
-                handleUpgrade={handleUpgrade}
-                desc="Guess words to outlast the competition"
-                disabled={isMobile}
-              />
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <GameCardV2
+                  gameType="ELIMINATION"
+                  image={
+                    "https://utfs.io/f/e8LGKadgGfdIPrp16cAFN2LzSnekdTxwXAr56uZhqvJ9jCiQ"
+                  }
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Be the fastest to guess your words, in order to survive each round"
+                />
+                <GameCardV2
+                  gameType="RACE"
+                  image={
+                    "https://utfs.io/f/e8LGKadgGfdIwrST4xRkSq6CTb0YOPGdeVulZgx4JU7HmWXL"
+                  }
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Try to keep up with others to make it to the end"
+                  disabled={isMobile}
+                />
+                <GameCardV2
+                  gameType="MARATHON"
+                  image={
+                    "https://utfs.io/f/e8LGKadgGfdIEbAOC484OC5cU3GY6ZanoMtWuLQwsKVTzFJr"
+                  }
+                  fullAccess={true}
+                  quickPlay={handleQuickPlay}
+                  handleUpgrade={handleUpgrade}
+                  desc="Guess words to outlast the competition"
+                  disabled={isMobile}
+                />
+              </div>
             </div>
           )}
         </AnimatePresence>

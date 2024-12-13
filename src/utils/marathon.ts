@@ -7,6 +7,7 @@ import {
   handleGetNewWord,
   handleMatched,
 } from "./game";
+import { GameDetails } from "./types";
 
 export interface MarathonLobbyData extends DefaultLobbyData {
   round: number;
@@ -113,3 +114,22 @@ export const handleIncorrectMarathonGuess = async (
 
   await update(userPath, mutateIncorrectGuessData(userData, guess));
 };
+
+export const marathonGameDetails: GameDetails = [
+  {
+    header: "Elimination",
+    content: "Guess words to earn more time",
+  },
+  {
+    header: "Elimination",
+    content: "As you survive longer, the amount of timer returned is lowered",
+  },
+  {
+    header: "Elimination",
+    content: "If your time runs out, you are eliminated",
+  },
+  {
+    header: "Elimination",
+    content: "Ties will be setteled with sudden death",
+  },
+];

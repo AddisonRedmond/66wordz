@@ -9,7 +9,7 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = (props) => {
   const signOut =
     "https://utfs.io/f/e8LGKadgGfdI49znZzmTRywNkmWY9Z3USKtaOiejHrsl8xv1";
   return (
-    <div className="sticky top-0 hidden h-14 w-screen items-center justify-between px-8 sm:flex">
+    <div className="sticky top-0 hidden h-14 w-screen items-center justify-between px-8 z-10 sm:flex bg-white">
       <div className="cursor-pointer text-4xl font-semibold">
         <Link href="/">
           <p>66</p>
