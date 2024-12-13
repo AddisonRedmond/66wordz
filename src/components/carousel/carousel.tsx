@@ -3,14 +3,13 @@ import useEmblaCarousel from "embla-carousel-react";
 import { CarouselButton, useDotButton } from "./carousel-button";
 
 import "../../styles/embla.css";
+import { GameDetails } from "~/utils/types";
 
 type CarouselProps = {
-  slides: Record<string, JSX.Element>;
+  slides: GameDetails;
 };
 
 const Carousel: React.FC<CarouselProps> = ({ slides }) => {
-  const SLIDE_COUNT = 5;
-  const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 10 * 1000 }),
   ]);
@@ -19,13 +18,18 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     useDotButton(emblaApi);
 
   return (
-    <section className="embla rounded-md border-2">
-      <div className="embla__viewport" ref={emblaRef}>
-        <div className="embla__container">
-          {Object.values(slides).map((slide, index) => (
+    <section className="embla m-atuo max-w-96 rounded-md shadow-md outline outline-1 outline-zinc-200">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="embla__container px-2">
+          {slides.map((slide, index) => (
             <div className="embla__slide" key={index}>
-              <div className="embla__slide__number">
-                {slide}
+              <div className="embla__slide__number flex flex-col">
+                <h3 className="grid h-1/3 place-content-center text-xl">
+                  {slide.header}
+                </h3>
+                <div className="grid flex-grow place-content-center text-sm font-normal">
+                  {slide.content}
+                </div>
               </div>
             </div>
           ))}

@@ -10,6 +10,7 @@ import { default as FIVE_LETTER_WORDS } from "./words";
 import SIX_LETTER_WORDS from "./six-letter-words";
 import FOUR_LETTER_WORDS from "./four-letter-words";
 import { db } from "./firebase/firebase";
+import { GameDetails } from "./types";
 
 const wordLengthLookUp: { [key: number]: number } = {
   1: 4,
@@ -69,8 +70,6 @@ export const joinEliminationLobby = (
 
   return player;
 };
-
-
 
 export const handleCorrectGuess = async (
   playerData: EliminationPlayerObject,
@@ -169,3 +168,20 @@ export const calculateSpots = (round: number, totalPlayers: number): number => {
 export const validateKey = (key: string): boolean => {
   return /[a-zA-Z]/.test(key);
 };
+
+export const eliminationGameDetails: GameDetails = [
+  {
+    header: "Elimination",
+    content: "Only the fastest players will advance to the next round.",
+  },
+  {
+    header: "Elimination",
+    content:
+      "Round 1: Words have 4 letters. Round 2: Words increase in length. Round 3: Words are the longest and most challenging.",
+  },
+  {
+    header: "Elimination",
+    content:
+      "The first player to correctly guess their 6-letter word wins the game.",
+  },
+];
