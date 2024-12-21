@@ -51,15 +51,38 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                     totalPoints={props.opponents?.[id]?.points}
                   />
                   <div className="flex h-fit items-center justify-center gap-1">
-                    {Array.from(
-                      { length: props.wordLength ?? 5 },
-                      (_, index) => (
-                        <div
-                          key={index}
-                          className={`aspect-square w-1/5 min-w-[5px] ${props.opponents?.[id]?.revealIndex?.includes(index) ? "bg-[#00DFA2]" : "bg-zinc-300"}`}
-                        ></div>
-                      ),
-                    )}
+                    {props.opponents?.[id]?.word
+                      .split("")
+                      .map((letter, index) => {
+                        return (
+                          <div
+                            key={`${id}-${index}`}
+                            style={{
+                              backgroundColor: props.opponents![
+                                id
+                              ]?.revealIndex?.includes(index)
+                                ? "#00DFA2"
+                                : "#d4d4d8",
+                            }}
+                            className={`my-1 grid aspect-square h-full w-1/5 min-w-1 place-content-center duration-150 ease-in-out ${opponentSizePercentage < 20 ? "rounded-none" : "rounded-md"}`}
+                          >
+                            {props.opponents?.[id]?.revealIndex?.includes(
+                              index,
+                            ) && (
+                              <m.p
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                style={{
+                                  fontSize: `${opponentSizePercentage / 2}px`,
+                                }}
+                                className={`hidden font-bold lg:block`}
+                              >
+                                {letter}
+                              </m.p>
+                            )}
+                          </div>
+                        );
+                      })}
                   </div>
                 </m.div>
               );
