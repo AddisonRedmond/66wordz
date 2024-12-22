@@ -5,7 +5,6 @@ const LifeTimer: React.FC<{ endTime: number; small?: boolean }> = ({
   endTime,
   small = false,
 }) => {
-
   const { totalSeconds, restart } = useTimer({
     expiryTimestamp: new Date(endTime),
   });
