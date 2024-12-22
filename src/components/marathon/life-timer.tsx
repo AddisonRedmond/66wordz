@@ -5,15 +5,12 @@ const LifeTimer: React.FC<{ endTime: number; small?: boolean }> = ({
   endTime,
   small = false,
 }) => {
-  const [initialTime, setInitialTime] = useState<number>(
-    new Date(endTime).getTime() - new Date().getTime(),
-  );
+
   const { totalSeconds, restart } = useTimer({
     expiryTimestamp: new Date(endTime),
   });
 
   useEffect(() => {
-    setInitialTime(new Date(endTime).getTime() - new Date().getTime());
     restart(new Date(endTime));
   }, [endTime]);
 
