@@ -25,12 +25,12 @@ const GameInfo: React.FC<GameInfoProps> = ({
   }, [roundTimer]);
   return (
     <div className="flex items-center justify-around p-2 font-semibold">
-      <div className="grid place-content-center text-center text-custom-accent">
+      <div className="grid w-1/3 place-content-center text-center text-custom-accent">
         <p>pts</p>
         <p className="text-xl font-semibold">{correctGuesses}</p>
       </div>
       <div
-        className="flex flex-col items-center justify-center duration-150 ease-in-out"
+        className="flex w-1/3 flex-col items-center justify-center duration-150 ease-in-out"
         style={{
           color:
             props.placement <= props.numberOfPlayersToEliminate
@@ -41,7 +41,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
         <p>#</p>
         <p>{`${getOrinalSuffix(props.placement)}`}</p>
       </div>
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex w-1/3 flex-col items-center gap-1">
         <span className="aspect-square">
           <Image
             src="https://utfs.io/f/e8LGKadgGfdIj6AGUvybY5N3wIvPhWRso1lep8jrEmnVxTQf"

@@ -114,6 +114,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   const getHalf = (isEven: boolean) => {
     // this should run if there are players in the db
     if (!gameData?.players) {
+      console.log("no players");
       return;
     }
     return Object.keys(gameData.players).filter((id: string, index: number) => {
@@ -129,10 +130,8 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
 
   useEffect(() => {
     if (gameData?.players) {
-      console.log("Reassigning game info")
       const { userPlacement, remainingPlayers, sortedPlayers } =
         getUserPlacement(userId, gameData?.players);
-        console.log(userPlacement)
       setPlacement({
         placement: userPlacement,
         remainingPlayers,
@@ -140,9 +139,6 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
       });
     }
   }, [gameData]);
-
-  console.log(placement.placement)
-
   // TODO: Add final round logic and notification
 
   if (gameData) {
@@ -172,8 +168,9 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                 </GameInfoContainer>
               )}
               <div className="flex w-full flex-col gap-y-2">
+                {gameData.lobbyData.winner === userId &&
+                  !playerData?.eliminated && <Winner />}
                 {playerData?.eliminated && <Eliminated />}
-                {gameData.lobbyData.winner === userId && <Winner />}
 
                 {!playerData?.eliminated && !gameData.lobbyData.winner && (
                   <>

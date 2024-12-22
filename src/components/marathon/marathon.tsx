@@ -20,6 +20,7 @@ import { checkSpelling } from "~/utils/spellCheck";
 import CountDownTimer from "../board-components/countdown-timer";
 import MarathonGameInfo from "./marathon-game-info";
 import Winner from "../board-components/winner";
+import Eliminated from "../board-components/eliminated";
 
 type MarathonProps = {
   lobbyId: string;
@@ -141,8 +142,11 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
         lifeTimers={gameData.timers}
       />
       {gameData.lobbyData.gameStarted ? (
-        <div className="flex h-full w-1/4 flex-col justify-center gap-4">
-          {gameData.lobbyData.winner === userId && <Winner />}
+        <div className="flex h-full w-1/4 flex-col items-center justify-center gap-4">
+          {gameData.lobbyData.winner === userId && !playerData?.eliminated && (
+            <Winner />
+          )}
+
           {gameData.timers[userId] && !gameData.lobbyData.winner && (
             <MarathonGameInfo
               additionalTime={lifeTimerIndex[gameData.lobbyData.round - 1]}
@@ -151,16 +155,21 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
             />
           )}
 
-          <WordContainer
-            word={playerData?.word}
-            match={playerData?.revealIndex}
-          />
-          <GuessContainer word={guess} wordLength={5} />
-          <Keyboard
-            matches={playerData?.matches}
-            handleKeyBoardLogic={handleKeyUp}
-            disabled={!gameData.lobbyData.gameStarted}
-          />
+          {!playerData?.eliminated && (
+            <>
+              <WordContainer
+                word={playerData?.word}
+                match={playerData?.revealIndex}
+              />
+              <GuessContainer word={guess} wordLength={5} />
+              <Keyboard
+                matches={playerData?.matches}
+                handleKeyBoardLogic={handleKeyUp}
+                disabled={!gameData.lobbyData.gameStarted}
+              />
+            </>
+          )}
+          {playerData?.eliminated && <Eliminated />}
         </div>
       ) : (
         <CountDownTimer

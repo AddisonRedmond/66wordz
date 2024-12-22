@@ -18,7 +18,7 @@ const LifeTimer: React.FC<{ endTime: number; small?: boolean }> = ({
   }, [endTime]);
 
   const calcualteTimeRemaining = () => {
-    return (totalSeconds / (initialTime / 1000)) * 100;
+    return (totalSeconds / 180) * 100;
   };
 
   return (
