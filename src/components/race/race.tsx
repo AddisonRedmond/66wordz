@@ -141,6 +141,15 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   }, [gameData]);
   // TODO: Add final round logic and notification
 
+  const isAtRisk = () => {
+    if (!gameData?.players) return false;
+    return (
+      placement.placement <
+      placement.remainingPlayers -
+        calculateNumberOfPlayersToEliminate(gameData.players)
+    );
+  };
+
   if (gameData) {
     return (
       <div className="flex w-full flex-grow justify-center">
@@ -161,9 +170,7 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                     correctGuesses={playerData?.correctGuesses}
                     guesses={playerData?.totalGuesses}
                     roundTimer={gameData.lobbyData.roundTimer}
-                    numberOfPlayersToEliminate={calculateNumberOfPlayersToEliminate(
-                      gameData.players,
-                    )}
+                    isAtRisk={isAtRisk()}
                   />
                 </GameInfoContainer>
               )}

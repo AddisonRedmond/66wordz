@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getOrinalSuffix } from "~/utils/race";
 type GameInfoProps = {
   roundTimer: number;
-  numberOfPlayersToEliminate: number;
+  isAtRisk: boolean;
   placement: number;
   correctGuesses?: number;
   guesses?: number;
@@ -32,10 +32,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
       <div
         className="flex w-1/3 flex-col items-center justify-center duration-150 ease-in-out"
         style={{
-          color:
-            props.placement <= props.numberOfPlayersToEliminate
-              ? "#059212"
-              : "#DF2E38",
+          color: props.isAtRisk ? "#059212" : "#DF2E38",
         }}
       >
         <p>#</p>
