@@ -11,7 +11,7 @@ import Modal from "~/components/modal";
 import ChallengeCard from "~/components/challenge-card";
 
 import { getAuth } from "@clerk/nextjs/server";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import toast, { Toaster } from "react-hot-toast";
 import RejoinGame from "~/components/survival/rejoin-game";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
@@ -29,7 +29,7 @@ const Marathon = dynamic(() => import("~/components/marathon/marathon"), {
   loading: () => <p>Loading game...</p>,
 });
 
-const Home: React.FC<{ userId: string }> = ({ userId }) => {
+const Home: NextPage<{ userId: string }> = ({ userId }) => {
   // TODO get rid of the lobby thing
   const quickPlay = api.quickPlay.quickPlay.useMutation();
   const lobby = api.createGame.getLobby.useQuery();

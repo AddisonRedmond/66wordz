@@ -22,12 +22,11 @@ import EliminationOpponent from "./elimination-opponent";
 import GameStarting from "../board-components/countdown-timer";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
-import Modal from "../modal";
-import Intermission from "./intermission";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
 import { checkSpelling } from "~/utils/spellCheck";
 import GameInfoContainer from "../board-components/game-info-container";
+import Qualified from "../board-components/qualified";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -167,16 +166,17 @@ const Elimination: React.FC<EliminationProps> = ({
 
     return filteredData;
   };
+
+  const isQualified = () => {
+    return (
+      (playerData?.points ?? 0) >= (gameData?.lobbyData?.totalPoints ?? 1) &&
+      !gameData?.lobbyData.winner &&
+      !playerData?.eliminated
+    );
+  };
   if (gameData) {
     return (
       <div className="flex w-screen flex-grow justify-center">
-        {gameData.lobbyData?.nextRoundStartTime && (
-          <Modal>
-            <Intermission
-              nextRoundStartTime={gameData.lobbyData.nextRoundStartTime}
-            />
-          </Modal>
-        )}
         {!isMobile && (
           <EliminationOpponent
             pointsGoal={gameData?.lobbyData.totalPoints}
@@ -190,23 +190,23 @@ const Elimination: React.FC<EliminationProps> = ({
 
             {/* hidden if game not started || if next round timer hasn't expired*/}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
-              {gameData.lobbyData.roundTimer &&
-                !gameData.lobbyData.nextRoundStartTime &&
-                !gameData.lobbyData.winner && (
-                  <GameInfoContainer>
-                    <GameStatus
-                      qualified={getQualified(
-                        gameData.players,
-                        gameData.lobbyData.totalPoints,
-                      )}
-                      endTime={gameData.lobbyData.roundTimer}
-                      totalSpots={gameData.lobbyData.totalSpots}
-                      round={gameData.lobbyData.round}
-                    />
-                  </GameInfoContainer>
-                )}
+              {gameData.lobbyData.roundTimer && !gameData.lobbyData.winner && (
+                <GameInfoContainer>
+                  <GameStatus
+                    qualified={getQualified(
+                      gameData.players,
+                      gameData.lobbyData.totalPoints,
+                    )}
+                    endTime={gameData.lobbyData.roundTimer}
+                    totalSpots={gameData.lobbyData.totalSpots}
+                    round={gameData.lobbyData.round}
+                    finalRound={gameData.lobbyData.finalRound}
+                  />
+                </GameInfoContainer>
+              )}
               {!playerData?.eliminated &&
-                gameData.lobbyData.winner !== userId && (
+                gameData.lobbyData.winner !== userId &&
+                !isQualified() && (
                   <>
                     <WordContainer
                       word={playerData?.word}
@@ -226,8 +226,9 @@ const Elimination: React.FC<EliminationProps> = ({
                   pointsGoal={8}
                 />
               )}
-              <div className="flex w-full flex-col gap-y-2">
+              <div className="flex w-full flex-col items-center gap-y-2">
                 {!playerData?.eliminated &&
+                  !isQualified() &&
                   gameData.lobbyData.winner !== userId && (
                     <>
                       <GuessContainer
@@ -243,8 +244,9 @@ const Elimination: React.FC<EliminationProps> = ({
                       />
                     </>
                   )}
-                {playerData?.eliminated && <Eliminated />}
                 {gameData.lobbyData.winner === userId && <Winner />}
+                {playerData?.eliminated && <Eliminated />}
+                {isQualified() && !playerData?.eliminated && <Qualified />}
               </div>
             </div>
 

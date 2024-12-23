@@ -14,13 +14,11 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({
   opponents,
   lifeTimers,
 }) => {
-  if (!opponents) {
-    return;
-  }
+
   const opponentSizePercentage =
     90 /
     Math.sqrt(
-      Object.values(opponents).filter((data) => {
+      Object.values(opponents ?? []).filter((data) => {
         return !data.eliminated;
       }).length,
     );
@@ -28,7 +26,7 @@ const MarathonOpponents: React.FC<MarathonOpponentsProps> = ({
   return (
     <OpponentsContainer>
       <AnimatePresence>
-        {Object.entries(opponents).map(([id, data]) => {
+        {Object.entries(opponents ?? []).map(([id, data]) => {
           return (
             <m.div
               initial={{ scale: 0 }}

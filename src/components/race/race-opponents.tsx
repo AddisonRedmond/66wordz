@@ -8,21 +8,10 @@ type RaceOpponentsProps = {
 };
 
 const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
-  if (!props.opponentIds?.length) {
-    return (
-      <p
-        style={{ maxWidth: "33%" }}
-        className="flex w-1/4 flex-grow flex-wrap items-center justify-evenly px-2"
-      >
-        Waiting for other players
-      </p>
-    );
-  }
-
   const opponentSizePercentage =
     90 /
     Math.sqrt(
-      props.opponentIds.filter((playerId) => {
+      (props.opponentIds ?? []).filter((playerId) => {
         return !props.opponents[playerId]?.eliminated;
       }).length,
     );
@@ -30,7 +19,7 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
   return (
     <OpponentsContainer>
       <AnimatePresence>
-        {props.opponentIds.map((id) => {
+        {props.opponentIds?.map((id) => {
           return (
             <m.div
               initial={{ scale: 0 }}

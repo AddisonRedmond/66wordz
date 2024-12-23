@@ -64,7 +64,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
   const middleRow = "ASDFGHJKL";
   const bottomRow = "ZXCVBNM";
   return (
-    <div className="flex h-56 max-w-full flex-col items-center gap-1 md:h-fit">
+    <div className="flex h-56 w-full flex-col items-center gap-1 md:h-fit">
       <div className="flex h-1/3 w-full justify-center gap-1">
         <KeyboardRow
           handleKeyBoardLogic={props.handleKeyBoardLogic}
@@ -88,9 +88,11 @@ const Keyboard: React.FC<KeyboardProps> = ({
                 className={`${
                   disabled ? "cursor-not-allowed" : "cursor-pointer"
                 } `}
-                 width={20}
-                 height={20}
-                src={"https://utfs.io/f/e8LGKadgGfdISbCQ3VBL1A7qyKpf45WPivbGZs2ItcuQgrmR"}
+                width={20}
+                height={20}
+                src={
+                  "https://utfs.io/f/e8LGKadgGfdISbCQ3VBL1A7qyKpf45WPivbGZs2ItcuQgrmR"
+                }
                 alt="Delete svg"
                 unoptimized
               />

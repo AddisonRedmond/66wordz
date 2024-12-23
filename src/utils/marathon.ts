@@ -117,19 +117,19 @@ export const handleIncorrectMarathonGuess = async (
 
 export const marathonGameDetails: GameDetails = [
   {
-    header: "Elimination",
+    header: "Marathon",
     content: "Guess words to earn more time",
   },
   {
-    header: "Elimination",
+    header: "Marathon",
     content: "As you survive longer, the amount of timer returned is lowered",
   },
   {
-    header: "Elimination",
+    header: "Marathon",
     content: "If your time runs out, you are eliminated",
   },
   {
-    header: "Elimination",
+    header: "Marathon",
     content: "Ties will be setteled with sudden death",
   },
 ];
