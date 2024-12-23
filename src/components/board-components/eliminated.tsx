@@ -19,7 +19,7 @@ const Eliminated: React.FC = () => {
 
         <h2 className="mb-4 text-center text-3xl font-bold">Game Over</h2>
         <p className="mb-6 text-center text-xl">
-          Sorry. You've been eliminated!
+          {"Sorry. You've been eliminated!"}
         </p>
       </m.div>
     </AnimatePresence>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 
 const LifeTimer: React.FC<{ endTime: number; small?: boolean }> = ({

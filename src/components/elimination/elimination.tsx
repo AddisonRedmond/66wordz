@@ -22,8 +22,6 @@ import EliminationOpponent from "./elimination-opponent";
 import GameStarting from "../board-components/countdown-timer";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import MobileOpponents from "./mobile-opponents";
-import Modal from "../modal";
-import Intermission from "./intermission";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
 import { checkSpelling } from "~/utils/spellCheck";
