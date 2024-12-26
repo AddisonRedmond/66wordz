@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, m, spring } from "framer-motion";
 import { api } from "~/utils/api";
 import Header from "~/components/hearder";
 import React, { useEffect, useState } from "react";
@@ -37,6 +37,9 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
   const upgrade = api.upgrade.createCheckout.useMutation();
   const isMobile = useIsMobile();
 
+  const [joinLobby, setJoinLobby] = useState(false);
+  const [quitGame, setQuitGame] = useState<boolean>(false);
+
   const rejoinGame = () => {
     toast.dismiss();
     quickPlay.mutate({ lobbyId: lobby.data?.id });
@@ -46,6 +49,7 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
     exitMatch();
     toast.dismiss();
   };
+
   useEffect(() => {
     if (lobby.data && !quickPlay.data) {
       toast(<RejoinGame rejoin={rejoinGame} decline={declineRejoinGame} />, {
@@ -67,7 +71,6 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
       await stripe.redirectToCheckout({ sessionId: checkoutURL });
     }
   };
-  const [quitGame, setQuitGame] = useState<boolean>(false);
 
   const handleQuickPlay = (gameMode: GameType) => {
     // TODO: Add detection for stale lobby
@@ -83,6 +86,8 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
     // delete user from lobby db
     // delete user from firebase db
   };
+
+  const handleCreateLobby = () => {};
 
   const handleStartGame = () => {
     if (quickPlay.data) {
@@ -206,7 +211,7 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
           )}
         </AnimatePresence>
       </div>
-      <footer className="m-auto pb-4">
+      <footer className="m-auto w-full pb-4">
         {quickPlay.data && (
           <button
             onClick={() => setQuitGame(true)}
@@ -217,6 +222,32 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
         )}
       </footer>
       <Toaster />
+      {!quickPlay.data && (
+        <div
+          onClick={() => setJoinLobby(!joinLobby)}
+          className="absolute bottom-2 right-4 cursor-pointer overflow-hidden rounded-md bg-custom-secondary p-2 shadow-md outline outline-1 outline-zinc-300"
+        >
+          <p className="font-semibold">Join Lobby</p>
+          <m.div
+            initial={{ height: 0 }}
+            animate={{ height: joinLobby ? "auto" : 0 }}
+            transition={{
+              duration: 0.1,
+              ease: "easeInOut",
+              type: "spring",
+              stiffness: 200
+            }}
+            className="bg-white"
+          >
+            <div>
+              <p>Lobby Id</p>
+            </div>
+            <div>
+              <p>Password</p>
+            </div>
+          </m.div>
+        </div>
+      )}
     </div>
   );
 };
