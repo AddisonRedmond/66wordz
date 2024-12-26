@@ -14,7 +14,7 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
   return (
     <div
       style={props.disabled ? { opacity: "50%" } : {}}
-      className="bg-card prose flex h-full w-1/5 min-w-64 flex-col rounded-lg px-6 py-5 shadow-md outline outline-1 outline-zinc-300"
+      className="bg-card prose flex h-full max-h-72 w-1/5 min-w-64 flex-col rounded-lg px-6 py-5 shadow-md outline outline-1 outline-zinc-300"
     >
       <span className="size-7">
         <Image

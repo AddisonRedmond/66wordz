@@ -15,6 +15,7 @@ import { GetServerSideProps, NextPage } from "next";
 import toast, { Toaster } from "react-hot-toast";
 import RejoinGame from "~/components/survival/rejoin-game";
 import { useIsMobile } from "~/custom-hooks/useIsMobile";
+import JoinLobby from "~/components/join-lobby";
 
 const Elimination = dynamic(
   () => import("~/components/elimination/elimination"),
@@ -134,6 +135,8 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
     };
   }, [quickPlay]);
+
+  console.log(joinLobby);
   return (
     <div className="flex flex-grow flex-col">
       {quitGame && (
@@ -223,29 +226,8 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
       </footer>
       <Toaster />
       {!quickPlay.data && (
-        <div
-          onClick={() => setJoinLobby(!joinLobby)}
-          className="absolute bottom-2 right-4 cursor-pointer overflow-hidden rounded-md bg-custom-secondary p-2 shadow-md outline outline-1 outline-zinc-300"
-        >
-          <p className="font-semibold">Join Lobby</p>
-          <m.div
-            initial={{ height: 0 }}
-            animate={{ height: joinLobby ? "auto" : 0 }}
-            transition={{
-              duration: 0.1,
-              ease: "easeInOut",
-              type: "spring",
-              stiffness: 200
-            }}
-            className="bg-white"
-          >
-            <div>
-              <p>Lobby Id</p>
-            </div>
-            <div>
-              <p>Password</p>
-            </div>
-          </m.div>
+        <div className="absolute bottom-2 right-4 w-fit">
+          <JoinLobby joinLobby={joinLobby} setJoinLobby={setJoinLobby} />
         </div>
       )}
     </div>
