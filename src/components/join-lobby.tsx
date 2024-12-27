@@ -7,7 +7,7 @@ const JoinLobby: React.FC<{
   return (
     <div
       style={{ borderRadius: `${joinLobby ? ".375rem" : "9999px"}` }}
-      className="cursor-pointer overflow-hidden bg-zinc-900 p-2 text-white shadow-md outline outline-1 outline-zinc-300"
+      className="cursor-pointer overflow-hidden bg-zinc-900 px-4 py-2 text-white shadow-md outline outline-1 outline-zinc-300"
     >
       <div className="flex justify-between">
         <button onClick={() => setJoinLobby(true)} className="w-full">
@@ -39,18 +39,19 @@ const JoinLobby: React.FC<{
           <p className="bg-zinc-900 text-sm">Lobby Id</p>
           <input
             placeholder="lobby id"
-            className="rounded-sm p-1 text-black"
+            className="rounded-md p-1 text-black"
           ></input>
         </div>
         <div className="flex flex-col gap-y-1">
           <p className="bg-zinc-900 text-sm">Password</p>
           <input
-            placeholder="password"
-            className="rounded-sm p-1 text-black"
+            placeholder="(Optional)"
+            className="rounded-md p-1 text-black"
           ></input>
-
-          <button>Join</button>
         </div>
+        <button className="w-full rounded-md bg-white py-1 font-semibold text-black duration-150 ease-in-out hover:bg-zinc-300">
+          Join
+        </button>
       </m.div>
     </div>
   );
