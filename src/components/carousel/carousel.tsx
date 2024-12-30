@@ -19,17 +19,17 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
   return (
     <section
-      className={`${styles.embla} m-atuo max-w-96 rounded-md shadow-md outline outline-1 outline-zinc-200`}
+      className={`${styles.embla} m-atuo max-w-96 rounded-md bg-white shadow-md outline outline-1 outline-zinc-200`}
     >
       <div className="overflow-hidden" ref={emblaRef}>
         <div className={`${styles.embla__container} px-2`}>
           {slides.map((slide, index) => (
             <div className={styles.embla__slide} key={index}>
               <div className={`${styles.embla__slide__number} flex flex-col`}>
-                <h3 className="grid h-1/3 place-content-center text-xl">
+                <h3 className="grid h-1/3 place-content-center text-xl font-semibold">
                   {slide.header}
                 </h3>
-                <div className="grid flex-grow place-content-center text-sm font-normal">
+                <div className="grid flex-grow place-content-center text-sm font-normal text-center">
                   {slide.content}
                 </div>
               </div>

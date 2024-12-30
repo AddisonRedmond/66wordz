@@ -18,17 +18,15 @@ export default async function handler(
   const players = await db.players.findMany({ where: { lobbyId: lobbyId } });
   const playerIds = players.map((player) => player.userId);
 
-  Promise.all([
-    db.user.updateMany({
-      where: {
-        id: {
-          in: playerIds,
-        },
+  await db.user.updateMany({
+    where: {
+      id: {
+        in: playerIds,
       },
-      data: { freeGameCount: { increment: 1 }, gamesPlayed: { increment: 1 } },
-    }),
-    db.lobby.update({ where: { id: lobbyId }, data: { started: true } }),
-  ]);
+    },
+    data: { freeGameCount: { increment: 1 } },
+  });
 
+  await db.lobby.update({ where: { id: lobbyId }, data: { started: true } });
   res.status(200).end();
 }

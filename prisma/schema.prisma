@@ -17,18 +17,17 @@ datasource db {
 // Necessary for Next auth
 
 model User {
-    id            String    @id @default(cuid())
+    id            String      @id @default(cuid())
     name          String
-    email         String    @unique
+    email         String      @unique
     emailVerified DateTime?
     image         String?
-    wins          Int       @default(0)
-    losses        Int       @default(0)
-    gamesPlayed   Int       @default(0)
+    wins          Int         @default(0)
+    losses        Int         @default(0)
+    gamesPlayed   Int         @default(0)
     Players       Players[]
     lobbyId       String?
-
-    challenge Challenge[]
+    challenge     Challenge[]
 
     friends  Friends[]  @relation(name: "friends")
     requests Requests[]
@@ -63,7 +62,7 @@ model Lobby {
 }
 
 model Players {
-    id String @id @default(cuid())
+    id      String @id @default(cuid())
     userId  String @unique
     user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     lobbyId String

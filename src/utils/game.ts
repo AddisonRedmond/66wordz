@@ -3,6 +3,9 @@ import words from "./words";
 import { db } from "./firebase/firebase";
 import { env } from "~/env.mjs";
 import { GameType } from "@prisma/client";
+import { eliminationGameDetails } from "./elimination";
+import { raceGameDetails } from "./race";
+import { marathonGameDetails } from "./marathon";
 
 export interface DefaultPlayerData {
   initials: string;
@@ -204,3 +207,4 @@ export const determineReveal = (word: string, numberToReveal: number) => {
 
   return { revealIndex, matches };
 };
+

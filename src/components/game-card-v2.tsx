@@ -8,25 +8,42 @@ type GameCardV2Props = {
   handleUpgrade: () => void;
   desc: string;
   disabled?: boolean;
+  handleInstructions: (gameType: GameType) => void;
 };
 
 const GameCardV2: React.FC<GameCardV2Props> = (props) => {
   return (
     <div
-
       style={props.disabled ? { opacity: "50%" } : {}}
-      className="shadow-md bg-card text-card-foreground prose flex h-60 w-1/4 min-w-64 flex-col rounded-lg outline outline-1 outline-zinc-300 px-6 py-5 "
+      className="bg-card text-card-foreground prose flex h-60 w-1/4 min-w-64 flex-col rounded-lg px-6 py-5 shadow-md outline outline-1 outline-zinc-300"
     >
-      <span className="size-7">
-        <Image
-          unoptimized
-          className="m-0"
-          src={props.image}
-          alt={`image for ${props.gameType} game`}
-          width={30}
-          height={30}
-        />
-      </span>
+      <div className="flex h-fit justify-between">
+        <span className="size-7">
+          <Image
+            unoptimized
+            className="m-0"
+            src={props.image}
+            alt={`image for ${props.gameType} game`}
+            width={30}
+            height={30}
+          />
+        </span>
+        <button
+          onClick={() => props.handleInstructions(props.gameType)}
+          className="grid size-7 place-content-center rounded-full outline outline-1 outline-zinc-300 duration-150 ease-in-out hover:bg-zinc-100"
+        >
+          <Image
+            unoptimized
+            className="m-0"
+            src={
+              "https://utfs.io/f/e8LGKadgGfdI8zEB08Ls0HGm1zJCvT6f9KpclUtM7kZ2jOBR"
+            }
+            alt={`image for ${props.gameType} game`}
+            width={4}
+            height={18}
+          />
+        </button>
+      </div>
 
       <div className="flex w-full flex-grow flex-col justify-between space-y-1.5">
         <div>
