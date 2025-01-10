@@ -9,14 +9,14 @@ import {
   getRevealIndex,
 } from "./game";
 import { GameDetails } from "./types";
-export interface RacePlayerData extends DefaultPlayerData {
-  correctGuesses: number;
-  totalGuesses: number;
-}
 
 export interface RaceLobbyData extends DefaultLobbyData {
   round: number;
   roundTimer: number;
+}
+
+export interface RacePlayerData extends DefaultPlayerData {
+  totalGuessCount: number;
 }
 
 export type RaceGameData = {
@@ -34,14 +34,14 @@ export const createNewRaceLobby = () => {
 };
 
 export const joinRaceLobby = (playerId: string, fullName?: string | null) => {
-  const player: Record<string, RacePlayerData> = {
+  const player: Record<string, DefaultPlayerData> = {
     [playerId]: {
       initials: getInitials(fullName) ?? "N/A",
       word: handleGetNewWord(),
       matches: { full: [], partial: [], none: [] },
       eliminated: false,
-      correctGuesses: 0,
-      totalGuesses: 0,
+      correctGuessCount: 0,
+      incorrectGuessCount: 0,
     },
   };
 
@@ -50,15 +50,20 @@ export const joinRaceLobby = (playerId: string, fullName?: string | null) => {
 
 export const getUserPlacement = (
   userId: string,
-  players: Record<string, RacePlayerData>,
+  players: Record<string, DefaultPlayerData>,
 ) => {
   const sortedPlayers = Object.entries(players)
     .filter(([, player]) => !player.eliminated)
     .sort(([, a], [, b]) => {
-      if (b.correctGuesses !== a.correctGuesses) {
-        return b.correctGuesses - a.correctGuesses;
+      if (b.correctGuessCount !== a.correctGuessCount) {
+        return b.correctGuessCount - a.correctGuessCount;
       }
-      return a.totalGuesses - b.totalGuesses; // Fallback to totalGuesses
+      return (
+        a.correctGuessCount +
+        a.incorrectGuessCount -
+        b.correctGuessCount +
+        b.incorrectGuessCount
+      ); // Fallback to totalGuesses
     })
     .map(([id]) => id);
 
@@ -70,7 +75,7 @@ export const getUserPlacement = (
 };
 export const handleCorrectGuess = (
   userId: string,
-  userData: RacePlayerData,
+  userData: DefaultPlayerData,
   dbRef: DatabaseReference,
   placement: {
     placement: number;
@@ -104,9 +109,8 @@ export const handleCorrectGuess = (
 
   updatedUserObject.revealIndex = revealIndex;
   updatedUserObject.matches = { full: matches };
-  updatedUserObject.correctGuesses = updatedUserObject.correctGuesses + 1;
+  updatedUserObject.correctGuessCount = updatedUserObject.correctGuessCount + 1;
   updatedUserObject.word = newWord;
-  updatedUserObject.totalGuesses = updatedUserObject.totalGuesses + 1;
 
   const playerRef = child(dbRef, "players");
 
@@ -119,7 +123,7 @@ export const handleCorrectGuess = (
 };
 
 export const handleIncorrectGuess = async (
-  playerData: Record<string, RacePlayerData>,
+  playerData: Record<string, DefaultPlayerData>,
   guess: string,
   dbRef: DatabaseReference,
 ) => {
@@ -135,7 +139,7 @@ export const handleIncorrectGuess = async (
     ...data,
     matches,
     revealIndex,
-    totalGuesses: data.totalGuesses + 1,
+    totalGuesses: data.incorrectGuessCount + 1,
   };
   const playerRef = child(dbRef, "players");
 
@@ -149,7 +153,7 @@ export const calcualteSpots = (playerCount: number) => {
 };
 
 export const calculateNumberOfPlayersToEliminate = (
-  players: Record<string, RacePlayerData>,
+  players: Record<string, DefaultPlayerData>,
 ) => {
   const nonElimiatedPlayers = Object.values(players).filter((data) => {
     return data.eliminated === false;
@@ -183,12 +187,13 @@ export const getOrinalSuffix = (num: number) => {
 export const raceGameDetails: GameDetails = [
   {
     header: "Race",
-    content: "Only the fastest players will advance to the next round.",
+    content:
+      "The players with the highest score will avoid elimination at the end of the timer",
   },
   {
     header: "Race",
     content:
-      "Depending on how many points you have, you will get a letters revealed for free",
+      "The game will help those who are behind by revealing some letters for them",
   },
   {
     header: "Race",

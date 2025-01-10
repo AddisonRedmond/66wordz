@@ -28,7 +28,16 @@ const CountDownTimer: React.FC<CountDownTimerProps> = (props) => {
           />
         </div>
         <div className="flex flex-col items-center">
-          {props.gameDetails && <Carousel slides={props.gameDetails} />}
+          {props.gameDetails && (
+            <Carousel
+              header={
+                <div className="text-xl mt-4">
+                  <p>{props.gameDetails[0]?.header}</p>
+                </div>
+              }
+              slides={props.gameDetails}
+            />
+          )}
         </div>
       </div>
     );

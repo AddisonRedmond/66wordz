@@ -51,7 +51,7 @@ const MarathonGameInfo: React.FC<MarathonGameInfoProps> = ({
         <p className="w-1/3">{`${minutes}:${seconds.toString().padStart(2, "0")}`}</p>
       </div>
       <div>
-        <p className="text-emerald-600">+ {props?.additionalTime ?? 0}s</p>
+        <p className="text-emerald-600 text-nowrap">+ {props?.additionalTime ?? 0}s</p>
       </div>
     </div>
   );

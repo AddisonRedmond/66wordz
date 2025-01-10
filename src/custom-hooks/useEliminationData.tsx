@@ -1,32 +1,9 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, Database } from "firebase/database";
 import { GameType } from "@prisma/client";
-export type EliminationLobbyData = {
-  gameStarted: boolean;
-  round: number;
-  nextRoundStartTime?: number;
-  gameStartTime: number;
-  roundTimer?: number;
-  winner?: string;
-  totalSpots: number;
-  finalRound: boolean;
-  owner?: string;
-  totalPoints: number;
-};
-
-export type EliminationPlayerObject = {
-  initials?: string;
-  isBot: boolean;
-  word: string;
-  matches?: {
-    full: string[];
-    partial: string[];
-    none: string[];
-  } | null;
-  revealIndex?: number[];
-  eliminated?: boolean;
-  points: number;
-};
+import { DefaultPlayerData } from "~/utils/game";
+import { EliminationLobbyData } from "~/utils/elimination";
+export interface EliminationPlayerObject extends DefaultPlayerData {}
 
 export type EliminationPlayerData = {
   [keyof: string]: EliminationPlayerObject;

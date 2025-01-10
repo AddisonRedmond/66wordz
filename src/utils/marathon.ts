@@ -16,7 +16,7 @@ export interface MarathonLobbyData extends DefaultLobbyData {
 
 export interface MarathonPlayerData extends DefaultPlayerData {
   correctGuessCount: number;
-  incorrectGuessCount: number;
+  marathonIncorrectGuessCount: number;
 }
 
 export type MarathonGameData = {
@@ -42,6 +42,7 @@ export const joinMarathonLobby = (userId: string, fullName: string | null) => {
       correctGuessCount: 0,
       eliminated: false,
       incorrectGuessCount: 0,
+      marathonIncorrectGuessCount: 0,
     },
   };
 
@@ -55,7 +56,7 @@ const mutateCorrectGuessData = (userData: MarathonPlayerData) => {
     ...userData,
     correctGuessCount: userData.correctGuessCount + 1,
     // TODO: set a max time. Math.min(being 3 mins probably)
-    incorrectGuessCount: 0,
+    marathonIncorrectGuessCount: 0,
     // TODO: remove and handle non null assertion
     matches: null,
     word: handleGetNewWord(),
@@ -71,7 +72,7 @@ const mutateIncorrectGuessData = (
     // reset matches and get a new word
     return {
       ...userData,
-      incorrectGuessCount: 0,
+      marathonIncorrectGuessCount: 0,
       matches: null,
       revealIndex: null,
       word: handleGetNewWord(),
@@ -118,7 +119,8 @@ export const handleIncorrectMarathonGuess = async (
 export const marathonGameDetails: GameDetails = [
   {
     header: "Marathon",
-    content: "Guess words to earn more time",
+    content:
+      "Guess words to earn more time. You can accumulate a maximum of 3 minutes",
   },
   {
     header: "Marathon",
@@ -131,5 +133,10 @@ export const marathonGameDetails: GameDetails = [
   {
     header: "Marathon",
     content: "Ties will be setteled with sudden death",
+  },
+  {
+    header: "Marathon",
+    content:
+      "If you fail to uncover the word in 6 guesses, a new word is picked for you",
   },
 ];

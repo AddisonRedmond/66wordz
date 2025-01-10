@@ -6,12 +6,12 @@ type GameInfoProps = {
   roundTimer: number;
   isAtRisk: boolean;
   placement: number;
-  correctGuesses?: number;
+  correctGuessCount?: number;
   guesses?: number;
 };
 
 const GameInfo: React.FC<GameInfoProps> = ({
-  correctGuesses = 0,
+  correctGuessCount = 0,
   roundTimer,
   ...props
 }) => {
@@ -27,7 +27,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
     <div className="flex items-center justify-around p-2 font-semibold">
       <div className="grid w-1/3 place-content-center text-center text-custom-accent">
         <p>pts</p>
-        <p className="text-xl font-semibold">{correctGuesses}</p>
+        <p className="text-xl font-semibold">{correctGuessCount}</p>
       </div>
       <div
         className="flex w-1/3 flex-col items-center justify-center duration-150 ease-in-out"

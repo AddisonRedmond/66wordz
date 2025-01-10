@@ -177,7 +177,7 @@ export const quickPlayRouter = createTRPCRouter({
     if (playerCount <= 0) {
       await Promise.all([
         ctx.db.lobby.delete({ where: { id: lobbyId } }),
-        db.ref(`${lobby?.gameType}/${lobbyId}`).remove(),
+        db.ref(`${lobby?.gameType}/${lobbyId}/lobbyData`).remove(),
       ]);
     }
   }),

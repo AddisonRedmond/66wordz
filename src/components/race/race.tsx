@@ -22,6 +22,7 @@ import CountDownTimer from "../board-components/countdown-timer";
 import Eliminated from "../board-components/eliminated";
 import Winner from "../board-components/winner";
 import GameInfoContainer from "../board-components/game-info-container";
+import { useAnimate } from "framer-motion";
 
 type RaceProps = {
   lobbyId: string;
@@ -32,7 +33,21 @@ type RaceProps = {
 const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
   const lobbyRef = ref(db, `${gameType}/${lobbyId}`);
   const gameData = useGameData<RaceGameData>(lobbyRef);
-  const [, setSpellCheck] = useState(false);
+  const [spellCheck, setSpellCheck] = useState(false);
+
+  const [scope, animate] = useAnimate();
+
+  const guessAnimation = (color: "#16C47F" | "#DF2E38") => {
+    animate(
+      scope.current,
+      { backgroundColor: ["#f5f5f4", color, "#f5f5f4"] },
+      { duration: 0.15 },
+    );
+  };
+
+  const finishSpellCheck = () => {
+    setSpellCheck(false);
+  };
   // fix the placement issue
   const [placement, setPlacement] = useState({
     placement: 0,
@@ -80,9 +95,11 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
         if (guess === playerData.word) {
           // get current placement
           handleCorrectGuess(userId, playerData, lobbyRef, placement);
+          guessAnimation("#16C47F");
         } else {
           // handle incorrect guess
           handleIncorrectGuess({ [userId]: playerData }, guess, lobbyRef);
+          guessAnimation("#DF2E38");
         }
         setGuess("");
       }
@@ -167,8 +184,8 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                 <GameInfoContainer>
                   <GameInfo
                     placement={placement.placement}
-                    correctGuesses={playerData?.correctGuesses}
-                    guesses={playerData?.totalGuesses}
+                    correctGuessCount={playerData?.correctGuessCount}
+                    guesses={playerData?.totalGuessCount}
                     roundTimer={gameData.lobbyData.roundTimer}
                     isAtRisk={isAtRisk()}
                   />
@@ -185,7 +202,13 @@ const Race: React.FC<RaceProps> = ({ lobbyId, userId, gameType }) => {
                       word={playerData?.word}
                       match={playerData?.revealIndex}
                     />
-                    <GuessContainer word={guess} wordLength={5} />
+                    <GuessContainer
+                      word={guess}
+                      wordLength={5}
+                      spellCheck={spellCheck}
+                      finishSpellCheck={finishSpellCheck}
+                      animationScope={scope}
+                    />
                     <Keyboard
                       disabled={!gameData.lobbyData.gameStarted}
                       handleKeyBoardLogic={handleKeyUp}

@@ -21,6 +21,7 @@ import CountDownTimer from "../board-components/countdown-timer";
 import MarathonGameInfo from "./marathon-game-info";
 import Winner from "../board-components/winner";
 import Eliminated from "../board-components/eliminated";
+import { useAnimate } from "framer-motion";
 
 type MarathonProps = {
   lobbyId: string;
@@ -32,6 +33,16 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
   const gameData = useGameData<MarathonGameData>(lobbyRef);
   const playerData = gameData?.players?.[userId];
   const [guess, setGuess] = useState("");
+
+  const [scope, animate] = useAnimate();
+
+  const guessAnimation = (color: "#16C47F" | "#DF2E38") => {
+    animate(
+      scope.current,
+      { backgroundColor: ["#f5f5f4", color, "#f5f5f4"] },
+      { duration: 0.15 },
+    );
+  };
 
   const handleKeyUp = (e: KeyboardEvent | string) => {
     const key = typeof e === "string" ? e.toUpperCase() : e.key.toUpperCase();
@@ -74,9 +85,11 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
             gameData.timers[userId]!,
             gameData.lobbyData.round,
           );
+          guessAnimation("#16C47F");
         } else {
           // handle incorrect guess
           handleIncorrectMarathonGuess(lobbyRef, userId, playerData, guess);
+          guessAnimation("#DF2E38");
         }
         setGuess("");
       }
@@ -150,7 +163,9 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
           {gameData.timers[userId] && !gameData.lobbyData.winner && (
             <MarathonGameInfo
               additionalTime={lifeTimerIndex[gameData.lobbyData.round - 1]}
-              remainingGuesses={6 - (playerData?.incorrectGuessCount ?? 0)}
+              remainingGuesses={
+                6 - (playerData?.marathonIncorrectGuessCount ?? 0)
+              }
               endTime={gameData.timers[userId]}
             />
           )}
@@ -161,7 +176,11 @@ const Marathon: React.FC<MarathonProps> = ({ lobbyId, userId, gameType }) => {
                 word={playerData?.word}
                 match={playerData?.revealIndex}
               />
-              <GuessContainer word={guess} wordLength={5} />
+              <GuessContainer
+                word={guess}
+                wordLength={5}
+                animationScope={scope}
+              />
               <Keyboard
                 matches={playerData?.matches}
                 handleKeyBoardLogic={handleKeyUp}

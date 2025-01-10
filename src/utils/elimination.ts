@@ -12,6 +12,23 @@ import FOUR_LETTER_WORDS from "./four-letter-words";
 import { db } from "./firebase/firebase";
 import { GameDetails } from "./types";
 
+export type OverTime = {
+  overTimeTimer?: number;
+};
+
+export type EliminationLobbyData = {
+  gameStarted: boolean;
+  round: number;
+  nextRoundStartTime?: number;
+  gameStartTime: number;
+  roundTimer?: number;
+  winner?: string;
+  totalSpots: number;
+  finalRound: boolean;
+  totalPoints: number;
+  overTime: boolean;
+};
+
 const wordLengthLookUp: { [key: number]: number } = {
   1: 4,
   2: 5,
@@ -50,6 +67,7 @@ export const createNewEliminationLobby = () => {
     totalSpots: 0,
     finalRound: false,
     totalPoints: 3,
+    overTime: false,
   };
 };
 
@@ -59,12 +77,12 @@ export const joinEliminationLobby = (
 ) => {
   const player: EliminationPlayerData = {
     [playerId]: {
-      isBot: false,
       initials: getInitials(fullName) ?? "N/A",
       word: getWordByLength(4),
       matches: { full: [], partial: [], none: [] },
       eliminated: false,
-      points: 0,
+      correctGuessCount: 0,
+      incorrectGuessCount: 0,
     },
   };
 
@@ -81,7 +99,7 @@ export const handleCorrectGuess = async (
   if (round) {
     const updatedPlayerData: EliminationPlayerObject = {
       ...playerData,
-      points: playerData.points + 1,
+      correctGuessCount: playerData.correctGuessCount + 1,
       matches: null,
       word: getWordByLength(wordLength),
       revealIndex: [],
@@ -99,6 +117,7 @@ export const handleIncorrectGuess = async (
     ...playerData,
     matches: handleMatched(guess, playerData.word, playerData.matches),
     revealIndex: getRevealIndex(playerData.word, guess, playerData.revealIndex),
+    incorrectGuessCount: playerData.incorrectGuessCount + 1,
   };
 
   await update(ref(db, path), updatedPlayerData);
@@ -112,7 +131,8 @@ export const calculatePlacement = (
 
   // Sort the player entries based on their points in descending order
   const sortedPlayers = playerEntries.sort(
-    ([, playerA], [, playerB]) => playerB.points - playerA.points,
+    ([, playerA], [, playerB]) =>
+      playerB.correctGuessCount - playerA.correctGuessCount,
   );
 
   // Find the index of the player with the given playerId
@@ -130,7 +150,7 @@ export const getQualified = (
 
   for (const playerId in players) {
     if (
-      players[playerId]!.points >= pointsGoal &&
+      players[playerId]!.correctGuessCount >= pointsGoal &&
       !players[playerId]?.eliminated
     ) {
       qualifiedCount++;
@@ -172,7 +192,8 @@ export const validateKey = (key: string): boolean => {
 export const eliminationGameDetails: GameDetails = [
   {
     header: "Elimination",
-    content: "Only the fastest players will advance to the next round.",
+    content:
+      "Avoid being eliminated by uncovering all of your words before other players",
   },
   {
     header: "Elimination",
@@ -183,5 +204,10 @@ export const eliminationGameDetails: GameDetails = [
     header: "Elimination",
     content:
       "The first player to correctly guess their 6-letter word wins the game.",
+  },
+  {
+    header: "Elimination",
+    content:
+      "If no one guesses their six letter word in the time limit, the game will help by revealing letters",
   },
 ];

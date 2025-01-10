@@ -27,6 +27,8 @@ import Winner from "../board-components/winner";
 import { checkSpelling } from "~/utils/spellCheck";
 import GameInfoContainer from "../board-components/game-info-container";
 import Qualified from "../board-components/qualified";
+import { useAnimate } from "framer-motion";
+import OverTime from "./over-time";
 type EliminationProps = {
   lobbyId: string;
   userId: string;
@@ -44,6 +46,16 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const finishSpellCheck = () => {
     setSpellCheck(false);
+  };
+
+  const [scope, animate] = useAnimate();
+
+  const guessAnimation = (color: "#16C47F" | "#DF2E38") => {
+    animate(
+      scope.current,
+      { backgroundColor: ["#f5f5f4", color, "#f5f5f4"] },
+      { duration: 0.15 },
+    );
   };
 
   const playerData: EliminationPlayerObject | undefined =
@@ -71,7 +83,7 @@ const Elimination: React.FC<EliminationProps> = ({
       return;
     } else if (
       playerData?.eliminated ||
-      playerData?.points >= gameData?.lobbyData.totalPoints
+      playerData?.correctGuessCount >= gameData?.lobbyData.totalPoints
     ) {
       console.warn("player already qualified");
       return;
@@ -108,6 +120,7 @@ const Elimination: React.FC<EliminationProps> = ({
             gameData.lobbyData.round,
             `${gameType}/${lobbyId}/players/${userId}`,
           );
+          guessAnimation("#16C47F");
         } else {
           // handle incorrect guess
           handleIncorrectGuess(
@@ -115,6 +128,7 @@ const Elimination: React.FC<EliminationProps> = ({
             playerData,
             `${gameType}/${lobbyId}/players/${userId}`,
           );
+          guessAnimation("#DF2E38");
         }
         setGuess("");
       }
@@ -169,7 +183,8 @@ const Elimination: React.FC<EliminationProps> = ({
 
   const isQualified = () => {
     return (
-      (playerData?.points ?? 0) >= (gameData?.lobbyData?.totalPoints ?? 1) &&
+      (playerData?.correctGuessCount ?? 0) >=
+        (gameData?.lobbyData?.totalPoints ?? 1) &&
       !gameData?.lobbyData.winner &&
       !playerData?.eliminated
     );
@@ -190,6 +205,7 @@ const Elimination: React.FC<EliminationProps> = ({
 
             {/* hidden if game not started || if next round timer hasn't expired*/}
             <div className="flex w-1/4 min-w-80 flex-col items-center justify-center gap-y-3">
+              <OverTime isOvertime={gameData.lobbyData?.overTime} />
               {gameData.lobbyData.roundTimer && !gameData.lobbyData.winner && (
                 <GameInfoContainer>
                   <GameStatus
@@ -215,7 +231,7 @@ const Elimination: React.FC<EliminationProps> = ({
                     <Points
                       large={true}
                       pointsGoal={gameData?.lobbyData.totalPoints}
-                      totalPoints={playerData?.points}
+                      totalPoints={playerData?.correctGuessCount}
                     />
                   </>
                 )}
@@ -236,6 +252,7 @@ const Elimination: React.FC<EliminationProps> = ({
                         wordLength={playerData?.word.length}
                         spellCheck={spellCheck}
                         finishSpellCheck={finishSpellCheck}
+                        animationScope={scope}
                       />
                       <Keyboard
                         disabled={false}

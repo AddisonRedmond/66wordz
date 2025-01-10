@@ -15,7 +15,7 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
   return (
     <div
       style={props.disabled ? { opacity: "50%" } : {}}
-      className="bg-card text-card-foreground prose flex h-60 w-1/4 min-w-64 flex-col rounded-lg px-6 py-5 shadow-md outline outline-1 outline-zinc-300"
+      className="text-card-foreground prose flex h-60 w-1/4 min-w-64 flex-col rounded-lg bg-zinc-100 px-6 py-5 shadow-md"
     >
       <div className="flex h-fit justify-between">
         <span className="size-7">
@@ -30,7 +30,7 @@ const GameCardV2: React.FC<GameCardV2Props> = (props) => {
         </span>
         <button
           onClick={() => props.handleInstructions(props.gameType)}
-          className="grid size-7 place-content-center rounded-full outline outline-1 outline-zinc-300 duration-150 ease-in-out hover:bg-zinc-100"
+          className="grid size-7 place-content-center rounded-full duration-150 ease-in-out hover:bg-zinc-300"
         >
           <Image
             unoptimized

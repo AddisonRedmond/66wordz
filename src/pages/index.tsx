@@ -17,10 +17,8 @@ import { useIsMobile } from "~/custom-hooks/useIsMobile";
 import AnimatedModal from "~/components/animated-modal";
 import LeaveGame from "~/components/leave-game";
 import { useClickOutside } from "~/custom-hooks/useClickOutside";
-import Carousel from "~/components/carousel/carousel";
-import { marathonGameDetails } from "~/utils/marathon";
-import { raceGameDetails } from "~/utils/race";
-import { eliminationGameDetails } from "~/utils/elimination";
+
+import Instructions from "~/components/instructions/instructions";
 const Elimination = dynamic(
   () => import("~/components/elimination/elimination"),
   {
@@ -43,9 +41,9 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
   const isMobile = useIsMobile();
 
   const [quitGame, setQuitGame] = useState(false);
-  const [instructions, setInstructions] = useState<GameType | null>(null);
+  const [instructions, setInstructions] = useState<GameType | undefined>();
 
-  const ref = useClickOutside<HTMLDivElement>(() => setInstructions(null));
+  const ref = useClickOutside<HTMLDivElement>(() => setInstructions(undefined));
 
   const rejoinGame = () => {
     toast.dismiss();
@@ -78,17 +76,23 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
     }
   };
 
-  const handleQuickPlay = (gameMode: GameType) => {
-    // TODO: Add detection for stale lobby
-    toast.dismiss();
-    quickPlay.mutate({ gameMode: gameMode });
+  const showInstructions = (gameMode: GameType) => {
+    localStorage.setItem(gameMode, "true");
+    setInstructions(gameMode);
   };
 
-  const allInstructions = {
-    MARATHON: marathonGameDetails,
-    RACE: raceGameDetails,
-    ELIMINATION: eliminationGameDetails,
-    SURVIVAL: [{ header: "", content: "" }],
+  const handleQuickPlay = (gameMode: GameType) => {
+    // TODO: Add detection for stale lobby
+
+    setInstructions(undefined);
+    const hasReadInstructions = localStorage.getItem(gameMode);
+
+    if (hasReadInstructions) {
+      toast.dismiss();
+      quickPlay.mutate({ gameMode: gameMode });
+    } else {
+      showInstructions(gameMode);
+    }
   };
 
   const exitMatch = () => {
@@ -151,8 +155,6 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
     };
   }, [quickPlay]);
 
-  console.log(instructions);
-
   return (
     <div className="flex flex-grow flex-col">
       <LeaveGame
@@ -161,11 +163,13 @@ const Home: NextPage<{ userId: string }> = ({ userId }) => {
         setQuitGame={setQuitGame}
       />
 
-      {instructions && (
-        <AnimatedModal reference={ref} isOpen={!!instructions}>
-          <Carousel slides={allInstructions[instructions]} />
-        </AnimatedModal>
-      )}
+      <AnimatedModal reference={ref} isOpen={!!instructions}>
+        <Instructions
+          instructions={instructions}
+          setInstructions={setInstructions}
+          handleQuickPlay={handleQuickPlay}
+        />
+      </AnimatedModal>
       <Navbar key="navbar" />
       <div className="flex min-w-[375px] flex-grow flex-col items-center justify-evenly pb-3">
         <Header

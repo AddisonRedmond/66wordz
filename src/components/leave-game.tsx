@@ -13,7 +13,7 @@ const LeaveGame: React.FC<LeaveGameProps> = ({
 }) => {
   return (
     <AnimatedModal isOpen={quitGame}>
-      <div className="rounded-md bg-white p-2">
+      <div className="flex flex-col gap-2 rounded-md bg-white p-2">
         <h1 className="my-2 text-xl font-semibold">Leave Game</h1>
         <p className="my-2">Are you sure you want to leave?</p>
         <div className="my-2 flex justify-around font-medium">

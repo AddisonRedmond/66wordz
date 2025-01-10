@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import WordTile from "./word-tile";
 
-import { m, useAnimate } from "framer-motion";
+import { AnimationScope, m, useAnimate } from "framer-motion";
 type GuessContainerProps = {
   word?: string;
   wordLength?: number;
   spellCheck?: boolean;
   finishSpellCheck?: () => void;
+  animationScope: AnimationScope<any>;
 };
 
 const GuessContainer: React.FC<GuessContainerProps> = ({
@@ -27,9 +28,10 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
 
   return (
     <div
-      className={`shadow-md flex h-16 w-full flex-row  rounded-md bg-stone-100 px-2  py-1 duration-150 ease-in-out`}
+      ref={props.animationScope}
+      className={`flex h-16 w-full flex-row rounded-md bg-stone-100 px-2 py-1 shadow-md duration-150 ease-in-out`}
     >
-      <m.div
+      <div
         ref={scope}
         className="flex h-full w-full items-center justify-center gap-1"
       >
@@ -44,7 +46,7 @@ const GuessContainer: React.FC<GuessContainerProps> = ({
             />
           );
         })}
-      </m.div>
+      </div>
     </div>
   );
 };

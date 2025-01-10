@@ -7,9 +7,10 @@ import { GameDetails } from "~/utils/types";
 
 type CarouselProps = {
   slides: GameDetails;
+  header?: JSX.Element;
 };
 
-const Carousel: React.FC<CarouselProps> = ({ slides }) => {
+const Carousel: React.FC<CarouselProps> = ({ slides, ...props }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 10 * 1000 }),
   ]);
@@ -19,17 +20,18 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
   return (
     <section
-      className={`${styles.embla} m-atuo max-w-96 rounded-md bg-white shadow-md outline outline-1 outline-zinc-200`}
+      className={`${styles.embla} m-auto max-w-96 rounded-md bg-white py-4 shadow-md outline outline-1 outline-zinc-200`}
     >
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className={`${styles.embla__container} px-2`}>
+      {props.header}
+      <div
+        className="grid h-52 max-w-full place-content-center overflow-hidden"
+        ref={emblaRef}
+      >
+        <div className={`${styles.embla__container} max-w-96`}>
           {slides.map((slide, index) => (
             <div className={styles.embla__slide} key={index}>
               <div className={`${styles.embla__slide__number} flex flex-col`}>
-                <h3 className="grid h-1/3 place-content-center text-xl font-semibold">
-                  {slide.header}
-                </h3>
-                <div className="grid flex-grow place-content-center text-sm font-normal text-center">
+                <div className="grid flex-grow place-content-center text-wrap text-center text-sm font-normal">
                   {slide.content}
                 </div>
               </div>
@@ -38,19 +40,17 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         </div>
       </div>
 
-      <div className="w-full">
-        <div className="flex justify-center gap-x-3 py-2">
-          {scrollSnaps.map((_, index) => (
-            <CarouselButton
-              key={index}
-              onClick={() => onDotButtonClick(index)}
-              style={{}}
-              className={"size-3 rounded-full outline outline-1 outline-zinc-700 duration-150 ease-in-out".concat(
-                index === selectedIndex ? " " + "bg-zinc-700" : "",
-              )}
-            />
-          ))}
-        </div>
+      <div className="flex justify-center gap-x-3 py-2">
+        {scrollSnaps.map((_, index) => (
+          <CarouselButton
+            key={index}
+            onClick={() => onDotButtonClick(index)}
+            style={{}}
+            className={"size-3 rounded-full outline outline-1 outline-zinc-700 duration-150 ease-in-out".concat(
+              index === selectedIndex ? " " + "bg-zinc-700" : "",
+            )}
+          />
+        ))}
       </div>
     </section>
   );

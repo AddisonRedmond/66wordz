@@ -7,7 +7,7 @@ const Eliminated: React.FC = () => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0 }}
-        className="py-1 w-full max-w-md rounded-md bg-red-600 text-white"
+        className="py-1 w-full max-w-md rounded-md bg-red-600 text-white shadow-md"
       >
         <m.div
           className="text-center text-3xl"

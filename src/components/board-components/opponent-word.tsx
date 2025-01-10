@@ -21,7 +21,7 @@ const OpponentWord: React.FC<OpponentWordProps> = ({
                 ? "#00DFA2"
                 : "#d4d4d8",
             }}
-            className="grid aspect-square h-full w-[18%] place-content-center rounded-md text-xl font-semibold"
+            className="grid aspect-square h-full w-[18%] place-content-center rounded-md  font-semibold"
             key={`${index}${letter}${uniqueKey}`}
           >
             {props.revealIndex?.includes(index) && (

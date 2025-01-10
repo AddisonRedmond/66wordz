@@ -1,9 +1,9 @@
-import { RacePlayerData } from "~/utils/race";
 import { AnimatePresence, m } from "framer-motion";
 import OpponentsContainer from "../board-components/opponents-container";
+import { DefaultPlayerData } from "~/utils/game";
 
 type RaceOpponentsProps = {
-  opponents: Record<string, RacePlayerData>;
+  opponents: Record<string, DefaultPlayerData>;
   opponentIds?: string[];
 };
 
@@ -36,7 +36,7 @@ const RaceOpponents: React.FC<RaceOpponentsProps> = (props) => {
                     {props.opponents?.[id]?.initials ?? "N/A"}
                   </p>
                   <div className="grid size-5 place-items-center rounded-full bg-zinc-500 text-white">
-                    <p>{props.opponents?.[id]?.correctGuesses}</p>
+                    <p>{props.opponents?.[id]?.correctGuessCount}</p>
                   </div>
                 </div>
                 <div className="flex gap-1 duration-150 ease-in-out">

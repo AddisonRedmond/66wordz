@@ -46,7 +46,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
                       >
                         <CircularProgressbarWithChildren
                           value={calculatePrecentage(
-                            player.points,
+                            player.correctGuessCount,
                             props.pointsGoal,
                           )}
                           strokeWidth={12}
@@ -79,7 +79,7 @@ const MobileOpponents: React.FC<MobileOpponentsProps> = (props) => {
                 <div key={playerId} className=" m-auto size-12">
                   <CircularProgressbarWithChildren
                     value={calculatePrecentage(
-                      player?.points ?? 0,
+                      player?.correctGuessCount ?? 0,
                       props.pointsGoal,
                     )}
                     strokeWidth={12}

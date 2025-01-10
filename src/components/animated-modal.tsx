@@ -14,7 +14,7 @@ const AnimatedModal: React.FC<Modal> = (props) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-500 bg-opacity-50"
         >
           <div
             ref={props.reference}

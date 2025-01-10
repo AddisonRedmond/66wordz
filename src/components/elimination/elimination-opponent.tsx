@@ -13,7 +13,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
   // Using the square root for both width and height
 
   const opponentSizePercentage =
-    90 /
+    95 /
     Math.sqrt(
       Object.keys(props?.opponents || []).filter((playerId) => {
         return !props.opponents![playerId]?.eliminated;
@@ -48,7 +48,7 @@ const EliminationOpponent: React.FC<EliminationOpponentProps> = (props) => {
                   </div>
                   <Points
                     pointsGoal={props.pointsGoal}
-                    totalPoints={props.opponents?.[id]?.points}
+                    totalPoints={props.opponents?.[id]?.correctGuessCount}
                   />
                   <div className="flex h-fit items-center justify-center gap-1">
                     {props.opponents?.[id]?.word
